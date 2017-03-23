@@ -83,7 +83,7 @@ $db['mirth_db']['stricton'] = FALSE;
  */
 $db['default']['cachedir'] = "";
 // Create dsn from the info above
-$db['default']['dsn'] = $db['default']['dbdriver'] . '://' . $db['default']['username'] . ':' . $db['default']['password'] . '@' . $db['default']['hostname'] . '/' . $db['default']['database'] . '' . '?charset=utf-8';
+$db['default']['dsn'] = $db['default']['dbdriver'] . '://' . $db['default']['username'] . ':' . $db['default']['password'] . '@' . $db['default']['hostname'] . ':'.$db['default']['port'].'/' . $db['default']['database'] . '' . '?charset=utf-8';
 
 // Require Doctrine.php
 require_once (realpath(dirname(__FILE__) . '/../..') . DIRECTORY_SEPARATOR . 'system/database/Doctrine.php');

@@ -39,7 +39,7 @@
 
 <div class="container-fluid content">
     <div class="row-fluid">
-        <a href="<?php echo base_url() . 'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a id="patient_names" href="<?php echo base_url() . 'patient_management/load_view/details/' . @$patient_id ?>"><?php echo strtoupper(@$result['name']); ?></a> <i class=" icon-chevron-right"></i><strong>Dispensing details</strong>
+        <a href="<?php echo base_url() . 'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a id="patient_names" href="<?php echo base_url() . 'patient_management/load_view/details/' . @$patient_id ?>"><?php echo strtoupper($result['name']); ?></a> <i class=" icon-chevron-right"></i><strong>Dispensing details</strong>
         <hr size="1">
     </div>
     <form id="dispense_form"  name="dispense_form" class="dispense_form" method="post"  action="<?php echo base_url() . 'dispensement_management/save'; ?>" >
@@ -698,7 +698,6 @@ var patient_iqcare=false;
                 has_tb      = data.Tb;
                 var age = data.age;
                 patient_ccc = data.Patient_Number_CCC;
-                //loadOtherDetails(patient_ccc);
                 //CHeck if patient is pregnant
                 checkIfPregnant(is_pregnant,patient_ccc);
                 //Check if still has tb
@@ -710,6 +709,7 @@ var patient_iqcare=false;
             request.fail(function(jqXHR, textStatus) {
                 bootbox.alert("<h4>Patient Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve patient details : </center>" + textStatus);
             });
+    
     });
     
     //-------------------------------- CHANGE EVENT --------------------------------------
@@ -768,15 +768,26 @@ if(patient_iqcare==false){
                 });
                 request.done(function(data) {
                     if(data.patient_who==0){//If no WHO Stage, prompt to enter it
-                            var length_who = data.who_stage.length;
-                            length_who = length_who-1;
-                            var select_who ="<select id='who_stage' name='who_stage'>";  
-                            $.each(data.who_stage,function(i,v){
-                                select_who+="<option value='"+data.who_stage[i]['id']+"'>"+data.who_stage[i]['name']+"</option>";
-                                if(length_who==i){
-                                    select_who+='</select>';
-                                    bootbox.confirm("<h4>WHO Stage </h4>\n\<hr/><center>Patient does not have a WHO Stage, Please select one "+select_who+"</center>","Cancel", "Save",
-                                    function(res){
+                        var length_who = data.who_stage.length;
+                        length_who = length_who-1;
+                        var select_who ="<select id='who_stage' name='who_stage'>";  
+                        $.each(data.who_stage,function(i,v){
+                            select_who+="<option value='"+data.who_stage[i]['id']+"'>"+data.who_stage[i]['name']+"</option>";
+                            if(length_who==i){
+                                select_who+='</select>';
+                                
+                                bootbox.confirm({
+                                    title: "WHO Stage",
+                                    message: "Patient does not have a WHO Stage, Please select one "+select_who,
+                                    buttons: {
+                                        cancel: {
+                                            label: '<i class="fa fa-times"></i> Cancel'
+                                        },
+                                        confirm: {
+                                            label: '<i class="fa fa-check"></i> Save'
+                                        }
+                                    },
+                                    callback: function(res){
                                         if(res===true){//If answer is no, update pregnancy status
                                             var who_selected = $('#who_stage').val();
                                             //Check if the current regimen is OI Medicine and if not, hide the indication field
@@ -789,10 +800,10 @@ if(patient_iqcare==false){
                                                 dataType: "json"
                                             });
                                         }
-                                    });
-                                }
-                            });
-                            
+                                    }
+                                });
+                            }
+                        });     
                     }
                 });
                 request.fail(function(jqXHR, textStatus) {
@@ -1290,31 +1301,55 @@ if(patient_iqcare==false){
     };
     //function to remove drug row in table 
     $(".remove").click(function() {
-           var rows=$("#tbl-dispensing-drugs > tbody").find("tr").length;
-           var rem_row=this;
-              if(rows> 1){
-                bootbox.confirm("<h4>Remove?</h4>\n\<hr/><center>Are you sure?</center>", function(res){
-                      if(res)
-                         $(rem_row).closest('tr').remove();  
-                      
-                  });
-                                                           
+        var rows=$("#tbl-dispensing-drugs > tbody").find("tr").length;
+        var rem_row=this;
+        if(rows> 1){
+            
+            bootbox.confirm({
+                message: "<h4>Remove?</h4>\n\<hr/><center>Are you sure?</center>",
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function(res){
+                    if(res){
+                        $(rem_row).closest('tr').remove();     
+                    }
+                }
+            });                                            
         }else{
            bootbox.alert("<h4>Remove Alert!</h4>\n\<hr/><center>Error!Cannot Delete Last Row Try Reset!</center>");
         }
     });
     $("#reset").click(function (e){
-    e.preventDefault();
-    bootbox.confirm("<h4>Reset?</h4>\n\<hr/><center>Are you sure?</center>", function(res){
-        if(res){
-        reinitialize();
-        clearForm("#dispense_form");
-        resetRoutineDrugs();
-    }else{
+        e.preventDefault();
         
-    }
-    });
-       
+        bootbox.confirm({
+            message: "<h4>Reset?</h4>\n\<hr/><center>Are you sure?</center>",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function(res){
+                if(res){
+                    reinitialize();
+                    clearForm("#dispense_form");
+                    resetRoutineDrugs();   
+                }
+            }
+        });        
     });
     
     //-------------------------------- ADD, REMOVE, RESET END ----------------------------
@@ -1522,89 +1557,124 @@ if(patient_iqcare==false){
 
     function checkIfTested(service, patient_id){
         if(service == 'prep'){
-            bootbox.prompt({
-                title: "HIV TEST (PREP) | Has the Patient Been Tested?",
-                inputType: 'select',
-                inputOptions: [
-                    {
-                        text: 'No',
-                        value: '0',
-                    },
-                    {
-                        text: 'Yes',
-                        value: '1',
-                    }
-                ],
-                callback: function (is_tested) {
-                    if(is_tested == true){
+            $.getJSON('<?php echo base_url();?>dispensement_management/get_prep_reasons', function(reasons){
+                bootbox.prompt({
+                    title: "HIV TEST (PREP) | What is the Patient's PREP Reason?",
+                    inputType: 'select',
+                    inputOptions: reasons,
+                    callback: function (prep_reason) {
                         bootbox.prompt({
-                            title: "HIV TEST (PREP) | When was the Test Done?",
-                            inputType: 'date',
-                            callback: function (test_date) {
-                                bootbox.prompt({
-                                    title: "HIV TEST (PREP) | What was the Test Positive?",
-                                    inputType: 'select',
-                                    inputOptions: [
-                                        {
-                                            text: 'No',
-                                            value: '0',
-                                        },
-                                        {
-                                            text: 'Yes',
-                                            value: '1',
+                            title: "HIV TEST (PREP) | Has the Patient Been Tested?",
+                            inputType: 'select',
+                            inputOptions: [
+                                {
+                                    text: 'No',
+                                    value: '0',
+                                },
+                                {
+                                    text: 'Yes',
+                                    value: '1',
+                                }
+                            ],
+                            callback: function (is_tested) {
+                                if(is_tested == true){
+                                    bootbox.prompt({
+                                        title: "HIV TEST (PREP) | When was the Test Done?",
+                                        inputType: 'date',
+                                        callback: function (test_date) {
+                                            bootbox.prompt({
+                                                title: "HIV TEST (PREP) | What was the Test Positive?",
+                                                inputType: 'select',
+                                                inputOptions: [
+                                                    {
+                                                        text: 'No',
+                                                        value: '0',
+                                                    },
+                                                    {
+                                                        text: 'Yes',
+                                                        value: '1',
+                                                    }
+                                                ],
+                                                callback: function (test_result) {
+                                                    var test_result_url = "<?php echo base_url(); ?>"+'dispensement_management/update_prep_test/'+patient_id+'/'+prep_reason+'/'+is_tested+'/'+test_date+'/'+test_result
+                                                    $.get(test_result_url, function(msg){
+                                                         bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
+                                                    });
+                                                }
+                                            });
                                         }
-                                    ],
-                                    callback: function (test_result) {
-                                        var test_result_url = "<?php echo base_url(); ?>"+'dispensement_management/update_prep_test/'+patient_id+'/'+is_tested+'/'+test_date+'/'+test_result
-                                        $.get(test_result_url, function(msg){
-                                             bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
-                                        });
-                                    }
-                                });
-                            }
+                                    });
+                                }else{
+                                    bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>Please ensure that the client is tested for the treatment to be effective</center>")
+                                }
+                            }         
                         });
-                    }else{
-                        bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>Please ensure that the client is tested for the treatment to be effective</center>")
                     }
-                }         
+                });
             });
         }
     }
 
     function checkIfPregnant(pregnancy_status,patient_ccc){
         if(pregnancy_status=='1'){
-            bootbox.confirm("<h4>Pregnancy confirmation</h4>\n\<hr/><center>Is patient still pregnant?</center>","No", "Yes",
-            function(res){
-                if(res===false){//If answer is no, update pregnancy status
-                    //Check if the current regimen is OI Medicine and if not, hide the indication field
-                    var _url = "<?php echo base_url() . 'patient_management/updatePregnancyStatus'; ?>";
-                    //Get drugs
-                    var request = $.ajax({
-                        url: _url,
-                        type: 'post',
-                        data: {"patient_ccc": patient_ccc},
-                        dataType: "json"
-                    });
+            
+            bootbox.confirm({
+                message: "<h4>Pregnancy confirmation</h4>\n\<hr/><center>Is patient still pregnant?</center>",
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function(res){
+                    if(res===false){//If answer is no, update pregnancy status
+                        //Check if the current regimen is OI Medicine and if not, hide the indication field
+                        var _url = "<?php echo base_url() . 'patient_management/updatePregnancyStatus'; ?>";
+                        //Get drugs
+                        var request = $.ajax({
+                            url: _url,
+                            type: 'post',
+                            data: {"patient_ccc": patient_ccc},
+                            dataType: "json"
+                        });
+                    }
                 }
             });
         }
     }
     
     function checkIfHasTb(tb_status,patient_ccc){
-        if(tb_status=='1'){
-                    bootbox.confirm("<h4>TB confirmation</h4>\n\<hr/><center>Is patient still having TB?</center>","No", "Yes",
-                    function(res){
-                        if(res===false){//If answer is no, update tbstatus
-                            var _url = "<?php echo base_url() . 'patient_management/update_tb_status'; ?>";
-                            //Get drugs
-                            var request = $.ajax({
-                                url: _url,
-                                type: 'post',
-                                data: {"patient_ccc": patient_ccc},
-                                dataType: "json"
-                            });
-                        }
-                    });
+        if(tb_status == 1){
+            
+            bootbox.confirm({
+                message: "<h4>TB confirmation</h4>\n\<hr/><center>Is patient still having TB?</center>",
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function(res){
+                    if(res===false){//If answer is no, update tbstatus
+                        var _url = "<?php echo base_url() . 'patient_management/update_tb_status'; ?>";
+                        //Get drugs
+                        var request = $.ajax({
+                            url: _url,
+                            type: 'post',
+                            data: {"patient_ccc": patient_ccc},
+                            dataType: "json"
+                        });
+                    }
+                }
+            });
         }
     }
     /*********TESTING FUNCTION*********/

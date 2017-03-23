@@ -174,6 +174,7 @@ function sanitizeForm(){
          
 	//Show/Hide pep/prep div depending on the patient type of service
 	$(".pep_reason").css("display","none");
+	$(".prep_reason").css("display","none");
 	$(".prep_test_question").css("display","none");
 	$("#service > option").each(function() {
 	  	if(this.text === "PEP"){
@@ -181,6 +182,7 @@ function sanitizeForm(){
 	      	$(".who_stage").hide();
 	      	$(".drug_prophylaxis").hide();
 	  	}else if(this.text === "PREP"){
+	  		$(".prep_reason").show();
 	  		$(".prep_test_question").show();
 	  		$(".who_stage").hide();
 	  		$(".drug_prophylaxis").hide();
@@ -217,6 +219,11 @@ function sanitizeForm(){
 		$("#other_chronic").hide();
 	}
 
+	//Hide transfer_from div
+	$(".transfer_from").hide();
+	if($("#source").text().toLowerCase().replace(' ', '_') == 'transfer_in'){
+		$(".transfer_from").show();
+	}
 }
 
 function getViralLoad(){

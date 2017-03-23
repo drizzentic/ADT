@@ -392,10 +392,12 @@ foreach($results as $result){
 			$('#tested_tb').val("<?php echo $result['tb_test'];?>");
 			$('#pep_reason').val("<?php echo $result['pep_reason'];?>");
 
+			$('#prep_reason').val("<?php echo $result['prep_reason'];?>");
 			$('#prep_test_answer').val("<?php echo $result['prep_test_answer'];?>");
 			$('#prep_test_date').val("<?php echo $result['prep_test_date'];?>");
 			$('#prep_test_result').val("<?php echo $result['prep_test_result'];?>");
 			if($('#prep_test_answer').val() == 1){
+				$('#prep_reason_listing').show();
 				$('#prep_test_question').show();
 				$('#prep_test_date_view').show();
 				$('#prep_test_result_view').show();
@@ -647,6 +649,10 @@ foreach($results as $result){
 			   	$("#drug_prophylax").show();
 			   	$("#current_regimen option").remove();
 			   	$("#servicestartedcontent").show();
+			   	$("#prep_reason_listing").hide();
+		   	 	$("#prep_reason").val(0);
+		   	 	$("#prep_test_answer").val(0);
+		   	 	$("#prep_test_result").val(0);
 			   	$("#pep_reason_listing").hide();
 		   		$("#pep_reason").val(0);
 		   	  	$("#who_listing").show();
@@ -674,6 +680,7 @@ foreach($results as $result){
 			   	  	$("#drug_prophylax").val(0);
 			   	  	$("#service_started").val("");
 			   	}else if(selected_text == "PREP"){
+			   		$("#prep_reason_listing").show();
 					$("#prep_test_question").show();
 					$("#pep_reason_listing").hide();
 					$("#who_listing").hide();
@@ -1286,12 +1293,24 @@ foreach($results as $result){
 				</select> </label>
 				</select>
 			</div>
-			 <div class="max-row" id="pep_reason_listing" style="display:none;">
+			<div class="max-row" id="pep_reason_listing" style="display:none;">
 				<label>PEP Reason</label>
 				<select name="pep_reason" id="pep_reason">
 					<option value="">--Select--</option>
 					<?php
 					    foreach($pep_reasons as $reason){
+							echo "<option value='".$reason['id']."'>".$reason['name']."</option>";
+						}
+					?>	
+				</select> </label>
+				</select>
+			</div>
+			<div class="max-row" id="prep_reason_listing" style="display:none;">
+				<label>PREP Reason</label>
+				<select name="prep_reason" id="prep_reason">
+					<option value="">--Select--</option>
+					<?php
+					    foreach($prep_reasons as $reason){
 							echo "<option value='".$reason['id']."'>".$reason['name']."</option>";
 						}
 					?>	

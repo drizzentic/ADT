@@ -6,3 +6,4 @@ CREATE TABLE IF NOT EXISTS `patient_prep_test` (
   KEY `patient_id` (`patient_id`),
   CONSTRAINT `patient_prep_test_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`id`)
 )//
+ALTER TABLE `patient_prep_test` ADD `prep_reason_id` INT NULL AFTER `patient_id`//

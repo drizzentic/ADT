@@ -1,3 +1,10 @@
+Version 3.2.1 23/03/2017
+==============================================
+- Added: Allows database access on non-default port
+- Added: PREP Reasons and Functionality
+- Fixed: New Bootbox bug for confirm dialog in Dispensing Module
+- Fixed: Convert timestamp to date on specific date columns
+
 Version 3.2.0 08/03/2017
 ==============================================
 - Added: New Differentiated Care Report for Appointment Analysis
