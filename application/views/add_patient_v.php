@@ -192,6 +192,8 @@
 		   		$("#regimen option").remove();
 		   	  	$("#service_started").val("<?php echo date('Y-m-d');?>");
 		   	 	$("#servicestartedcontent").show();
+		   	 	$("#prep_reason_listing").hide();
+		   	 	$("#prep_reason").val(0);
 		   	 	$("#prep_test_answer").val(0)
 		   	 	$("#prep_test_question").hide();
 		   	 	$("#prep_test_date_view").hide();
@@ -210,6 +212,7 @@
 					$("#servicestartedcontent").hide();
 				}
 				else if(service_line_text == "prep"){
+					$("#prep_reason_listing").show();
 					$("#prep_test_question").show();
 					$("#pep_reason_listing").hide();
 					$("#pep_reason").val(0);
@@ -919,6 +922,19 @@
 								<option value="">--Select--</option>
 								<?php
 								    foreach($pep_reasons as $reason){
+										echo "<option value='".$reason['id']."'>".$reason['name']."</option>";
+									}
+								?>	
+							</select> </label>
+							</select>
+						</div>
+
+						<div class="max-row" id="prep_reason_listing" style="display:none;">
+							<label>PREP Reason</label>
+							<select name="prep_reason" id="prep_reason">
+								<option value="">--Select--</option>
+								<?php
+								    foreach($prep_reasons as $reason){
 										echo "<option value='".$reason['id']."'>".$reason['name']."</option>";
 									}
 								?>	

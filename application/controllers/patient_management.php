@@ -53,6 +53,7 @@ class Patient_Management extends MY_Controller {
         $data['family_planning'] = Family_Planning::getAll();
         $data['other_illnesses'] = Other_Illnesses::getAll();
         $data['pep_reasons'] = Pep_Reason::getActive();
+        $data['prep_reasons'] = Prep_Reason::getActive();
         $data['drugs'] = Drugcode::getAllEnabled();
         $data['who_stages'] = Who_Stage::getAllHydrated();
         $data['hide_side_menu'] = '1';
@@ -401,7 +402,7 @@ class Patient_Management extends MY_Controller {
 		        	   LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse
                        LEFT JOIN (
                             SELECT 
-                                patient_id, is_tested AS prep_test_answer, test_date AS prep_test_date, test_result AS prep_test_result 
+                                patient_id, prep_reason_id AS prep_reason, is_tested AS prep_test_answer, test_date AS prep_test_date, test_result AS prep_test_result 
                             FROM patient_prep_test 
                             WHERE patient_id = ?
                             ORDER BY test_date DESC
@@ -428,6 +429,7 @@ class Patient_Management extends MY_Controller {
         $data['family_planning'] = Family_Planning::getAll();
         $data['other_illnesses'] = Other_Illnesses::getAll();
         $data['pep_reasons'] = Pep_Reason::getActive();
+        $data['prep_reasons'] = Prep_Reason::getActive();
         $data['regimens'] = Regimen::getRegimens();
         $data['drugs'] = Drugcode::getAllEnabled();
         $data['who_stages'] = Who_Stage::getAllHydrated();
@@ -564,6 +566,7 @@ class Patient_Management extends MY_Controller {
         $is_tested = $this->input->post('prep_test_answer', TRUE);
         $prep_test_data = array(
             'patient_id' => $auto_id,
+            'prep_reason_id' => $this -> input -> post('prep_reason', TRUE),
             'is_tested' =>  $is_tested,
             'test_date' => $this->input->post('prep_test_date', TRUE),
             'test_result' => $this->input->post('prep_test_result', TRUE),
@@ -746,6 +749,7 @@ class Patient_Management extends MY_Controller {
         $is_tested = $this->input->post('prep_test_answer', TRUE);
         $test_data = array(
             'patient_id' => $record_id,
+            'prep_reason_id' => $this->input->post('prep_reason', TRUE),
             'is_tested' => $is_tested,
             'test_date' => $this->input->post('prep_test_date', TRUE),
             'test_result' => $this->input->post('prep_test_result', TRUE)
@@ -1569,9 +1573,10 @@ class Patient_Management extends MY_Controller {
     }
 
     public function load_form($form_id = NULL)
-    {
+    {   
+        $data = array();
         if($form_id == "patient_details"){
-            $data['pob'] = District::getItems();
+            $data['pob'] = District::getItems(); 
             $data['gender'] = Gender::getItems();
             $data['current_status'] = Patient_Status::getItems();
             $data['source'] = Patient_Source::getItems();
@@ -1580,20 +1585,26 @@ class Patient_Management extends MY_Controller {
             $data['fplan'] = Family_Planning::getItems();
             $data['other_illnesses'] = Other_Illnesses::getItems();
             $data['pep_reason'] = Pep_Reason::getItems();
-            $data['drug_allergies'] = Drugcode::getItems();
+            $data['prep_reason'] = Prep_Reason::getItems();
+            $data['who_stage'] = Who_Stage::getItems();
             $regimens = Regimen::getItems();
             $data['start_regimen'] = $regimens;
             $data['current_regimen'] = $regimens;
-            $data['who_stage'] = Who_Stage::getItems();
 
             //Get facilities beacuse of UTF-8 encoding
             $this -> db-> select('facilitycode AS id, name AS Name');
             $query = $this ->db -> get('facilities');
             $facilities = $query -> result_array();
             foreach($facilities as $facility){
-                $facility_list[]=array('id' => $facility['id'],'Name' => utf8_encode($facility['Name']));
+                $facility_list[]=array('id' => $facility['id'], 'Name' => utf8_encode($facility['Name']));
             }
             $data['transfer_from'] = $facility_list;
+
+            //Get drug allergies
+            $allergies = $this->db->query("SELECT id, Drug FROM drugcode WHERE Enabled = ? ORDER BY Drug ASC", array(1))->result_array();
+            foreach ($allergies as $allergy) {
+                $data['drug_allergies'][] = array('id' => $allergy['id'], 'Name' => utf8_encode($allergy['Drug']));
+            }
         }
 
         echo json_encode($data);
@@ -1682,13 +1693,14 @@ class Patient_Management extends MY_Controller {
     public function get_latest_test($patient_id = NULL)
     {
         $prep_test_data = array(
+            'prep_reason' => 0,
             'prep_test_answer' => 0,
             'prep_test_date' => '',
             'prep_test_result' => 0
         );
 
         $sql = "SELECT 
-                    is_tested AS prep_test_answer, test_date AS prep_test_date, test_result AS prep_test_result 
+                    prep_reason_id AS prep_reason, is_tested AS prep_test_answer, test_date AS prep_test_date, test_result AS prep_test_result 
                 FROM patient_prep_test 
                 WHERE patient_id = ? 
                 ORDER BY test_date DESC

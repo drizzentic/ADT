@@ -372,6 +372,11 @@
 					<select name="pep_reason" id="pep_reason" class="span8">
 					</select>
 			    </div>
+			    <div class="row-fluid prep_reason">
+					<label>PREP Reason</label>
+					<select name="prep_reason" id="prep_reason" class="span8">
+					</select>
+			    </div>
 			    <div class="row-fluid prep_test_question">
 					<label>Have you been Tested?</label>
 					<select name="prep_test_answer" id="prep_test_answer" class="span8">

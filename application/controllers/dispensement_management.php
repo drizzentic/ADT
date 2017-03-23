@@ -138,10 +138,20 @@ class Dispensement_Management extends MY_Controller {
                 
 	}
 
-	public function update_prep_test($patient_id, $is_tested, $test_date, $test_result){
+	public function get_prep_reasons(){
+		$data = array();
+		$reasons = Prep_Reason::getActive();
+		foreach ($reasons as $reason) {
+			$data[] = array('text' => $reason['name'], 'value' => $reason['id']);
+		}
+		echo json_encode($data);
+	}
+
+	public function update_prep_test($patient_id, $prep_reason_id, $is_tested, $test_date, $test_result){
 		$message = '';
 		$test_data = array(
             'patient_id' => $patient_id,
+            'prep_reason_id' => $prep_reason_id,
             'is_tested' => $is_tested,
             'test_date' => $test_date,
             'test_result' => $test_result

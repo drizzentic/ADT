@@ -394,6 +394,9 @@
 									<a href="#" class="settings/listing/pep_reason" title="PEP Management" id="index">PEP Reasons</a>
 								</li>
 								<li>
+									<a href="#" class="settings/listing/prep_reason" title="PREP Management" id="index">PREP Reasons</a>
+								</li>
+								<li>
 									<a href="#" class="settings/listing/transaction_type" title="Transaction Type Management" id="index">Transaction Types</a>
 								</li>
 								<li>
