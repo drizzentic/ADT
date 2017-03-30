@@ -1575,7 +1575,8 @@ class Patient_Management extends MY_Controller {
     public function load_form($form_id = NULL)
     {   
         $data = array();
-        if($form_id == "patient_details"){
+        if($form_id == "patient_details")
+        {
             $data['pob'] = District::getItems(); 
             $data['gender'] = Gender::getItems();
             $data['current_status'] = Patient_Status::getItems();
@@ -1605,6 +1606,12 @@ class Patient_Management extends MY_Controller {
             foreach ($allergies as $allergy) {
                 $data['drug_allergies'][] = array('id' => $allergy['id'], 'Name' => utf8_encode($allergy['Drug']));
             }
+        }else if($form_id == "dispensing_frm")
+        {
+            $data['ccc_store_sp'] = CCC_store_service_point::getActive(); 
+            $data['visit_purpose'] = Visit_Purpose::getActive();
+            $data['regimen_change_reason'] = Regimen_Change_Purpose::getAllHydrated();
+            $data['non_adherence_reason'] = Non_Adherence_Reasons::getAllHydrated();
         }
 
         echo json_encode($data);

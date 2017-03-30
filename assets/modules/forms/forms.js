@@ -2,7 +2,7 @@ function getPageData(url){
 	//Get JSON data for patient details page
 	return  $.getJSON( url ,function( resp ) {
 			    $.each( resp, function( column , elements ) {
-		    	var text = "<option value=''>--Select--</option>";
+		    	var text = "<option value='0'>Select One</option>";
 		    	$.each( elements, function( key , value ) {
 		    		text += "<option value='" + value.id +"'>" + value.Name + "</option>";    	
 		        });

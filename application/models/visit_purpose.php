@@ -16,6 +16,12 @@ class Visit_Purpose extends Doctrine_Record {
 		return $purposes;
 	}
 
+	public function getActive() {
+		$query = Doctrine_Query::create() -> select("*") -> from("Visit_Purpose") -> where("Active", "1");
+		$purposes = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $purposes;
+	}
+
 	public function getFiltered($enrollment_check,$start_art_check) 
 	{   
 		$filter = "";

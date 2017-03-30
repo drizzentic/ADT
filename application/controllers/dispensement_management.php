@@ -78,7 +78,13 @@ class Dispensement_Management extends MY_Controller {
 		echo json_encode($results);
 
 	}
-	public function dispense($record_no) {
+	public function dispense($patient_id = NULL) {
+		$data['patient_id'] = $patient_id;
+		$data['hide_side_menu'] = 1;
+		$data['content_view'] = "patients/dispense_v1";
+		$this -> base_params($data);
+	}
+	public function dispense1($record_no) {
 		$facility_code = $this -> session -> userdata('facility');
                 
 		$dispensing_date = "";
@@ -104,7 +110,7 @@ class Dispensement_Management extends MY_Controller {
 		}
 
 		/*************/
-		$sql1="SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  ".$record_no." AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1";
+		$sql1="SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  ".$patient_no." AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1";
 		$query = $this -> db -> query($sql1);
 		$results1 = $query -> row_array();
 		$dated='';
@@ -131,7 +137,7 @@ class Dispensement_Management extends MY_Controller {
 		$data['patient_id'] = $record_no; 
 		$data['service_name'] = $service_name;
 		$data['purposes'] = Visit_Purpose::getAll();
-		$data['patient_appointment']=$results;
+		$data['patient_appointment'] = $results;
 		$data['hide_side_menu'] = 1;
 		$data['content_view'] = "patients/dispense_v";
 		$this -> base_params($data);

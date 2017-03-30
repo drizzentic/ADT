@@ -39,7 +39,7 @@
 
 <div class="container-fluid content">
     <div class="row-fluid">
-        <a href="<?php echo base_url() . 'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a id="patient_names" href="<?php echo base_url() . 'patient_management/load_view/details/' . @$patient_id ?>"><?php echo strtoupper($result['name']); ?></a> <i class=" icon-chevron-right"></i><strong>Dispensing details</strong>
+        <a href="<?php echo base_url() . 'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a id="patient_names" href="<?php echo base_url() . 'patient_management/load_view/details/' . @$patient_id ?>"><?php echo strtoupper(@$result['name']); ?></a> <i class=" icon-chevron-right"></i><strong>Dispensing details</strong>
         <hr size="1">
     </div>
     <form id="dispense_form"  name="dispense_form" class="dispense_form" method="post"  action="<?php echo base_url() . 'dispensement_management/save'; ?>" >
@@ -158,9 +158,9 @@
                     <div class="span6 dispensing-field">
                         <div class="control-group">
                             <label id="scheduled_patients" class="message information " style="display:none; background-color: black;"></label><label>Last Regimen Dispensed</label>
-                            <input type="text"name="last_regimen_disp" value="<?php  foreach($patient_appointment as $appointment): 
-                            echo $appointment['regimen_desc']; endforeach; ?>" id="last_regimen_disp" readonly="">
-                            <input type="hidden" name="last_regimen" value="0" id="last_regimen" value="0">
+                            <input type="text"name="last_regimen_disp" value="<?php $last_regimen_disp = 'N/A'; $last_regimen = 0; foreach($patient_appointment as $appointment): 
+                            $last_regimen_disp = $appointment['regimen_code'].' | '.$appointment['regimen_desc']; $last_regimen = $appointment['regimen_id']; endforeach; echo $last_regimen_disp; ?>" id="last_regimen_disp" readonly="">
+                            <input type="hidden" name="last_regimen" value="<?php echo $last_regimen; ?>" id="last_regimen" value="0">
                         </div>
                     </div>
                     <div class="span6 dispensing-field">
@@ -730,93 +730,94 @@ var patient_iqcare=false;
     
     //Add listener to check purpose
     $("#purpose").change(function() {
-        if($("#ccc_store_id").val()==""){//If dispensing point not selected, prompt user to select it first
+        //Ensure dispensing point is selected
+        if($("#ccc_store_id").val() == ""){
             bootbox.alert("<h4>Dispensing point</h4>\n\<hr/>\n\<center>Please select a dispensing point first! </center>" );
-            //$("#reset").trigger("click");
             $("#ccc_store_id").css('border','solid 3px red');
             return;
         }
-//load previously dispensed drugs
-//loadMyPreviousDispensedDrugs();
-        //reset drug tables
-        
-if(patient_iqcare==false){
-        resetRoutineDrugs();
-        var regimen = $("#current_regimen option:selected").attr("value");
-        var last_regimen = $("#last_regimen").attr("value");
-        purpose_visit = $("#purpose :selected").text().toLowerCase();
-        //If purpose of visit is not switch regimen, current regimen is last regimen
-        if (purpose_visit === 'switch regimen' ||  purpose_visit === '--select one--') {
-            $("#current_regimen").val("0");
-        } else {
-            $("#current_regimen").val(last_regimen);
-            //Populate drugs by triggering change event
-            $("#current_regimen").trigger("change");
-            $("#purpose_refill_text").val('');
-            
-            //If purpose is Start ART, check if patient has WHO stage
-            if(purpose_visit === 'start art'){
+
+        //Check for IQCare Order
+        if(patient_iqcare==false){
+            resetRoutineDrugs();
+            var regimen = $("#current_regimen option:selected").attr("value");
+            var last_regimen = $("#last_regimen").attr("value");
+            purpose_visit = $("#purpose :selected").text().toLowerCase();
+
+            //Check if visit != switch_regimen then current_regimen = last_regimen
+            if (purpose_visit === 'switch regimen' ||  purpose_visit === '--select one--') {
                 $("#current_regimen").val("0");
-                $("#purpose_refill_text").val(purpose_visit);
-                var _url = "<?php echo base_url() . 'patient_management/getWhoStage'; ?>";
-                //Get drugs
-                var request = $.ajax({
-                    url: _url,
-                    type: 'post',
-                    data: {"patient_ccc": patient_ccc},
-                    dataType: "json"
-                });
-                request.done(function(data) {
-                    if(data.patient_who==0){//If no WHO Stage, prompt to enter it
-                        var length_who = data.who_stage.length;
-                        length_who = length_who-1;
-                        var select_who ="<select id='who_stage' name='who_stage'>";  
-                        $.each(data.who_stage,function(i,v){
-                            select_who+="<option value='"+data.who_stage[i]['id']+"'>"+data.who_stage[i]['name']+"</option>";
-                            if(length_who==i){
-                                select_who+='</select>';
-                                
-                                bootbox.confirm({
-                                    title: "WHO Stage",
-                                    message: "Patient does not have a WHO Stage, Please select one "+select_who,
-                                    buttons: {
-                                        cancel: {
-                                            label: '<i class="fa fa-times"></i> Cancel'
-                                        },
-                                        confirm: {
-                                            label: '<i class="fa fa-check"></i> Save'
-                                        }
-                                    },
-                                    callback: function(res){
-                                        if(res===true){//If answer is no, update pregnancy status
-                                            var who_selected = $('#who_stage').val();
-                                            //Check if the current regimen is OI Medicine and if not, hide the indication field
-                                            var _url = "<?php echo base_url() . 'patient_management/updateWhoStage'; ?>";
-                                            //Get drugs
-                                            var request = $.ajax({
-                                                url: _url,
-                                                type: 'post',
-                                                data: {"patient_ccc": patient_ccc,"who_stage": who_selected},
-                                                dataType: "json"
-                                            });
-                                        }
+            } else {
+                //Assign current_regimen = last_regimen
+                $("#current_regimen").val(last_regimen);
+
+                //Populate drugs by triggering change event
+                $("#current_regimen").trigger("change");
+                $("#purpose_refill_text").val('');
+                    
+                //If purpose == Start ART, check if patient has WHO stage
+                if(purpose_visit === 'start art'){
+                    $("#current_regimen").val("0");
+                    $("#purpose_refill_text").val(purpose_visit);
+                    var _url = "<?php echo base_url() . 'patient_management/getWhoStage'; ?>";
+                        //Get drugs
+                        var request = $.ajax({
+                            url: _url,
+                            type: 'post',
+                            data: {"patient_ccc": patient_ccc},
+                            dataType: "json"
+                        });
+                        request.done(function(data) {
+                            if(data.patient_who==0){//If no WHO Stage, prompt to enter it
+                                var length_who = data.who_stage.length;
+                                length_who = length_who-1;
+                                var select_who ="<select id='who_stage' name='who_stage'>";  
+                                $.each(data.who_stage,function(i,v){
+                                    select_who+="<option value='"+data.who_stage[i]['id']+"'>"+data.who_stage[i]['name']+"</option>";
+                                    if(length_who==i){
+                                        select_who+='</select>';
+                                        
+                                        bootbox.confirm({
+                                            title: "WHO Stage",
+                                            message: "Patient does not have a WHO Stage, Please select one "+select_who,
+                                            buttons: {
+                                                cancel: {
+                                                    label: '<i class="fa fa-times"></i> Cancel'
+                                                },
+                                                confirm: {
+                                                    label: '<i class="fa fa-check"></i> Save'
+                                                }
+                                            },
+                                            callback: function(res){
+                                                if(res===true){//If answer is no, update pregnancy status
+                                                    var who_selected = $('#who_stage').val();
+                                                    //Check if the current regimen is OI Medicine and if not, hide the indication field
+                                                    var _url = "<?php echo base_url() . 'patient_management/updateWhoStage'; ?>";
+                                                    //Get drugs
+                                                    var request = $.ajax({
+                                                        url: _url,
+                                                        type: 'post',
+                                                        data: {"patient_ccc": patient_ccc,"who_stage": who_selected},
+                                                        dataType: "json"
+                                                    });
+                                                }
+                                            }
+                                        });
                                     }
-                                });
+                                });     
                             }
-                        });     
+                        });
+                        request.fail(function(jqXHR, textStatus) {
+                            bootbox.alert("<h4>Who Error </h4>\n\<hr/>\n\<center>Could not retrieve Who information : </center>" + textStatus);
+                        });
+                    }else{
+                        //Check is dispensing point was selected
+                        
                     }
-                });
-                request.fail(function(jqXHR, textStatus) {
-                    bootbox.alert("<h4>Who Error </h4>\n\<hr/>\n\<center>Could not retrieve Who information : </center>" + textStatus);
-                });
-            }else{
-                //Check is dispensing point was selected
-                
-            }
+                }
+                //adherence rate
+                getAdherenceRate();
         }
-        //adherence rate
-        getAdherenceRate();
-    }
     });
     
     //Dynamically change the list of drugs once a current regimen is selected
@@ -975,7 +976,7 @@ if(patient_iqcare==false){
                     
                     request.done(function(datas){
                         var age = datas.Dob;
-                        var weight=datas.Weight;
+                        var weight=$("#weight").val();
                         var drug_id =selected_drug ;
                         //get facility adult age
                         var link ="<?php echo base_url();?>dispensement_management/getFacililtyAge";
@@ -1011,7 +1012,7 @@ if(patient_iqcare==false){
                                     row.closest("tr").find(".dose option").remove();
                                     $.each(data, function(key, value) {
                                         if(dose==value.Name){
-                                            row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
+                                            row.closest("tr").find(".dose").append("<option selected='selected' value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
                                         }else{
                                              row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
                                         }
