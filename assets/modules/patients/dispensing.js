@@ -11,7 +11,7 @@ $(function(){
         
     //Define resources for requests
 	var page_url = base_url + "patient_management/load_form/dispensing_frm";
-	var patient_url = base_url + "patient_management/load_patient/" + patient_id ;
+	var patient_url = base_url + "dispensement_management/get_patient_data/" + patient_id ;
 	var visits_url = base_url + "patient_management/get_visits/" + patient_id;
 	var summary_url = base_url + "patient_management/load_summary/" + patient_id;
 	var spinner_url = base_url + "assets/images/loading_spin.gif";
@@ -19,11 +19,12 @@ $(function(){
 	//Load Page Data(form.js) then load Patient Data(details.js) after that sanitize form (details.js)
     getPageData(page_url).always( function(){
 	    getPatientData(patient_url).always( function(){
-            sanitizeForm();
+            //sanitizeForm();
 	    });
 	});
 
 	//Setup Dispensing History Datatable
+	/*
 	createTable("#dispensing_history",visits_url,0,'desc');
 
 	//Patient Info Modal
@@ -72,5 +73,17 @@ $(function(){
 		getAppointmentHistory();
 		getViralResult(patient_number_ccc);
 	});
+	*/
 
 });
+
+function getPatientData(url){
+	//Get JSON data for patient details page
+	return  $.getJSON( url ,function( resp ) {
+			    $.each( resp , function( index , value ) {
+			        //Append JSON elements to DOM
+		            $( "#"+index ).val( value );
+		            $( "."+index ).html( value );
+			    });
+			});
+}

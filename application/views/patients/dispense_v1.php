@@ -6,9 +6,13 @@
 	    <div class="row-fluid">
 		    <div class="span12">
 			    <ul class="breadcrumb">
-				  <li><a href="<?php echo base_url().'patient_management'; ?>">Patients</a> <span class="divider">/</span></li>
-				  <li class="patient_name">{NAME PLACEHOLDER} <span class="divider">/</span> </li>
-				  <li class="active">Dispensing</li>
+					<li><a href="<?php echo base_url().'patient_management'; ?>">Patients</a> <span class="divider">/</span></li>
+				  	<li>
+				  		<a href="<?php echo base_url().'patient_management/load_view/details/'.$patient_id; ?>">
+				  		<span class="patient_name_link"></span>
+				  		</a><span class="divider">/</span> 
+				  	</li>
+				  	<li class="active">Dispensing</li>
 				</ul>
 				<div class="alert alert-info">
 				    <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -28,19 +32,17 @@
 					<div class="row-fluid">
 	                    <div class="span12 control-group">
 							<label><span class='astericks'>*</span>Dispensing Point</label>
-							<select name="ccc_store_sp" id="ccc_store_sp" class="validate[required] span12">
-								<option value="0">Select One</option>
-							</select>
+							<select name="ccc_store_sp" id="ccc_store_sp" class="validate[required] span12"></select>
 	                    </div>
 	                </div>
 	                <div class="row-fluid">
 	                    <div class="span6 control-group">
 	                        <label>Patient CCC Number</label>
-	                        <input type="text" readonly="" id="patient_id" name="patient_id" class="span12"/>
+	                        <input type="text" readonly="" id="patient_id" class="span12"/>
 	                    </div>
 	                    <div class="span6 control-group">
 	                        <label>Patient Name</label>
-	                        <input type="text" readonly="" id="patient_name" name="patient_name" class="span12"/>
+	                        <input type="text" readonly="" id="patient_name" class="span12 patient_name"/>
 	                    </div>
 	                </div>
 	                <div class="row-fluid">
@@ -50,25 +52,23 @@
 	                    </div>
 	                    <div class="span6 control-group">
 	                        <label><span class='astericks'>*</span>Purpose of Visit</label>
-	                        <select name="visit_purpose" id="visit_purpose" class="validate[required] span12">
-	                            <option value="0">Select One</option>
-	                        </select>   
+	                        <select name="visit_purpose" id="visit_purpose" class="validate[required] span12"></select>   
 	                    </div>
 	                </div>
 	                <div class="row-fluid">
 	                    <div class="span6 control-group">
 	                        <label>Current Height(cm)</label>
-	                        <input type="text" name="height" id="height" class="validate[required] span12">
+	                        <input type="number" name="current_height" id="current_height" class="validate[required] span12" min="0"/>
 	                    </div>
 	                    <div class="span6 control-group">
 	                        <label><span class='astericks'>*</span>Current Weight(kg)</label>
-	                        <input type="text" name="weight" id="weight" class="validate[required] span12"/>
+	                        <input type="number" name="current_weight" id="current_weight" class="validate[required] span12" min="0"/>
 	                    </div>
 	                </div>
 	                <div class="row-fluid">
 	                    <div class="span6 control-group">
 	                        <label><span class='astericks'>*</span>Days to Next Appointment</label>
-	                        <input type="text" name="days_to_next" id="days_to_next" class="validate[required] span12"/>
+	                        <input type="number" id="days_to_next" class="validate[required] span12" min="0"/>
 	                    </div>
 	                    <div class="span6 control-group">
 	                        <label><span class='astericks'>*</span>Date of Next Appointment</label>
@@ -83,23 +83,17 @@
 					<div class="row-fluid">
 	                    <div class="span6 control-group">
 							<label>Last Regimen Dispensed</label>
-							<select name="last_regimen" id="last_regimen" class="span12" readonly="">
-	                            <option value="0">N/A</option>
-	                        </select> 
+							<select name="last_regimen" id="last_regimen" class="span12" disabled="" =""></select> 
 	                    </div>
 	                    <div class="span6 control-group">
 							<label><span class='astericks'>*</span>Current Regimen</label>
-							<select name="current_regimen" id="current_regimen" class="validate[required] span12">
-								<option value="0">Select One</option>
-							</select>
+							<select name="regimen" id="current_regimen" class="validate[required] span12"></select>
 	                    </div>
 	                </div>
 					<div class="row-fluid">
 	                    <div class="span12 control-group regimen_change_reason_container" style="display:none;">
 	                        <label><span class='astericks'>*</span>Regimen Change Reason</label>
-	                        <select name="regimen_change_reason" id="regimen_change_reason" class="span12">
-	                            <option value="0">Select One</option>
-	                        </select>
+	                        <select name="regimen_change_reason" id="regimen_change_reason" class="span12"></select>
 	                    </div>
 	                </div>
 	                <div class="row-fluid">
@@ -109,9 +103,7 @@
 	                    </div>
 	                    <div class="span6 control-group">
 	                        <label> Poor/Fair Adherence Reasons </label>
-	                        <select name="non_adherence_reason" id="non_adherence_reason" class="span12">
-	                       		<option value="0">Select One</option>
-	                        </select>
+	                        <select name="non_adherence_reason" id="non_adherence_reason" class="span12"></select>
 	                    </div>
 	                </div>      
 				</fieldset>
@@ -125,23 +117,23 @@
 					<div class="row-fluid">
 	                    <div class="span6 control-group">
 	                        <label>Appointment Date</label>
-	                       	<input type="text" id="last_appointment_date" name="last_appointment_date" readonly=""  class="span12"/>
+	                       	<input type="text" id="appointment_date" readonly=""  class="span12"/>
 	                    </div>
 	                    <div class="span6 control-group">
 	                        <label>Previous Visit Date</label>
-	                        <input type="text" id="last_visit_date" name="last_visit_date" readonly="" class="span12"/>
+	                        <input type="text" id="prev_visit_date" readonly="" class="span12"/>
 	                    </div>
 	                </div>
 	                <div class="row-fluid">
 	                    <div class="span12 control-group">
-	                        <table class="table table-bordered table-condensed table-hover table-striped" id="prev_visit_data">
+	                        <table class="table table-bordered table-condensed table-hover table-striped">
 								<thead>
 									<tr>
 										<th>Previous Drug</th>
 										<th>Previous Quantity</th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody class="prev_visit_data">
 									<tr>
 										<td colspan="2"><div class="text-center">No History Available</div></td>
 									</tr>

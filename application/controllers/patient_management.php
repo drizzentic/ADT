@@ -1612,6 +1612,9 @@ class Patient_Management extends MY_Controller {
             $data['visit_purpose'] = Visit_Purpose::getActive();
             $data['regimen_change_reason'] = Regimen_Change_Purpose::getAllHydrated();
             $data['non_adherence_reason'] = Non_Adherence_Reasons::getAllHydrated();
+            $regimens = Regimen::getItems();
+            $data['last_regimen'] = $regimens;
+            $data['current_regimen'] = $regimens;
         }
 
         echo json_encode($data);

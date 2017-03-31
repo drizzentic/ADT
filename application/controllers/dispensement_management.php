@@ -84,6 +84,51 @@ class Dispensement_Management extends MY_Controller {
 		$data['content_view'] = "patients/dispense_v1";
 		$this -> base_params($data);
 	}
+
+	public function get_patient_data($patient_id = NULL){
+		$data = array();
+		/*Dispensing information*/
+		$sql = "SELECT 
+					p.ccc_store_sp,
+					p.patient_number_ccc AS patient_id,
+					UPPER(CONCAT_WS(' ', CONCAT_WS(' ', p.first_name, p.other_name), p.last_name)) AS patient_name,
+					UPPER(CONCAT_WS(' ', CONCAT_WS(' ', p.first_name, p.other_name), p.last_name)) AS patient_name_link,
+					CURDATE() AS dispensing_date,
+					p.height AS current_height,
+					p.weight AS current_weight,
+					p.nextappointment AS appointment_date
+				FROM patient p
+				WHERE p.id = ?";
+		$query = $this->db->query($sql, array($patient_id));
+		$data = $query->row_array();
+		if(!empty($data)){
+			/*Visit information*/
+			$sql = "SELECT 
+						v.dispensing_date AS prev_visit_date,
+						v.last_regimen AS prev_regimen_id,
+						d.drug AS prev_drug_name,
+						v.quantity AS prev_drug_qty,
+						v.drug_id AS prev_drug_id,
+						v.dose AS prev_drug_dose,
+						v.duration AS prev_duration
+					FROM patient_visit v
+					LEFT JOIN drugcode d ON d.id = v.drug_id
+					WHERE v.patient_id = ?
+					AND v.dispensing_date IN (SELECT MAX(dispensing_date) FROM patient_visit WHERE patient_id = ?)";
+			$query = $this->db->query($sql, array($data['patient_id'], $data['patient_id']));
+			$visits = $query->result_array();
+			$data['prev_visit_data'] = "";
+			if(!empty($visits)){
+				foreach ($visits as $visit) {
+					$data['prev_visit_date'] = $visit['prev_visit_date'];
+					$data['last_regimen'] = $visit['prev_regimen_id'];
+					$data['prev_visit_data'] .= "<tr><td>".$visit['prev_drug_name']."</td><td>".$visit['prev_drug_qty']."</td></tr>";
+				}
+			}
+		}
+		echo json_encode($data);
+	}
+
 	public function dispense1($record_no) {
 		$facility_code = $this -> session -> userdata('facility');
                 
