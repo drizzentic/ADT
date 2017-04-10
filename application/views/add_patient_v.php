@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -193,6 +192,7 @@
 		   	  	$("#service_started").val("<?php echo date('Y-m-d');?>");
 		   	 	$("#servicestartedcontent").show();
 		   	 	$("#prep_reason_listing").hide();
+				$('#prep_reason').removeClass("validate[required]");					
 		   	 	$("#prep_reason").val(0);
 		   	 	$("#prep_test_answer").val(0)
 		   	 	$("#prep_test_question").hide();
@@ -203,16 +203,19 @@
 
 				if(service_line_text == "pep"){
 					$("#pep_reason_listing").show();
+					$('#pep_reason').addClass("validate[required]");
 					$("#who_listing").hide();
 					$("#drug_prophylax").css("display","none");
 				}
 				else if(service_line_text == "oi only"){
 					$("#service_started").val("");
 					$("#pep_reason_listing").hide();
+					$('#pep_reason').removeClass("validate[required]");					
 					$("#servicestartedcontent").hide();
 				}
 				else if(service_line_text == "prep"){
 					$("#prep_reason_listing").show();
+					$('#prep_reason').addClass("validate[required]");
 					$("#prep_test_question").show();
 					$("#pep_reason_listing").hide();
 					$("#pep_reason").val(0);
@@ -566,7 +569,7 @@
 				(Fields Marked with <b><span class='astericks'>*</span></b> Asterisks are required)
 			</div></h3>
 
-                    <form id="add_patient_form" name="add_patient_form" method="post"  action="<?php echo base_url().'patient_management/save';?>"  >
+        <form id="add_patient_form" name="add_patient_form" method="post"  action="<?php echo base_url().'patient_management/save';?>"  >
 				<div class="column" id="columnOne">
 					<fieldset>
 						<legend>
@@ -917,7 +920,7 @@
 						</div>
 						
 					   <div class="max-row" id="pep_reason_listing" style="display:none;">
-							<label>PEP Reason</label>
+							<label><span class='astericks'>*</span>PEP Reason</label>
 							<select name="pep_reason" id="pep_reason">
 								<option value="">--Select--</option>
 								<?php
@@ -930,7 +933,7 @@
 						</div>
 
 						<div class="max-row" id="prep_reason_listing" style="display:none;">
-							<label>PREP Reason</label>
+							<label><span class='astericks'>*</span>PREP Reason</label>
 							<select name="prep_reason" id="prep_reason">
 								<option value="">--Select--</option>
 								<?php
