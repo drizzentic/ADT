@@ -1123,7 +1123,7 @@ class Inventory_Management extends MY_Controller {
 			$this->mpdf->SetFooter("{DATE D j M Y }|{PAGENO}/{nb}| Issues_".date('U')."  , source Web ADT");
 		   	
 			$file_name='Export/Issues_'.date('U').'.pdf';
-			$this -> mpdf -> Output($file_name, 'F');
+			@$this -> mpdf -> Output($file_name, 'F');
 			echo (base_url().$file_name);
 			die();
    		}else{

@@ -78,7 +78,7 @@ class Dispensement_Management extends MY_Controller {
 		echo json_encode($results);
 
 	}
-	public function dispense($patient_id = NULL) {
+	public function dispense1($patient_id = NULL) {
 		$data['patient_id'] = $patient_id;
 		$data['hide_side_menu'] = 1;
 		$data['content_view'] = "patients/dispense_v1";
@@ -129,7 +129,7 @@ class Dispensement_Management extends MY_Controller {
 		echo json_encode($data);
 	}
 
-	public function dispense1($record_no) {
+	public function dispense($record_no) {
 		$facility_code = $this -> session -> userdata('facility');
                 
 		$dispensing_date = "";

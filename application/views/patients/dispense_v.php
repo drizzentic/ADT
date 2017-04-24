@@ -342,7 +342,7 @@
 <script src="<?php echo base_url().'assets/scripts/bootbox/v4/bootbox.min.js'; ?>"></script>
 
 <script type="text/javascript">
-var patient_iqcare=false;
+var patient_iqcare = false;
     $(document).ready(function(){
         var loopcounter = 0;
         //iqcare flag
@@ -1504,8 +1504,7 @@ var patient_iqcare=false;
                 });
                 
                 //Appointment date, If patient presiously visited,load previous appointment date
-                
-                if(patient_appointment.length==2){
+                if(patient_appointment.length > 0){
                     appointment_date = patient_appointment[0].Appointment;
                     $("#last_appointment_date").val(appointment_date);//Latest appointment date
                     //loadMyPreviousDispensedDrugs();
@@ -1522,7 +1521,6 @@ var patient_iqcare=false;
                             $("#last_visit_data tbody").empty();
                             $(msg).each(function(i,v){//Load last visit data
                                 previous_dispensed_data = msg;
-                                
                                 if(i==0){//Previous dispense details
                                     previous_dispensing_date = v.dispensing_date;
                                     $("#last_visit_date").val(previous_dispensing_date);
@@ -1539,10 +1537,6 @@ var patient_iqcare=false;
                         });
                     
                     
-                }
-                else if(patient_appointment.length==1){
-                    appointment_date = patient_appointment[0].Appointment;
-                    $("#last_appointment_date").val(appointment_date);
                 }
                 
                 if(typeof appointment_date !=="undefined"){

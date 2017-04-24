@@ -647,7 +647,7 @@
 							   "quantity"	:$(data[counter]).closest('tr').find(".quantity").attr("value"),
 							   "counter"	:counter,
 							   "total"		:total},
-					dataType: "html"
+					//dataType: "html"
 				});
 				request.done(function(msg){
 					
