@@ -59,9 +59,10 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
-	var background_type="<?php echo $stock_type;?>";
+	var background_type="<?=  $store;?>";
+	// var background_type="<?php echo $stock_type;?>";
 	optgroup = 'Others';
-	if(background_type=="1"){
+	if(background_type.toLowerCase().indexOf('store')){
 		$("#stock_div").css("background","#ff6666");
 	}else{
 		$("#stock_div").css("background","#9CF");

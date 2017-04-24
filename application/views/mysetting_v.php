@@ -103,18 +103,6 @@
 			<?php
               if($table=="ccc_store_service_point"){
             ?>
-			<div class="form-inline">
-				<div class="controls-row">
-				        <label class="radio inline">
-				            <input type="radio" name="ccc_store_type" checked value="pharmacy"/>
-				            Pharmacy
-				        </label>
-				        <label class="radio inline">
-				            <input name="ccc_store_type" type="radio" value="store"/>
-				            Store
-				        </label>
-				</div>
-			</div>
 			<?php
               }if($table=="transaction_type"){
              ?>
