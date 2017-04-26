@@ -62,10 +62,10 @@
 	var background_type="<?=  $store;?>";
 	// var background_type="<?php echo $stock_type;?>";
 	optgroup = 'Others';
-	if(background_type.toLowerCase().indexOf('store')){
-		$("#stock_div").css("background","#ff6666");
-	}else{
+	if(background_type.toLowerCase().indexOf('store')<0){
 		$("#stock_div").css("background","#9CF");
+	}else{
+		$("#stock_div").css("background","#ff6666");
 	}
 		
 		

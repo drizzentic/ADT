@@ -5,6 +5,10 @@
 		$('input_form').submit(function(){
 		  	$(this).find(':submit').attr('disabled','disabled');
 		});
+
+		$('select#drug').select2();
+		$('#edit_form select#drugs').select2()
+
 		//GET DRUGS
 		var request=$.ajax({
 		url: "dossing_chart/get_drugs",
