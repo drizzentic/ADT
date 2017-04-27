@@ -315,7 +315,7 @@ class Facilitydashboard_Management extends MY_Controller {
 		$results = $query -> result_array();
 		$tmpl = array('table_open' => '<table id="stock_level" class="table table-striped table-condensed">');
 		$this -> table -> set_template($tmpl);
-		$this -> table -> set_heading('No', 'Drug', 'Unit', 'Qty (Units)', 'Threshold Qty (Units)', 'Priority');
+		$this -> table -> set_heading('No', 'Drug', 'Unit', 'Qty (Units)', 'Threshold Qty (Units)', 'Order Priority');
 		$x = 1;
 		foreach ($results as $drugs) {
 			if ($drugs['minimum_consumption'] == 0 and $drugs['stock_level'] == 0) {

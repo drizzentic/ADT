@@ -121,6 +121,7 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 				<option class="date_range_report" value="dispensingReport">Patients Visit Summary</option>
 				<option class="date_range_report" value="differenciated_package_of_care">Patients on Differentiated Care(Viral Load)</option>
 				<option class="date_range_report" value="get_differentiated_care_appointments">Patients on Differentiated Care(Appointments)</option>
+				<option class="date_range_report" value="get_viral_load_results">List of Patient Viral Load Results</option>
 			</select></td>
 		</tr>
 		<!-- Early warning reports -->
@@ -314,4 +315,3 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 		</tr>
 	</table>
 </div>
-

@@ -1161,7 +1161,7 @@ var patient_iqcare = false;
         var selected_value = $(this).attr("value");
         //including drugs with the default quantity of zero
         if(selected_value > 0){
-        stock_at_hand = row.closest("tr").find(".soh ").attr("value");
+        var stock_at_hand = row.closest("tr").find(".soh ").attr("value");
         var stock_validity = stock_at_hand - selected_value;
         
         if (stock_validity < 0) {
