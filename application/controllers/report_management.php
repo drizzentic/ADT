@@ -2454,6 +2454,7 @@ class report_management extends MY_Controller {
 						<th> Phys. Address </th>
 						<th> Sex </th>
 						<th> Age </th>
+						<th> Service </th>
 						<th> Last Regimen </th>
 						<th> Appointment Date </th>
 						<th> Visit Status</th>
@@ -2490,7 +2491,7 @@ class report_management extends MY_Controller {
 						$status = "<span style='color:red;'>Not Visited</span>";
 					}
 				}
-				$sql = "select patient_number_ccc as art_no,UPPER(first_name)as first_name,pss.name as source,UPPER(other_name)as other_name,UPPER(last_name)as last_name, IF(gender=1,'Male','Female')as gender,UPPER(physical) as physical,phone,alternate,FLOOR(DATEDIFF('$today',dob)/365) as age,r.regimen_desc as last_regimen from patient LEFT JOIN patient_source pss on pss.id=patient.source,regimen r where patient_number_ccc='$patient' and current_regimen=r.id and facility_code='$facility_code'";
+				$sql = "select patient_number_ccc as art_no,UPPER(first_name)as first_name,pss.name as source,UPPER(other_name)as other_name,UPPER(last_name)as last_name, IF(gender=1,'Male','Female')as gender,UPPER(physical) as physical,phone,alternate,FLOOR(DATEDIFF('$today',dob)/365) as age,regimen_service_type.name as service,r.regimen_desc as last_regimen from patient LEFT JOIN patient_source pss on pss.id=patient.source left join regimen_service_type on regimen_service_type.id = patient.service ,regimen r where patient_number_ccc='$patient' and current_regimen=r.id and facility_code='$facility_code'";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -2506,11 +2507,12 @@ class report_management extends MY_Controller {
 						$address = $result['physical'];
 						$gender = $result['gender'];
 						$age = $result['age'];
+						$service = $result['service'];
 						$last_regimen = $result['last_regimen'];
 						$appointment = date('d-M-Y', strtotime($appointment));
 						$source=$result['source'];
 					}
-					$row_string .= "<tr><td>$patient_id</td><td width='300' style='text-align:left;'>$first_name $other_name $last_name</td><td>$phone</td><td>$address</td><td>$gender</td><td>$age</td><td style='white-space:nowrap;'>$last_regimen</td><td>$appointment</td><td width='200px'>$status</td><td>$source</td></tr>";
+					$row_string .= "<tr><td>$patient_id</td><td width='300' style='text-align:left;'>$first_name $other_name $last_name</td><td>$phone</td><td>$address</td><td>$gender</td><td>$age</td><td>$service</td><td style='white-space:nowrap;'>$last_regimen</td><td>$appointment</td><td width='200px'>$status</td><td>$source</td></tr>";
 					$overall_total++;
 				}
 			}
