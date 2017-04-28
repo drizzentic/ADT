@@ -218,6 +218,7 @@
 					$('#prep_reason').addClass("validate[required]");
 					$("#prep_test_question").show();
 					$("#pep_reason_listing").hide();
+					$('#pep_reason').removeClass("validate[required]");					
 					$("#pep_reason").val(0);
 					$("#who_listing").hide();
 					$("#who_stage").val(0);
@@ -229,6 +230,7 @@
 					}
 					$("#pep_reason_listing").hide();
 					$("#pep_reason").val(0);
+					$('#pep_reason').removeClass("validate[required]");					
 					$("#who_listing").show();
 					$("#who_stage").val(0);
 		   	  	}
