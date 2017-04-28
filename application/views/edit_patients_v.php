@@ -674,15 +674,19 @@ foreach($results as $result){
 		   	  	    }
                 }else if(selected_text==="PEP"){
 			   	  	$("#pep_reason_listing").show();
+					$('#pep_reason').addClass("validate[required]");
 			   	  	$("#who_listing").hide();
 			   	  	$("#who_stage").val(0);
 			   	  	$("#drug_prophylax").hide();
 			   	  	$("#drug_prophylax").val(0);
 			   	  	$("#service_started").val("");
+					$('#prep_reason').removeClass("validate[required]");					
 			   	}else if(selected_text == "PREP"){
 			   		$("#prep_reason_listing").show();
+					$('#prep_reason').addClass("validate[required]");
 					$("#prep_test_question").show();
 					$("#pep_reason_listing").hide();
+					$('#pep_reason').removeClass("validate[required]");					
 					$("#who_listing").hide();
 					$("#who_stage").val(0);
 					$("#drug_prophylax").hide();
@@ -1294,7 +1298,7 @@ foreach($results as $result){
 				</select>
 			</div>
 			<div class="max-row" id="pep_reason_listing" style="display:none;">
-				<label>PEP Reason</label>
+				<label><span class='astericks'>*</span>PEP Reason</label>
 				<select name="pep_reason" id="pep_reason">
 					<option value="">--Select--</option>
 					<?php
@@ -1306,7 +1310,7 @@ foreach($results as $result){
 				</select>
 			</div>
 			<div class="max-row" id="prep_reason_listing" style="display:none;">
-				<label>PREP Reason</label>
+				<label><span class='astericks'>*</span>PREP Reason</label>
 				<select name="prep_reason" id="prep_reason">
 					<option value="">--Select--</option>
 					<?php
