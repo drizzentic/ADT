@@ -2990,7 +2990,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 							FROM vw_routine_refill_visit pv
 							WHERE pv.visit_date 
 							BETWEEN '$from' 
-							AND '$to'";
+							AND '$to' group by patient_number,visit_date";
 
 							$query = $this -> db -> query($sql);
 							$results = $query -> result_array();

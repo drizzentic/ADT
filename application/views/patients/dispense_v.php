@@ -63,224 +63,224 @@
                             $selected = '';
                             if ($count_ccc > 0) {//In case on has more than one dispensing point
                                 echo "<label><span class='astericks'>*</span>Select dispensing point</label>
-                                        <select name='ccc_store_id' id='ccc_store_id' class='validate[required]'>
-                                            <option value=''>Select One</option>";
+                                <select name='ccc_store_id' id='ccc_store_id' class='validate[required]'>
+                                    <option value=''>Select One</option>";
                                 //Check if facility has more than one dispensing point
-                                foreach ($ccc_stores as $value) {
-                                    $name = $value['Name'];
-                                    if ($this -> session -> userdata('ccc_store_id')) {
-                                        $ccc_storeid = $this -> session -> userdata('ccc_store_id');
-                                        if ($value['id'] === $ccc_storeid) {
-                                            $selected = "selected";
-                                        } else {
-                                            $selected = "";
-                                        }
-                                    } 
-                                    echo "<option value='" . $value['id'] . "' " . $selected . ">" . $name . "</option>";
+                                    foreach ($ccc_stores as $value) {
+                                        $name = $value['Name'];
+                                        if ($this -> session -> userdata('ccc_store_id')) {
+                                            $ccc_storeid = $this -> session -> userdata('ccc_store_id');
+                                            if ($value['id'] === $ccc_storeid) {
+                                                $selected = "selected";
+                                            } else {
+                                                $selected = "";
+                                            }
+                                        } 
+                                        echo "<option value='" . $value['id'] . "' " . $selected . ">" . $name . "</option>";
+                                    }
+                                    echo "</select>";
                                 }
-                                echo "</select>";
-                            }
-        
+                                
                             //$this->session->set_userdata('ccc_store',$name);
-                            ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label>Patient Number CCC</label>
-                            <input type="text" readonly="" id="patient" name="patient" class="validate[required] "/>
-                        </div>
-                    </div>
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label>Patient Name</label>
-                            <input type="text" readonly="" id="patient_details" name="patient_details" class=""  />
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label><span class='astericks'>*</span>Dispensing Date</label>
-                            <input type="text"name="dispensing_date" id="dispensing_date" class="validate[required] ">
-                        </div>
-                    </div>
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label><span class='astericks'>*</span>Purpose of Visit</label>
-                            <select  type="text"name="purpose" id="purpose" class="validate[required] " >
-                                <option value="">--Select One--</option>
-                                <?php
-                                foreach ($purposes as $purpose) {
-                                    echo "<option value='" . $purpose['id'] . "'>" . $purpose['Name'] . "</option>";
-                                }
                                 ?>
-                            </select>   
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label>Current Height(cm)</label>
-                            <input  type="text"name="height" id="height" class="validate[required]">
+                    <div class="row-fluid">
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label>Patient Number CCC</label>
+                                <input type="text" readonly="" id="patient" name="patient" class="validate[required] "/>
+                            </div>
+                        </div>
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label>Patient Name</label>
+                                <input type="text" readonly="" id="patient_details" name="patient_details" class=""  />
+                            </div>
                         </div>
                     </div>
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label><span class='astericks'>*</span>Current Weight(kg)</label>
-                            <input  type="text"name="weight" id="weight" class="validate[required]" >
+                    <div class="row-fluid">
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label><span class='astericks'>*</span>Dispensing Date</label>
+                                <input type="text"name="dispensing_date" id="dispensing_date" class="validate[required] ">
+                            </div>
+                        </div>
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label><span class='astericks'>*</span>Purpose of Visit</label>
+                                <select  type="text"name="purpose" id="purpose" class="validate[required] " >
+                                    <option value="">--Select One--</option>
+                                    <?php
+                                    foreach ($purposes as $purpose) {
+                                        echo "<option value='" . $purpose['id'] . "'>" . $purpose['Name'] . "</option>";
+                                    }
+                                    ?>
+                                </select>   
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label><span class='astericks'>*</span>Days to Next Appointment</label>
-                            <input  type="text" name="days_to_next" id="days_to_next" class="validate[required]">
+                    <div class="row-fluid">
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label>Current Height(cm)</label>
+                                <input  type="text"name="height" id="height" class="validate[required]">
+                            </div>
+                        </div>
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label><span class='astericks'>*</span>Current Weight(kg)</label>
+                                <input  type="text"name="weight" id="weight" class="validate[required]" >
+                            </div>
                         </div>
                     </div>
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label><span class='astericks'>*</span>Date of Next Appointment</label>
-                            <input  type="text" name="next_appointment_date" id="next_appointment_date" class="validate[required]" >
+                    <div class="row-fluid">
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label><span class='astericks'>*</span>Days to Next Appointment</label>
+                                <input  type="text" name="days_to_next" id="days_to_next" class="validate[required]">
+                            </div>
+                        </div>
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label><span class='astericks'>*</span>Date of Next Appointment</label>
+                                <input  type="text" name="next_appointment_date" id="next_appointment_date" class="validate[required]" >
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span10 dispensing-field">
-                        <span id="scheduled_patients" style="display:none;background:#9CF;"></span>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label id="scheduled_patients" class="message information " style="display:none; background-color: black;"></label><label>Last Regimen Dispensed</label>
-                            <input type="text"name="last_regimen_disp" value="<?php $last_regimen_disp = 'N/A'; $last_regimen = 0; foreach($patient_appointment as $appointment): 
-                            $last_regimen_disp = $appointment['regimen_code'].' | '.$appointment['regimen_desc']; $last_regimen = $appointment['regimen_id']; endforeach; echo $last_regimen_disp; ?>" id="last_regimen_disp" readonly="">
-                            <input type="hidden" name="last_regimen" value="<?php echo $last_regimen; ?>" id="last_regimen" value="0">
+                    <div class="row-fluid">
+                        <div class="span10 dispensing-field">
+                            <span id="scheduled_patients" style="display:none;background:#9CF;"></span>
                         </div>
                     </div>
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label><span class='astericks'>*</span>Current Regimen</label>
-                           <select type="text"name="current_regimen" id="current_regimen"  class="validate[required]" style='width:100%;' >
+                    <div class="row-fluid">
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label id="scheduled_patients" class="message information " style="display:none; background-color: black;"></label><label>Last Regimen Dispensed</label>
+                                <input type="text"name="last_regimen_disp" value="<?php $last_regimen_disp = 'N/A'; $last_regimen = 0; foreach($patient_appointment as $appointment): 
+                                $last_regimen_disp = $appointment['regimen_code'].' | '.$appointment['regimen_desc']; $last_regimen = $appointment['regimen_id']; endforeach; echo $last_regimen_disp; ?>" id="last_regimen_disp" readonly="">
+                                <input type="hidden" name="last_regimen" value="<?php echo $last_regimen; ?>" id="last_regimen" value="0">
+                            </div>
+                        </div>
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label><span class='astericks'>*</span>Current Regimen</label>
+                                <select type="text"name="current_regimen" id="current_regimen"  class="validate[required]" style='width:100%;' >
                                     <option value="">-Select One--</option>
-                           </select>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span6 dispensing-field">
+                            <div class="control-group" style="display:none" id="regimen_change_reason_container">
+                                <label><span class='astericks'>*</span>Regimen Change Reason</label>
+                                <select type="text"name="regimen_change_reason" id="regimen_change_reason" >
+                                    <option value="">--Select One--</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label>Appointment Adherence (%)</label>
+                                <input type="text" name="adherence" id="adherence"/>
+                            </div>
+                        </div>
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label> Poor/Fair Adherence Reasons </label>
+                                <select type="text"name="non_adherence_reasons" id="non_adherence_reasons"  style='width:100%;'>
+                                    <option value="">-Select One--</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-                 <div class="row-fluid">
-                    <div class="span6 dispensing-field">
-                        <div class="control-group" style="display:none" id="regimen_change_reason_container">
-                            <label><span class='astericks'>*</span>Regimen Change Reason</label>
-                            <select type="text"name="regimen_change_reason" id="regimen_change_reason" >
-                                <option value="">--Select One--</option>
-                            </select>
+                
+                
+                <div class="span5">
+                    <legend>
+                        Previous Patient Information
+                    </legend>
+                    <div class="row-fluid">
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label> Appointment Date</label>
+                                <input type="text" readonly="" id="last_appointment_date" name="last_appointment_date"/>
+                            </div>
+                        </div>
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label>Previous Visit Date</label>
+                                <input type="text" value="<?php  echo $dated; ?>"readonly="" id="last_visit_date" name="last_visit_date"/>
+                                <input type="hidden" id="last_visit"/>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label>Appointment Adherence (%)</label>
-                            <input type="text" name="adherence" id="adherence"/>
-                        </div>
-                    </div>
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                        <label> Poor/Fair Adherence Reasons </label>
-                        <select type="text"name="non_adherence_reasons" id="non_adherence_reasons"  style='width:100%;'>
-                            <option value="">-Select One--</option>
-                        </select>
+                    <div class="row-fluid">
+                        <div class="span12 dispensing-field">
+                            <div class="control-group">
+                                <label>Previously Dispensed Drugs</label>
+                                <table class="table table-bordered prev_dispense" id="last_visit_data" style="float:left;width:100%;">
+                                    <thead><th style="width: 70%">Drug Dispensed</th><th>Qty Dispensed</th></thead>
+                                    <tbody>
+                                        <?php foreach($patient_appointment as $appointment): ?>
+                                            <tr>
+                                                <td><?php echo $appointment['drug']; ?></td>
+                                                <td><?php echo $appointment['quantity']; ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            
-            <div class="span5">
+            <div class="row-fluid">
                 <legend>
-                    Previous Patient Information
+                    Drug Details 
                 </legend>
-                <div class="row-fluid">
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label> Appointment Date</label>
-                            <input type="text" readonly="" id="last_appointment_date" name="last_appointment_date"/>
-                        </div>
-                    </div>
-                    <div class="span6 dispensing-field">
-                        <div class="control-group">
-                            <label>Previous Visit Date</label>
-                            <input type="text" value="<?php  echo $dated; ?>"readonly="" id="last_visit_date" name="last_visit_date"/>
-                            <input type="hidden" id="last_visit"/>
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span12 dispensing-field">
-                        <div class="control-group">
-                            <label>Previously Dispensed Drugs</label>
-                            <table class="table table-bordered prev_dispense" id="last_visit_data" style="float:left;width:100%;">
-                                <thead><th style="width: 70%">Drug Dispensed</th><th>Qty Dispensed</th></thead>
-                                <tbody>
-                                    <?php foreach($patient_appointment as $appointment): ?>
-                                    <tr>
-                                        <td><?php echo $appointment['drug']; ?></td>
-                                        <td><?php echo $appointment['quantity']; ?></td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row-fluid">
-            <legend>
-                Drug Details 
-            </legend>
-            <table class="table table-bordered" id="tbl-dispensing-drugs">
-                <thead>
-                    <tr>
-                        <th style="width:18%">Drug</th>
-                        <th style="width:10%">Unit</th>
-                        <th style="width:10%">Batch No.&nbsp;</th>
-                        <th style="width:9%">Expiry&nbsp;Date</th>
-                        <th style="width:9%">Dose</th>
-                        <th><b>Expected</b><br/>Pill Count</th>
-                        <th><b>Actual</b><br/> Pill Count</th>
-                        <th>Duration</th>
-                        <th style="width:5%">Qty. disp</th>
-                        <th style="width:8%">Stock on Hand</th>
-<!--                        <th>Brand Name</th>-->
-                        <th>Indication</th>
-                        <th>Comment</th>
-                        <th>Missed Pills</th>
-                        <th style="">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr drug_row="0">
-                        <td><select name="drug[]" class="drug input-large span3"></select></td>
-                        <td>
-                            <input type="text" name="unit[]" class="unit input-small" style="" readonly="" />
-                            <input type="hidden" name="comment[]" class="comment input-small" style="" readonly="" />
-                        </td>
-                        <td><select name="batch[]" class="batch input-small next_pill span2"></select></td>
-                        <td>
-                            <input type="text" name="expiry[]" name="expiry" class="expiry input-small" id="expiry_date" readonly="" size="15"/>
-                        </td>
-                        <td class="dose_col">
-                           <!-- <select name="dose[]" class="next_pill input-small dose  span2"></select></td>-->
-                            <input  name="dose[]" list="dose" id="doselist" class="input-small next_pill dose icondose"> 
-                            <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist> 
-                        </td>
-                        <td>
+                <table class="table table-bordered" id="tbl-dispensing-drugs">
+                    <thead>
+                        <tr>
+                            <th style="width:18%">Drug</th>
+                            <th style="width:10%">Unit</th>
+                            <th style="width:10%">Batch No.&nbsp;</th>
+                            <th style="width:9%">Expiry&nbsp;Date</th>
+                            <th style="width:9%">Dose</th>
+                            <th><b>Expected</b><br/>Pill Count</th>
+                            <th><b>Actual</b><br/> Pill Count</th>
+                            <th>Duration</th>
+                            <th style="width:5%">Qty. disp</th>
+                            <th style="width:8%">Stock on Hand</th>
+                            <!--                        <th>Brand Name</th>-->
+                            <th>Indication</th>
+                            <th>Comment</th>
+                            <th>Missed Pills</th>
+                            <th style="">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr drug_row="0">
+                            <td><select name="drug[]" class="drug input-large span3"></select></td>
+                            <td>
+                                <input type="text" name="unit[]" class="unit input-small" style="" readonly="" />
+                                <input type="hidden" name="comment[]" class="comment input-small" style="" readonly="" />
+                            </td>
+                            <td><select name="batch[]" class="batch input-small next_pill span2"></select></td>
+                            <td>
+                                <input type="text" name="expiry[]" name="expiry" class="expiry input-small" id="expiry_date" readonly="" size="15"/>
+                            </td>
+                            <td class="dose_col">
+                             <!-- <select name="dose[]" class="next_pill input-small dose  span2"></select></td>-->
+                             <input  name="dose[]" list="dose" id="doselist" class="input-small next_pill dose icondose"> 
+                             <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist> 
+                         </td>
+                         <td>
                             <input type="text" name="pill_count[]" class="pill_count input-small" readonly="readonly" />
                         </td>
                         <td>
@@ -291,75 +291,75 @@
                         </td>
                         <td>
                             <input type="number" name="qty_disp[]" class="qty_disp input-small next_pill validate[requireds]"  id="qty_disp"/>
-                        <td>
-                            <input type="text" name="soh[]" class="soh input-small" readonly="readonly"/>
+                            <td>
+                                <input type="text" name="soh[]" class="soh input-small" readonly="readonly"/>
+                            </td>
                         </td>
-                        </td>
-<!--                        <td><select name="brand[]" class="brand input-small"></select></td>-->
+                        <!--                        <td><select name="brand[]" class="brand input-small"></select></td>-->
 
                         <td>
                             <select name="indication[]" class="indication input-small " style="">
                                 <option value="0">None</option>
                             </select></td>
-                        <td>
-                            <input type="text" name="comment[]" class="comment input-small" />
-                        </td>
-                        <td>
-                            <input type="text" name="missed_pills[]" class="missed_pills input-small" />
-                        </td>
-                        <td>
-                            <a class="add btn-small">Add</a>|<a class="remove btn-small">Remove</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="row-fluid" id="submit_section">
-            <div class="span12">
-                <input type="reset" class="btn btn-danger button_size" id="reset" value="Reset Fields" />
+                            <td>
+                                <input type="text" name="comment[]" class="comment input-small" />
+                            </td>
+                            <td>
+                                <input type="text" name="missed_pills[]" class="missed_pills input-small" />
+                            </td>
+                            <td>
+                                <a class="add btn-small">Add</a>|<a class="remove btn-small">Remove</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row-fluid" id="submit_section">
+                <div class="span12">
+                    <input type="reset" class="btn btn-danger button_size" id="reset" value="Reset Fields" />
                     <input type="button" class="btn button_size" id="print_btn" value="Print Labels" />
                     <input type="submit" form="dispense_form" id="btn_submit " class="btn actual button_size" id="submit"  value="Dispense Drugs"/>
+                </div>
             </div>
+        </form>
+        <!-- Modal -->
+        <div id="open_print_label" name="open_print_label" title="Label Printer" class="container-fluid">
+            <!--select all row-->
+            <div class="drugrow"> 
+                <form id="print_frm" method="post" action="<?php echo base_url(); ?>dispensement_management/print_test">
+                    <div class="row label_selectall">
+                        <div class="span1" style="padding: 4px 5px;">
+                            <label class="checkbox inline">
+                                <input type="checkbox" id="selectall" class="label_checker" value="0">All
+                            </label>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+            <!--end modal-->
         </div>
-    </form>
-    <!-- Modal -->
-    <div id="open_print_label" name="open_print_label" title="Label Printer" class="container-fluid">
-        <!--select all row-->
-        <div class="drugrow"> 
-            <form id="print_frm" method="post" action="<?php echo base_url(); ?>dispensement_management/print_test">
-                <div class="row label_selectall">
-                    <div class="span1" style="padding: 4px 5px;">
-                        <label class="checkbox inline">
-                            <input type="checkbox" id="selectall" class="label_checker" value="0">All
-                        </label>
-                    </div>
-    
-            </form>
-        </div>
-    </div>
-    <!--end modal-->
-</div>
-<script src="<?php echo base_url().'assets/scripts/bootbox/v4/bootbox.min.js'; ?>"></script>
+        <script src="<?php echo base_url().'assets/scripts/bootbox/v4/bootbox.min.js'; ?>"></script>
 
-<script type="text/javascript">
-var patient_iqcare = false;
-    $(document).ready(function(){
-        var loopcounter = 0;
+        <script type="text/javascript">
+            var patient_iqcare = false;
+            $(document).ready(function(){
+                var loopcounter = 0;
         //iqcare flag
         var patient_id="<?php echo $patient_id; ?>";
         var service = "<?php echo $service_name; ?>"
         var base_url="<?php echo base_url();?>";
         var link = base_url + "patient_management/get_viral_load_info/" + patient_id;
         var request_viral_load=$.ajax({
-                url: link,
-                type: 'POST',
-                dataType: "json",
-                success: function(data) {
-                   if(data!=0){
-                        bootbox.alert("<h4>ViralLoad Alert!</h4>" + data);
-                   }
-                }
-            });
+            url: link,
+            type: 'POST',
+            dataType: "json",
+            success: function(data) {
+             if(data!=0){
+                bootbox.alert("<h4>ViralLoad Alert!</h4>" + data);
+            }
+        }
+    });
 
         //Check if 'PREP' patient has been tested
         checkIfTested(service, patient_id)
@@ -416,16 +416,16 @@ var patient_iqcare = false;
         $("#days_to_next").change(function() {
             var days = $("#days_to_next").attr("value");
             if(days > 0){
-            var base_date = new Date();
-            var appointment_date = $("#next_appointment_date");
-            var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
-            var today_timestamp = today.getTime();
-            var appointment_timestamp = (1000 * 60 * 60 * 24 * days) + today_timestamp;
-            appointment_date.datepicker("setDate", new Date(appointment_timestamp));
-            retrieveAppointedPatients();
+                var base_date = new Date();
+                var appointment_date = $("#next_appointment_date");
+                var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
+                var today_timestamp = today.getTime();
+                var appointment_timestamp = (1000 * 60 * 60 * 24 * days) + today_timestamp;
+                appointment_date.datepicker("setDate", new Date(appointment_timestamp));
+                retrieveAppointedPatients();
             }else{
-               bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
-            }
+             bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
+         }
             //Loop through Table to calculate pill counts for all rows
             $.each($(".drug"), function(i, v) {
                 var row = $(this);
@@ -509,12 +509,12 @@ var patient_iqcare = false;
                   //data: return data from server
                   if (data == 0) {
                     bootbox.alert("<h4>Notice!</h4>\n\<center>You have not selected any drug label to print!</center>");
-                  } else {
+                } else {
                     window.open(data);
                     $("#open_print_label").dialog("close");
-                  }
                 }
-               });
+            }
+        });
             //STOP default action
             e.preventDefault(); 
         });
@@ -561,92 +561,92 @@ var patient_iqcare = false;
                             drug_instructions = s.replace(/\n /, "\n");
                             //append data
                             label_str += '<tr class="' + _class + '">\
-                                            <td class="span1 ">\
-                                            <label class="checkbox inline">\
-                                            <input type="checkbox" name="print_check[' + i + ']" class="label_checker" value="0"/>\
-                                            </label>\
-                                            </td>\
-                                            <td class="span10">\
-                                            <div class="row-fluid">\
-                                              <div class="span9">\
-                                               <label class="inline">\
-                                               Drugname:\
-                                               <input type="text" name="print_drug_name[]" class="span9 label_drug" value="' + drug_name + '" required readonly/>\
-                                               </label>\
-                                              </div>\
-                                              <div class="span3">\
-                                              <label class="inline">\
-                                               Qty:\
-                                              <input type="number" name="print_qty[]" class="span3 label_qty" value="' + qty + '" required readonly/>\
-                                              </label>\
-                                              </div>\
-                                            </div>\
-                                            <div class="row-fluid">\
-                                             <div class="span12">\
-                                              <label class="inline">\
-                                              Tablets/Capsules:\
-                                              <input type="number" name="print_dose_value[]" class="span1 label_dose_value" value="' + dose_value + '" required/> to be taken\
-                                              <input type="number" name="print_dose_frequency[]" class="span1 label_dose_frequency" value="' + dose_frequency + '" required/> times a day after every\
-                                              <input type="number" name="print_dose_hours[]" class="span1 label_hours" value="' + dose_hours + '" required/> hours\
-                                              </label>\
-                                             </div>\
-                                            </div>\
-                                            <div class="row-fluid">\
-                                             <div class="span12">\
-                                              <label class="inline">\
-                                              Before/After Meals:\
-                                              <textarea name="print_drug_info[]"  row="5" class="span8 label_info">' + drug_instructions + '</textarea>\
-                                              </label>\
-                                              </div>\
-                                            </div>\
-                                            <div class="row-fluid">\
-                                             <div class="span4">\
-                                                <label class="inline">\
-                                                 Name: <input type="text" name="print_patient_name" class="span9 label_patient" value="' + patient_name + '" required readonly/>\
-                                                </label>\
-                                             </div>\
-                                             <div class="span4">\
-                                              <label class="inline">\
-                                                Pharmacy: <input type="text" name="print_pharmacy[]" class="span8 label_patient" value="Pharmacy"/>\
-                                               </label>\
-                                             </div>\
-                                             <div class="span4">\
-                                                <label class="inline">\
-                                                Date: <input type="text" name="print_date" class="span6 label_date" value="<?php echo date('d/m/Y'); ?>" readonly/>\
-                                                </label>\
-                                               </div>\
-                                            </div>\
-                                            <div class="row-fluid">\
-                                              <div class="span12">\
-                                                  <label style="text-align:center;">Keep all medicines in a cold dry place out of reach of children.</label>\
-                                               </div>\
-                                             </div>\
-                                             <div class="row-fluid">\
-                                              <div class="span6">\
-                                                <label class="inline">\
-                                                Facility Name:<input type="text" name="print_facility_name" class="span8 label_facility" value="<?php echo $this->session->userdata("facility_name"); ?>" readonly/>\
-                                                </label>\
-                                              </div>\
-                                              <div class="span6">\
-                                                <label class="inline">\
-                                                Facility Phone:<input type="text" name="print_facility_phone" class="span4 label_contact" value="<?php echo $this->session->userdata("facility_phone"); ?>" readonly/>\
-                                                </label>\
-                                              </div>\
-                                             </div>\
-                                            </td>\
-                                            <td class="span1">\
-                                            <label class="inline">\
-                                            No. of Labels\
-                                            <input name="print_count[]" class="span1" style="height: 2em;" type="number" value="1">\
-                                            </label>\
-                                            </td>\
-                                            </tr>';
-                        }
-                    });
-                } else {
-                    $("#open_print_label").dialog("close");
-                }
-            });
+                            <td class="span1 ">\
+                                <label class="checkbox inline">\
+                                    <input type="checkbox" name="print_check[' + i + ']" class="label_checker" value="0"/>\
+                                </label>\
+                            </td>\
+                            <td class="span10">\
+                                <div class="row-fluid">\
+                                  <div class="span9">\
+                                     <label class="inline">\
+                                         Drugname:\
+                                         <input type="text" name="print_drug_name[]" class="span9 label_drug" value="' + drug_name + '" required readonly/>\
+                                     </label>\
+                                 </div>\
+                                 <div class="span3">\
+                                  <label class="inline">\
+                                     Qty:\
+                                     <input type="number" name="print_qty[]" class="span3 label_qty" value="' + qty + '" required readonly/>\
+                                 </label>\
+                             </div>\
+                         </div>\
+                         <div class="row-fluid">\
+                           <div class="span12">\
+                              <label class="inline">\
+                                  Tablets/Capsules:\
+                                  <input type="number" name="print_dose_value[]" class="span1 label_dose_value" value="' + dose_value + '" required/> to be taken\
+                                  <input type="number" name="print_dose_frequency[]" class="span1 label_dose_frequency" value="' + dose_frequency + '" required/> times a day after every\
+                                  <input type="number" name="print_dose_hours[]" class="span1 label_hours" value="' + dose_hours + '" required/> hours\
+                              </label>\
+                          </div>\
+                      </div>\
+                      <div class="row-fluid">\
+                       <div class="span12">\
+                          <label class="inline">\
+                              Before/After Meals:\
+                              <textarea name="print_drug_info[]"  row="5" class="span8 label_info">' + drug_instructions + '</textarea>\
+                          </label>\
+                      </div>\
+                  </div>\
+                  <div class="row-fluid">\
+                   <div class="span4">\
+                    <label class="inline">\
+                       Name: <input type="text" name="print_patient_name" class="span9 label_patient" value="' + patient_name + '" required readonly/>\
+                   </label>\
+               </div>\
+               <div class="span4">\
+                  <label class="inline">\
+                    Pharmacy: <input type="text" name="print_pharmacy[]" class="span8 label_patient" value="Pharmacy"/>\
+                </label>\
+            </div>\
+            <div class="span4">\
+                <label class="inline">\
+                    Date: <input type="text" name="print_date" class="span6 label_date" value="<?php echo date('d/m/Y'); ?>" readonly/>\
+                </label>\
+            </div>\
+        </div>\
+        <div class="row-fluid">\
+          <div class="span12">\
+              <label style="text-align:center;">Keep all medicines in a cold dry place out of reach of children.</label>\
+          </div>\
+      </div>\
+      <div class="row-fluid">\
+          <div class="span6">\
+            <label class="inline">\
+                Facility Name:<input type="text" name="print_facility_name" class="span8 label_facility" value="<?php echo $this->session->userdata("facility_name"); ?>" readonly/>\
+            </label>\
+        </div>\
+        <div class="span6">\
+            <label class="inline">\
+                Facility Phone:<input type="text" name="print_facility_phone" class="span4 label_contact" value="<?php echo $this->session->userdata("facility_phone"); ?>" readonly/>\
+            </label>\
+        </div>\
+    </div>\
+</td>\
+<td class="span1">\
+    <label class="inline">\
+        No. of Labels\
+        <input name="print_count[]" class="span1" style="height: 2em;" type="number" value="1">\
+    </label>\
+</td>\
+</tr>';
+}
+});
+} else {
+    $("#open_print_label").dialog("close");
+}
+});
             //remove all
             $('.label_selectall').nextAll().remove();
             //insertafter
@@ -682,22 +682,22 @@ var patient_iqcare = false;
         var link ="<?php echo base_url();?>patient_management/get_patient_details";
         var patient_id = "<?php echo $patient_id;?>";
         var request = $.ajax({
-                        url: link,
-                        type: 'post',
-                        data: {"patient_id": patient_id},
-                        dataType: "json"
-                    });
-                    
-            request.done(function(data){
-                $("#patient").val(data.Patient_Number_CCC);
-                $("#patient_details").val(data.names);
-                $("#height").val(data.Height);
-                $("#weight").val(data.Weight);
-                $("#patient_names").text(data.names);
-                is_pregnant = data.Pregnant;
-                has_tb      = data.Tb;
-                var age = data.age;
-                patient_ccc = data.Patient_Number_CCC;
+            url: link,
+            type: 'post',
+            data: {"patient_id": patient_id},
+            dataType: "json"
+        });
+        
+        request.done(function(data){
+            $("#patient").val(data.Patient_Number_CCC);
+            $("#patient_details").val(data.names);
+            $("#height").val(data.Height);
+            $("#weight").val(data.Weight);
+            $("#patient_names").text(data.names);
+            is_pregnant = data.Pregnant;
+            has_tb      = data.Tb;
+            var age = data.age;
+            patient_ccc = data.Patient_Number_CCC;
                 //CHeck if patient is pregnant
                 checkIfPregnant(is_pregnant,patient_ccc);
                 //Check if still has tb
@@ -706,12 +706,12 @@ var patient_iqcare = false;
                 loadRegimens(age);
                 loadOtherDetails(patient_ccc);
             })
-            request.fail(function(jqXHR, textStatus) {
-                bootbox.alert("<h4>Patient Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve patient details : </center>" + textStatus);
-            });
-    
+        request.fail(function(jqXHR, textStatus) {
+            bootbox.alert("<h4>Patient Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve patient details : </center>" + textStatus);
+        });
+        
     });
-    
+
     //-------------------------------- CHANGE EVENT --------------------------------------
     //store type change event
     $("#ccc_store_id").change(function() {
@@ -754,7 +754,7 @@ var patient_iqcare = false;
                 //Populate drugs by triggering change event
                 $("#current_regimen").trigger("change");
                 $("#purpose_refill_text").val('');
-                    
+                
                 //If purpose == Start ART, check if patient has WHO stage
                 if(purpose_visit === 'start art'){
                     $("#current_regimen").val("0");
@@ -817,9 +817,9 @@ var patient_iqcare = false;
                 }
                 //adherence rate
                 getAdherenceRate();
-        }
-    });
-    
+            }
+        });
+
     //Dynamically change the list of drugs once a current regimen is selected
     $("#current_regimen").change(function() {
         
@@ -985,9 +985,9 @@ var patient_iqcare = false;
                             type: 'post',
                             dataType: "json"
                         });
-                    
+                        
                         request.done(function(datas){ 
-                        var adult_age=datas[0].adult_age;
+                            var adult_age=datas[0].adult_age;
                         //if patient is a child 
                         if (age < adult_age) {
                             var url_dose = "<?php echo base_url() . 'dispensement_management/getDoses'; ?>";
@@ -1014,9 +1014,9 @@ var patient_iqcare = false;
                                         if(dose==value.Name){
                                             row.closest("tr").find(".dose").append("<option selected='selected' value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
                                         }else{
-                                             row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
-                                        }
-                                    });
+                                           row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
+                                       }
+                                   });
                                 });
                             });
                         }else{
@@ -1030,7 +1030,7 @@ var patient_iqcare = false;
                             request_dose.done(function(data) {
                                 var url_drug_dose = "<?php echo base_url() . 'dispensement_management/getDrugDose/'; ?>";
                                 var new_url_dose = url_drug_dose+selected_drug;
-                             
+                                
                                 var request_one_dose = $.ajax({
                                     url: new_url_dose,
                                     type: 'post',
@@ -1049,8 +1049,8 @@ var patient_iqcare = false;
                                 });
                             });
                         } 
-                         });
                     });
+});
                     // end of doses
                     row.closest("tr").find(".batch option").remove();
                     row.closest("tr").find(".batch").append($("<option value='0'>Select</option>"));
@@ -1066,13 +1066,13 @@ var patient_iqcare = false;
                             row.closest("tr").find(".duration").val(value.duration);
                             row.closest("tr").find(".qty_disp ").val(value.quantity); //Fix for not showing quantity when not routine refill
                         }
-                      
+                        
                         row.closest("tr").find(".unit").val(value.Name);
                         row.closest("tr").find(".batch").append("<option "+_class+" value='" + value.batch_number + "'>" + value.batch_number + "</option> ");
                         row.closest("tr").find(".comment").val(value.comment);
                         dose = value.dose;
                     });
-                      
+                    
                     //Get brands
                     var new_url = "<?php echo base_url() . 'dispensement_management/getBrands'; ?>";
                     var request_brand = $.ajax({
@@ -1110,22 +1110,22 @@ var patient_iqcare = false;
                         });
                     });
                 });
-                request.fail(function(jqXHR, textStatus) {
-                    bootbox.alert("<h4>Indication Alert</h4>\n\<hr/><center>Could not retrieve the list of batches : </center>" + textStatus);
-                });
-                
+request.fail(function(jqXHR, textStatus) {
+    bootbox.alert("<h4>Indication Alert</h4>\n\<hr/><center>Could not retrieve the list of batches : </center>" + textStatus);
+});
+
                 //trigger batch changes
                 row.closest("tr").find(".batch").trigger("change");
             }
         });
-    });
-    
+});
+
     //batch change event
     $(".batch").change(function() {
         if ($(this).prop("selectedIndex") > 1) {
             bootbox.alert("<h4>Expired Batch</h4>\
-                                        <hr/>\n\
-                                    <center>This is not the first expiring batch</center>");
+                <hr/>\n\
+                <center>This is not the first expiring batch</center>");
         }
         var row = $(this);
         //Get batch details(balance,expiry date)
@@ -1151,37 +1151,43 @@ var patient_iqcare = false;
         }
     });
     //quantity disepensed change event
-    $(".qty_disp").keyup(function(event,current_row) {
-        if (typeof current_row !== "undefined" && current_row){//Check if current_row parameter was passed
-          row = current_row;
-        }else{//when not triggering the keyup event
-            var row = $(this);
-            alert_qty_check = true;
-        }
-        var selected_value = $(this).attr("value");
-        //including drugs with the default quantity of zero
-        if(selected_value > 0){
-        var stock_at_hand = row.closest("tr").find(".soh ").attr("value");
-        var stock_validity = stock_at_hand - selected_value;
-        
-        if (stock_validity < 0) {
-            if(alert_qty_check===true){//Check to only show the error message once
-                bootbox.alert("<h4>Quantity-Stock Alert</h4>\n\<hr/><center>Quantity Cannot Be larger Than Stock at Hand</center>");
-            }
-            row.closest("tr").find(".qty_disp").css("background-color", "red");
-            row.closest("tr").find(".qty_disp").addClass("input_error");
-            alert_qty_check=false;
-        }
-        else {
-            row.closest("tr").find(".qty_disp").css("background-color", "white");
-            row.closest("tr").find(".qty_disp").removeClass("input_error");
-        }
-        }else{
-           // bootbox.alert("<h4>Notice!</h4>\n\<hr/><center>The default quantity to be dispensed is set to negative or empty</center>");
-            row.closest("tr").find(".qty_disp").css("background-color", "red");
-            row.closest("tr").find(".qty_disp").addClass("input_error");
-        }
-    });
+    // -- Not sure impact of this red background validation
+
+    // $(".qty_disp").keyup(function(event,current_row) {
+    //     if (typeof current_row !== "undefined" && current_row){//Check if current_row parameter was passed
+    //       row = current_row;
+    //     }else{//when not triggering the keyup event
+    //         var row = $(this);
+    //         alert_qty_check = true;
+    //     }
+    //     var selected_value = $(this).attr("value");
+    //     //including drugs with the default quantity of zero
+    //     if(selected_value > 0){
+    //     var stock_at_hand = row.closest("tr").find(".soh ").attr("value");
+    //     var stock_validity = stock_at_hand - selected_value;
+    
+    //     if (stock_validity < 0) {
+    //         if(alert_qty_check===true){//Check to only show the error message once
+    //             bootbox.alert("<h4>Quantity-Stock Alert</h4>\n\<hr/><center>Quantity Cannot Be larger Than Stock at Hand</center>");
+    //         }
+    //         row.closest("tr").find(".qty_disp").css("background-color", "red");
+    //         row.closest("tr").find(".qty_disp").addClass("input_error");
+    //         alert_qty_check=false;
+    //     }
+    //     else {
+    //         row.closest("tr").find(".qty_disp").css("background-color", "white");
+    //         row.closest("tr").find(".qty_disp").removeClass("input_error");
+    //     }
+    //     }
+    //     else{
+    //        // bootbox.alert("<h4>Notice!</h4>\n\<hr/><center>The default quantity to be dispensed is set to negative or empty</center>");
+    //         row.closest("tr").find(".qty_disp").css("background-color", "red");
+    //         row.closest("tr").find(".qty_disp").addClass("input_error");
+    //     }
+    // });
+// --/ red validation
+
+
     //next pill count change event
     $(".next_pill").change(function() {
         var row = $(this);
@@ -1189,13 +1195,16 @@ var patient_iqcare = false;
         var dose_val = row.closest("tr").find(".dose option:selected").attr("dose_val");
         var dose_freq = row.closest("tr").find(".dose option:selected").attr("dose_freq");
     });
-    $(".duration").on('keyup', function() {
-       duration_quantity($(this));
-    });
-    $(".dose").on('input', function() {
-       duration_quantity($(this));
-    });
 
+    // @todo  red background issue ----
+    // -- Not sure impact of this red background validation
+    // $(".duration").on('keyup', function() {
+    //    duration_quantity($(this));
+    // });
+    // $(".dose").on('input', function() {
+    //    duration_quantity($(this));
+    // });
+// --/ red validation
     //function to change quantity based on the duration 
     function duration_quantity(row){
         var duration = row.closest("tr").find(".duration").val();
@@ -1207,12 +1216,12 @@ var patient_iqcare = false;
             var dose_freq = row.closest("tr").find('.dose option').filter(function() {
                 return this.value == val;
             }).data('dose_freq');
-        
+            
             var qty_disp = duration * dose_val * dose_freq;
             if(!isNaN(qty_disp)) {
                 row.closest("tr").find(".qty_disp").val(qty_disp);
             }
-        
+            
             row.closest("tr").find(".duration").css("background-color", "white");
             row.closest("tr").find(".duration").removeClass("input_error");
         }else {
@@ -1283,11 +1292,11 @@ var patient_iqcare = false;
         // it's ok to reset the value attr of text inputs,
         // password inputs, and textareas
         if (type == 'text' || type == 'password' || tag == 'textarea')
-        if ( $(':input').is('[readonly]') ) { 
-        
-        }else{
-            this.value = "";
-        }
+            if ( $(':input').is('[readonly]') ) { 
+                
+            }else{
+                this.value = "";
+            }
         // checkboxes and radios need to have their checked state cleared
         // but should *not* have their 'value' changed
         else if (type == 'checkbox' || type == 'radio')
@@ -1298,8 +1307,8 @@ var patient_iqcare = false;
             if($(this).attr('id')!='ccc_store_id'){
                 this.selectedIndex = -1;
             } 
-      });
-    };
+        });
+  };
     //function to remove drug row in table 
     $(".remove").click(function() {
         var rows=$("#tbl-dispensing-drugs > tbody").find("tr").length;
@@ -1325,9 +1334,9 @@ var patient_iqcare = false;
                 }
             });                                            
         }else{
-           bootbox.alert("<h4>Remove Alert!</h4>\n\<hr/><center>Error!Cannot Delete Last Row Try Reset!</center>");
-        }
-    });
+         bootbox.alert("<h4>Remove Alert!</h4>\n\<hr/><center>Error!Cannot Delete Last Row Try Reset!</center>");
+     }
+ });
     $("#reset").click(function (e){
         e.preventDefault();
         
@@ -1359,50 +1368,50 @@ var patient_iqcare = false;
     //------------------------------ START DATA PROCESSING -------------------------------
     function retrieveFormValues() {
                 //This function loops the whole form and saves all the input, select, e.t.c. elements with their corresponding values in a javascript array for processing
-        var dump = Array;
-        $.each($("input, select, textarea"), function(i, v) {
-            var theTag = v.tagName;
-            var theElement = $(v);
-            var theValue = theElement.val();
-            if (theElement.attr('type') == "radio") {
-                var text = 'input:radio[name=' + theElement.attr('name') + ']:checked';
-                dump[theElement.attr("name")] = $(text).attr("value");
-            } else {
-                dump[theElement.attr("name")] = theElement.attr("value");
+                var dump = Array;
+                $.each($("input, select, textarea"), function(i, v) {
+                    var theTag = v.tagName;
+                    var theElement = $(v);
+                    var theValue = theElement.val();
+                    if (theElement.attr('type') == "radio") {
+                        var text = 'input:radio[name=' + theElement.attr('name') + ']:checked';
+                        dump[theElement.attr("name")] = $(text).attr("value");
+                    } else {
+                        dump[theElement.attr("name")] = theElement.attr("value");
+                    }
+                });
+                return dump;
             }
-        });
-        return dump;
-    }
-    function retrieveFormValues_Array(name) {
-        var dump = new Array();
-        var counter = 0;
-        $.each($("input[name=" + name + "], select[name=" + name + "], select[name=" + name + "]"), function(i, v) {
-            var theTag = v.tagName;
-            var theElement = $(v);
-            var theValue = theElement.val();
-            dump[counter] = theElement.attr("value");
-            counter++;
-        });
-        return dump;
-    }
-    
+            function retrieveFormValues_Array(name) {
+                var dump = new Array();
+                var counter = 0;
+                $.each($("input[name=" + name + "], select[name=" + name + "], select[name=" + name + "]"), function(i, v) {
+                    var theTag = v.tagName;
+                    var theElement = $(v);
+                    var theValue = theElement.val();
+                    dump[counter] = theElement.attr("value");
+                    counter++;
+                });
+                return dump;
+            }
+            
     //Function to validate required fields
     function processData(form) {
-          var form_selector = "#" + form;
-          var validated = $(form_selector).validationEngine('validate');
-            if(!validated) {
-                return false;
-            }else{
-                return saveData();      
-            }
+      var form_selector = "#" + form;
+      var validated = $(form_selector).validationEngine('validate');
+      if(!validated) {
+        return false;
+    }else{
+        return saveData();      
     }
+}
     //Function to post data to the server
     function saveData(){
         $("#btn_submit").attr("readonly","readonly");
         var timestamp = new Date().getTime();
         var all_rows=$('#tbl-dispensing-drugs>tbody>tr');
         var msg = '';
-    
+        
         //Loop through all rows to check values
         $.each(all_rows,function(i,v){
             
@@ -1429,18 +1438,18 @@ var patient_iqcare = false;
             if(!last_row.find(".missed_pills ").val() && last_row.find(".drug option:selected").attr('arv_status') == 1){
                 msg+='<b>'+drug_name + '</b> : You have not entered the missed pills!<br/>';
             }
-        
+            
         });
         //Show Bootbox
         if(msg !=''){
-           bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
-           return;
-        }
-        
-        var rowCount = $('#drugs_table>tbody tr').length;
-        return true;
-    }
-    
+         bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
+         return;
+     }
+     
+     var rowCount = $('#drugs_table>tbody tr').length;
+     return true;
+ }
+ 
     //------------------------------ END DATA PROCESSING ---------------------------------
     
     
@@ -1448,48 +1457,48 @@ var patient_iqcare = false;
     function loadRegimens(age){
         var link ="<?php echo base_url();?>regimen_management/getFilteredRegiments";
         var request = $.ajax({
-                        url: link,
-                        type: 'post',
-                        data: {"age": age},
-                        dataType: "json"
-                    });
-                    
-            request.done(function(data){
+            url: link,
+            type: 'post',
+            data: {"age": age},
+            dataType: "json"
+        });
+        
+        request.done(function(data){
                 //Remove appended options to reinitialize dropdown
                 $('#current_regimen option')
                 .filter(function() {
                     return this.value || $.trim(this.value).length != 0;
                 }).remove();
-               
+                
                 $(data).each(function(i,v){
                     $("#current_regimen").append("<option value='"+v.id+"'>"+v.Regimen_Code+" | "+v.Regimen_Desc+"</option>");
                 });
             });
-            request.fail(function(jqXHR, textStatus) {
-                bootbox.alert("<h4>Regimens Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve regimens details : </center>" + textStatus);
-            });
+        request.fail(function(jqXHR, textStatus) {
+            bootbox.alert("<h4>Regimens Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve regimens details : </center>" + textStatus);
+        });
     }
     
     function loadOtherDetails(patient_ccc){
         //Load Non adherence reasons, regimen change reasons previously dispensed drugs
         var link ="<?php echo base_url();?>dispensement_management/get_other_dispensing_details";
         var request = $.ajax({
-                        url: link,
-                        type: 'post',
-                        data: {"patient_ccc": patient_ccc},
-                        dataType: "json"
-                    });
-                    
-            request.done(function(data){
-                var non_adherence_reasons = data.non_adherence_reasons;
-                var regimen_change_reason = data.regimen_changes;
-                var patient_appointment   = data.patient_appointment;
+            url: link,
+            type: 'post',
+            data: {"patient_ccc": patient_ccc},
+            dataType: "json"
+        });
+        
+        request.done(function(data){
+            var non_adherence_reasons = data.non_adherence_reasons;
+            var regimen_change_reason = data.regimen_changes;
+            var patient_appointment   = data.patient_appointment;
                 //Remove appended options to reinitialize dropdown
                 $('#non_adherence_reasons option')
                 .filter(function() {
                     return this.value || $.trim(this.value).length != 0;
                 }).remove();
-               
+                
                 $(non_adherence_reasons).each(function(i,v){
                     $("#non_adherence_reasons").append("<option value='"+v.id+"'>"+v.Name+"</option>");
                 });
@@ -1498,7 +1507,7 @@ var patient_iqcare = false;
                 .filter(function() {
                     return this.value || $.trim(this.value).length != 0;
                 }).remove();
-               
+                
                 $(regimen_change_reason).each(function(i,v){
                     $("#regimen_change_reason").append("<option value='"+v.id+"'>"+v.Name+"</option>");
                 });
@@ -1511,14 +1520,14 @@ var patient_iqcare = false;
                     //------------------------------- PREVIOUS VISIT DATA
                     var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispensedDrugs";
                     var request = $.ajax({
-                                    url: link,
-                                    type: 'post',
-                                    data: {"patient_ccc": patient_ccc},
-                                    dataType: "json"
-                                });
-                                
-                        request.done(function(msg){
-                            $("#last_visit_data tbody").empty();
+                        url: link,
+                        type: 'post',
+                        data: {"patient_ccc": patient_ccc},
+                        dataType: "json"
+                    });
+                    
+                    request.done(function(msg){
+                        $("#last_visit_data tbody").empty();
                             $(msg).each(function(i,v){//Load last visit data
                                 previous_dispensed_data = msg;
                                 if(i==0){//Previous dispense details
@@ -1532,9 +1541,9 @@ var patient_iqcare = false;
                                 $("#last_visit_data tbody").append("<tr><td>"+v.drug+"</td><td>"+v.quantity+"</td></tr>");
                             });
                         });
-                        request.fail(function(jqXHR, textStatus) {
-                            bootbox.alert("<h4>Previous Dispensing Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve previously dispensed details : </center>" + textStatus);
-                        });
+                    request.fail(function(jqXHR, textStatus) {
+                        bootbox.alert("<h4>Previous Dispensing Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve previously dispensed details : </center>" + textStatus);
+                    });
                     
                     
                 }
@@ -1545,9 +1554,9 @@ var patient_iqcare = false;
                 }
                 
             });
-            request.fail(function(jqXHR, textStatus) {
-                bootbox.alert("<h4>Regimens Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve regimens details : </center>" + textStatus);
-            });
+        request.fail(function(jqXHR, textStatus) {
+            bootbox.alert("<h4>Regimens Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve regimens details : </center>" + textStatus);
+        });
     }
 
     function checkIfTested(service, patient_id){
@@ -1562,14 +1571,14 @@ var patient_iqcare = false;
                             title: "HIV TEST (PREP) | Has the Patient Been Tested?",
                             inputType: 'select',
                             inputOptions: [
-                                {
-                                    text: 'No',
-                                    value: '0',
-                                },
-                                {
-                                    text: 'Yes',
-                                    value: '1',
-                                }
+                            {
+                                text: 'No',
+                                value: '0',
+                            },
+                            {
+                                text: 'Yes',
+                                value: '1',
+                            }
                             ],
                             callback: function (is_tested) {
                                 if(is_tested == true){
@@ -1581,20 +1590,20 @@ var patient_iqcare = false;
                                                 title: "HIV TEST (PREP) | What was the Test Positive?",
                                                 inputType: 'select',
                                                 inputOptions: [
-                                                    {
-                                                        text: 'No',
-                                                        value: '0',
-                                                    },
-                                                    {
-                                                        text: 'Yes',
-                                                        value: '1',
-                                                    }
+                                                {
+                                                    text: 'No',
+                                                    value: '0',
+                                                },
+                                                {
+                                                    text: 'Yes',
+                                                    value: '1',
+                                                }
                                                 ],
                                                 callback: function (test_result) {
                                                     var test_result_url = "<?php echo base_url(); ?>"+'dispensement_management/update_prep_test/'+patient_id+'/'+prep_reason+'/'+is_tested+'/'+test_date+'/'+test_result
                                                     $.get(test_result_url, function(msg){
-                                                         bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
-                                                    });
+                                                       bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
+                                                   });
                                                 }
                                             });
                                         }
@@ -1674,16 +1683,16 @@ var patient_iqcare = false;
     }
     /*********TESTING FUNCTION*********/
     function loadMyPreviousDispensedDrugs(){
-var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispensedDrugs";
-                    var request = $.ajax({
-                                    url: link,
-                                    type: 'post',
-                                    data: {"patient_ccc": patient_ccc},
-                                    dataType: "json"
-                                });
-                                
-                        request.done(function(msg){
-                            $("#last_visit_data tbody").empty();
+        var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispensedDrugs";
+        var request = $.ajax({
+            url: link,
+            type: 'post',
+            data: {"patient_ccc": patient_ccc},
+            dataType: "json"
+        });
+        
+        request.done(function(msg){
+            $("#last_visit_data tbody").empty();
                             $(msg).each(function(i,v){//Load last visit data
                                 previous_dispensed_data = msg;
                                 
@@ -1699,7 +1708,7 @@ var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispense
                             });
                         });
     }
-/***********************************/
+    /***********************************/
     
     function checkIfDispensed(last_visit_date,dispensing_date){//check if patient has already been dispensed drugs for current dispensing date
         if (last_visit_date) {
@@ -1707,7 +1716,7 @@ var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispense
             if (last_visit_date == dispensing_date) {
                 //if equal ask for alert
                 bootbox.alert("<h4>Notice!</h4>\n\<center>You have dispensed drugs to this patient!</center>");
-                                
+                
             }
         }
     }
@@ -1716,13 +1725,13 @@ var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispense
     function getRoutineDrugs(visits,total_visits,count){
       //loop and add rows 
       for(var count=0;count<(visits.length-1);count++){
-         var row = $('#tbl-dispensing-drugs tr:last');
-         var cloned_row = row.clone(true);
+       var row = $('#tbl-dispensing-drugs tr:last');
+       var cloned_row = row.clone(true);
          //show remove link for cloned row
          cloned_row.find(".remove").show();
          //insert after cloned row
          cloned_row.insertAfter('#tbl-dispensing-drugs tr:last');
-      }
+     }
       //loop through rows on table and assign commodities
       var rows=$('#tbl-dispensing-drugs tbody>tr');
       $.each(rows,function(i,v){
@@ -1738,12 +1747,12 @@ var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispense
         //add previous quantity dispensed
         current_row.find(".qty_disp").val(visits[i].quantity);
         //$(".qty_disp").trigger('keyup',[current_row]);
-      });
+    });
       //Make focus on first line drug
       $('#tbl-dispensing-drugs tbody>tr:first').find('.duration').select();
       showFirstRemove();
-    }
-    
+  }
+  
     //function reset routine drugs
     function resetRoutineDrugs(){
       //remove all table tr's except first one
@@ -1762,11 +1771,11 @@ var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispense
       row.find(".indication option").remove();
       routine_check=0;
       hideFirstRemove();
-    }
-    
-    function resetFields(row) {
-        row.closest("tr").find(".qty_disp").val("");
-        row.closest("tr").find(".soh").val("");
+  }
+  
+  function resetFields(row) {
+    row.closest("tr").find(".qty_disp").val("");
+    row.closest("tr").find(".soh").val("");
         //row.closest("tr").find(".indication").val("");
         row.closest("tr").find(".duration").val("");
         row.closest("tr").find(".expiry").val("");
@@ -1776,12 +1785,12 @@ var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispense
     
     function hideFirstRemove(){
       $("#drugs_table tbody > tr:first").find(".remove").hide();
-    }
-    
-    function showFirstRemove(){
+  }
+  
+  function showFirstRemove(){
       $("#drugs_table tbody > tr:first").find(".remove").show();
-    }
-    
+  }
+  
     function checkDaysLate(appointment_date){//Check how many days the patient is late
         var diffDays = 0;
         var dispensing_date = $.datepicker.parseDate('yy-mm-dd',$("#dispensing_date").val());
@@ -1794,15 +1803,15 @@ var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispense
     }
     
     //function to check the next appointment date to populate duration
-       function checkAppointment(){
+    function checkAppointment(){
         if($("#days_to_next").val()!= " ")
         {
-             var days = $("#days_to_next").val();
-             $("#days_to_next").val();
-             
-        }
-    
-    }
+           var days = $("#days_to_next").val();
+           $("#days_to_next").val();
+           
+       }
+       
+   }
     //function to calculate adherence rate(%)
     function getAdherenceRate(){
         $("#adherence").attr("value", " ");
@@ -1817,7 +1826,7 @@ var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispense
                 
                 var days_to_next_appointment = Math.floor((prev_visit_date.getTime() - appoint_date.getTime()) / (1000 * 3600 * 24));
                 var days_missed_appointment = Math.floor((appoint_date.getTime() - dispensing_date.getTime()) / (1000 * 3600 * 24));
-                                 
+                
                 //Formula
                 day_percentage = ((days_to_next_appointment - days_missed_appointment) / days_to_next_appointment) * 100;
                 if(day_percentage > 100){
