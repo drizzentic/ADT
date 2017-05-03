@@ -155,7 +155,7 @@ class Dispensement_Management extends MY_Controller {
 		}
 
 		/*************/
-		$sql1="SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  ".$patient_no." AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1";
+		$sql1="SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '".$patient_no."' AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1";
 		$query = $this -> db -> query($sql1);
 		$results1 = $query -> row_array();
 		$dated='';
