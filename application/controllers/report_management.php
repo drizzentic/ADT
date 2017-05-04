@@ -2986,11 +2986,11 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 							$from = date('Y-m-d', strtotime($from));
 							$to = date('Y-m-d', strtotime($to));
 
-							$sql = "SELECT pv.*
-							FROM vw_routine_refill_visit pv
+							$sql = "SELECT pv.patient_number,type_of_service,client_support,patient_name,current_age,sex,regimen,visit_date,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence,source FROM vw_routine_refill_visit pv
 							WHERE pv.visit_date 
 							BETWEEN '$from' 
 							AND '$to' group by patient_number,visit_date";
+							//echo $sql;die;
 
 							$query = $this -> db -> query($sql);
 							$results = $query -> result_array();
