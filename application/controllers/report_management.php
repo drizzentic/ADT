@@ -2941,100 +2941,112 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 					<table border='1' class='dataTables'>
 						<thead >
 							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th>Adults</th>
+								<th></th>
+								<th></th>
+								<th>Children</th>
+								<th></th>
+							</tr>
+							<tr>
 								<th> </th>
-								<th> Male Adults </th>
-								<th> Female Adults</th>
-								<th> Total Adults</th>
+								<th> <b>Total</b></th>
+								<th> Male </th>
+								<th> Female </th>
+								<th> Total </th>
 
-								<th> Male Children </th>
-								<th> Female Children</th>
-								<th> Total Children</th>
-								<th> Total</th>
+								<th> Male  </th>
+								<th> Female </th>
+								<th> Total </th>
 
 
 
 							</tr></thead><tbody>
 							<tr>
 								<td>No of patients on Routine isoniazid </td>
+								<td><b>".$routine_isoniazid_total."</b></td>
 								<td>".$result."</td>
 								<td>".$result1."</td>
 								<td>".$adults_routine_isoniazid_total."</td>
 								<td>".$result3 ."</td>
 								<td>".$result4."</td>
 								<td>".$children_routine_isoniazid_total."</td>
-								<td>".$routine_isoniazid_total."</td>
 							</tr>
 							<tr>
 								<td>No of patients started on isoniazid </td>
+								<td><b>".$patients_started_on_isoniazid_total."</b></td>
 								<td>".$result5."</td>
 								<td>".$result6."</td>
 								<td>".$adults_patients_started_on_isoniazid_total."</td>
 								<td>".$result7 ."</td>
 								<td>".$result8."</td>
 								<td>".$children_patients_started_on_isoniazid_total."</td>
-								<td>".$patients_started_on_isoniazid_total."</td>
 
 							</tr>
 							<tr>
 								<td>No of patients completed  isoniazid </td>
+								<td><b>".$isoniazid_total."</b></td>
 								<td>".$result9."</td>
 								<td>".$result10."</td>
 								<td>".$adults_isoniazid_total."</td>
 								<td>".$result11 ."</td>
 								<td>".$result12."</td>
 								<td>".$children_isoniazid_total."</td>
-								<td>".$isoniazid_total."</td>
 
 							</tr>
 							<tr>
 								<td>No of patients on Cotrimoxazole</td>
+								<td><b>".$cotrimoxazole_total."</b></td>
 								<td>".$result13."</td>
 								<td>".$result14."</td>
 								<td>".$adults_cotrimoxazole_total."</td>
 								<td>".$result15 ."</td>
 								<td>".$result16."</td>
 								<td>".$children_cotrimoxazole_total."</td>
-								<td>".$cotrimoxazole_total."</td>
 
 							</tr>
 							<tr>
 								<td>No of patients on Dapsone</td>
+								<td><strong>".$dapsone_total."</strong></td>
 								<td>".$result17."</td>
 								<td>".$result18."</td>
 								<td>".$adults_dapsone_total."</td>
 								<td>".$result19 ."</td>
 								<td>".$result20."</td>
 								<td>".$children_dapsone_total."</td>
-								<td>".$dapsone_total."</td>
 
 							</tr>
 							<tr>
 								<td>No of patients on Fluconazole</td>
+								<td><b>".$fluconazole_total."</b></td>
 								<td>".$result21."</td>
 								<td>".$result22."</td>
 								<td>".$adults_fluconazole_total."</td>
 								<td>".$result23 ."</td>
 								<td>".$result24."</td>
 								<td>".$children_fluconazole_total."</td>
-								<td>".$fluconazole_total."</td>
 
 							</tr>
-
+							</tbody>
+							<tfoot>
 								<tr>
-								<td>Total</td>
-								<td>".$male_adults_total."</td>
-								<td>".$female_adults_total."</td>
-								<td>".$adults_total."</td>
-								<td>".$male_children_total ."</td>
-								<td>".$female_children_total."</td>
-								<td>".$children_total."</td>
-								<td>".$total_patients."</td>
-
+								<th>Total</th>
+								<th><b>".$total_patients."</b></th>
+								<th>".$male_adults_total."</th>
+								<th>".$female_adults_total."</th>
+								<th>".$adults_total."</th>
+								<th>".$male_children_total ."</th>
+								<th>".$female_children_total."</th>
+								<th>".$children_total."</th>
 							</tr>
+								</tfoot>
+
 							";
 
 
-							$row_string .= "</tbody></table>";
+							$row_string .= "</table>";
 							$data['from'] = date('d-M-Y', strtotime($from));
 							$data['to'] = date('d-M-Y', strtotime($to));
 							$data['dyn_table'] = $row_string;
