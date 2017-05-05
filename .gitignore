@@ -36,6 +36,7 @@ _$*
 /nbproject/private/
 application/views/sections/link.php
 application/config/database.php
+assets/viral_load.json
 
 # exclude everything
 assets/cache/*
