@@ -1142,7 +1142,7 @@ request.fail(function(jqXHR, textStatus) {
             request.done(function(data) {
                 row.closest("tr").find(".expiry").val(data[0].expiry_date);
                 row.closest("tr").find(".soh ").val(data[0].balance);  
-                duration_quantity(row); //Auto-calculate what should be displayed
+                // duration_quantity(row); //Auto-calculate what should be displayed
                 $(".qty_disp").trigger('keyup',[row]); 
             });
             request.fail(function(jqXHR, textStatus) {
