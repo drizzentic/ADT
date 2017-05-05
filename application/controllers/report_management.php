@@ -2903,6 +2903,40 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 					$query24 = $this -> db -> query($sql24);
 					$result24 = $query24 -> num_rows();
 
+					$adults_isoniazid_total = $result9 + $result10;
+					$adults_cotrimoxazole_total = $result13 + $result14;
+					$adults_dapsone_total = $result17 + $result18;
+					$adults_fluconazole_total = $result21 + $result22;
+					$adults_routine_isoniazid_total = $result1 + $result2;
+					$adults_patients_started_on_isoniazid_total = $result5 + $result6;
+
+					$children_isoniazid_total =  $result11 + $result12;
+					$children_cotrimoxazole_total =  $result15 + $result16;
+					$children_dapsone_total =  $result19 + $result20;
+					$children_fluconazole_total =  $result23 + $result24;
+					$children_routine_isoniazid_total =  $result3 + $result4;
+					$children_patients_started_on_isoniazid_total =  $result7 + $result8;
+
+
+					$isoniazid_total = $result9 + $result10 + $result11 + $result12;
+					$cotrimoxazole_total = $result13 + $result14 + $result15 + $result16;
+					$dapsone_total = $result17 + $result18 + $result19 + $result20;
+					$fluconazole_total = $result21 + $result22 + $result23 + $result24;
+					$routine_isoniazid_total = $result1 + $result2 + $result3 + $result4;
+					$patients_started_on_isoniazid_total = $result5 + $result6 + $result7 + $result8;
+
+					$male_adults_total = $result  + $result5 + $result9  + $result13 + $result17 + $result21;
+					$female_adults_total = $result1 + $result6 + $result10 + $result14 + $result18 + $result22;
+					$adults_total = $male_adults_total + $female_adults_total;
+					
+					$male_children_total = $result3 + $result7 + $result11 + $result15 + $result19 + $result23;
+					$female_children_total = $result4 + $result8 + $result12 + $result16 + $result20 + $result24;
+					$children_total = $male_children_total + $female_children_total; 
+
+
+					$total_patients = $male_adults_total + $female_adults_total + $adults_total + $male_children_total + $female_children_total + $children_total;
+
+					
 					$row_string = "
 					<table border='1' class='dataTables'>
 						<thead >
@@ -2910,8 +2944,12 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 								<th> </th>
 								<th> Male Adults </th>
 								<th> Female Adults</th>
+								<th> Total Adults</th>
+
 								<th> Male Children </th>
 								<th> Female Children</th>
+								<th> Total Children</th>
+								<th> Total</th>
 
 
 
@@ -2920,43 +2958,78 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 								<td>No of patients on Routine isoniazid </td>
 								<td>".$result."</td>
 								<td>".$result1."</td>
+								<td>".$adults_routine_isoniazid_total."</td>
 								<td>".$result3 ."</td>
 								<td>".$result4."</td>
+								<td>".$children_routine_isoniazid_total."</td>
+								<td>".$routine_isoniazid_total."</td>
 							</tr>
 							<tr>
-								<td>No of patients started on  isoniazid </td>
+								<td>No of patients started on isoniazid </td>
 								<td>".$result5."</td>
 								<td>".$result6."</td>
+								<td>".$adults_patients_started_on_isoniazid_total."</td>
 								<td>".$result7 ."</td>
 								<td>".$result8."</td>
+								<td>".$children_patients_started_on_isoniazid_total."</td>
+								<td>".$patients_started_on_isoniazid_total."</td>
+
 							</tr>
 							<tr>
 								<td>No of patients completed  isoniazid </td>
 								<td>".$result9."</td>
 								<td>".$result10."</td>
+								<td>".$adults_isoniazid_total."</td>
 								<td>".$result11 ."</td>
 								<td>".$result12."</td>
+								<td>".$children_isoniazid_total."</td>
+								<td>".$isoniazid_total."</td>
+
 							</tr>
 							<tr>
 								<td>No of patients on Cotrimoxazole</td>
 								<td>".$result13."</td>
 								<td>".$result14."</td>
+								<td>".$adults_cotrimoxazole_total."</td>
 								<td>".$result15 ."</td>
 								<td>".$result16."</td>
+								<td>".$children_cotrimoxazole_total."</td>
+								<td>".$cotrimoxazole_total."</td>
+
 							</tr>
 							<tr>
 								<td>No of patients on Dapsone</td>
 								<td>".$result17."</td>
 								<td>".$result18."</td>
+								<td>".$adults_dapsone_total."</td>
 								<td>".$result19 ."</td>
 								<td>".$result20."</td>
+								<td>".$children_dapsone_total."</td>
+								<td>".$dapsone_total."</td>
+
 							</tr>
 							<tr>
 								<td>No of patients on Fluconazole</td>
 								<td>".$result21."</td>
 								<td>".$result22."</td>
+								<td>".$adults_fluconazole_total."</td>
 								<td>".$result23 ."</td>
 								<td>".$result24."</td>
+								<td>".$children_fluconazole_total."</td>
+								<td>".$fluconazole_total."</td>
+
+							</tr>
+
+								<tr>
+								<td>Total</td>
+								<td>".$male_adults_total."</td>
+								<td>".$female_adults_total."</td>
+								<td>".$adults_total."</td>
+								<td>".$male_children_total ."</td>
+								<td>".$female_children_total."</td>
+								<td>".$children_total."</td>
+								<td>".$total_patients."</td>
+
 							</tr>
 							";
 
@@ -2990,7 +3063,6 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 							WHERE pv.visit_date 
 							BETWEEN '$from' 
 							AND '$to' group by patient_number,visit_date";
-							echo $sql;die;
 
 							$query = $this -> db -> query($sql);
 							$results = $query -> result_array();
@@ -3705,6 +3777,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 
 		//Get Total Count of all patients
 										$sql = "select count(*) as total from patient p,patient_status ps,regimen_service_type rst,gender g where(p.date_enrolled <= '$from' or p.date_enrolled='') and ps.id=p.current_status and p.service=rst.id and p.gender=g.id and facility_code='$facility_code' and p.active='1'";
+
 										$query = $this -> db -> query($sql);
 										$results = $query -> result_array();
 										$patient_total = $results[0]['total'];
