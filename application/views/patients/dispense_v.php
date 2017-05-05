@@ -1195,16 +1195,13 @@ request.fail(function(jqXHR, textStatus) {
         var dose_val = row.closest("tr").find(".dose option:selected").attr("dose_val");
         var dose_freq = row.closest("tr").find(".dose option:selected").attr("dose_freq");
     });
+    $(".duration").on('keyup', function() {
+       duration_quantity($(this));
+    });
+    $(".dose").on('input', function() {
+       duration_quantity($(this));
+    });
 
-    // @todo  red background issue ----
-    // -- Not sure impact of this red background validation
-    // $(".duration").on('keyup', function() {
-    //    duration_quantity($(this));
-    // });
-    // $(".dose").on('input', function() {
-    //    duration_quantity($(this));
-    // });
-// --/ red validation
     //function to change quantity based on the duration 
     function duration_quantity(row){
         var duration = row.closest("tr").find(".duration").val();
@@ -1218,17 +1215,19 @@ request.fail(function(jqXHR, textStatus) {
             }).data('dose_freq');
             
             var qty_disp = duration * dose_val * dose_freq;
+
             if(!isNaN(qty_disp)) {
                 row.closest("tr").find(".qty_disp").val(qty_disp);
             }
             
             row.closest("tr").find(".duration").css("background-color", "white");
             row.closest("tr").find(".duration").removeClass("input_error");
-        }else {
-            row.closest("tr").find(".duration").css("background-color", "red");
-            row.closest("tr").find(".duration").addClass("input_error");
-            row.closest("tr").find(".qty_disp").val("0");
-        } 
+        }
+        // else {
+        //     row.closest("tr").find(".duration").css("background-color", "red");
+        //     row.closest("tr").find(".duration").addClass("input_error");
+        //     row.closest("tr").find(".qty_disp").val("0");
+        // } 
     }
 
     //function to add drug row in table 
