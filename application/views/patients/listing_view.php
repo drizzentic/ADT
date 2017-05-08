@@ -54,9 +54,9 @@
                     <thead>
                         <tr>
 							<th>CCC No</th>
+							<th>Patient Number</th>
 							<th>Patient Name</th>
 							<th>Next Appointment</th>
-							<th>Contact</th>
 							<th>Current Regimen</th>
 							<th>Status</th>
 							<th>Action</th>
@@ -67,9 +67,9 @@
                     <tfoot>
 	                    <tr>
 							<th>CCC No</th>
+							<th>Patient Number</th>
 							<th>Patient Name</th>
 							<th>Next Appointment</th>
-							<th>Contact</th>
 							<th>Current Regimen</th>
 							<th>Status</th>
 							<th>Action</th>

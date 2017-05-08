@@ -1980,9 +1980,9 @@ class Patient_Management extends MY_Controller {
 
         $sql = "SELECT 
 		            p.patient_number_ccc as ccc_no,
+                    p.medical_record_number,
 		            UPPER(CONCAT_WS(' ',CONCAT_WS(' ',p.first_name,p.other_name),p.last_name)) as patient_name,
 		            DATE_FORMAT(p.nextappointment,'%b %D, %Y') as appointment,
-		            IF(p.phone='',p.alternate,p.phone) as phone_number,
                     CONCAT_WS(' | ',r.regimen_code,r.regimen_desc) as regimen,
                     ps.name as status,
                     p.active,

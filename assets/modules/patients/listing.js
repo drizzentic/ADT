@@ -11,12 +11,12 @@ $(function(){
 					"bAutoWidth" : false,
 					"bDeferRender" : true,
 					"bInfo" : true,
-					"aoColumnDefs": [{ "bSearchable": true, "aTargets": [0,1,3,4] }, { "bSearchable": false, "aTargets": [ "_all" ] }]
+					"aoColumnDefs": [{ "bSearchable": true, "aTargets": [0,1,2,3,4,5] }, { "bSearchable": false, "aTargets": [ "_all" ] }]
 			    });
 
     //Filter Table
     oTable.columnFilter({ 
-        aoColumns: [{ type: "text"},{ type: "text" },null,{ type: "text" },{ type: "text" },null]}
+        aoColumns: [{ type: "text"},{ type: "text" },{ type: "text" },{ type: "text" },{ type: "text" },{ type: "text" }]}
     );
 
     //Fade Out Message
@@ -37,12 +37,12 @@ function filter(status){
 					"bAutoWidth" : false,
 					"bDeferRender" : true,
 					"bInfo" : true,
-					"aoColumnDefs": [{ "bSearchable": true, "aTargets": [0,1,3,4] }, { "bSearchable": false, "aTargets": [ "_all" ] }]
+					"aoColumnDefs": [{ "bSearchable": true, "aTargets": [0,1,2,3,4,5] }, { "bSearchable": false, "aTargets": [ "_all" ] }]
 			    });
 
     //Filter Table
     oTable.columnFilter({ 
-        aoColumns: [{ type: "text"},{ type: "text" },null,{ type: "text" },{ type: "text" },null]}
+        aoColumns: [{ type: "text"},{ type: "text" },{ type: "text" },{ type: "text" },{ type: "text" },{ type: "text" }]}
     );
 
     //Fade Out Message
