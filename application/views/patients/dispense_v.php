@@ -882,7 +882,7 @@
         var weight=$("#weight").val();
 
             $(".drug").each(function( index ) {
-                console.log( index + ": " + $( this ).val() );
+                //console.log( index + ": " + $( this ).val() );
                 $( this ).closest('');
                 var row = $(this);
 
