@@ -822,7 +822,7 @@
 
     //Dynamically change the list of drugs once a current regimen is selected
     $("#current_regimen").change(function() {
-        
+
         var selected_regimen = $(this).val();
         //Check if the current regimen is OI Medicine and if not, hide the indication field
         var _url = "<?php echo base_url() . 'dispensement_management/getDrugsRegimens'; ?>";
@@ -875,6 +875,33 @@
         }
 
     });
+
+    // on change weight, sort doses.
+ $('#weight').change(function() {
+        var age=$("#age").val();
+        var weight=$("#weight").val();
+
+            $(".drug").each(function( index ) {
+                console.log( index + ": " + $( this ).val() );
+                $( this ).closest('');
+                var row = $(this);
+
+                var url_drug_dose = "<?php echo base_url() . 'dispensement_management/getDrugDose/'; ?>";
+                var new_url_dose = url_drug_dose+$( this ).val();
+                var request_one_dose = $.ajax({
+                    url: new_url_dose,
+                    data: {"weight": weight,"drug_id":$( this ).val() ,"age":age},
+                    type: 'post',
+                    dataType: "json"
+                    });
+                request_one_dose.done(function(data_single_dose) {
+                    var current_dose = data_single_dose[0].dose;
+                    row.closest("tr").find(".dose option").remove();
+                    row.closest("tr").find(".dose").val(current_dose);
+                });
+            });
+        });
+   
     
     //drug change event
     $(".drug").change(function() {
@@ -988,38 +1015,6 @@
                         
                         request.done(function(datas){ 
                             var adult_age=datas[0].adult_age;
-                        //if patient is a child 
-                        if (age < adult_age) {
-                            var url_dose = "<?php echo base_url() . 'dispensement_management/getDoses'; ?>";
-                            //Get doses
-                            var request_dose = $.ajax({
-                                url: url_dose,
-                                type: 'post',
-                                dataType: "json"
-                            });
-                            request_dose.done(function(data) {
-                                var link ="<?php echo base_url();?>patient_management/get_peadiatric_dose";
-                                var request = $.ajax({
-                                    url: link,
-                                    type: 'post',
-                                    data: {"weight": weight,"drug_id":drug_id},
-                                    dataType: "json"
-                                });
-                                request.done(function(data_1){
-                                    var dose=data_1.Name;
-                                    var values=data_1.value;
-                                    var frequency=data_1.frequency;
-                                    row.closest("tr").find(".dose option").remove();
-                                    $.each(data, function(key, value) {
-                                        if(dose==value.Name){
-                                            row.closest("tr").find(".dose").append("<option selected='selected' value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
-                                        }else{
-                                           row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
-                                       }
-                                   });
-                                });
-                            });
-                        }else{
                             var url_dose = "<?php echo base_url() . 'dispensement_management/getDoses'; ?>";
                             //Get doses
                             var request_dose = $.ajax({
@@ -1033,6 +1028,7 @@
                                 
                                 var request_one_dose = $.ajax({
                                     url: new_url_dose,
+                                    data: {"weight": weight,"drug_id":drug_id,"age":age},
                                     type: 'post',
                                     dataType: "json"
                                 });
@@ -1040,17 +1036,18 @@
                                     var current_dose = data_single_dose[0].dose;
                                     row.closest("tr").find(".dose option").remove();
                                     $.each(data, function(key, value) {
-                                        if(current_dose==value.Name){
-                                            row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
-                                        }else{
-                                            row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
-                                        }
+                                        row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
                                     });
+                                    row.closest("tr").find(".dose").val(current_dose)
+
                                 });
                             });
-                        } 
+                        // } 
                     });
-});
+
+                    });
+
+
                     // end of doses
                     row.closest("tr").find(".batch option").remove();
                     row.closest("tr").find(".batch").append($("<option value='0'>Select</option>"));
@@ -1150,42 +1147,6 @@ request.fail(function(jqXHR, textStatus) {
             });
         }
     });
-    //quantity disepensed change event
-    // -- Not sure impact of this red background validation
-
-    // $(".qty_disp").keyup(function(event,current_row) {
-    //     if (typeof current_row !== "undefined" && current_row){//Check if current_row parameter was passed
-    //       row = current_row;
-    //     }else{//when not triggering the keyup event
-    //         var row = $(this);
-    //         alert_qty_check = true;
-    //     }
-    //     var selected_value = $(this).attr("value");
-    //     //including drugs with the default quantity of zero
-    //     if(selected_value > 0){
-    //     var stock_at_hand = row.closest("tr").find(".soh ").attr("value");
-    //     var stock_validity = stock_at_hand - selected_value;
-    
-    //     if (stock_validity < 0) {
-    //         if(alert_qty_check===true){//Check to only show the error message once
-    //             bootbox.alert("<h4>Quantity-Stock Alert</h4>\n\<hr/><center>Quantity Cannot Be larger Than Stock at Hand</center>");
-    //         }
-    //         row.closest("tr").find(".qty_disp").css("background-color", "red");
-    //         row.closest("tr").find(".qty_disp").addClass("input_error");
-    //         alert_qty_check=false;
-    //     }
-    //     else {
-    //         row.closest("tr").find(".qty_disp").css("background-color", "white");
-    //         row.closest("tr").find(".qty_disp").removeClass("input_error");
-    //     }
-    //     }
-    //     else{
-    //        // bootbox.alert("<h4>Notice!</h4>\n\<hr/><center>The default quantity to be dispensed is set to negative or empty</center>");
-    //         row.closest("tr").find(".qty_disp").css("background-color", "red");
-    //         row.closest("tr").find(".qty_disp").addClass("input_error");
-    //     }
-    // });
-// --/ red validation
 
 
     //next pill count change event
@@ -1197,10 +1158,10 @@ request.fail(function(jqXHR, textStatus) {
     });
     $(".duration").on('keyup', function() {
        duration_quantity($(this));
-    });
+   });
     $(".dose").on('input', function() {
        duration_quantity($(this));
-    });
+   });
 
     //function to change quantity based on the duration 
     function duration_quantity(row){
@@ -1292,7 +1253,7 @@ request.fail(function(jqXHR, textStatus) {
         // password inputs, and textareas
         if (type == 'text' || type == 'password' || tag == 'textarea')
             if ( $(':input').is('[readonly]') ) { 
-                
+
             }else{
                 this.value = "";
             }
@@ -1313,7 +1274,7 @@ request.fail(function(jqXHR, textStatus) {
         var rows=$("#tbl-dispensing-drugs > tbody").find("tr").length;
         var rem_row=this;
         if(rows> 1){
-            
+
             bootbox.confirm({
                 message: "<h4>Remove?</h4>\n\<hr/><center>Are you sure?</center>",
                 buttons: {
@@ -1413,7 +1374,7 @@ request.fail(function(jqXHR, textStatus) {
         
         //Loop through all rows to check values
         $.each(all_rows,function(i,v){
-            
+
             var last_row = $(this);
             var drug_name = last_row.find(".drug option:selected").text();
             if(last_row.find(".drug").val()==0){
@@ -1444,11 +1405,11 @@ request.fail(function(jqXHR, textStatus) {
          bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
          return;
      }
-     
+
      var rowCount = $('#drugs_table>tbody tr').length;
      return true;
  }
- 
+
     //------------------------------ END DATA PROCESSING ---------------------------------
     
     
@@ -1620,7 +1581,7 @@ request.fail(function(jqXHR, textStatus) {
 
     function checkIfPregnant(pregnancy_status,patient_ccc){
         if(pregnancy_status=='1'){
-            
+
             bootbox.confirm({
                 message: "<h4>Pregnancy confirmation</h4>\n\<hr/><center>Is patient still pregnant?</center>",
                 buttons: {
@@ -1652,7 +1613,7 @@ request.fail(function(jqXHR, textStatus) {
     
     function checkIfHasTb(tb_status,patient_ccc){
         if(tb_status == 1){
-            
+
             bootbox.confirm({
                 message: "<h4>TB confirmation</h4>\n\<hr/><center>Is patient still having TB?</center>",
                 buttons: {
@@ -1807,9 +1768,9 @@ request.fail(function(jqXHR, textStatus) {
         {
            var days = $("#days_to_next").val();
            $("#days_to_next").val();
-           
+
        }
-       
+
    }
     //function to calculate adherence rate(%)
     function getAdherenceRate(){

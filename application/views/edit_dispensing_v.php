@@ -228,6 +228,31 @@ foreach ($expiries as $expiry) {
 				});
 		   }
 		   
+		    $('#weight').change(function() {
+        var age=$("#age").val();
+        var weight=$("#weight").val();
+
+            $(".drug").each(function( index ) {
+                console.log( index + ": " + $( this ).val() );
+                $( this ).closest('');
+                var row = $(this);
+
+                var url_drug_dose = "<?php echo base_url() . 'dispensement_management/getDrugDose/'; ?>";
+                var new_url_dose = url_drug_dose+$( this ).val();
+                var request_one_dose = $.ajax({
+                    url: new_url_dose,
+                    data: {"weight": weight,"drug_id":$( this ).val() ,"age":age},
+                    type: 'post',
+                    dataType: "json"
+                    });
+                request_one_dose.done(function(data_single_dose) {
+                    var current_dose = data_single_dose[0].dose;
+                    row.closest("tr").find(".dose option").remove();
+                    row.closest("tr").find(".dose").val(current_dose);
+                });
+            });
+        });
+   
 		   $("#batch").change(function(){
 		   	if($(this).prop("selectedIndex")>1){
 		   		bootbox.alert("<h4>Expired Batch</h4>\
