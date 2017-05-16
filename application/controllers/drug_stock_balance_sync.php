@@ -362,8 +362,8 @@ class Drug_stock_balance_sync extends MY_Controller {
         return true;
     }
     function update_balances(){
-              	$sql="INSERT ignore into drug_stock_balance(drug_id	,batch_number	,expiry_date,facility_code	,balance,ccc_store_sp)
-              	SELECT drug_stock_movement.drug AS drug,drug_stock_movement.batch_number AS batch_number,drug_stock_movement.expiry_date AS expiry_date,drug_stock_movement.destination AS destination,(sum(drug_stock_movement.quantity) - sum(drug_stock_movement.quantity_out)) AS balance , ccc_store_sp FROM drug_stock_movement where (drug_stock_movement.expiry_date <> ' ') group by drug_stock_movement.drug,drug_stock_movement.batch_number,drug_stock_movement.expiry_date ";
+              	$sql="INSERT ignore into drug_stock_balance(drug_id	,batch_number	,expiry_date,stock_type,facility_code	,balance,ccc_store_sp)
+              	SELECT drug_stock_movement.drug AS drug,drug_stock_movement.batch_number AS batch_number,drug_stock_movement.expiry_date AS expiry_date,ccc_store_sp,drug_stock_movement.destination AS destination,(sum(drug_stock_movement.quantity) - sum(drug_stock_movement.quantity_out)) AS balance , ccc_store_sp FROM drug_stock_movement where (drug_stock_movement.expiry_date <> ' ') group by drug_stock_movement.drug,drug_stock_movement.batch_number,drug_stock_movement.expiry_date ";
               	$this->db->query($sql);
 
     	echo $this->db->affected_rows(). " Drug balances have been updated successfully.";
