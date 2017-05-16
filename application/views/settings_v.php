@@ -351,6 +351,9 @@
 								<li>
 									<a href="#" class="order_settings/listing/sync_drug" title="Order Drug Management">Drugs Order</a>
 								</li>
+								<li>
+									<a href="#" class="drug_stock_balance_sync/update_balances" title="Order Drug Management">Update Drug balances </a>
+								</li>
 							</ul>
 						</li>
 						<li class="divider-vertical"></li>
