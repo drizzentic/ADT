@@ -8075,7 +8075,151 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 			$data['content_view'] = 'reports/patient_viralload_results_v';
 			$this -> load -> view('template', $data);
 
+
 		}
+
+
+	public function get_viral_loadsummary($start_date = null,$end_date = null)
+	{
+		$start_date = date('Y-m-d', strtotime($start_date));
+		$end_date = date('Y-m-d', strtotime($end_date));
+		$overall_total = 0;
+		$tbody = '';
+		// print_r($start_date);die;
+
+
+		$sql = "SELECT 'adults',count(*) as total ,SUM( CASE pt.gender WHEN 1 THEN +1 END) male, SUM( CASE pt.gender WHEN 2 THEN +1 END) female
+		FROM patient_viral_load ptvl ,patient pt 
+		WHERE pt.patient_number_ccc = ptvl.patient_ccc_number
+		AND pt.gender != '	'
+		AND result < 1000 AND result > 0
+		AND FLOOR(DATEDIFF('$start_date',pt.dob)/365)>15 AND pt.current_status=1
+			UNION
+		SELECT 'children',count(*) as total ,SUM( CASE pt.gender WHEN 1 THEN +1 END) male, SUM( CASE pt.gender WHEN 2 THEN +1 END) female
+		FROM patient_viral_load ptvl ,patient pt 
+		WHERE pt.patient_number_ccc = ptvl.patient_ccc_number
+		AND pt.gender != '	'
+		AND result < 1000 AND result >0
+		AND FLOOR(DATEDIFF('$start_date',pt.dob)/365)<=15 AND pt.current_status=1;";
+
+		$query = $this -> db -> query($sql);
+
+
+		$results = $query -> result_array();
+		// print_r($results);die;
+		$tbody .='<tr><td>below 1,000</td><td>'.$results[0]['total'].'</td><td>'.$results[0]['male'].'</td><td>'.$results[0]['female'].'</td>
+				  <td>'.$results[1]['total'].'</td><td>'.$results[1]['male'].'</td><td>'.$results[1]['female'].'</td></tr>';
+
+		$sql = "SELECT 'adults',count(*) as total ,SUM( CASE pt.gender WHEN 1 THEN +1 END) male, SUM( CASE pt.gender WHEN 2 THEN +1 END) female
+		FROM patient_viral_load ptvl ,patient pt 
+		WHERE pt.patient_number_ccc = ptvl.patient_ccc_number
+		AND pt.gender != '	'
+		AND result <= 5000 AND result >= 1000
+		AND FLOOR(DATEDIFF('$start_date',pt.dob)/365)>15 AND pt.current_status=1
+			UNION
+		SELECT 'children',count(*) as total ,SUM( CASE pt.gender WHEN 1 THEN +1 END) male, SUM( CASE pt.gender WHEN 2 THEN +1 END) female
+		FROM patient_viral_load ptvl ,patient pt 
+		WHERE pt.patient_number_ccc = ptvl.patient_ccc_number
+		AND pt.gender != '	'
+		AND result <= 5000 AND result >= 1000
+		AND FLOOR(DATEDIFF('$start_date',pt.dob)/365)<=15 AND pt.current_status=1;";
+
+		$query = $this -> db -> query($sql);
+
+		$results1 = $query -> result_array();
+		// print_r($results);die;
+		$tbody .='<tr><td>1,000 - 5,000</td><td>'.$results1[0]['total'].'</td><td>'.$results1[0]['male'].'</td><td>'.$results1[0]['female'].'</td>
+				  <td>'.$results1[1]['total'].'</td><td>'.$results1[1]['male'].'</td><td>'.$results1[1]['female'].'</td></tr>';
+
+
+		$sql = "SELECT 'adults',count(*) as total ,SUM( CASE pt.gender WHEN 1 THEN +1 END) male, SUM( CASE pt.gender WHEN 2 THEN +1 END) female
+		FROM patient_viral_load ptvl ,patient pt 
+		WHERE pt.patient_number_ccc = ptvl.patient_ccc_number
+		AND pt.gender != '	'
+		AND result <= 10000 AND result >= 5000
+		AND FLOOR(DATEDIFF('$start_date',pt.dob)/365)>15 AND pt.current_status=1
+			UNION
+		SELECT 'children',count(*) as total ,SUM( CASE pt.gender WHEN 1 THEN +1 END) male, SUM( CASE pt.gender WHEN 2 THEN +1 END) female
+		FROM patient_viral_load ptvl ,patient pt 
+		WHERE pt.patient_number_ccc = ptvl.patient_ccc_number
+		AND pt.gender != '	'
+		AND result <= 10000 AND result >= 5000
+		AND FLOOR(DATEDIFF('$start_date',pt.dob)/365)<=15 AND pt.current_status=1;";
+
+		$query = $this -> db -> query($sql);
+
+		$results5 = $query -> result_array();
+		// print_r($results);die;
+		$tbody .='<tr><td>5,000 - 10,000</td><td>'.$results5[0]['total'].'</td><td>'.$results5[0]['male'].'</td><td>'.$results5[0]['female'].'</td>
+				  <td>'.$results5[1]['total'].'</td><td>'.$results5[1]['male'].'</td><td>'.$results5[1]['female'].'</td></tr>';
+
+
+
+		$sql = "SELECT 'adults',count(*) as total ,SUM( CASE pt.gender WHEN 1 THEN +1 END) male, SUM( CASE pt.gender WHEN 2 THEN +1 END) female
+		FROM patient_viral_load ptvl ,patient pt 
+		WHERE pt.patient_number_ccc = ptvl.patient_ccc_number
+		AND pt.gender != '	'
+		AND result  > 10000
+		AND FLOOR(DATEDIFF('$start_date',pt.dob)/365)>15 AND pt.current_status=1
+			UNION
+		SELECT 'children',count(*) as total ,SUM( CASE pt.gender WHEN 1 THEN +1 END) male, SUM( CASE pt.gender WHEN 2 THEN +1 END) female
+		FROM patient_viral_load ptvl ,patient pt 
+		WHERE pt.patient_number_ccc = ptvl.patient_ccc_number
+		AND pt.gender != '	'
+		AND result  > 10000
+		AND FLOOR(DATEDIFF('$start_date',pt.dob)/365)<=15 AND pt.current_status=1;";
+
+		$query = $this -> db -> query($sql);
+
+		$results10 = $query -> result_array();
+		$tbody .='<tr><td>Above 10,000</td><td>'.$results10[0]['total'].'</td><td>'.$results10[0]['male'].'</td><td>'.$results10[0]['female'].'</td><td>'.$results10[1]['total'].'</td><td>'.$results10[1]['male'].'</td><td>'.$results10[1]['female'].'</td></tr>';
+// $results10[0]['male'] + $results1[0]['male'] + $results5[0]['male'] + $results[0]['male']; 
+
+$total_male_adults = $results10[0]['male'] + $results1[0]['male'] + $results5[0]['male'] + $results[0]['male']; 
+$total_female_adults = $results10[0]['female'] + $results1[0]['female'] + $results5[0]['female'] + $results[0]['female']; 
+$total_male_children = $results10[1]['male'] + $results1[1]['male'] + $results5[1]['male'] + $results[1]['male']; 
+$total_female_children = $results10[1]['female'] + $results1[1]['female'] + $results5[1]['female'] + $results[1]['female']; 
+$total_adults = $total_female_adults + $total_male_adults;
+$total_children = $total_female_children + $total_male_children;
+
+		$tbody .='<tr><td>Total</td><td>'.$total_adults.'</td><td>'.$total_male_adults.'</td><td>'.$total_female_adults.'</td><td>'.$total_children.'</td><td>'.$total_male_children.'</td><td>'.$total_female_children.'</td></tr>';
+
+
+
+		$row_string = "<table border='1' class='dataTables'>
+		<thead >
+			<tr>
+			<th></th>
+ 				<th>total(adults)</th>
+				<th>male</th>
+				<th>female</th>
+				<th>total(children)</th>
+				<th>male</th>
+				<th>female</th>
+			</tr>
+		</thead>
+		<tbody>";
+			
+			$row_string .= $tbody."</tbody></table>";
+// echo($row_string);die;
+
+			$data['start_date'] = date('d-M-Y', strtotime($start_date));
+			$data['end_date'] = date('d-M-Y', strtotime($end_date));
+			$data['dyn_table'] = $row_string;
+			$data['overall_total'] = count($results);
+			$data['title'] = "webADT | Reports";
+			$data['hide_side_menu'] = 1;
+			$data['banner_text'] = "Facility Reports";
+			$data['selected_report_type_link'] = "early_warning_report_select";
+			$data['selected_report_type'] = "Early Warning Indicators";
+			$data['report_title'] = "Patient Viral Load Results";
+			$data['facility_name'] = $this -> session -> userdata('facility_name');
+			$data['content_view'] = 'reports/patient_viralload_summary_v';
+			$this -> load -> view('template', $data);
+
+
+		}
+
 
 		public function base_params($data) {
 			$data['reports'] = true;

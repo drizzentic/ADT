@@ -139,7 +139,9 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 				<option class="date_range_report" value="graphical_adherence">Patients Adherence Report</option>
 				<option class="date_range_report" value="patients_nonadherence">Patients Non Adherence Report</option>
 				<option class="date_range_report" value="get_lost_followup">Lost to Followup Report</option>
+				<option class="single_date_report" value="get_viral_loadsummary">Viral Load results</option>
 				<!--<option class="single_date_report" value="service_statistics">Service Statistics (By Regimen)</option>-->
+
 			</select></td>
 		</tr>
 		<!-- Drug inventory reports -->
