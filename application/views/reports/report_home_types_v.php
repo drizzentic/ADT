@@ -105,6 +105,8 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 				<option class="date_range_report" value="patients_disclosure">Patients Status &amp; Disclosure</option>	
 				<option class="single_date_report" value="getBMI">Patient BMI Summary</option>
 				<option class="date_range_report" value="getisoniazidPatients">Patients on Drug Prophylaxis </option><!-- New section for patients Isoniazid -->
+				<option class="single_date_report" value="getnonisoniazidPatients">Patients not on Isoniazid </option><!-- New section for patients not on Isoniazid -->
+				
 				<option class="month_period_report" value="get_prep_patients">Patient PREP Summary</option>
 			</select></td>
 		</tr>
@@ -137,7 +139,9 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 				<option class="date_range_report" value="graphical_adherence">Patients Adherence Report</option>
 				<option class="date_range_report" value="patients_nonadherence">Patients Non Adherence Report</option>
 				<option class="date_range_report" value="get_lost_followup">Lost to Followup Report</option>
+				<option class="single_date_report" value="get_viral_loadsummary">Viral Load results</option>
 				<!--<option class="single_date_report" value="service_statistics">Service Statistics (By Regimen)</option>-->
+
 			</select></td>
 		</tr>
 		<!-- Drug inventory reports -->
