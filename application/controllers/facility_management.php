@@ -43,8 +43,14 @@ class Facility_Management extends MY_Controller {
 	}
 
 	public function getFacilityList() {
+		$response = array();
 		$facilities = Facilities::getAll();
-		echo json_encode($facilities);
+		foreach ($facilities as $index => $facility) {
+			foreach ($facility as $key => $value) {
+				$response[$index][$key] = utf8_encode($value);
+			}
+		}
+		echo json_encode($response);
 	}
 
 	public function getCurrent() {

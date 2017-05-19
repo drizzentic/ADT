@@ -118,7 +118,8 @@ foreach ($expiries as $expiry) {
 		   
 		   function getRegimenDrugs(regimen){
 		   	  var base_url="<?php echo base_url();?>";
-		   	  var link=base_url+"regimen_management/getAllDrugs/"+regimen;
+		   	  // var link=base_url+"regimen_management/getAllDrugs/"+regimen;
+		   	  var link=base_url+"regimen_management/getAllDrugs/";
 				$.ajax({
 				    url: link,
 				    type: 'POST',

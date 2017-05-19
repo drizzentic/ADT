@@ -3064,11 +3064,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 					}
 
 					// patients who have not been on isoniazid 
-					public function getnonisoniazidPatients($to = "",$list = null) {
-						if ($list == "list" || $to == "list"){
-							redirect("report_management/getnonisoniazidPatientslist");
-							// die;
-						}
+					public function getnonisoniazidPatients($from = "",$list = null) {
 		//Variables
 
 						$row_string = "";
@@ -3077,30 +3073,30 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 						$today = date('Y-m-d');
 						$late_by = "";
 						$facility_code = $this -> session -> userdata("facility");
-						$to = date('Y-m-d', strtotime($to));
+						$from = date('Y-m-d', strtotime($from));
 
 		//Get all patients who have never been on isoniazid 
 
 		//Isoniazid
 		//male adult
-						$sql1 = "SELECT * FROM patient WHERE isoniazid_start_date = '  ' OR `isoniazid_start_date` IS NULL AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
+				$sql1 = "SELECT * FROM patient left join patient_status on patient_status.id = patient.current_status WHERE (isoniazid_start_date = '' OR isoniazid_start_date IS NULL) AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)>=15 AND patient_status.name like '%active%' AND date_enrolled <= '$from'";
 					// print_r($sql1);die;
 
 						$query1 = $this -> db -> query($sql1);
 						$result = $query1 ->num_rows();
 		//$count=$result['COUNT(*)'];
 		//female adult
-						$sql2 = "SELECT * FROM patient WHERE isoniazid_start_date = '  ' OR `isoniazid_start_date` IS NULL AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
+				$sql2 = "SELECT * FROM patient left join patient_status on patient_status.id = patient.current_status WHERE (isoniazid_start_date = '' OR isoniazid_start_date IS NULL) AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)>=15 AND patient_status.name like '%active%' AND date_enrolled <= '$from'";
 
 						$query2 = $this -> db -> query($sql2);
 						$result1 = $query2 -> num_rows();
 		//male child
-						$sql3 = "SELECT * FROM patient WHERE isoniazid_start_date = '  ' OR `isoniazid_start_date` IS NULL AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
+				$sql3 = "SELECT * FROM patient left join patient_status on patient_status.id = patient.current_status WHERE (isoniazid_start_date = '' OR isoniazid_start_date IS NULL) AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND patient_status.name like '%active%' AND date_enrolled <= '$from'";
 
 						$query3 = $this -> db -> query($sql3);
 						$result3 = $query3 -> num_rows();
 		//female adult
-						$sql4 = "SELECT * FROM patient WHERE isoniazid_start_date = '  ' OR `isoniazid_start_date` IS NULL AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1 ";
+				$sql4 = "SELECT * FROM patient left join patient_status on patient_status.id = patient.current_status WHERE (isoniazid_start_date = '' OR isoniazid_start_date IS NULL) AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND patient_status.name like '%active%' AND date_enrolled <= '$from'";
 
 						$query4 = $this -> db -> query($sql4);
 						$result4 = $query4 -> num_rows();
@@ -3137,7 +3133,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 
 								</tr></thead><tbody>
 								<tr>
-									<td><a href='/list'>No of patients not on isoniazid</a> </td>
+									<td><a href='../getnonisoniazidPatientslist/".$from."'>No of patients not on isoniazid</a> </td>
 									<td><b>".$non_isoniazid_total."</b></td>
 									<td>".$result."</td>
 									<td>".$result1."</td>
@@ -3170,8 +3166,9 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 							$data['title'] = "webADT | Reports";
 							$data['hide_side_menu'] = 1;
 							$data['banner_text'] = "Facility Reports";
-		//$data['selected_report_type_link'] = "visiting_patient_report_row";
-		//$data['selected_report_type'] = "Visiting Patients";
+							$data['selected_report_type_link'] = "visiting_patient_report_row";
+							$data['selected_report_type'] = "Visiting Patients";
+
 							$data['all_count'] = $non_isoniazid_total;
 							$data['report_title'] = "List of Patients not on isoniazid";
 							$data['facility_name'] = $this -> session -> userdata('facility_name');
@@ -3179,7 +3176,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 							$this -> load -> view('template', $data);
 						}
 
-						public function getnonisoniazidPatientslist()
+						public function getnonisoniazidPatientslist($to = null)
 						
 						{
 						
@@ -3193,12 +3190,15 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 
 		//Get all patients who have never been on isoniazid 
 
-		//Isoniazid
+		//Isoniazid
 		//male adult
 						$sql1 = "SELECT * FROM patient 
-						left join gender on patient.gender = gender.id 
+						inner join gender on patient.gender = gender.id 
 						left join regimen on patient.start_regimen	= regimen.id
-						WHERE isoniazid_start_date = '  ' OR `isoniazid_start_date` IS NULL AND current_status=1";
+						left join patient_status on patient_status.id = patient.current_status
+						WHERE (isoniazid_start_date = '' OR isoniazid_start_date IS NULL)
+						AND patient_status.name LIKE '%active%' AND date_enrolled <= '$to'
+						AND dob != '' ";
 
 						$query1 = $this -> db -> query($sql1);
 						$result = $query1 ->result();
@@ -3214,7 +3214,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 						<td>".$patient->name ." </td>
  						<td>".$patient->nextappointment ." </td>
 						<td>".$patient->regimen_desc ." </td>
-						<tr/>";
+						</tr>";
 
 						}
 						$row_string = "
@@ -3230,8 +3230,8 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 								</tr>
 								</thead>
 								<tbody>					
+						$tr
 							</tbody>
-							$tr
 							<tfoot>
 								<tr>
 									<th> patient ccc number</th>
@@ -3245,7 +3245,6 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 
 
 							$row_string .= "</table>";
-							// echo $row_string;die;
 
 							$data['from'] = date('d-M-Y', strtotime($from));
 							$data['to'] = date('d-M-Y', strtotime($to));
@@ -3254,10 +3253,10 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 
 							$data['title'] = "webADT | Reports";
 							$data['hide_side_menu'] = 1;
+							$data['all_count'] = count($result);
+
 							$data['banner_text'] = "Facility Reports";
-		//$data['selected_report_type_link'] = "visiting_patient_report_row";
-		//$data['selected_report_type'] = "Visiting Patients";
-							// $data['all_count'] = $non_isoniazid_total;
+							$data['selected_report_type_link'] = "standard_report_row";
 							$data['report_title'] = "List of Patients not on isoniazid";
 							$data['facility_name'] = $this -> session -> userdata('facility_name');
 							$data['content_view'] = 'reports/patients_not_on_isoniazid_list_v';
@@ -8182,31 +8181,40 @@ $total_female_children = $results10[1]['female'] + $results1[1]['female'] + $res
 $total_adults = $total_female_adults + $total_male_adults;
 $total_children = $total_female_children + $total_male_children;
 
-		$tbody .='<tr><td>Total</td><td>'.$total_adults.'</td><td>'.$total_male_adults.'</td><td>'.$total_female_adults.'</td><td>'.$total_children.'</td><td>'.$total_male_children.'</td><td>'.$total_female_children.'</td></tr>';
+		$tbody .='</tbody><tfoot><tr><th>Total</th><th>'.$total_adults.'</th><th>'.$total_male_adults.'</th><th>'.$total_female_adults.'</th><th>'.$total_children.'</th><th>'.$total_male_children.'</th><th>'.$total_female_children.'</th></tr></tfoot>';
 
 
 
 		$row_string = "<table border='1' class='dataTables'>
-		<thead >
+		<thead>
 			<tr>
-			<th></th>
- 				<th>total(adults)</th>
-				<th>male</th>
-				<th>female</th>
-				<th>total(children)</th>
-				<th>male</th>
-				<th>female</th>
+				<th>Viral Count</th>
+				<th></th>
+				<th>Adult</th>
+				<th></th>
+				<th></th>
+				<th>Child</th>
+				<th></th>
+			</tr>
+			<tr>
+				<th></th>
+ 				<th>Total</th>
+				<th>Male</th>
+				<th>Female</th>
+				<th>Total</th>
+				<th>Male</th>
+				<th>Female</th>
 			</tr>
 		</thead>
 		<tbody>";
 			
-			$row_string .= $tbody."</tbody></table>";
+			$row_string .= $tbody."</tbody><tfoot></table>";
 // echo($row_string);die;
 
 			$data['start_date'] = date('d-M-Y', strtotime($start_date));
 			$data['end_date'] = date('d-M-Y', strtotime($end_date));
 			$data['dyn_table'] = $row_string;
-			$data['overall_total'] = count($results);
+			$data['overall_total'] = $total_adults + $total_children ;
 			$data['title'] = "webADT | Reports";
 			$data['hide_side_menu'] = 1;
 			$data['banner_text'] = "Facility Reports";
