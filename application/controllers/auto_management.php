@@ -10,7 +10,7 @@ class Auto_management extends MY_Controller {
 		ini_set("memory_limit", '2048M');
 		ini_set("allow_url_fopen", '1');
 	    $dir = realpath($_SERVER['DOCUMENT_ROOT']);
-	    $link = $dir . "\\ADT\\assets\\nascop.txt";
+	    $link = $dir . "//ADT//assets//nascop.txt";
 		$this -> nascop_url = trim(file_get_contents($link));
 		$this -> eid_url = "http://viralload.nascop.org/";
         $this -> ftp_url = "192.168.133.10";
