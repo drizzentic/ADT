@@ -35,8 +35,8 @@ class Backup_management extends MY_Controller {
 		if ($this -> dbutil -> database_exists($current_db)) {
 			$mysql_home = realpath($_SERVER['MYSQL_HOME']) . "\mysqldump";
 			$outer_file = "webadt_" . date('d-M-Y h-i-sa') . ".sql";
-			$file_path = "\"" . $file_path . "\\" . $outer_file . "\"";
-			$mysql_bin = str_replace("\\", "\\\\", $mysql_home);
+			$file_path = "\"" . $file_path . "//" . $outer_file . "\"";
+			$mysql_bin = str_replace("//", "////", $mysql_home);
 			$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' -P '.$port.' '. $current_db . ' > ' . $file_path;
 			exec($mysql_con);
 			$error_message = "<div class='alert-success'><button type='button' class='close' data-dismiss='alert'>&times;</button><strong>Backup!</strong> Database Backup Successful</div>";

@@ -11,7 +11,7 @@ class Nascop_report_management extends MY_Controller{
         ini_set("allow_url_fopen", '1');
 
         $dir = realpath($_SERVER['DOCUMENT_ROOT']);
-        $link = $dir . "\\ADT\\assets\\nascop.txt";
+        $link = $dir . "//ADT//assets//nascop.txt";
         $this -> nascop_url = file_get_contents($link);
         
 	}
