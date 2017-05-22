@@ -1,5 +1,5 @@
 <?php
-class nascop_report_management extends MY_Controller{
+class Nascop_report_management extends MY_Controller{
 	var $nascop_url = "";
 	function __construct() {
 		parent::__construct();

@@ -1,5 +1,5 @@
 <?php
-class Generic_Name extends Doctrine_Record {
+class Generic_name extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('Name', 'varchar', 25);

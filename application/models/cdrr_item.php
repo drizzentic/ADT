@@ -1,5 +1,5 @@
 <?php
-class Cdrr_Item extends Doctrine_Record {
+class Cdrr_item extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('balance', 'int', 11);

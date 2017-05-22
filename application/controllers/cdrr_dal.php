@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Cdrr_Dal extends MY_Controller {
+class Cdrr_dal extends MY_Controller {
 
 	function __construct() 
 	{

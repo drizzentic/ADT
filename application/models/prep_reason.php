@@ -1,5 +1,5 @@
 <?php
-class Prep_Reason extends Doctrine_Record {
+class Prep_reason extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('name', 'varchar', 150);

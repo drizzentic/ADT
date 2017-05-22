@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Client_Management extends MY_Controller {
+class Client_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->session->set_userdata("link_id","index");

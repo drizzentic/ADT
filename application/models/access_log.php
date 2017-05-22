@@ -1,5 +1,5 @@
 <?php
-class Access_Log extends Doctrine_Record {
+class Access_log extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('machine_code','varchar',150);

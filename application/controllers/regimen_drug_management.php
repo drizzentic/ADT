@@ -1,7 +1,7 @@
 <?php
 ob_start();
 
-class Regimen_Drug_Management extends MY_Controller {
+class Regimen_drug_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		$this -> session -> set_userdata("link_id", "index");

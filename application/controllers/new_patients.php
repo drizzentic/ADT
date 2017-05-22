@@ -1,6 +1,6 @@
 <?php
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class new_patients extends MY_Controller {
+class New_patients extends MY_Controller {
 	public function __construct() {
 		parent::__construct();
 	}

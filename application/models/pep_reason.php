@@ -1,5 +1,5 @@
 <?php
-class Pep_Reason extends Doctrine_Record {
+class Pep_reason extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('name', 'varchar', 150);

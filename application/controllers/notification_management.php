@@ -1,6 +1,6 @@
 <?php
 error_reporting(0);
-class notification_management extends MY_Controller {
+class Notification_management extends MY_Controller {
 	var $nascop_url = "";
 	function __construct() {
 		parent::__construct();

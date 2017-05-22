@@ -1,5 +1,5 @@
 <?php
-class Password_Log extends Doctrine_Record {
+class Password_log extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('user_id','varchar',150);

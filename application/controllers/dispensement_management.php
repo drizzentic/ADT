@@ -1,7 +1,7 @@
 <?php
 ob_start();
 
-class Dispensement_Management extends MY_Controller {
+class Dispensement_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 

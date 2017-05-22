@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Cdrr_Logic extends MY_Controller {
+class Cdrr_logic extends MY_Controller {
     
     var $nascop_url = "http://192.168.133.10/NASCOP/";
     var $escm_url = "http://portal.kemsa.co.ke/escm-api/";

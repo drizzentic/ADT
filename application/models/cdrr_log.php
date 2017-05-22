@@ -1,5 +1,5 @@
 <?php
-class Cdrr_Log extends Doctrine_Record {
+class Cdrr_log extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('description', 'varchar', 255);

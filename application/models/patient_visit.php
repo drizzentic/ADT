@@ -1,5 +1,5 @@
 <?php
-class Patient_Visit extends Doctrine_Record {
+class Patient_visit extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		/*

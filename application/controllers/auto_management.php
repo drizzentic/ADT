@@ -1,7 +1,7 @@
 <?php
 ob_start();
 //error_reporting(0);
-class auto_management extends MY_Controller {
+class Auto_management extends MY_Controller {
 	var $nascop_url = "";
 	var $viral_load_url="";
 	function __construct() {

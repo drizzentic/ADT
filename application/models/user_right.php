@@ -1,5 +1,5 @@
 <?php
-class User_Right extends Doctrine_Record {
+class User_right extends Doctrine_Record {
 	public function setTableDefinition() {
 		$this -> hasColumn('Access_Level', 'varchar', 50);
 		$this -> hasColumn('Menu', 'varchar', 100);

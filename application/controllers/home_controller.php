@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Home_Controller extends MY_Controller {
+class Home_controller extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 	}

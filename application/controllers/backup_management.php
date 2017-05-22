@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Backup_Management extends MY_Controller {
+class Backup_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		date_default_timezone_set('Africa/Nairobi');
