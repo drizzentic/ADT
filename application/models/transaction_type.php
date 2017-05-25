@@ -1,5 +1,5 @@
 <?php
-class Transaction_Type extends Doctrine_Record {
+class Transaction_type extends Doctrine_Record {
 	
 	public function setTableDefinition() {
 		$this -> hasColumn('Name', 'varchar', 100);

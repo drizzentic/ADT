@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
 exit('No direct script access allowed');
 
-class Migration_Management extends MY_Controller {
+class Migration_management extends MY_Controller {
 
 	function __construct() {
 		parent::__construct();

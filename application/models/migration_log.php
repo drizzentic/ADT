@@ -1,5 +1,5 @@
 <?php
-class Migration_Log extends Doctrine_Record {
+class Migration_log extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('source', 'varchar', 150);

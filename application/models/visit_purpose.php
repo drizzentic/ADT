@@ -1,5 +1,5 @@
 <?php
-class Visit_Purpose extends Doctrine_Record {
+class Visit_purpose extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('Name', 'varchar', 50);

@@ -1,5 +1,5 @@
 <?php
-class Regimen_Change_Purpose extends Doctrine_Record {
+class Regimen_change_purpose extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('Name', 'varchar', 50);

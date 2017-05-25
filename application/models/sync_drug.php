@@ -1,5 +1,5 @@
 <?php
-class Sync_Drug extends Doctrine_Record {
+class Sync_drug extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('name', 'varchar', 255);

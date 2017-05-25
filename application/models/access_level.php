@@ -1,5 +1,5 @@
 <?php
-class Access_Level extends Doctrine_Record {
+class Access_level extends Doctrine_Record {
 	public function setTableDefinition() {
 		$this -> hasColumn('Level_Name', 'varchar', 50);
 		$this -> hasColumn('Description', 'text');

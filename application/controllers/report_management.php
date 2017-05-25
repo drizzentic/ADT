@@ -1,5 +1,5 @@
 <?php
-class report_management extends MY_Controller {
+class Report_management extends MY_Controller {
 
 	var $counter = 0;
 	var $drug_array = array();

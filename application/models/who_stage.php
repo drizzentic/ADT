@@ -1,5 +1,5 @@
 <?php
-class Who_Stage extends Doctrine_Record {
+class Who_stage extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('name', 'varchar', 50);

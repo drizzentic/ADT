@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Visit_Management extends MY_Controller {
+class Visit_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->session->set_userdata("link_id","index");

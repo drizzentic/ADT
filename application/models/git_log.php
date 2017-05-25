@@ -1,5 +1,5 @@
 <?php
-class Git_Log extends Doctrine_Record {
+class Git_log extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('hash_value', 'varchar', 255);

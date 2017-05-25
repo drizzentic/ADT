@@ -1,5 +1,5 @@
 <?php
-class Maps_Log extends Doctrine_Record {
+class Maps_log extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('description', 'varchar', 255);

@@ -1,6 +1,6 @@
 <?php
 
-class Facility_Types extends Doctrine_Record {
+class Facility_types extends Doctrine_Record {
 	public function setTableDefinition() {
 		$this -> hasColumn('Name', 'varchar', 20);
 	}

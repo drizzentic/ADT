@@ -5,7 +5,7 @@ ob_start();
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Settings_Management extends MY_Controller {
+class Settings_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		if(!$this->session->userdata("link_id")){

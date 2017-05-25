@@ -1,5 +1,5 @@
 <?php
-class genericname_management extends MY_Controller {
+class Genericname_management extends MY_Controller {
 
 	//required
 	function __construct() {

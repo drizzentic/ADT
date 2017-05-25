@@ -1,5 +1,5 @@
 <?php
-class Drug_Stock_Balance extends Doctrine_Record {
+class Drug_stock_balance extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('drug_id', 'int', 11);

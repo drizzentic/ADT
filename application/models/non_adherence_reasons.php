@@ -1,5 +1,5 @@
 <?php
-class Non_Adherence_Reasons extends Doctrine_Record {
+class Non_adherence_reasons extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('Name', 'varchar', 150);

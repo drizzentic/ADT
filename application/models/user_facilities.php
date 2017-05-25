@@ -1,5 +1,5 @@
 <?php
-class User_Facilities extends Doctrine_Record {
+class User_facilities extends Doctrine_Record {
 	public function setTableDefinition() {
 		$this -> hasColumn('user_id', 'int', 11);
 		$this -> hasColumn('facility', 'text');

@@ -1,5 +1,5 @@
 <?php
-class Maps_Item extends Doctrine_Record {
+class Maps_item extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('total', 'int', 11);

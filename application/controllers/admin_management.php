@@ -1,5 +1,5 @@
 <?php
-class admin_management extends MY_Controller {
+class Admin_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		$this -> load -> library('encrypt');

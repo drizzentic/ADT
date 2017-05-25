@@ -1,5 +1,5 @@
 <?php
-class brandname_management extends MY_Controller {
+class Brandname_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->session->set_userdata("link_id","index");

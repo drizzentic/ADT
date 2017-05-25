@@ -1,5 +1,5 @@
 <?php
-class Sync_Regimen_Category extends Doctrine_Record {
+class Sync_regimen_category extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('Name', 'varchar', 50);

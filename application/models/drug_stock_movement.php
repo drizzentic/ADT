@@ -1,5 +1,5 @@
 <?php
-class Drug_Stock_Movement extends Doctrine_Record {
+class Drug_stock_movement extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('Machine_Code', 'varchar', 10);

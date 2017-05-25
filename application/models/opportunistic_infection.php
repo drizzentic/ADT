@@ -1,5 +1,5 @@
 <?php
-class Opportunistic_Infection extends Doctrine_Record {
+class Opportunistic_infection extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('Name', 'varchar', 100);

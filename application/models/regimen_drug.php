@@ -1,5 +1,5 @@
 <?php
-class Regimen_Drug extends Doctrine_Record {
+class Regimen_drug extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('Regimen', 'varchar', 5);

@@ -1,5 +1,5 @@
 <?php
-class Regimen_Category extends Doctrine_Record {
+class Regimen_category extends Doctrine_Record {
 
 	public function setTableDefinition() {
 		$this -> hasColumn('Name', 'varchar', 50);

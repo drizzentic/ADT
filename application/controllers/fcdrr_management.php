@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Fcdrr_Management extends MY_Controller {
+class Fcdrr_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		$data = array();

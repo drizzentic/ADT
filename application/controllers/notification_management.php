@@ -1,6 +1,6 @@
 <?php
 error_reporting(0);
-class notification_management extends MY_Controller {
+class Notification_management extends MY_Controller {
 	var $nascop_url = "";
 	function __construct() {
 		parent::__construct();
@@ -10,7 +10,7 @@ class notification_management extends MY_Controller {
 		ini_set("allow_url_fopen", '1');
 
 	    $dir = realpath($_SERVER['DOCUMENT_ROOT']);
-	    $link = $dir . "\\ADT\\assets\\nascop.txt";
+	    $link = $dir . "//ADT//assets//nascop.txt";
 		$this -> nascop_url = file_get_contents($link);
 	}
 
