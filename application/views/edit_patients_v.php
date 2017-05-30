@@ -119,7 +119,7 @@ foreach($results as $result){
 				if ($('#age').val()>=facilityAdultAge){
 					$('.plan_hidden').css("display","block");
 					$('.match_hidden').css("display","none");
-					$("#match_parent").val("<?php echo $result['child']; ?>");
+					$("#match_parent").val("<?php echo $result['parent']; ?>");
 				}else if($('#age').val()<facilityAdultAge){
 					$('.match_hidden').css("display","block");
 					$("#match_parent").val("");
@@ -136,7 +136,7 @@ foreach($results as $result){
 			$("#pob").val("<?php echo $result['pob'];?>");
 			$("#gender").val("<?php echo $result['gender'];?>");
 			$("#who_stage").val("<?php echo $result['who_stage']; ?>");
-			$("#match_parent").val("<?php echo $result['child']; ?>");
+			$("#match_parent").val("<?php echo $result['parent']; ?>");
 			$("#match_spouse").val("<?php echo $result['secondary_spouse']; ?>");
 			
 			//Display Gender Tab
