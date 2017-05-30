@@ -393,12 +393,12 @@ class Patient_management extends MY_Controller {
     public function edit($record_no) {
         $sql = "SELECT p.*,
 		               rst.Name as service_name,
-		               dp.child,
+		               dp.parent,
 		               s.secondary_spouse,
                        t.* 
 		               FROM patient p 
 		               LEFT JOIN regimen_service_type rst ON rst.id=p.service 
-		               LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
+		               LEFT JOIN dependants dp ON p.patient_number_ccc=dp.child  
 		        	   LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse
                        LEFT JOIN (
                             SELECT 
@@ -411,7 +411,11 @@ class Patient_management extends MY_Controller {
 		               WHERE p.id = ?
 		               GROUP BY p.id";
         $query = $this -> db -> query($sql, array($record_no, $record_no));
+        //echo $this->db->last_query();die();
         $results = $query -> result_array();
+        /*echo '<pre>';
+        print_r($results);
+        echo '</pre>';die();*/
         if ($results) {
             $results[0]['other_illnesses'] = $this -> extract_illness($results[0]['other_illnesses']);
             $data['results'] = $results;
