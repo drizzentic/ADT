@@ -877,30 +877,29 @@
     });
 
     // on change weight, sort doses.
- $('#weight').change(function() {
+    $('#weight').change(function() {
         var age=$("#age").val();
         var weight=$("#weight").val();
 
-            $(".drug").each(function( index ) {
-                //console.log( index + ": " + $( this ).val() );
-                $( this ).closest('');
-                var row = $(this);
+        $(".drug").each(function( index ) {
+            $( this ).closest('');
+            var row = $(this);
 
-                var url_drug_dose = "<?php echo base_url() . 'dispensement_management/getDrugDose/'; ?>";
-                var new_url_dose = url_drug_dose+$( this ).val();
-                var request_one_dose = $.ajax({
-                    url: new_url_dose,
-                    data: {"weight": weight,"drug_id":$( this ).val() ,"age":age},
-                    type: 'post',
-                    dataType: "json"
-                    });
-                request_one_dose.done(function(data_single_dose) {
-                    var current_dose = data_single_dose[0].dose;
-                    row.closest("tr").find(".dose option").remove();
-                    row.closest("tr").find(".dose").val(current_dose);
+            var url_drug_dose = "<?php echo base_url() . 'dispensement_management/getDrugDose/'; ?>";
+            var new_url_dose = url_drug_dose+$( this ).val();
+            var request_one_dose = $.ajax({
+                url: new_url_dose,
+                data: {"weight": weight,"drug_id":$( this ).val() ,"age":age},
+                type: 'post',
+                dataType: "json"
                 });
+            request_one_dose.done(function(data_single_dose) {
+                var current_dose = data_single_dose[0].dose;
+                row.closest("tr").find(".dose option").remove();
+                row.closest("tr").find(".dose").val(current_dose);
             });
         });
+    });
    
     
     //drug change event
@@ -1042,7 +1041,6 @@
 
                                 });
                             });
-                        // } 
                     });
 
                     });
@@ -1139,8 +1137,8 @@ request.fail(function(jqXHR, textStatus) {
             request.done(function(data) {
                 row.closest("tr").find(".expiry").val(data[0].expiry_date);
                 row.closest("tr").find(".soh ").val(data[0].balance);  
-                // duration_quantity(row); //Auto-calculate what should be displayed
-                $(".qty_disp").trigger('keyup',[row]); 
+                //duration_quantity(row); //Auto-calculate what should be displayed
+                $(".qty_disp").trigger('keyup',[row]); //for error dialog
             });
             request.fail(function(jqXHR, textStatus) {
                 bootbox.alert("<h4>Batch Details Alert</h4>\n\<hr/><center>Could not retrieve batch details : </center>" + textStatus);
@@ -1184,11 +1182,6 @@ request.fail(function(jqXHR, textStatus) {
             row.closest("tr").find(".duration").css("background-color", "white");
             row.closest("tr").find(".duration").removeClass("input_error");
         }
-        // else {
-        //     row.closest("tr").find(".duration").css("background-color", "red");
-        //     row.closest("tr").find(".duration").addClass("input_error");
-        //     row.closest("tr").find(".qty_disp").val("0");
-        // } 
     }
 
     //function to add drug row in table 
