@@ -637,7 +637,7 @@
 						<div class="max-row">
 							<div class="mid-row">
 								<label><span class='astericks'>*</span>Gender</label>				
-								<select name="gender" id="gender" onchange="showDiv(this)">
+								<select name="gender" id="gender" class="validate[required]" onchange="showDiv(this)">
 								<option value="">--Select--</option>
 								<?php
 									foreach($genders as $gender){
