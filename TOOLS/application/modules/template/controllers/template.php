@@ -9,16 +9,16 @@ class Template extends MY_Controller {
 	}
 
 	public function index($data) {
-		$user_session = $this -> check_session();
-		if ($user_session) {
+		// $user_session = $this -> check_session();
+		// if ($user_session) {
 			$data['banner_title'] = $this -> config -> item('banner_title');
 			$data['banner_subtitle'] = $this -> config -> item('banner_subtitle');
 			$data['firm_name'] = $this -> config -> item('firm_name');
 			$data['default_home_controller'] = $this -> config -> item('default_home_controller');
 			$this -> load -> view('template_v', $data);
-		} else {
-			redirect("login");
-		}
+		// } else {
+		// 	redirect("login");
+		// }
 	}
 
 	public function check_session() {

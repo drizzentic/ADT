@@ -2,8 +2,8 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Github extends MY_Controller {
-	var $nascop_url = "";
+class Adminer extends MY_Controller {
+	// var $nascop_url = "";
 	function __construct() {
 		parent::__construct();
 		ini_set("max_execution_time", "100000");
@@ -16,26 +16,12 @@ class Github extends MY_Controller {
 		$this -> nascop_url = file_get_contents($link);
 	}
 
-	public function index($facility = "") {
-		$this -> session -> set_userdata("facility", $facility);
-		$sql = "SELECT hash_value,update_time FROM git_log ORDER BY id desc";
-		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
-		$data['active_menu'] = 2;
-
-		$headings = array('Hash value', 'Timestamp');
-		$options = '';
-		$this -> load -> module('table');
-		$data['update_log'] = $this -> table -> load_table($headings, $results, $options, 0);
-
-		if (file_exists($this -> session -> userdata("temp_file"))) {
-			unlink($this -> session -> userdata("temp_file"));
-			$this -> session -> unset_userdata("temp_file");
-		}
-		$data['update_status'] = $this -> checkUpdate();
-		$data['content_view'] = "github/github_v";
-		$data['title'] = "Dashboard | System Update";
-		$this -> template($data);
+	public function index() {
+		// $data['content_view'] = "adminer/dbadminer.php";
+		// $data['title'] = "Dashboard | System Update";
+		// $this -> template($data);
+		require_once'..\\views\\dbadminer.php';
+			// $this -> load -> view('adminer/dbadminer');
 	}
 
 	public function checkUpdate() {

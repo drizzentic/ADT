@@ -10,6 +10,7 @@ class Recover extends MY_Controller {
 
 	public function index() {
 		$data['backup_files'] = $this -> checkdir();
+		$data['active_menu'] = 1;
 		$data['content_view'] = "recover/test_v";
 		$data['title'] = "Dashboard | System Recovery";
 		$this -> template($data);
