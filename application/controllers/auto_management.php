@@ -672,14 +672,16 @@ class Auto_management extends MY_Controller {
 			if(!empty($lab_data)){
 				foreach($lab_data as $lab){
 					foreach($lab as $tests){
+						$id = intval($tests['ID']);
 					   	$ccc_no = trim($tests['Patient']);
 					   	$result = $tests['Result'];
 					    $date_tested = $tests['DateTested'];
 					    $justification = $tests['Justification'];
 						//An array to store patient viral Load data
-						$sql = "CALL proc_check_viralload(?, ?, ?, ?)";
-						$parameters = array($ccc_no, $date_tested, $result, $justification);
+						$sql = "CALL proc_check_viralload(?, ?, ?, ?, ?)";
+						$parameters = array($id, $ccc_no, $date_tested, $result, $justification);
 						$this->db->query($sql, $parameters);
+						// echo $this->db->last_query().'<br/>';
 	               }
 				}
 		    	$message="Viral Load Download Success!<br/>";

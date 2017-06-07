@@ -5,3 +5,5 @@ CREATE TABLE IF NOT EXISTS patient_viral_load(
   justification TEXT
 )//
 ALTER TABLE patient_viral_load ADD id int NOT NULL AUTO_INCREMENT primary key//
+ALTER TABLE patient_viral_load ADD test_id int NULL//
+DELETE FROM patient_viral_load test_id IS NULL//
