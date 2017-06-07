@@ -282,43 +282,30 @@ class Dispensement_management extends MY_Controller {
 	}
 
 	public function getDrugDose($drug_id) {
-		$dose_array ;
+		$dose_array = array();
 		$facility_code = $this -> session -> userdata('facility');
 		$weight = $this -> input -> post("weight");
 		$age = $this -> input -> post("age");
 		$drug_id = $this -> input -> post("drug_id");
 
 		$get_adult_age_sql = $this -> db -> query("SELECT adult_age FROM facilities where facilitycode='$facility_code'");
-		// $get_adult_age_sql = $this -> db -> query("SELECT adult_age FROM facilities where facilitycode='11289'");
 		$adult_age = $get_adult_age_sql -> result_array()[0]['adult_age'];
 
 		if ($age < $adult_age){
-
-					$sql = "select drug_id as id,Name as dose from dossing_chart d  inner join dose do on do.id=d.dose_id 
+			$sql = "select drug_id as id,Name as dose from dossing_chart d  inner join dose do on do.id=d.dose_id 
 					where min_weight <= $weight
 					and max_weight >= $weight
 					and drug_id=$drug_id
 					and is_active = 1";
-		$get_dose_sql = $this -> db -> query($sql);
-		$padeatric_dose_array = $get_dose_sql -> result_array();
-		$dose_array = $padeatric_dose_array;
-
-
-		if (count($padeatric_dose_array)<1 || $age > $adult_age ){
-		$get_doses_sql = $this -> db -> query("SELECT id,dose FROM drugcode where id='$drug_id'");
-		// echo "SELECT id,dose FROM drugcode where id='$drug_id'";
-		$doses_array = $get_doses_sql -> result_array();
-		$dose_array = $doses_array;
+			$get_dose_sql = $this -> db -> query($sql);
+			$dose_array = $get_dose_sql -> result_array();
 		}
-	
-
-	}
+		if (empty($dose_array) || $age > $adult_age){
+			$get_doses_sql = $this -> db -> query("SELECT id,dose FROM drugcode where id='$drug_id'");
+			$doses_array = $get_doses_sql -> result_array();
+			$dose_array = $doses_array;
+		}
 		echo json_encode($dose_array);
-
-
-		// $get_doses_sql = $this -> db -> query("SELECT id,dose FROM drugcode where id='$drug_id'");
-		// $get_doses_array = $get_doses_sql -> result_array();
-		// echo json_encode($get_doses_array);
 	}
 	public function getFacililtyAge(){
 		$facility_code = $this -> session -> userdata('facility');

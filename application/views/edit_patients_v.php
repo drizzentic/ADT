@@ -975,7 +975,7 @@ foreach($results as $result){
 				<div class="mid-row">
 					<label><span class='astericks'>*</span>Gender</label>
 					<select name="gender" id="gender" class="validate[required]">
-						<option value=" ">--Select--</option>
+						<option value="">--Select--</option>
 						<?php
 						foreach ($genders as $gender) {
 							echo "<option value='" . $gender['id'] . "'>" . $gender['name'] . "</option>";
