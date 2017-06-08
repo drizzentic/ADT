@@ -371,7 +371,7 @@ if (isset($styles)) {
 			    
 				<li class="divider"></li>
 				<li><a href="<?php echo base_url().'facilitydashboard_management/getPatientMasterList' ?>" target="_blank"><i class="icon-book"></i>Export Patient List</a></li>			
-			    <li><a href="<?php echo base_url().'user_manual.pdf' ?>" target="_blank"><i class="icon-book"></i>User Manual</a></li>	
+			    <li><a href="<?php echo base_url().'assets/manuals/user_manual.pdf' ?>" target="_blank"><i class="icon-book"></i>User Manual</a></li>	
 				
 				
 				<?php
@@ -400,16 +400,13 @@ if (isset($styles)) {
 						<a  id="assignRights" class="admin_link"><i class="icon-cog"></i>Assign User Rights</a>
 					</li>
 					<li>
-						<a  id="nascopSettings" class="admin_link"><i class="icon-cog"></i>Nascop Settings</a>
-					</li>
-					<li>
 						<a  id="getAccessLogs" class="admin_link"><i class="icon-book"></i>Access Logs</a>
 					</li>
 					<li>
 						<a  id="getDeniedLogs" class="admin_link"><i class="icon-book"></i>Denied Logs</a>
 					</li>
 					 <li>
-					 	<a href="<?php echo base_url().'user_manual.pdf' ?>"><i class="icon-book"></i>User Manual</a>
+					 	<a href="<?php echo base_url().'assets/manuals/user_manual.pdf' ?>"><i class="icon-book"></i>User Manual</a>
 					 </li>	
 			    <?php
 				}

@@ -18,54 +18,6 @@ class Dispensement_management extends MY_Controller {
 		print_r($this->patientmodel->get_patient_details($patientID));
 	}
 
-
-	/************
-	*************
-	iqcare changes
-	**************
-	***************
-	**************/
-
-	public function get_pharmacy_order($record_no){
-		$this->load->dbutil();
-		$iqcare_data = array('size' => 0, 'orders' => array());
-		if ($this->dbutil->database_exists('mirth_adt_db')){
-			//Get patient ptnk
-			$row = $this->db->query('SELECT medical_record_number FROM patient where id='.$record_no.'')->row();
-			$ptnpk = $row->medical_record_number;
-			if($ptnpk){	
-				//Get pharmacy orders for ptnpk
-				$order_query = "SELECT 
-									ord.weight,
-									ord.height,
-									ord.adt_regimen_id current_regimen,
-									dtl.adt_drugId drug_id,
-									dtl.dose,
-									dtl.duration,
-									dtl.quantity 
-								FROM ord_patientpharmacyorder ord 
-							INNER JOIN dtl_patientpharmacyorder dtl ON ord.Ptnpk_pharmacy_pk = dtl.ptn_pharmacyPK
-								WHERE ord.PtnPk = $ptnpk";
-			$mirth_db=$this->load->database('mirth_db',TRUE);
-				$results = $mirth_db->query($order_query)->result_array();
-				$main_elements = array('weight', 'height', 'current_regimen');
-				$stem_length =  sizeof($results);
-				foreach ($results as $counter => $result) {
-					$stem_elements = array();
-					foreach ($result as $key => $value) {
-						if(in_array($key, $main_elements)){
-							$iqcare_data['orders'][$key] = $value;
-						}else{
-							$stem_elements[$key] = $value;
-						}
-					}
-					$iqcare_data['orders']['items'][] = $stem_elements;	
-				}
-				$iqcare_data['size'] = $stem_length;
-			}
-		}
-		echo json_encode($iqcare_data);
-	}
 	public function get_patient_details(){
 		$record_no = $this -> input -> post('record_no');
 		$facility_code = $this -> session -> userdata('facility');
@@ -787,7 +739,7 @@ class Dispensement_management extends MY_Controller {
 					} //end while
 				}//end if
 			} //end foreach
-			$file_name='Export/'.$patient_name.'(Labels).pdf';
+			$file_name='assets/download/'.$patient_name.'(Labels).pdf';
 			$this -> mpdf -> Output($file_name, 'F');
 			echo base_url().$file_name;
 		}else{

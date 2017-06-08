@@ -1,9 +1,8 @@
 ADT
-===
+================================
 This is an ARV Dispensing Tool.
 
-
-Version 3.2.1 23/03/2017
+Version 3.2.1 23/03/2017 (Latest)
 ==============================================
 - Added: Allows database access on non-default port
 - Added: PREP Reasons and Functionality
@@ -98,8 +97,7 @@ Version 2.15 09/09/2014
 - Added: Concordant Partners linkage,Add Question Match to Spouse in ccc?
 - Added: Isonazid prophylaxis should have start date and end date
 - Added: Adherence report, include 100% to the >=95% group and include the number of days part into the percentage
-- Added: Add Category to TB section 
-(if category 1 then intensive is 3 months & continuation is 112 days, else if category 2 is intensive is 3 months range and continuation 5 months)
+- Added: Add Category to TB section(if category 1 then intensive is 3 months & continuation is 112 days, else if category 2 is intensive is 3 months range and continuation 5 months)
 - Fixed: Error listing for no status change should not list transit patients
 - Fixed: Send version of system installed
 - Fixed: 'round' function replaced with 'floor' in dispense controller
@@ -113,11 +111,11 @@ Version 2.14 03/09/2014
 
 Version 2.13 -28/08/2014
 ==============================================
--Fixed: Reports: Patient Missing appointment accuracy
--Fixed: Reports: Visiting patients - List of patients started on a certain period
--Changed: Auto logout feature disabled 
--Changed: Password expiry feature disabled
--Fixed: Error notification tables listing accuracy
+- Fixed: Reports: Patient Missing appointment accuracy
+- Fixed: Reports: Visiting patients - List of patients started on a certain period
+- Changed: Auto logout feature disabled 
+- Changed: Password expiry feature disabled
+- Fixed: Error notification tables listing accuracy
 
 Version 2.12 -25/08/2014
 ==============================================
@@ -135,7 +133,6 @@ Version 2.12 -25/08/2014
 - Added: Generate PDF for drugs issued transactions
 - Added: Non mapped regimens to be listed in other regimens list on Fmaps
 
-
 Version 2.11 -04/08/2014
 ==============================================
 - Fixed: Transit patients are changed status once dispensed
@@ -151,7 +148,6 @@ Version 2.11 -04/08/2014
 - Added: Viral Load API
 - Added: Reports export All feature
 - Added: Bulk mapping for regimens and drugs
-
 
 Version 2.1 - 23/07/2014
 ==============================================
@@ -186,7 +182,6 @@ Version 1.2 - 03/22/2013
 - Added: UPPERCASE data display for patient management and inventory datagrid
 - Added: Notifier for success of adding patients and drug commodities
 
-
 Version 1.1 - 03/21/2013
 ==============================================
 - Fixed: Data sanitization for Lost to follow up,PEP End and PMTCT End
@@ -201,4 +196,3 @@ Version 1.1 - 03/21/2013
 - Added: Synchronization of Non-Adherence Reasons changed from hard-coded reasons
 - Added: Synchronization of all facilitites to local database 
 - Added: Datatables intergration to settings
-

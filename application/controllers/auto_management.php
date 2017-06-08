@@ -2,20 +2,16 @@
 ob_start();
 //error_reporting(0);
 class Auto_management extends MY_Controller {
-	var $nascop_url = "";
+	var $remote_url = "";
 	var $viral_load_url="";
 	function __construct() {
 		parent::__construct();
 		ini_set("max_execution_time", "100000");
 		ini_set("memory_limit", '2048M');
 		ini_set("allow_url_fopen", '1');
-	    $dir = realpath($_SERVER['DOCUMENT_ROOT']);
-	    $link = $dir . "//ADT//assets//nascop.txt";
-		$this -> nascop_url = trim(file_get_contents($link));
-		$this -> eid_url = "http://viralload.nascop.org/";
-        $this -> ftp_url = "192.168.133.10";
-        // off Campus access {should be active at facility level}
-        // $this->ftp_url='41.89.6.210';
+
+		$this -> remote_url = "http://commodities.nascop.org";
+		$this -> viralload_url = "http://viralload.nascop.org/";
 	}
 
 	public function index($manual=FALSE){
@@ -38,8 +34,6 @@ class Auto_management extends MY_Controller {
 			$message .= $this->updateCCC_Store();
 			//function to update patients without current_regimen with last regimen dispensed
 			$message .= $this->update_current_regimen(); 
-			//function to send eid statistics to nascop dashboard
-			//$message .= $this->updateEid();
 			//function to update patient data such as active to lost_to_follow_up	
 			$message .= $this->updatePatientData();
 			//function to update data bugs by applying query fixes
@@ -54,8 +48,6 @@ class Auto_management extends MY_Controller {
 			$message .= $this->updateViralLoad();
 			//function to set negative batches to zero
 			$message .= $this->setBatchBalance();
-			//function to create mirth_sync_db
-			$message .= $this->mirth_adt_db();
 			//fucntion to update patient visit dose from id to name
 			$message .= $this->update_dose_name();
 			// To clean the sync_regimen_category table incase of the duplicates
@@ -77,40 +69,6 @@ class Auto_management extends MY_Controller {
           	$message="<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>&times;</button>".$message."</div>";
 	    }
 	    echo $message;
-	}
-	public function mirth_adt_db(){
-		$this->load->dbforge();
-		if ($this->dbforge->create_database('mirth_adt_db')){
-			$count = 0;
-			$delimeter = "//";
-			$queries_dir  = 'assets/adt_iqcare/';
-			$accepted_files = array('sql');
-			if (is_dir($queries_dir)) {
-				$files = scandir($queries_dir);
-				foreach ($files as $file_name) {
-					$ext = pathinfo($file_name, PATHINFO_EXTENSION);
-					if ($file_name != '.' && $file_name != '..' && in_array($ext, $accepted_files)) {
-						//Get query statements
-						$query_file = $queries_dir . '/' . $file_name;
-						$query_stmt = file_get_contents($query_file);
-						//Execute query statements
-						$statements = explode($delimeter, $query_stmt);
-						foreach($statements as $statement){
-							$statement = trim($statement);
-							if ($statement){
-								$mirth_db=$this->load->database('mirth_db',TRUE);
-								if (!$mirth_db->simple_query($statement))
-								{
-									$error = $file_name.'==>'.$mirth_db->_error_message().'<br/>';
-								}
-							}
-						}
-						$count++;
-					}
-				}
-			
-			}
-		}
 	}
 
 	public function updateDrugId() {
@@ -280,50 +238,6 @@ class Auto_management extends MY_Controller {
 			$message="";
 		}
 		return $message;
-	}
-
-	public function updateEid() {
-		$message="";
-		$adult_age = 3;
-		$facility_code = $this -> session -> userdata("facility");
-		$url = trim($this -> nascop_url). "sync/eid/" . $facility_code;
-		$sql = "SELECT patient_number_ccc as patient_no,
-		               facility_code,
-		               g.name as gender,
-		               p.dob as birth_date,
-		               rst.Name as service,
-		               CONCAT_WS(' | ',r.regimen_code,r.regimen_desc) as regimen,
-		               p.date_enrolled as enrollment_date,
-		               ps.name as source,
-		               s.name as status
-				FROM patient p
-				LEFT JOIN gender g ON g.id=p.gender
-				LEFT JOIN regimen_service_type rst ON rst.id=p.service
-				LEFT JOIN regimen r ON r.id=p.start_regimen
-				LEFT JOIN patient_source ps ON ps.id=p.source
-				LEFT JOIN patient_status s ON s.id=p.current_status
-				WHERE p.active='1'
-				AND round(datediff(p.date_enrolled,p.dob)/360)<$adult_age";
-		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
-		if($results){
-			$json_data = json_encode($results, JSON_PRETTY_PRINT);
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, array('json_data' => $json_data));
-			$json_data = curl_exec($ch);
-			if (empty($json_data)) {
-				$message = "cURL Error: " . curl_error($ch);
-				$this -> session -> set_userdata("curl_error", 1);
-			} else {
-				$messages = json_decode($json_data, TRUE);
-				$message = $messages[0];
-			}
-			curl_close($ch);
-		}
-		return $message."<br/>";
 	}
     
     public function updateSms() {
@@ -656,7 +570,7 @@ class Auto_management extends MY_Controller {
 
 	public function updateViralLoad(){
 		$facility_code = $this -> session -> userdata("facility");
-		$url = $this -> eid_url . "vlapi.php?mfl=" . $facility_code;
+		$url = $this -> viralload_url . "vlapi.php?mfl=" . $facility_code;
 		$patient_tests=array();
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -707,7 +621,7 @@ class Auto_management extends MY_Controller {
 		if($total < 9800){
 			$this -> load -> library('PHPExcel');
 			$inputFileType = 'Excel5';
-			$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/facility_list.xls';
+			$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/templates/sites/facility_list.xls';
 			$objReader = PHPExcel_IOFactory::createReader($inputFileType);
 			$objPHPExcel = $objReader -> load($inputFileName);
 			$highestColumm = $objPHPExcel -> setActiveSheetIndex(0) -> getHighestColumn();
@@ -788,7 +702,7 @@ class Auto_management extends MY_Controller {
 	public function update_database_tables(){
 		$count = 0;
 		$delimeter = "//";
-		$queries_dir  = 'assets/queries';
+		$queries_dir  = 'assets/migrations';
 		$accepted_files = array('sql');
 		if (is_dir($queries_dir)) {
 			$files = scandir($queries_dir);
@@ -843,7 +757,7 @@ class Auto_management extends MY_Controller {
    
     public function get_guidelines(){
         $this->load->library('ftp');
-        $config['hostname'] = $this->ftp_url;
+        $config['hostname'] = $this->remote_url;
         $config['username'] = 'demo';
         $config['password'] = 'demo';
         $config['port']     = 21;
@@ -862,7 +776,8 @@ class Auto_management extends MY_Controller {
 	        }
         }
     }
-    //function to update dose on patient visit from id to dose name 
+   
+   //function to update dose on patient visit from id to dose name 
    public function update_dose_name(){
    	$message = '';
    		$sql="SELECT id, Name FROM dose";
@@ -880,7 +795,7 @@ class Auto_management extends MY_Controller {
 
    }
     public function update_system_version(){
-		$url = $this -> nascop_url . "sync/gitlog";
+		$url = $this -> remote_url . "sync/gitlog";
 		$facility_code = $this -> session -> userdata("facility");
 		$hash=Git_Log::getLatestHash();
 		$results = array("facility_code" => $facility_code, "hash_value" => $hash);

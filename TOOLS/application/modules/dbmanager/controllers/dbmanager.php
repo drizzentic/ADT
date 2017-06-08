@@ -26,7 +26,7 @@ class Dbmanager extends MY_Controller {
 		// echo "<iframe src='filemanager.php' width:></iframe>";
 	}
 
-		public function template($data) {
+	public function template($data) {
 		$data['show_menu'] = 0;
 		$data['show_sidemenu'] = 0;
 		$this -> load -> module('template');

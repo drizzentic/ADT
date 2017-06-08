@@ -1,17 +1,12 @@
 <?php
 error_reporting(0);
 class Notification_management extends MY_Controller {
-	var $nascop_url = "";
 	function __construct() {
 		parent::__construct();
 
 		ini_set("max_execution_time", "1000000");
 		ini_set("memory_limit", '2048M');
 		ini_set("allow_url_fopen", '1');
-
-	    $dir = realpath($_SERVER['DOCUMENT_ROOT']);
-	    $link = $dir . "//ADT//assets//nascop.txt";
-		$this -> nascop_url = file_get_contents($link);
 	}
 
 	public function password_notification() {
@@ -146,7 +141,7 @@ class Notification_management extends MY_Controller {
 		}
 		echo $temp;
 		*/
-		$changelog_link=base_url().'changelog.txt';
+		$changelog_link=base_url().'README.md';
 		echo "<li><a href='$changelog_link' target='_blank'><i class='icon-th'></i>System Up to Date</a></li>";
 	}
 

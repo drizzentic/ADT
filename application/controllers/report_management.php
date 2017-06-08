@@ -24,14 +24,14 @@ class Report_management extends MY_Controller {
 
 	public function getMOHForm($type = "", $period_start = "", $period_end) {
 		$this -> load -> library('PHPExcel');
-		$dir = "Export";
+		$dir = "assets/download";
 		if ($type == "711") {
 			$template = "711_template";
 		} else if ($type == "731") {
 			$template = "731_template";
 		}
 		$inputFileType = 'Excel5';
-		$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/' . $template . '.xls';
+		$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/templates/moh_forms/' . $template . '.xls';
 		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
 		$objPHPExcel = $objReader -> load($inputFileName);
 
@@ -7712,7 +7712,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 
 	    //export patient transactions
 			$this -> load -> library('PHPExcel');
-			$dir = "Export";
+			$dir = "assets/download";
 			$objPHPExcel = new PHPExcel();
 			$objPHPExcel->setActiveSheetIndex(0);
 

@@ -975,7 +975,7 @@ class Order extends MY_Controller {
 		if ($type == "cdrr") {
 			$cdrr_id = $id;
 			$cdrr_array = array();
-			$dir = "Export";
+			$dir = "assets/download";
 			$drug_name = "CONCAT_WS('] ',CONCAT_WS(' [',sd.name,sd.abbreviation),CONCAT_WS(' ',sd.strength,sd.formulation)) as drug_map";
 
 			$sql = "SELECT c.*,ci.*,cl.*,f.*,co.county as county_name,d.name as district_name,u.*,al.level_name,IF(c.code='D-CDRR',CONCAT('D-CDRR#',c.id),CONCAT('F-CDRR#',c.id)) as cdrr_label,c.status as status_name,sf.name as facility_name,$drug_name
@@ -1131,7 +1131,7 @@ class Order extends MY_Controller {
 		} else if ($type == "maps") {
 			$fmaps_id = $id;
 			$fmaps_array = array();
-			$dir = "Export";
+			$dir = "assets/download";
 
 			$sql = "SELECT m.*,mi.*,ml.*,f.*,co.county as county_name,d.name as district_name,u.*,al.level_name,IF(m.code='D-MAPS',CONCAT('D-MAPS#',m.id),CONCAT('F-MAPS#',m.id)) as maps_id,m.status as status_name,sf.name as facility_name,m.id as map_id
 			 	FROM maps m

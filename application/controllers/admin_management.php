@@ -221,23 +221,7 @@ class Admin_management extends MY_Controller {
 		$data['dyn_table'] = $dyn_table;
 		$this -> base_params($data);
 	}
-
-	public function nascopSettings() {
-		$results = file_get_contents(base_url() . 'assets/nascop.txt');
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
-		$dyn_table .= "<thead><tr><th>Link</th><th>Options</th></tr></thead><tbody>";
-		if ($results) {
-			$dyn_table .= "<tr><td>" . $results . "</td><td><a href='#edit_nascop'data-toggle='modal' role='button' class='edit green' table='nascop' nascop_url='" . $results . "' >Update</a></td></tr>";
-		}
-		$dyn_table .= "</tbody></table>";
-		$data['label'] = 'Nascop Settings';
-		$data['column'] = 'active';
-		$data['table'] = '';
-		$data['actual_page'] = 'NASCOP Settings';
-		$data['dyn_table'] = $dyn_table;
-		$this -> base_params($data);
-	}
-
+	
 	public function getAccessLogs() {
 		$sql = "select * from access_log al left join users u on u.id=al.user_id";
 		$query = $this -> db -> query($sql);
@@ -528,15 +512,7 @@ class Admin_management extends MY_Controller {
 			$this -> db -> update($table, array('access_level' => $access_id, 'menu' => $menu_id));
 			$this -> session -> set_userdata('msg_success', 'User Right was Updated');
 			$this -> session -> set_userdata('default_link', 'assignRights');
-		} else if ($table = "nascop") {
-			$myFile = '././assets/nascop.txt';
-			$fh = fopen($myFile, 'w') or die("can't open file");
-			$stringData = $this -> input -> post("nascop_url");
-			fwrite($fh, $stringData);
-			fclose($fh);
-			$this -> session -> set_userdata('msg_success', 'NASCOP URL was Updated');
-			$this -> session -> set_userdata('default_link', 'nascopSettings');
-		}
+		} 
 		redirect("home_controller/home");
 	}
 
@@ -553,9 +529,7 @@ class Admin_management extends MY_Controller {
                         $this -> session -> set_userdata('default_link', 'addFAQ');
                 } else if ($table == "user_right") {
 			$this -> session -> set_userdata('default_link', 'assignRights');
-		} else if ($table = "nascop") {
-			$this -> session -> set_userdata('default_link', 'nascopSettings');
-		}
+		} 
 	}
 
 	public function getSystemUsage($period = '') {

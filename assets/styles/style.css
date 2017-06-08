@@ -1351,11 +1351,7 @@ legend {
 	color: red;
 	font-weight: bold;
 }
-.icondose {
-	background: #FFFFFF url(../images/dropdown.png) no-repeat 55px 4px;
-	padding: 4px 4px 4px 22px;
-	height: 5px;
-}
+
 #current_regimen {
 	color: red;
 	font-weight: bold;

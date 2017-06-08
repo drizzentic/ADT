@@ -33,17 +33,13 @@ RCS
 RCSLOG
 SCCS
 _$*
-/nbproject/private/
 application/views/sections/link.php
 application/config/database.php
-assets/viral_load.json
 
 # exclude everything
 assets/cache/*
-Export/*
 assets/download/*
 
 # exception to the rule
 !assets/cache/.gitkeep 
-!Export/.gitkeep
 !assets/download/.gitkeep 
