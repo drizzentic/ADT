@@ -4,7 +4,7 @@ class Rb {
 	
 	function __construct() {
 		// Include database configuration
-		include(APPPATH.'/config/database.php');
+		include(str_replace('\tools', '', FCPATH).APPPATH.'/config/database.php');
 		
 		// Get Redbean
 		include(APPPATH.'/third_party/RedBean/rb.php');
