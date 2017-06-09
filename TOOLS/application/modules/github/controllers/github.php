@@ -21,7 +21,7 @@ class Github extends MY_Controller {
 		$sql = "SELECT hash_value,update_time FROM git_log ORDER BY id desc";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-		$data['active_menu'] = 2;
+		$data['active_menu'] = 3;
 
 		$headings = array('Hash value', 'Timestamp');
 		$options = '';

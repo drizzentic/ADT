@@ -62,7 +62,9 @@
 					<br>
 					<input type="password" name="password" class="input-xlarge" id="password" placeholder="password">
 				</label>
+				<a class="btn btn-warning pull-right" href="<?= base_url() ?>TOOLS">ADT Tools</a>
 				<input type="submit" class="btn" name="register" id="register" value="Login" >
+
 				<div style="margin:auto;width:auto" class="anchor">
 					<strong><a href="<?php echo base_url().'user_management/resetPassword' ?>" >Forgot Password?</a></strong>
 				</div>
