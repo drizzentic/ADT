@@ -48,7 +48,7 @@
 								<label class="control-label" for="inputHost">Database Hostname</label>
 								<div class="controls">
 									<input type="hidden" id="log1_status" name="log1_status" value="0" />
-									<input type="text" id="inputHost" name="inputHost" placeholder="localhost" required/>
+									<input type="text" id="inputHost" name="inputHost" placeholder="localhost" />
 								</div>
 							</div>
 							<div class="control-group">

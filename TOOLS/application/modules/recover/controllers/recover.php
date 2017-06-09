@@ -17,7 +17,8 @@ class Recover extends MY_Controller {
 	}
 
 	public function check_server() {
-		$host_name = $this -> input -> post("inputHost");
+		// $host_name = $this -> input -> post("inputHost");
+		$host_name = ($this -> input -> post("inputHost")!= null) ? $this -> input -> post("inputHost") : 'localhost';
 		$host_user = $this -> input -> post("inputUser");
 		$host_password = $this -> input -> post("inputPassword");
 
@@ -123,11 +124,13 @@ class Recover extends MY_Controller {
 	}
 
 	public function start_recovery() {
-		$file_name = $this -> input -> post("file_name", TRUE);
-		$targetFolder = '/UPDATE/backup_db';
-		$targetPath = $_SERVER['DOCUMENT_ROOT'] . $targetFolder;
-		$file_path = rtrim($targetPath, '/') . '/' . $file_name;
-		$file_path = realpath($file_path);
+		$file_name =$_POST['file_name'];
+		// echo "file_name".$file_name;
+
+		$file_path =  FCPATH.'backup_db/'.$file_name;
+		$unzip = $this -> uncompress_zip($file_path);
+		// $file_path = ($unzip) ? str_replace(".zip", "", $file_path) : $file_path;
+		$file_path = str_replace(".zip", "", $file_path);
 
 		$CI = &get_instance();
 		$CI -> load -> database();
@@ -145,31 +148,39 @@ class Recover extends MY_Controller {
 			$result = @mysql_query($sql, $link);
 			$count = mysql_num_rows($result);
 			if ($count==0) {
-				$real_name = $this -> uncompress_zip($file_path);
 				$mysql_home = realpath($_SERVER['MYSQL_HOME']) . "\mysql";
-				$file_path = "\"" . realpath($_SERVER['MYSQL_HOME']) . "\\" . $real_name . "\"";
-				$recovery_status = true;
+				// $file_path = "\"" . realpath($_SERVER['MYSQL_HOME']) . "\\" . $real_name . "\"";
 				$mysql_bin = str_replace("\\", "\\\\", $mysql_home);
 				$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' ' . $current_db . ' < ' . $file_path;
 				exec($mysql_con);
+				$recovery_status = true;
+				$this->delete_file($file_path);
 			}
 		}
 		echo $recovery_status;
 	}
+	public function delete_file($file_path) {
+		if(unlink($file_path)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+
+
+
+
 
 	public function uncompress_zip($file_path) {
-		$destination_path = $_SERVER['DOCUMENT_ROOT'];
-		$destination_path = realpath(str_replace("htdocs", "mysql/bin/", $destination_path));
 		$this -> load -> library('unzip');
+		// $destination_path = realpath(".zip","",$file_path);
+
 		$this -> unzip -> allow(array('sql'));
-		$locations = $this -> unzip -> extract($file_path, $destination_path);
-		if (is_array($locations)) {
-			if (!empty($locations)) {
-				$location = $locations[0];
-			}
-		}
-		$locations = explode("/", $location);
-		return $locations[1];
+		if ($this -> unzip -> extract($file_path, $destination_path))
+			{return true;}else{return false;}
+
 	}
 
 	public function template($data) {

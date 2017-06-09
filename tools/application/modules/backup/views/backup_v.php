@@ -18,7 +18,7 @@
         <img src="<?= base_url() ?>assets/img/loader.gif" >
       </div>
       <hr />
-      
+
     </div>
 
   </div>
@@ -37,7 +37,7 @@
 
   $(document).ready(function(){ 
 
-   
+
    $("#backup_frm").on('submit',function(e){
   		//disable button when submitted
       $("#backup_btn").attr("disabled",true);
@@ -78,14 +78,8 @@
   // dataType: dataType
 });
 
-
-
-
-
         e.preventDefault();
       });
-
-
    $(".recover").click(function() {
      var current_row = $(this).closest('tr').children('td');
      var file_name = current_row.eq(1).text();

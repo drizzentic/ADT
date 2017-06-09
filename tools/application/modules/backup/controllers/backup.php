@@ -201,7 +201,7 @@ class Backup extends MY_Controller {
 
 				$this->delete_file(str_replace('"', "", $file_path));
 				echo "Backup Successful";
-				
+
 			}
 
 		}
@@ -229,21 +229,7 @@ class Backup extends MY_Controller {
 
 
 
-		public function uncompress_zip($file_path) {
-			$destination_path = $_SERVER['DOCUMENT_ROOT'];
-			$destination_path = realpath(str_replace("htdocs", "mysql/bin/", $destination_path));
-			$this -> load -> library('unzip');
-			$this -> unzip -> allow(array('sql'));
-			$locations = $this -> unzip -> extract($file_path, $destination_path);
-			if (is_array($locations)) {
-				if (!empty($locations)) {
-					$location = $locations[0];
-				}
-			}
-			$locations = explode("/", $location);
-			return $locations[1];
-		}
-
+		
 		public function template($data) {
 			$data['show_menu'] = 0;
 			$data['show_sidemenu'] = 0;
