@@ -19,7 +19,7 @@ class Dbmanager extends MY_Controller {
 
 	public function index($facility = "") {
 
-		$data['active_menu'] = 4;
+		$data['active_menu'] = 3;
 		$data['content_view'] = "dbmanager/dbmanager_v";
 		$data['title'] = "Dashboard | DB Manager";
 		$this -> template($data);
