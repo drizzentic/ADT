@@ -55,30 +55,6 @@ class Recover extends MY_Controller {
 			$status = "Database Exists!";
 			$this -> session -> set_userdata("db_name", $database_name);
 		}
-
-
-		// write new credentials to project's config file
-		// check file Exists
-		$db_config_file =  str_replace('\tools', '', FCPATH).'application/config/database.php';
-		if(file_exists($db_config_file)){
-			$hostname = $this -> session -> userdata("db_host");
-			$username = $this -> session -> userdata("db_user");
-			$password = $this -> session -> userdata("db_pass");
-			$current_db = $this -> session -> userdata("db_name");
-
-			$file = fopen($db_config_file,"a");
-
-			fwrite($file,"". "\r\n");
-			fwrite($file,"\$db['default']['hostname'] = '$host_name';". "\r\n");
-			fwrite($file,"\$db['default']['username'] = '$host_user';". "\r\n");
-			fwrite($file,"\$db['default']['password'] = '$host_password';". "\r\n");
-			fwrite($file,"\$db['default']['database'] = '$database_name';". "\r\n");
-			fclose($file);
-
-		}
-		
-
-
 		echo $status;
 	}
 
@@ -163,6 +139,7 @@ class Recover extends MY_Controller {
 		$password = $this -> session -> userdata("db_pass");
 		$current_db = $this -> session -> userdata("db_name");
 		$recovery_status = false;
+
 		$this -> load -> dbutil();
 		if ($this -> dbutil -> database_exists($current_db)) {
 
@@ -175,7 +152,6 @@ class Recover extends MY_Controller {
 				// $file_path = "\"" . realpath($_SERVER['MYSQL_HOME']) . "\\" . $real_name . "\"";
 				$mysql_bin = str_replace("\\", "\\\\", $mysql_home);
 				$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' ' . $current_db . ' < ' . $file_path;
-				// echo $mysql_con;die;
 				exec($mysql_con);
 				$recovery_status = true;
 				$this->delete_file($file_path);
