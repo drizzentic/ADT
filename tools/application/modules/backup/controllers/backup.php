@@ -188,7 +188,7 @@ class Backup extends MY_Controller {
 
 			$mysql_home = realpath($_SERVER['MYSQL_HOME']) . "\mysqldump";
 			// $outer_file = "webadt_" . date('d-M-Y h-i-sa') . ".sql";
-			$outer_file = $facility_code."_" . time() . ".sql";
+			$outer_file = $facility_code."_" . date('dMY_hi') . ".sql";
 			$file_path = "\"" . $file_path . "//" . $outer_file . "\"";
 			$mysql_bin = str_replace("//", "////", $mysql_home);
 			$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' -P '.$port.' '. $current_db . ' > ' . $file_path;
@@ -206,6 +206,60 @@ class Backup extends MY_Controller {
 
 		}
 	}
+
+	public function upload_backup() {
+		$file_name =$_POST['file_name'];
+		$file_path =  FCPATH.'backup_db/'.$file_name;
+
+
+		$this->load->library('ftp');
+
+		$config['hostname'] = 'ftp.inclusion.im';
+		$config['username'] = 'adtftp';
+		$config['password'] = 'Kuwesa1!1';
+		$config['debug']        = TRUE;
+
+		$CI = &get_instance();
+		$CI -> load -> database();
+
+		$sql = "SELECT Facility_Code from users limit 1";
+		$result = $CI->db->query($sql);
+		$facility_code = $result->result_array()[0]['Facility_Code']; 
+
+
+		$this->ftp->connect($config);
+		$list = $this->ftp->list_files('/');
+		
+		if (!in_array('/'.$facility_code.'', $list)){
+			$this->ftp->mkdir('/'.$facility_code.'/', 0755);
+		}
+		$uploaded_backups = $this->ftp->list_files('/'.$facility_code.'/');
+		
+		if (!in_array('/'.$facility_code.'/'.$file_name, $uploaded_backups)){
+		$this->ftp->upload($file_path, '/'.$facility_code.'/'.$file_name, 'ascii', 0775);
+		}
+		else{
+			echo "backup already done";
+		}
+		$this->ftp->close();
+	}
+
+
+
+	public function delete_backup() {
+		$file_name =$_POST['file_name'];
+		$file_path =  FCPATH.'backup_db/'.$file_name;
+		if($this->delete_file($file_path)){
+			echo "Backup deleted";
+		}
+		else{
+			echo "failed to delete backup";
+		}
+
+
+	}
+
+
 
 	public function zip_backup($file_path = null) {
 		$this->load->library('zip');
