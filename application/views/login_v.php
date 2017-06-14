@@ -81,8 +81,6 @@
 					All Rights Reserved
 					<br/><br/>
 						<strong>Web-ADT version 3.2.1</strong>
-						-
-						<strong><a href="<?= base_url() ?>tools">ADT Tools</a></strong>
 					</div>
 				</div>
 				</div>
