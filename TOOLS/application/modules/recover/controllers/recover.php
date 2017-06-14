@@ -63,6 +63,34 @@ class Recover extends MY_Controller {
 			$status = "Database Exists!";
 			$this -> session -> set_userdata("db_name", $database_name);
 		}
+			// write new credentials to project's config file
+		// check file Exists
+			$db_config_file =  str_replace('\tools', '', FCPATH).'application/config/database.php';
+
+			// $write_config = false;
+			// $write_config = ( explode(':', $CI->db->hostname)[0] == $this -> session -> userdata("db_host")) ? true : false ;
+
+			// $write_config = ( $CI->db->password == $this -> session -> userdata("db_pass")) ? true : false ;
+			// $write_config = ( $CI->db->username == $this -> session -> userdata("db_user")) ? true : false ;
+			// $write_config = ( $CI->db->database == $this -> session -> userdata("db_name")) ? true : false ;
+
+			if(file_exists($db_config_file)){
+				$hostname = $this -> session -> userdata("db_host");
+				$username = $this -> session -> userdata("db_user");
+				$password = $this -> session -> userdata("db_pass");
+				$current_db = $this -> session -> userdata("db_name");
+
+				$file = fopen($db_config_file,"a");
+
+				fwrite($file,"". "\r\n");
+				fwrite($file,"\$db['default']['hostname'] = '$host_name';". "\r\n");
+				fwrite($file,"\$db['default']['username'] = '$host_user';". "\r\n");
+				fwrite($file,"\$db['default']['password'] = '$host_password';". "\r\n");
+				fwrite($file,"\$db['default']['database'] = '$database_name';". "\r\n");
+				fclose($file);
+
+			}
+			
 		echo $status;
 	}
 
@@ -176,7 +204,7 @@ class Recover extends MY_Controller {
 		}
 	}
 
-	
+
 
 
 
