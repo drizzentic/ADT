@@ -2,6 +2,9 @@
   <div class="container">
     <div class="row">
       <div class="col col-md-12">
+        <div class="alert alert-info" role="alert" style="display: none;"> 
+
+        </div>
         <h4>Create Backup</h4>
         <form class="form-horizontal" id="backup_frm">
          <div class="form-group">
@@ -36,11 +39,15 @@
 <script type="text/javascript">
 
   $(document).ready(function(){ 
-
+  $(".recover").text("Upload Backup");           
+    $('.recover').parent().append(' | <a class="btn btn-danger delete">Delete Backup</a>')
+$('.recover').parent().first().html('<button class="btn btn-primary btn-sm recover">Upload Backup</button>')
+// $('.recover').parent(:nth-child(3)  ).first().html('<button class="btn btn-primary btn-sm recover">Upload Backup</button>')
+// $('.recover').parent()[0].find('.delete').remmove();
 
    $("#backup_frm").on('submit',function(e){
   		//disable button when submitted
-      $("#backup_btn").attr("disabled",true);
+      $("#backup_btn, .btn").attr("disabled",true);
         // do ajax request to backup
 
 
@@ -61,10 +68,14 @@
           url: "backup/run_backup",
           data: data,
           success: (function(resp){
-            $("#backup_btn").attr("disabled",false);
+            $("#backup_btn, .btn").attr("disabled",false);
             $('#progress-text').text(resp);
               // $('.modal form').hide();
               $('#progress-panel').hide();
+              $('.alert').show();
+              $('.alert').text(""+resp);
+
+
               window.location.href = "";
 
             }),
@@ -80,26 +91,88 @@
 
         e.preventDefault();
       });
+
+
+
+
+
    $(".recover").click(function() {
-     var current_row = $(this).closest('tr').children('td');
-     var file_name = current_row.eq(1).text();
-     var link="<?php echo base_url().'recover/start_recovery/'?>"
-     $.ajax({
+    $('#progress-panel').show();
+    $('#progress-text').text("Uploading copy of backup to remote server.");
+    $(".recover, .btn").addClass("disabled");
+    var current_row = $(this).closest('tr').children('td');
+    var file_name = current_row.eq(1).text();
+
+        var file = {
+       "file_name" : file_name
+     }
+
+    var link="<?php echo base_url().'backup/upload_backup/'?>"
+    $.ajax({
       url : link,
       type : 'POST',
-      dataType : 'json',
+      // dataType : 'json',
+      data : file,
+     done : function(response) {
+      $('#progress-panel').hide();
+
+      $(".recover, .btn").removeClass("disabled");
+      $('.alert').show();
+      console.log(response);
+      $('.alert').text(response);
+        // alert(response);
+      },
+      error: function(response){      
+        $(".recover, .btn").removeClass("disabled");
+        $('#progress-panel').hide();
+        $('.alert').show();
+        console.log(response);
+        $('.alert').text(response);
+        // alert(response);
+      }
+    });
+  });
+
+
+
+
+   $(".delete").click(function() {
+    $('#progress-panel').show();
+    $('#progress-text').text("Deleting Backup");
+    $(".recover, .btn").addClass("disabled");
+    var current_row = $(this).closest('tr').children('td');
+    var file_name = current_row.eq(1).text();
+    var link="<?php echo base_url().'backup/delete_backup/'?>"
+    $.ajax({
+      url : link,
+      type : 'POST',
+      // dataType : 'json',
       data : {
        "file_name" : file_name
      },
-     success : function(data) {
-       if(data==1){
-        alert("Recovery successful")
-      }else{
-        alert("Recovery not needed")
+     done : function(response) {
+      $('#progress-panel').hide();
+
+      $(".recover, .btn").removeClass("disabled");
+      $('.alert').show();
+      console.log(response);
+      $('.alert').text(response);
+        // alert(response);
+              window.location.href = "";
+      },
+      error: function(response){      
+        $(".recover, .btn").removeClass("disabled");
+        $('#progress-panel').hide();
+        $('.alert').show();
+        console.log(response);
+        $('.alert').text(response);
+        // alert(response);
+              window.location.href = "";
       }
-    }
+    });
   });
-   });
+
+
  });
 
 </script>

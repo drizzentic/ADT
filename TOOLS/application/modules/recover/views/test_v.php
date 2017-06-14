@@ -28,13 +28,13 @@
 							},
 							onFinishing:function(event, currentIndex)  {
 								var server_status = $("#log3_status").val();
-								  if(server_status == 1) {
-								  	alert("Recovery Complete");
+								if(server_status == 1) {
+									alert("Recovery Complete");
 									return true;
-								  } else {
-								  	alert("Recovery not complete");
+								} else {
+									alert("Recovery not complete");
 									return false;
-								  }
+								}
 							}
 						});
 					});
@@ -115,6 +115,14 @@
 									<input type="file" id="file" name="file"  required/>
 								</div>
 							</div>
+
+
+							<div id="progress-panel" style="display: none;">
+								<span id="progress-text">Performing Recovery</span>
+								<br />  
+								<img src="<?= base_url() ?>assets/img/loader.gif" >
+							</div>
+
 							<div class="control-group form-actions">
 								<label class="control-label"></label>
 								<div class="controls" id="backup_files">
@@ -129,7 +137,7 @@
 	</div>
 </div>
 <script>
-    <?php $timestamp = time();?>
+	<?php $timestamp = time();?>
 	$(function() {
 		//Submit Server Configuarion Form
 		$('#checkServerFrm').on('submit', function(e) {
@@ -150,73 +158,81 @@
 			e.preventDefault();
 		});
         //Submit Database Configuarion Form
-		$('#checkDatabaseFrm').on('submit', function(e) {
-			$.ajax({
-				type : 'post',
-				url : 'recover/check_database',
-				data : $('form').serialize(),
-				success : function(data) {
-					if(data == 0) {
-						var data = "Database does not exist! \nError creating database!";
-						$("#log2_status").val(0);
-					} else {
-						$("#log2_status").val(1);
-					}
-					var mystatus = $("#inputLog1").text() + "\n" + data;
-					$("#inputLog2").text(mystatus);
-				}
-			});
-			e.preventDefault();
-		});
+        $('#checkDatabaseFrm').on('submit', function(e) {
+        	$.ajax({
+        		type : 'post',
+        		url : 'recover/check_database',
+        		data : $('form').serialize(),
+        		success : function(data) {
+        			if(data == 0) {
+        				var data = "Database does not exist! \nError creating database!";
+        				$("#log2_status").val(0);
+        			} else {
+        				$("#log2_status").val(1);
+        			}
+        			var mystatus = $("#inputLog1").text() + "\n" + data;
+        			$("#inputLog2").text(mystatus);
+        		}
+        	});
+        	e.preventDefault();
+        });
 	    //File Upload Form	
-		$('#file').uploadify({
-			    'method'  : 'post',
-				'formData'     : {
-					'timestamp' : '<?php echo $timestamp;?>',
-					'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
-				},
-				'swf'      : '<?php echo base_url()."assets/images/" ?>uploadify.swf',
-				'uploader' : 'recover/start_database',
-				'onUploadSuccess' : function(file, data, response) {
-					if(data==1){
-                     alert('The file ' + file.name + ' was successfully');
-                     $("#backup_files").load("recover/showdir",function(){
-								$('.dataTables').dataTable({
-									"bJQueryUI" : true,
-									"sPaginationType" : "full_numbers",
-									"bProcessing" : true,
-									"bServerSide" : false,
-								});
-	                     });
-	                 }else{
-	                 	alert('The file ' + file.name + ' upload failed '+data);
-	                 }
-                 }
-		});
-		
-		
-		$('.recover').live('click', function(e) {
-			var current_row = $(this).closest('tr').children('td');
-			var file_name = current_row.eq(1).text();
-			var link='recover/start_recovery/';
-			$.ajax({
-				url : link,
-				type : 'POST',
-				data : {
-					"file_name" : file_name
-				},
-				success : function(data) {
-					if(data==1){
-						alert("Recovery Successful!");
-						$("#log3_status").val(1);
-					}else{
-						alert("Recovery Failed!");
-						$("#log3_status").val(0);
-					}
-				}
-			});
-			e.preventDefault();
-		});
+	    $('#file').uploadify({
+	    	'method'  : 'post',
+	    	'formData'     : {
+	    		'timestamp' : '<?php echo $timestamp;?>',
+	    		'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
+	    	},
+	    	'swf'      : '<?php echo base_url()."assets/images/" ?>uploadify.swf',
+	    	'uploader' : 'recover/start_database',
+	    	'onUploadSuccess' : function(file, data, response) {
+	    		if(data==1){
+	    			alert('The file ' + file.name + ' was successfully');
+	    			$("#backup_files").load("recover/showdir",function(){
+	    				$('.dataTables').dataTable({
+	    					"bJQueryUI" : true,
+	    					"sPaginationType" : "full_numbers",
+	    					"bProcessing" : true,
+	    					"bServerSide" : false,
+	    				});
+	    			});
+	    		}else{
+	    			alert('The file ' + file.name + ' upload failed '+data);
+	    		}
+	    	}
+	    });
+
+
+	    $('.recover').live('click', function(e) {
+	    	$('#progress-panel').show();
+	    	$('.recover').addClass('disabled');
+
+	    	var current_row = $(this).closest('tr').children('td');
+	    	var file_name = current_row.eq(1).text();
+	    	var link='recover/start_recovery/';
+	    	$.ajax({
+	    		url : link,
+	    		type : 'POST',
+	    		data : {
+	    			"file_name" : file_name
+	    		},
+	    		success : function(data) {
+	    			if(data==1){
+	    				alert("Recovery Successful!");
+	    				$("#log3_status").val(1);
+	    				$('.recover').removeClass('disabled');
+	    				$('#progress-panel').hide();
+
+	    			}else{
+	    				alert("Recovery Failed!");
+	    				$("#log3_status").val(0);
+	    				$('.recover').removeClass('disabled');
+	    				$('#progress-panel').hide();
+	    			}
+	    		}
+	    	});
+	    	e.preventDefault();
+	    });
 	});
 
 </script>
