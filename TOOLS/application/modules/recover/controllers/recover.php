@@ -13,6 +13,14 @@ class Recover extends MY_Controller {
 		$data['active_menu'] = 1;
 		$data['content_view'] = "recover/test_v";
 		$data['title'] = "Dashboard | System Recovery";
+
+		$CI = &get_instance();
+		$CI -> load -> database();
+		$data['sys_hostname'] = explode(':', $CI->db->hostname)[0];
+		$data['sys_username'] = $CI->db->username;
+		$data['sys_password'] = $CI->db->password;
+
+
 		$this -> template($data);
 	}
 
