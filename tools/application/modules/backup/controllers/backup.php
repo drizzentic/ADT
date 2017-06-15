@@ -13,6 +13,7 @@ class Backup extends MY_Controller {
 		$data['active_menu'] = 2;
 		$data['content_view'] = "backup/backup_v";
 		$data['title'] = "Dashboard | System Recovery";
+
 		$this -> template($data);
 	}
 
