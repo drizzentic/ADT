@@ -17,6 +17,7 @@ class Recover extends MY_Controller {
 		$CI = &get_instance();
 		$CI -> load -> database();
 		$data['sys_hostname'] = explode(':', $CI->db->hostname)[0];
+		$data['sys_hostport']  = $CI->db->port;
 		$data['sys_username'] = $CI->db->username;
 		$data['sys_password'] = $CI->db->password;
 
@@ -29,8 +30,9 @@ class Recover extends MY_Controller {
 		$host_name = ($this -> input -> post("inputHost")!= null) ? $this -> input -> post("inputHost") : 'localhost';
 		$host_user = $this -> input -> post("inputUser");
 		$host_password = $this -> input -> post("inputPassword");
+		$host_port = $this -> input -> post("inputPort");
 
-		$link = @mysql_connect($host_name, $host_user, $host_password);
+		$link = @mysql_connect($host_name.':'.$host_port, $host_user, $host_password);
 		if ($link == false) {
 			$status = 0;
 		} else {
@@ -38,6 +40,8 @@ class Recover extends MY_Controller {
 			$this -> session -> set_userdata("db_host", $host_name);
 			$this -> session -> set_userdata("db_user", $host_user);
 			$this -> session -> set_userdata("db_pass", $host_password);
+			$this -> session -> set_userdata("db_port", $host_port);
+
 		}
 		echo $status;
 	}
@@ -47,6 +51,7 @@ class Recover extends MY_Controller {
 		$host_user = $this -> session -> userdata("db_user");
 		$host_password = $this -> session -> userdata("db_pass");
 		$database_name = $this -> input -> post("inputDb");
+		$database_port = $this -> input -> post("inputport");
 
 		$link = @mysql_connect($host_name, $host_user, $host_password);
 		$db_selected = @mysql_select_db($database_name, $link);
@@ -65,7 +70,7 @@ class Recover extends MY_Controller {
 		}
 			// write new credentials to project's config file
 		// check file Exists
-			$db_config_file =  str_replace('\tools', '', FCPATH).'application/config/database.php';
+			$db_config_file =  str_replace('\tools', '', FCPATH).'application/config/db_conf.php';
 
 			// $write_config = false;
 			// $write_config = ( explode(':', $CI->db->hostname)[0] == $this -> session -> userdata("db_host")) ? true : false ;
@@ -79,14 +84,17 @@ class Recover extends MY_Controller {
 				$username = $this -> session -> userdata("db_user");
 				$password = $this -> session -> userdata("db_pass");
 				$current_db = $this -> session -> userdata("db_name");
+				$host_port = $this -> session -> userdata("db_port");
 
-				$file = fopen($db_config_file,"a");
+				$file = fopen($db_config_file,"w");
 
 				fwrite($file,"". "\r\n");
+				fwrite($file,"<?php ". "\r\n");
 				fwrite($file,"\$db['default']['hostname'] = '$host_name';". "\r\n");
 				fwrite($file,"\$db['default']['username'] = '$host_user';". "\r\n");
 				fwrite($file,"\$db['default']['password'] = '$host_password';". "\r\n");
 				fwrite($file,"\$db['default']['database'] = '$database_name';". "\r\n");
+				fwrite($file,"\$db['default']['port'] = $host_port;". "\r\n");
 				fclose($file);
 
 			}
