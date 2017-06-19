@@ -42,11 +42,8 @@ if (!defined('BASEPATH'))
 
 $active_group = 'default';
 $active_record = TRUE;
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'root';
-$db['default']['password'] = 'root';
-$db['default']['database'] = 'testadt';
-$db['default']['port'] = 3306;
+include 'db_conf.php';
+
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = FALSE;
@@ -58,23 +55,6 @@ $db['default']['dbcollat'] = 'utf8_general_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
-
-$db['mirth_db']['hostname'] = 'localhost';
-$db['mirth_db']['username'] = 'root';
-$db['mirth_db']['password'] = 'root';
-$db['mirth_db']['database'] = 'mirth_adt_db';
-$db['mirth_db']['port'] = 3306;
-$db['mirth_db']['dbdriver'] = 'mysql';
-$db['mirth_db']['dbprefix'] = '';
-$db['mirth_db']['pconnect'] = FALSE;
-$db['mirth_db']['db_debug'] = FALSE;
-$db['mirth_db']['cache_on'] = FALSE;
-$db['mirth_db']['cachedir'] = '';
-$db['mirth_db']['char_set'] = 'utf8';
-$db['mirth_db']['dbcollat'] = 'utf8_general_ci';
-$db['mirth_db']['swap_pre'] = '';
-$db['mirth_db']['autoinit'] = TRUE;
-$db['mirth_db']['stricton'] = FALSE;
 
 /* End of file database.php */
 
