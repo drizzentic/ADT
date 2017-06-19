@@ -9,11 +9,76 @@ class Backup extends MY_Controller {
 	}
 
 	public function index() {
-		$data['backup_files'] = $this -> checkdir();
+		// $data['backup_files'] = $this -> checkdir();
+
 		$data['active_menu'] = 2;
 		$data['content_view'] = "backup/backup_v";
 		$data['title'] = "Dashboard | System Recovery";
+		$dir = $this -> backup_dir;
+		$data['ftp_status'] = '';
+		$files = scandir($dir, 1);
+		$data['remote_files'] = $this->list_remote_files();
+				$CI = &get_instance();
+		$CI -> load -> database();
 
+		$sql = "SELECT Facility_Code from users limit 1";
+		$result = $CI->db->query($sql);
+		$facility_code = $result->result_array()[0]['Facility_Code'];
+		$remote_dir = "/$facility_code/";
+
+
+
+		$table = '<table id="dyn_table" class="table table-hover table-bordered table-condensed dataTables">';
+		$table .= '<thead><th>backup</th>		<th>action</th>		<th>local</th>		<th>remote</th>		</thead>';
+		$table .= '<tbody>';
+
+		// echo "<pre>";		print_r($data['remote_files']);		print_r($files);die;
+		if (!$data['remote_files']){$data['ftp_status'] = "$('.alert').addClass('alert-danger');$('.alert').text('Cannot connect to remote server');$('.alert').show();$('.upload').attr('disabled',true);";}
+		// foreach ($files as $key => $file) {
+		for ($key=0; $key <count($files)-2 ; $key++) { 
+			// echo $file .' <br />';
+
+			if (in_array($remote_dir.$files[$key], $data['remote_files'])){
+				// echo $file.' file exists both remotely and locally';
+				// echo $file .' key '.$key;
+
+				$table .='<td>'.$files[$key].'</td>';
+				$table .='<td><button class="btn btn-danger btn-sm delete" >delete</button></td>';
+
+				$table .='</td><td><img src="./assets/img/check-mark.png" height="25px"></td><td> <img src="./assets/img/check-mark.png" height="25px"></td></tr>';
+				$table .='</tr>';
+			}	
+			else{
+
+				$table .='<td>'.$files[$key].'</td>';
+				$table .='<td><button class="btn btn-danger btn-sm delete" >delete</button>
+								<button class="btn btn-info btn-sm upload" >upload</button> </td>';
+				$table .='<td><img src="./assets/img/check-mark.png" height="25px"></td><td><img src="./assets/img/x-mark.png" height="20px"></td></tr>';
+				$table .='</tr>';
+			}
+
+
+
+		}
+		foreach ($data['remote_files'] as $key => $file) {
+			if (in_array(str_replace($remote_dir, '', $file), $files)){
+			}else{
+				// Files only found on remote server
+
+				$table .='<td>'.$file.'</td>';
+				$table .='<td><button class="btn btn-warning btn-sm download" >Download</button> </td>';
+				$table .='<td><img src="./assets/img/x-mark.png" height="20px"></td><td> <img src="./assets/img/check-mark.png" height="25px"></td></tr>';
+				$table .='</tr>';
+
+			}
+		}
+
+
+
+		$table .='</tbody>';
+		$table .='</table>';
+		// echo $table;die;
+		$data['backup_files'] = $table;
 		$this -> template($data);
 	}
 
@@ -189,7 +254,7 @@ class Backup extends MY_Controller {
 
 			$mysql_home = realpath($_SERVER['MYSQL_HOME']) . "\mysqldump";
 			// $outer_file = "webadt_" . date('d-M-Y h-i-sa') . ".sql";
-			$outer_file = $facility_code."_" . date('dMY_hi') . ".sql";
+			$outer_file = $facility_code."_" . date('YmdHis') . ".sql";
 			$file_path = "\"" . $file_path . "//" . $outer_file . "\"";
 			$mysql_bin = str_replace("//", "////", $mysql_home);
 			$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' -P '.$port.' '. $current_db . ' > ' . $file_path;
@@ -204,21 +269,74 @@ class Backup extends MY_Controller {
 				echo "Backup Successful";
 
 			}
+			else{
+				echo "Error: Backup Not successful";
+			}
 
 		}
+	}
+	public function list_remote_files(){
+		$this->load->library('ftp');
+
+		$config['hostname'] = 'ftp.inclusion.co.ke';
+		$config['username'] = 'adtftp';
+		$config['password'] = 'Kuwesa1!1';
+		$config['debug']	= FALSE;
+
+		$CI = &get_instance();
+		$CI -> load -> database();
+
+		$sql = "SELECT Facility_Code from users limit 1";
+		$result = $CI->db->query($sql);
+		$facility_code = $result->result_array()[0]['Facility_Code']; 
+		if($this->ftp->connect($config)){
+			$list = $this->ftp->list_files('/');
+
+			if (!in_array('/'.$facility_code.'', $list)){
+				$this->ftp->mkdir('/'.$facility_code.'/', 0755);
+			}
+			$uploaded_backups = $this->ftp->list_files('/'.$facility_code.'/');
+
+			$this->ftp->close();
+			return $uploaded_backups;
+		}
+		else {return false;}
+	}
+
+	public function download_remote_file($remote_path = null){
+		$remote_path =$_POST['remote_path'];
+		$file_path =  FCPATH.'backup_db/'.explode('/', $remote_path)[2];
+
+		$this->load->library('ftp');
+
+		$config['hostname'] = 'ftp.inclusion.co.ke';
+		$config['username'] = 'adtftp';
+		$config['password'] = 'Kuwesa1!1';
+		$config['debug']	= FALSE;
+
+		if($this->ftp->connect($config)){
+				$this->ftp->download($remote_path, $file_path, 'ascii');
+				$this->ftp->close();
+				echo "Backup download successful";
+			}
+			else{
+				echo "Failed to download backup file";
+			}
 	}
 
 	public function upload_backup() {
 		$file_name =$_POST['file_name'];
 		$file_path =  FCPATH.'backup_db/'.$file_name;
+		// echo $file_path." fp";die;
 
 
 		$this->load->library('ftp');
 
-		$config['hostname'] = 'ftp.inclusion.im';
+		$config['hostname'] = 'ftp.inclusion.co.ke';
 		$config['username'] = 'adtftp';
 		$config['password'] = 'Kuwesa1!1';
-		$config['debug']        = TRUE;
+		$config['debug']	= FALSE;
+
 
 		$CI = &get_instance();
 		$CI -> load -> database();
@@ -237,7 +355,7 @@ class Backup extends MY_Controller {
 		$uploaded_backups = $this->ftp->list_files('/'.$facility_code.'/');
 		
 		if (!in_array('/'.$facility_code.'/'.$file_name, $uploaded_backups)){
-		$this->ftp->upload($file_path, '/'.$facility_code.'/'.$file_name, 'ascii', 0775);
+			$this->ftp->upload($file_path, '/'.$facility_code.'/'.$file_name, 'ascii', 0775);
 		}
 		else{
 			echo "backup already done";
@@ -265,8 +383,9 @@ class Backup extends MY_Controller {
 	public function zip_backup($file_path = null) {
 		$this->load->library('zip');
 
-		$data = $this->zip->read_file($file_path);
-		// C:\\xampp\\htdocs\\ADT\\tools\\backup_db//webadt_09-Jun-2017 01-00-50pm.sql
+
+		$data = $this->zip->read_file($file_path,FALSE);
+		// $data = file_get_contents($file_path);
 		$this->zip->add_data($file_path, $data);
 		// Write the zip file to a folder on your server. Name it "my_backup.zip"
 		if ($this->zip->archive($file_path.'.zip')){

@@ -1996,7 +1996,7 @@ $dyn_table .= "<thead>
 }
 
 
-public function get_pep_reasons($period_end=""){
+public function get_pep_reasons($period_start="",$period_end=""){
 	$sql = "SELECT  pr.name,pr.id,
 	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 15 AND (YEAR(CURDATE())-YEAR(dob)) < 20 , 1, NULL)) as male_15,
 	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 20 AND (YEAR(CURDATE())-YEAR(dob)) < 25 , 1, NULL)) as male_20,
@@ -2008,13 +2008,14 @@ public function get_pep_reasons($period_end=""){
 	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 25 AND (YEAR(CURDATE())-YEAR(dob)) < 30 , 1, NULL)) as female_25,
 	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 30  , 1, NULL)) as female_30
 	FROM patient p
-	LEFT JOIN gender g ON g.id = p.gender
-	left join pep_reason pr on 
+	INNER JOIN gender g ON g.id = p.gender
+	INNER join pep_reason pr on 
 	pr.id = p.pep_reason	
-	left join regimen_service_type rst on rst.id = p.service WHERE LOWER(rst.name) = 'pep'
+	INNER join regimen_service_type rst on rst.id = p.service WHERE LOWER(rst.name) = 'pep'
+	AND p.date_enrolled between '$period_start' and '$period_end'
 	group by pep_reason
-union 
-SELECT 'Total',pr.id,
+	union 
+	SELECT 'Total',pr.id,
 	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 15 AND (YEAR(CURDATE())-YEAR(dob)) < 20 , 1, NULL)) as male_15,
 	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 20 AND (YEAR(CURDATE())-YEAR(dob)) < 25 , 1, NULL)) as male_20,
 	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 25 AND (YEAR(CURDATE())-YEAR(dob)) < 30 , 1, NULL)) as male_25,
@@ -2025,10 +2026,11 @@ SELECT 'Total',pr.id,
 	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 25 AND (YEAR(CURDATE())-YEAR(dob)) < 30 , 1, NULL)) as female_25,
 	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 30  , 1, NULL)) as female_30
 	FROM patient p
-	LEFT JOIN gender g ON g.id = p.gender
-	left join pep_reason pr on 
+	INNER JOIN gender g ON g.id = p.gender
+	INNER join pep_reason pr on 
 	pr.id = p.pep_reason
-	left join regimen_service_type rst on rst.id = p.service WHERE LOWER(rst.name) = 'pep'
+	INNER join regimen_service_type rst on rst.id = p.service WHERE LOWER(rst.name) = 'pep'
+	AND p.date_enrolled between '$period_start' and '$period_end'
 	";
 
 
@@ -2037,8 +2039,14 @@ SELECT 'Total',pr.id,
 	<tr>
 		<th>Description</th>
 		<th>Total</th>
-		<th colspan='4'>Male</th>
-		<th colspan='4'>Female</th>
+		<th>Male</th>
+		<th></th>
+		<th></th>
+		<th></th>
+		<th>Female</th>
+		<th></th>
+		<th></th>
+		<th></th>
 	</tr>
 	<tr>
 		<th></th>
@@ -2058,10 +2066,10 @@ SELECT 'Total',pr.id,
 
 
 //$sql = "SELECT count( * ) AS total FROM patient p LEFT JOIN patient_source ps ON ps.id = p.source WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.active='1'";
-$query = $this -> db -> query($sql);
-$results = $query -> result_array();
+	$query = $this -> db -> query($sql);
+	$results = $query -> result_array();
 // echo "<pre>";
-foreach ($results as $res) {
+	foreach ($results as $res) {
 		$total = ($res['male_15'] + $res['male_20'] + $res['male_25'] + $res['male_30'] + $res['female_15'] + $res['female_20']+ $res['female_25']+ $res['female_30']);
 
 		$dyn_table .= "<tr><td>"
@@ -2075,7 +2083,7 @@ foreach ($results as $res) {
 		.$res['female_20']."</td><td>"
 		.$res['female_25']."</td><td>"
 		.$res['female_30']."</td></tr>";
-}
+	}
 
 	$dyn_table .= "</tbody><tfoot></tfoot></table>";
 
@@ -2087,9 +2095,213 @@ foreach ($results as $res) {
 	$data['banner_text'] = "Facility Reports";
 	$data['selected_report_type_link'] = "standard_report_row";
 	$data['selected_report_type'] = "Standard Reports";
-	$data['report_title'] = "Patients PREP Summary";
+	$data['report_title'] = "PEP Reasons Summary";
 	$data['facility_name'] = $this -> session -> userdata('facility_name');
 	$data['content_view'] = 'reports/pep_reasons_summary_v';
+	$this -> load -> view('template', $data);
+}
+
+public function get_prep_reasons($period_start="",$period_end=""){
+	$sql = "SELECT  pr.name,pr.id,
+	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 15 AND (YEAR(CURDATE())-YEAR(dob)) < 20 , 1, NULL)) as male_15,
+	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 20 AND (YEAR(CURDATE())-YEAR(dob)) < 25 , 1, NULL)) as male_20,
+	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 25 AND (YEAR(CURDATE())-YEAR(dob)) < 30 , 1, NULL)) as male_25,
+	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 30  , 1, NULL)) as male_30,
+
+	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 15 AND (YEAR(CURDATE())-YEAR(dob)) < 20 , 1, NULL)) as female_15,
+	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 20 AND (YEAR(CURDATE())-YEAR(dob)) < 25 , 1, NULL)) as female_20,
+	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 25 AND (YEAR(CURDATE())-YEAR(dob)) < 30 , 1, NULL)) as female_25,
+	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 30  , 1, NULL)) as female_30
+	FROM patient p
+	INNER JOIN gender g ON g.id = p.gender
+	inner join patient_prep_test ppt on p.id = ppt.patient_id
+	inner join prep_reason pr on pr.id = ppt.prep_reason_id
+	INNER join regimen_service_type rst on rst.id = p.service WHERE LOWER(rst.name) = 'prep'
+	AND p.date_enrolled between '$period_start' and '$period_end'
+	group by pr.name
+	union 
+	SELECT 'Total',pr.id,
+	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 15 AND (YEAR(CURDATE())-YEAR(dob)) < 20 , 1, NULL)) as male_15,
+	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 20 AND (YEAR(CURDATE())-YEAR(dob)) < 25 , 1, NULL)) as male_20,
+	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 25 AND (YEAR(CURDATE())-YEAR(dob)) < 30 , 1, NULL)) as male_25,
+	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 30  , 1, NULL)) as male_30,
+
+	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 15 AND (YEAR(CURDATE())-YEAR(dob)) < 20 , 1, NULL)) as female_15,
+	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 20 AND (YEAR(CURDATE())-YEAR(dob)) < 25 , 1, NULL)) as female_20,
+	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 25 AND (YEAR(CURDATE())-YEAR(dob)) < 30 , 1, NULL)) as female_25,
+	COUNT(IF(LOWER(g.name) = 'female' AND (YEAR(CURDATE())-YEAR(dob)) >= 30  , 1, NULL)) as female_30
+	FROM patient p
+	INNER JOIN gender g ON g.id = p.gender
+	inner join patient_prep_test ppt on p.id = ppt.patient_id
+	inner join prep_reason pr on pr.id = ppt.prep_reason_id
+	INNER join regimen_service_type rst on rst.id = p.service WHERE LOWER(rst.name) = 'prep'
+	AND p.date_enrolled between '$period_start' and '$period_end'	
+	";
+
+	$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+	$dyn_table .= "<thead>
+	<tr>
+		<th>Description</th>
+		<th>Total</th>
+		<th>Male</th>
+		<th></th>
+		<th></th>
+		<th></th>
+		<th>Female</th>
+		<th></th>
+		<th></th>
+		<th></th>
+	</tr>
+	<tr>
+		<th></th>
+		<th></th>
+		<th>15 - 19</th>
+		<th>20 - 24</th>
+		<th>25 - 30</th>
+		<th>30 & Above</th>
+
+		<th>15 - 19</th>
+		<th>20 - 24</th>
+		<th>25 - 30</th>
+		<th>30 & Above</th>
+	</tr>
+</thead>
+<tbody>";
+
+
+//$sql = "SELECT count( * ) AS total FROM patient p LEFT JOIN patient_source ps ON ps.id = p.source WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.active='1'";
+	$query = $this -> db -> query($sql);
+	$results = $query -> result_array();
+// echo "<pre>";
+	foreach ($results as $res) {
+		$total = ($res['male_15'] + $res['male_20'] + $res['male_25'] + $res['male_30'] + $res['female_15'] + $res['female_20']+ $res['female_25']+ $res['female_30']);
+
+		$dyn_table .= "<tr><td>"
+		.$res['name'] ."</td><td>"
+		.$total."</td><td>"
+		.$res['male_15']."</td><td>"
+		.$res['male_20']."</td><td>"
+		.$res['male_25']."</td><td>"
+		.$res['male_30']."</td><td>"
+		.$res['female_15']."</td><td>"
+		.$res['female_20']."</td><td>"
+		.$res['female_25']."</td><td>"
+		.$res['female_30']."</td></tr>";
+	}
+
+	$dyn_table .= "</tbody><tfoot></tfoot></table>";
+
+	$data['dyn_table'] = $dyn_table;
+	$data['from'] = date('d-M-Y', strtotime($period_start));
+	$data['to'] = date('d-M-Y', strtotime($period_end));
+	$data['title'] = "webADT | Reports";
+	$data['hide_side_menu'] = 1;
+	$data['banner_text'] = "Facility Reports";
+	$data['selected_report_type_link'] = "standard_report_row";
+	$data['selected_report_type'] = "Standard Reports";
+	$data['report_title'] = "PREP Reasons Summary";
+	$data['facility_name'] = $this -> session -> userdata('facility_name');
+	$data['content_view'] = 'reports/prep_reasons_summary_v';
+	$this -> load -> view('template', $data);
+}
+public function get_prep_reasons_patients($period_start="",$period_end=""){
+	$sql = "SELECT p.patient_number_ccc,p.first_name,p.last_name,g.name as gender, FLOOR(DATEDIFF(now(),dob)/365) as age, pr.name as prep_reason
+	FROM patient p
+	INNER JOIN gender g ON g.id = p.gender
+	INNER join patient_prep_test ppt on p.id = ppt.patient_id
+	INNER join prep_reason pr on pr.id = ppt.prep_reason_id
+	INNER join regimen_service_type rst on rst.id = p.service WHERE LOWER(rst.name) = 'prep'
+	AND p.date_enrolled between '$period_start' and '$period_end'	";
+
+	$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+	$dyn_table .= "<thead>
+	<tr>
+		<th>CCC Number</th>
+		<th>First Name</th>
+		<th>Last Name</th>
+		<th>Gender </th>
+		<th>Age</th>
+		<th>Prep Reason</th>
+	</tr>
+</thead>
+<tbody>";
+
+	$query = $this -> db -> query($sql);
+	$results = $query -> result_array();
+	foreach ($results as $res) {
+
+		$dyn_table .= "<tr><td>"
+		.$res['patient_number_ccc'] ."</td><td>"
+		.$res['first_name']."</td><td>"
+		.$res['last_name']."</td><td>"
+		.$res['gender']."</td><td>"
+		.$res['age']."</td><td>"
+		.$res['prep_reason']."</td></tr>";
+	}
+
+	$dyn_table .= "</tbody><tfoot></tfoot></table>";
+
+	$data['dyn_table'] = $dyn_table;
+	$data['from'] = date('d-M-Y', strtotime($period_start));
+	$data['to'] = date('d-M-Y', strtotime($period_end));
+	$data['title'] = "webADT | Reports";
+	$data['hide_side_menu'] = 1;
+	$data['banner_text'] = "Facility Reports";
+	$data['selected_report_type_link'] = "standard_report_row";
+	$data['selected_report_type'] = "Standard Reports";
+	$data['report_title'] = "PREP Reasons Patients";
+	$data['facility_name'] = $this -> session -> userdata('facility_name');
+	$data['content_view'] = 'reports/prep_reasons_patients_v';
+	$this -> load -> view('template', $data);
+}
+public function get_pep_reasons_patients($period_start="",$period_end=""){
+	$sql = "SELECT p.patient_number_ccc,p.first_name,p.last_name,g.name as gender, FLOOR(DATEDIFF(now(),dob)/365) as age, pr.name as pep_reason
+	FROM patient p
+	INNER JOIN gender g ON g.id = p.gender
+	INNER join pep_reason pr on 
+	pr.id = p.pep_reason	
+	INNER join regimen_service_type rst on rst.id = p.service WHERE LOWER(rst.name) = 'pep'
+	AND p.date_enrolled between '$period_start' and '$period_end'	";
+
+	$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+	$dyn_table .= "<thead>
+	<tr>
+		<th>CCC Number</th>
+		<th>First Name</th>
+		<th>Last Name</th>
+		<th>Gender </th>
+		<th>Age</th>
+		<th>Prep Reason</th>
+	</tr>
+</thead>
+<tbody>";
+
+	$query = $this -> db -> query($sql);
+	$results = $query -> result_array();
+	foreach ($results as $res) {
+
+		$dyn_table .= "<tr><td>"
+		.$res['patient_number_ccc'] ."</td><td>"
+		.$res['first_name']."</td><td>"
+		.$res['last_name']."</td><td>"
+		.$res['gender']."</td><td>"
+		.$res['age']."</td><td>"
+		.$res['pep_reason']."</td></tr>";
+	}
+
+	$dyn_table .= "</tbody><tfoot></tfoot></table>";
+
+	$data['dyn_table'] = $dyn_table;
+	$data['from'] = date('d-M-Y', strtotime($period_start));
+	$data['to'] = date('d-M-Y', strtotime($period_end));
+	$data['title'] = "webADT | Reports";
+	$data['hide_side_menu'] = 1;
+	$data['banner_text'] = "Facility Reports";
+	$data['selected_report_type_link'] = "standard_report_row";
+	$data['selected_report_type'] = "Standard Reports";
+	$data['report_title'] = "PEP Reasons Patients";
+	$data['facility_name'] = $this -> session -> userdata('facility_name');
+	$data['content_view'] = 'reports/pep_reasons_patients_v';
 	$this -> load -> view('template', $data);
 }
 

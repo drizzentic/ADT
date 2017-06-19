@@ -108,7 +108,8 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 				<option class="single_date_report" value="getnonisoniazidPatients">Patients not on Isoniazid </option><!-- New section for patients not on Isoniazid -->
 				
 				<option class="month_period_report" value="get_prep_patients">Patient PREP Summary</option>
-				<option class="single_date_report" value="get_pep_reasons">PEP Reasons Summary</option>
+				<option class="date_range_report" value="get_pep_reasons">PEP Reasons Summary</option>
+				<option class="date_range_report" value="get_prep_reasons">PREP Reasons Summary</option>
 			</select></td>
 		</tr>
 		<!-- Visiting patients reports -->

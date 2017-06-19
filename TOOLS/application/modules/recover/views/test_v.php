@@ -52,6 +52,13 @@
 								</div>
 							</div>
 							<div class="control-group">
+								<label class="control-label" for="inputPort">Database Port</label>
+								<div class="controls">
+									<input type="hidden" id="log1_status" name="log1_status" value="0" />
+									<input type="text" id="inputPort" name="inputPort" placeholder="localhost" value="<?php echo $sys_hostport; ?>" />
+								</div>
+							</div>
+														<div class="control-group">
 								<label class="control-label" for="inputUser">Database User</label>
 								<div class="controls">
 									<input type="text" id="inputUser" name="inputUser" placeholder="root" value="<?php echo $sys_username; ?>" required/>

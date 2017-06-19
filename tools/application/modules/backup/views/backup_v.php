@@ -7,10 +7,6 @@
         <div class="alert alert-info" role="alert" style="display: none;"> 
 
         </div>
-
-        <?php 
-        ?>
-
         <h4>Create Backup</h4>
         <form class="form-horizontal" id="backup_frm">
          <div class="form-group">
@@ -45,20 +41,17 @@
 <script type="text/javascript">
 
   $(document).ready(function(){ 
-
-
-    $('#myTabs a').click(function (e) {
-      e.preventDefault()
-      $(this).tab('show')
-    })
+<?= $ftp_status; ?>
 
 
 
-    $(".recover").text("Upload Backup");           
-    $('.recover').parent().append(' | <a class="btn btn-danger delete">Delete Backup</a>')
-    $('.recover').parent().first().html('<button class="btn btn-primary btn-sm recover">Upload Backup</button>')
-// $('.recover').parent(:nth-child(3)  ).first().html('<button class="btn btn-primary btn-sm recover">Upload Backup</button>')
-// $('.recover').parent()[0].find('.delete').remmove();
+
+
+    // $(".upload").text("Upload Backup");           
+    // $('.upload').parent().append(' | <a class="btn btn-danger delete">Delete Backup</a>')
+    // $('.upload').parent().first().html('<button class="btn btn-danger btn-sm delete">Delete Backup</button>')
+// $('.upload').parent(:nth-child(3)  ).first().html('<button class="btn btn-primary btn-sm recover">Upload Backup</button>')
+// $('.upload').parent()[0].find('.delete').remmove();
 
 $("#backup_frm").on('submit',function(e){
   		//disable button when submitted
@@ -89,8 +82,6 @@ $("#backup_frm").on('submit',function(e){
               $('#progress-panel').hide();
               $('.alert').show();
               $('.alert').text(""+resp);
-
-
               window.location.href = "";
 
             }),
@@ -111,12 +102,12 @@ $("#backup_frm").on('submit',function(e){
 
 
 
-$(".recover").click(function() {
+$(".upload").click(function() {
   $('#progress-panel').show();
   $('#progress-text').text("Uploading copy of backup to remote server.");
-  $(".recover, .btn").addClass("disabled");
+  $(".upload, .btn").addClass("disabled");
   var current_row = $(this).closest('tr').children('td');
-  var file_name = current_row.eq(1).text();
+  var file_name = current_row.eq(0).text();
 
   var file = {
    "file_name" : file_name
@@ -131,18 +122,57 @@ $(".recover").click(function() {
       done : function(response) {
         $('#progress-panel').hide();
 
-        $(".recover, .btn").removeClass("disabled");
+        $(".upload, .btn").removeClass("disabled");
         $('.alert').show();
         console.log(response);
         $('.alert').text(response);
         // alert(response);
       },
       error: function(response){      
-        $(".recover, .btn").removeClass("disabled");
+        $(".upload, .btn").removeClass("disabled");
         $('#progress-panel').hide();
         $('.alert').show();
         console.log(response);
         $('.alert').text(response);
+        // alert(response);
+      }
+    });
+});
+
+$(".download").click(function() {
+  $('#progress-panel').show();
+  $('#progress-text').text("Downloading copy of backup from remote server.");
+  $(".download, .btn").addClass("disabled");
+  var current_row = $(this).closest('tr').children('td');
+  var remote_path = current_row.eq(0).text();
+
+  var file = {
+   "remote_path" : remote_path
+ }
+
+ var link="<?php echo base_url().'backup/download_remote_file/'?>"
+ $.ajax({
+  url : link,
+  type : 'POST',
+      // dataType : 'json',
+      data : file,
+      success : function(response) {
+        $('#progress-panel').hide();
+
+        $(".download, .btn").removeClass("disabled");
+        $('.alert').show();
+        console.log(response);
+        $('.alert').text(response);
+        window.location.href = "";
+        // alert(response);
+      },
+      error: function(response){      
+        $(".download, .btn").removeClass("disabled");
+        $('#progress-panel').hide();
+        $('.alert').show();
+        console.log(response);
+        $('.alert').text(response);
+        window.location.href = "";
         // alert(response);
       }
     });
@@ -154,9 +184,9 @@ $(".recover").click(function() {
 $(".delete").click(function(e) {
   $('#progress-panel').show();
   $('#progress-text').text("Deleting Backup");
-  $(".recover, .btn").addClass("disabled");
+  $(".upload, .btn").addClass("disabled");
   var current_row = $(this).closest('tr').children('td');
-  var file_name = current_row.eq(1).text();
+  var file_name = current_row.eq(0).text();
   var file = {'file_name' : file_name};
   var link="<?php echo base_url().'backup/delete_backup/'?>"
   $.ajax({
@@ -166,21 +196,21 @@ $(".delete").click(function(e) {
     success : function(response) {
       $('#progress-panel').hide();
 
-      $(".recover, .btn").removeClass("disabled");
+      $(".upload, .btn").removeClass("disabled");
       $('.alert').show();
       console.log(response);
       $('.alert').text(response);
         // alert(response);
-        window.location.href = "";
+        // window.location.href = "";
       },
       error: function(response){      
-        $(".recover, .btn").removeClass("disabled");
+        $(".upload, .btn").removeClass("disabled");
         $('#progress-panel').hide();
         $('.alert').show();
         console.log(response);
         $('.alert').text(response);
         // alert(response);
-        window.location.href = "";
+        // window.location.href = "";
       }
     });
 });
