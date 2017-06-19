@@ -4,8 +4,16 @@ if (!defined('BASEPATH'))
 
 class Backup extends MY_Controller {
 	var $backup_dir = "./backup_db";
+
+	var $config = array (
+		'hostname' => 'ftp.inclusion.co.ke',
+		'username' => 'adtftp',
+		'password' => 'Kuwesa1!1',
+		'debug'	=> TRUE);
+
 	function __construct() {
 		parent::__construct();
+		$this->load->library('ftp');
 	}
 
 	public function index() {
@@ -17,8 +25,15 @@ class Backup extends MY_Controller {
 		$dir = $this -> backup_dir;
 		$data['ftp_status'] = '';
 		$files = scandir($dir, 1);
-		$data['remote_files'] = $this->list_remote_files();
-				$CI = &get_instance();
+		// $data['remote_files'] = $this->list_remote_files();
+
+		$this->connect_ftp();
+// 			$list = $this->list_remote_files();
+// var_dump($list);
+// $this->disconnect_ftp();
+// 		die;
+		$data['remote_files'] = ($this->connect_ftp()) ? $this->list_remote_files() : false ;
+		$CI = &get_instance();
 		$CI -> load -> database();
 
 		$sql = "SELECT Facility_Code from users limit 1";
@@ -28,10 +43,9 @@ class Backup extends MY_Controller {
 
 
 
-		$table = '<table id="dyn_table" class="table table-hover table-bordered table-condensed dataTables">';
+		$table = '<table id="dyn_table" class="table table-striped table-condensed table-bordered" cellspacing="0" width="100%">';
 		$table .= '<thead><th>backup</th>		<th>action</th>		<th>local</th>		<th>remote</th>		</thead>';
 		$table .= '<tbody>';
-
 		// echo "<pre>";		print_r($data['remote_files']);		print_r($files);die;
 		if (!$data['remote_files']){$data['ftp_status'] = "$('.alert').addClass('alert-danger');$('.alert').text('Cannot connect to remote server');$('.alert').show();$('.upload').attr('disabled',true);";}
 		// foreach ($files as $key => $file) {
@@ -43,17 +57,17 @@ class Backup extends MY_Controller {
 				// echo $file .' key '.$key;
 
 				$table .='<td>'.$files[$key].'</td>';
-				$table .='<td><button class="btn btn-danger btn-sm delete" >delete</button></td>';
+				$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button></td>';
 
-				$table .='</td><td><img src="./assets/img/check-mark.png" height="25px"></td><td> <img src="./assets/img/check-mark.png" height="25px"></td></tr>';
+				$table .='</td><td align="center"><img src="./assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./assets/img/check-mark.png" height="25px"></td></tr>';
 				$table .='</tr>';
 			}	
 			else{
 
 				$table .='<td>'.$files[$key].'</td>';
-				$table .='<td><button class="btn btn-danger btn-sm delete" >delete</button>
-								<button class="btn btn-info btn-sm upload" >upload</button> </td>';
-				$table .='<td><img src="./assets/img/check-mark.png" height="25px"></td><td><img src="./assets/img/x-mark.png" height="20px"></td></tr>';
+				$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button>
+				<button class="btn btn-info btn-sm upload" >Upload</button> </td>';
+				$table .='<td align="center"><img src="./assets/img/check-mark.png" height="25px"></td><td align="center"><img src="./assets/img/x-mark.png" height="20px"></td></tr>';
 				$table .='</tr>';
 			}
 
@@ -67,7 +81,7 @@ class Backup extends MY_Controller {
 
 				$table .='<td>'.$file.'</td>';
 				$table .='<td><button class="btn btn-warning btn-sm download" >Download</button> </td>';
-				$table .='<td><img src="./assets/img/x-mark.png" height="20px"></td><td> <img src="./assets/img/check-mark.png" height="25px"></td></tr>';
+				$table .='<td align="center"><img src="./assets/img/x-mark.png" height="20px"></td><td align="center"> <img src="./assets/img/check-mark.png" height="25px"></td></tr>';
 				$table .='</tr>';
 
 			}
@@ -275,13 +289,8 @@ class Backup extends MY_Controller {
 
 		}
 	}
-	public function list_remote_files(){
-		$this->load->library('ftp');
 
-		$config['hostname'] = 'ftp.inclusion.co.ke';
-		$config['username'] = 'adtftp';
-		$config['password'] = 'Kuwesa1!1';
-		$config['debug']	= FALSE;
+	public function list_remote_files(){
 
 		$CI = &get_instance();
 		$CI -> load -> database();
@@ -289,18 +298,22 @@ class Backup extends MY_Controller {
 		$sql = "SELECT Facility_Code from users limit 1";
 		$result = $CI->db->query($sql);
 		$facility_code = $result->result_array()[0]['Facility_Code']; 
-		if($this->ftp->connect($config)){
+
+		// echo "time before  connection" .date('h:i:s',time()) .'<br />';
+		// if($this->ftp->connect($this -> config)){
+			// echo "time after connection" .date('h:i:s',time()).'<br />';
+		// var_dump($this->ftp->list_files('/11289/'));
 			$list = $this->ftp->list_files('/');
 
 			if (!in_array('/'.$facility_code.'', $list)){
 				$this->ftp->mkdir('/'.$facility_code.'/', 0755);
 			}
 			$uploaded_backups = $this->ftp->list_files('/'.$facility_code.'/');
-
-			$this->ftp->close();
+			// echo "time after checking files" .date('h:i:s',time()).'<br />';
+			// $this->ftp->close();			echo "time after closing connection" .date('h:i:s',time()).'<br />';
 			return $uploaded_backups;
-		}
-		else {return false;}
+		// }
+		// else {return false;}
 	}
 
 	public function download_remote_file($remote_path = null){
@@ -315,13 +328,13 @@ class Backup extends MY_Controller {
 		$config['debug']	= FALSE;
 
 		if($this->ftp->connect($config)){
-				$this->ftp->download($remote_path, $file_path, 'ascii');
-				$this->ftp->close();
-				echo "Backup download successful";
-			}
-			else{
-				echo "Failed to download backup file";
-			}
+			$this->ftp->download($remote_path, $file_path, 'ascii');
+			$this->ftp->close();
+			echo "Backup download successful";
+		}
+		else{
+			echo "Failed to download backup file";
+		}
 	}
 
 	public function upload_backup() {
@@ -330,13 +343,7 @@ class Backup extends MY_Controller {
 		// echo $file_path." fp";die;
 
 
-		$this->load->library('ftp');
-
-		$config['hostname'] = 'ftp.inclusion.co.ke';
-		$config['username'] = 'adtftp';
-		$config['password'] = 'Kuwesa1!1';
-		$config['debug']	= FALSE;
-
+		$this->connect_ftp();
 
 		$CI = &get_instance();
 		$CI -> load -> database();
@@ -346,7 +353,6 @@ class Backup extends MY_Controller {
 		$facility_code = $result->result_array()[0]['Facility_Code']; 
 
 
-		$this->ftp->connect($config);
 		$list = $this->ftp->list_files('/');
 		
 		if (!in_array('/'.$facility_code.'', $list)){
@@ -356,11 +362,12 @@ class Backup extends MY_Controller {
 		
 		if (!in_array('/'.$facility_code.'/'.$file_name, $uploaded_backups)){
 			$this->ftp->upload($file_path, '/'.$facility_code.'/'.$file_name, 'ascii', 0775);
+			echo "Upload  Successful";
 		}
 		else{
 			echo "backup already done";
 		}
-		$this->ftp->close();
+		$this->disconnect_ftp();
 	}
 
 
@@ -400,7 +407,30 @@ class Backup extends MY_Controller {
 				return false;
 			}
 		}
+		public function connect_ftp(){
 
+			// $conf['hostname'] = 'ftp.inclusion.co.ke'; 
+			// $conf['username'] = 'adtftp'; 
+			// $conf['password'] = 'Kuwesa1!1'; 
+			// $conf['debug'] = TRUE;
+
+			// if($this->ftp->connect($conf)){
+			if($this->ftp->connect($this -> config)){
+				return true;
+			}
+			else{
+				return false;
+			}
+
+		}
+		public function disconnect_ftp(){
+			if($this->ftp->close()){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
 
 
 		

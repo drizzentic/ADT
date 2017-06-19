@@ -1,13 +1,7 @@
 <div class="external-content">
   <div class="container">
     <div class="row">
-
-      <div class="col col-md-12">
-
-        <div class="alert alert-info" role="alert" style="display: none;"> 
-
-        </div>
-        <h4>Create Backup</h4>
+      <div class="col col-md-2">
         <form class="form-horizontal" id="backup_frm">
          <div class="form-group">
          </div>
@@ -17,19 +11,19 @@
           </div>
         </div>
       </form>
-
       <div id="progress-panel" style="display: none;">
-        <span id="progress-text">Creating Backup</span>  
+      <span id="progress-text"></span>
         <img src="<?= base_url() ?>assets/img/loader.gif" >
       </div>
       <hr />
-
+    </div>
+    <div class="col col-md-10">
+      <div class="alert alert-info" role="alert" style="display: none;"> 
+      </div>
     </div>
 
   </div>
-
 </div>
-<h4>Backup viewer</h4>
 <div class="browser">
   <div id="dvContents" class="dvContents">
    <?php
@@ -41,12 +35,10 @@
 <script type="text/javascript">
 
   $(document).ready(function(){ 
-<?= $ftp_status; ?>
+    <?= $ftp_status; ?>
+    $("td:contains('testadt_blank.sql.zip')").next().html('<button class="btn btn-info btn-sm upload" >Upload</button>');
 
-
-
-
-
+    $('#dyn_table').DataTable();
     // $(".upload").text("Upload Backup");           
     // $('.upload').parent().append(' | <a class="btn btn-danger delete">Delete Backup</a>')
     // $('.upload').parent().first().html('<button class="btn btn-danger btn-sm delete">Delete Backup</button>')
@@ -60,8 +52,6 @@ $("#backup_frm").on('submit',function(e){
 
 
         var upload =   $('input[name=upload]:checked').val();
-
-
 
         var data = {
           upload : upload,
@@ -104,11 +94,11 @@ $("#backup_frm").on('submit',function(e){
 
 $(".upload").click(function() {
   $('#progress-panel').show();
-  $('#progress-text').text("Uploading copy of backup to remote server.");
+  $('#progress-text').text("Uploading backup.");
   $(".upload, .btn").addClass("disabled");
   var current_row = $(this).closest('tr').children('td');
   var file_name = current_row.eq(0).text();
-
+  
   var file = {
    "file_name" : file_name
  }
@@ -119,7 +109,7 @@ $(".upload").click(function() {
   type : 'POST',
       // dataType : 'json',
       data : file,
-      done : function(response) {
+      success : function(response) {
         $('#progress-panel').hide();
 
         $(".upload, .btn").removeClass("disabled");
@@ -127,13 +117,16 @@ $(".upload").click(function() {
         console.log(response);
         $('.alert').text(response);
         // alert(response);
+        $(this).closest('.upload')
+        window.location.href = "";
       },
       error: function(response){      
         $(".upload, .btn").removeClass("disabled");
         $('#progress-panel').hide();
         $('.alert').show();
         console.log(response);
-        $('.alert').text(response);
+        $('.alert').text(response);    
+        window.location.href = "";
         // alert(response);
       }
     });
@@ -200,19 +193,17 @@ $(".delete").click(function(e) {
       $('.alert').show();
       console.log(response);
       $('.alert').text(response);
-        // alert(response);
-        // window.location.href = "";
-      },
-      error: function(response){      
-        $(".upload, .btn").removeClass("disabled");
-        $('#progress-panel').hide();
-        $('.alert').show();
-        console.log(response);
-        $('.alert').text(response);
-        // alert(response);
-        // window.location.href = "";
-      }
-    });
+      window.location.href = "";
+    },
+    error: function(response){      
+      $(".upload, .btn").removeClass("disabled");
+      $('#progress-panel').hide();
+      $('.alert').show();
+      console.log(response);
+      $('.alert').text(response);
+      window.location.href = "";
+    }
+  });
 });
 
 
