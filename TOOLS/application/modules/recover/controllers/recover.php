@@ -17,7 +17,7 @@ class Recover extends MY_Controller {
 		$CI = &get_instance();
 		$CI -> load -> database();
 		$data['sys_hostname'] = explode(':', $CI->db->hostname)[0];
-		$data['sys_hostport']  = $CI->db->port;
+		$data['sys_hostport']  = (isset($CI->db->port)) ? $CI->db->port : 3306 ;
 		$data['sys_username'] = $CI->db->username;
 		$data['sys_password'] = $CI->db->password;
 
