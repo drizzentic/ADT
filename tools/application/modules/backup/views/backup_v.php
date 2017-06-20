@@ -36,7 +36,7 @@
 
   $(document).ready(function(){ 
     <?= $ftp_status; ?>
-    $("td:contains('testadt_blank.sql.zip')").next().html('<button class="btn btn-info btn-sm upload" >Upload</button>');
+    $("td:contains('testadt_blank.sql.zip')").next().html('');
 
     $('#dyn_table').DataTable();
     // $(".upload").text("Upload Backup");           
