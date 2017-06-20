@@ -8,7 +8,7 @@
         <span class="icon-bar"></span>
       </button>
       <!-- <a class="navbar-brand" href="#">ADT Tools</a> -->
-      <a class="navbar-brand" href="<?= str_replace("tools/", "", base_url())?>">ADT Home</a>
+      <a class="navbar-brand" href="<?= str_replace("tools/", "", base_url())?>">ADT Login</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
 
