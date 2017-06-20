@@ -197,7 +197,7 @@
 	    			alert('The file ' + file.name + ' was successfully');
 	    			$("#backup_files").load("recover/showdir",function(){
 	    				$('.dataTables').dataTable({
-	    					"bJQueryUI" : true,
+	    					"bJQueryUI" : false,
 	    					"sPaginationType" : "full_numbers",
 	    					"bProcessing" : true,
 	    					"bServerSide" : false,

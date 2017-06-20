@@ -17,6 +17,9 @@ class Github extends MY_Controller {
 	}
 
 	public function index($facility = "") {
+		// $git_releases = $this->fetch_url_contents('https://api.github.com/repos/KevinMarete/ADT/releases');
+		// echo "<pre>";		var_dump(json_decode($git_releases));die;
+
 		$this -> session -> set_userdata("facility", $facility);
 		$sql = "SELECT hash_value,update_time FROM git_log ORDER BY id desc";
 		$query = $this -> db -> query($sql);
@@ -174,6 +177,19 @@ class Github extends MY_Controller {
 		curl_close($ch);
 		return $message;
 	}
+	public function fetch_url_contents($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_USERAGENT, "Web ADT");
+    curl_setopt($ch, CURLOPT_REFERER, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return $result;
+}
 
 	public function template($data) {
 		$data['show_menu'] = 0;

@@ -6,10 +6,10 @@ class Backup extends MY_Controller {
 	var $backup_dir = "./backup_db";
 
 	var $config = array (
-		'hostname' => 'ftp.inclusion.co.ke',
-		'username' => 'adtftp',
-		'password' => 'Kuwesa1!1',
-		'debug'	=> TRUE);
+		'hostname' => 'commodities.nascop.org',
+		'username' => 'ftpuser',
+		'password' => 'ftpuser',
+		'debug'	=> FALSE);
 
 	function __construct() {
 		parent::__construct();
@@ -25,13 +25,6 @@ class Backup extends MY_Controller {
 		$dir = $this -> backup_dir;
 		$data['ftp_status'] = '';
 		$files = scandir($dir, 1);
-		// $data['remote_files'] = $this->list_remote_files();
-
-		$this->connect_ftp();
-// 			$list = $this->list_remote_files();
-// var_dump($list);
-// $this->disconnect_ftp();
-// 		die;
 		$data['remote_files'] = ($this->connect_ftp()) ? $this->list_remote_files() : false ;
 		$CI = &get_instance();
 		$CI -> load -> database();
@@ -47,7 +40,7 @@ class Backup extends MY_Controller {
 		$table .= '<thead><th>backup</th>		<th>action</th>		<th>local</th>		<th>remote</th>		</thead>';
 		$table .= '<tbody>';
 		// echo "<pre>";		print_r($data['remote_files']);		print_r($files);die;
-		if (!$data['remote_files']){$data['ftp_status'] = "$('.alert').addClass('alert-danger');$('.alert').text('Cannot connect to remote server');$('.alert').show();$('.upload').attr('disabled',true);";}
+		if (!is_array($data['remote_files'])){$data['ftp_status'] = "$('.alert').addClass('alert-danger');$('.alert').text('Cannot connect to remote server');$('.alert').show();$('.upload').attr('disabled',true);";}
 		// foreach ($files as $key => $file) {
 		for ($key=0; $key <count($files)-2 ; $key++) { 
 			// echo $file .' <br />';
@@ -408,13 +401,6 @@ class Backup extends MY_Controller {
 			}
 		}
 		public function connect_ftp(){
-
-			// $conf['hostname'] = 'ftp.inclusion.co.ke'; 
-			// $conf['username'] = 'adtftp'; 
-			// $conf['password'] = 'Kuwesa1!1'; 
-			// $conf['debug'] = TRUE;
-
-			// if($this->ftp->connect($conf)){
 			if($this->ftp->connect($this -> config)){
 				return true;
 			}

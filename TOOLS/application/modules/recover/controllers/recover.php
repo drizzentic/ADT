@@ -70,35 +70,7 @@ class Recover extends MY_Controller {
 		}
 			// write new credentials to project's config file
 		// check file Exists
-			$db_config_file =  str_replace('\tools', '', FCPATH).'application/config/db_conf.php';
-
-			// $write_config = false;
-			// $write_config = ( explode(':', $CI->db->hostname)[0] == $this -> session -> userdata("db_host")) ? true : false ;
-
-			// $write_config = ( $CI->db->password == $this -> session -> userdata("db_pass")) ? true : false ;
-			// $write_config = ( $CI->db->username == $this -> session -> userdata("db_user")) ? true : false ;
-			// $write_config = ( $CI->db->database == $this -> session -> userdata("db_name")) ? true : false ;
-
-			if(file_exists($db_config_file)){
-				$hostname = $this -> session -> userdata("db_host");
-				$username = $this -> session -> userdata("db_user");
-				$password = $this -> session -> userdata("db_pass");
-				$current_db = $this -> session -> userdata("db_name");
-				$host_port = $this -> session -> userdata("db_port");
-
-				$file = fopen($db_config_file,"w");
-
-				fwrite($file,"". "\r\n");
-				fwrite($file,"<?php ". "\r\n");
-				fwrite($file,"\$db['default']['hostname'] = '$host_name';". "\r\n");
-				fwrite($file,"\$db['default']['username'] = '$host_user';". "\r\n");
-				fwrite($file,"\$db['default']['password'] = '$host_password';". "\r\n");
-				fwrite($file,"\$db['default']['database'] = '$database_name';". "\r\n");
-				fwrite($file,"\$db['default']['port'] = $host_port;". "\r\n");
-				fclose($file);
-
-			}
-			
+					
 		echo $status;
 	}
 
@@ -179,6 +151,7 @@ class Recover extends MY_Controller {
 		$CI = &get_instance();
 		$CI -> load -> database();
 		$hostname = $this -> session -> userdata("db_host");
+		$port = $this -> session -> userdata("db_port");
 		$username = $this -> session -> userdata("db_user");
 		$password = $this -> session -> userdata("db_pass");
 		$current_db = $this -> session -> userdata("db_name");
@@ -196,11 +169,32 @@ class Recover extends MY_Controller {
 				// $file_path = "\"" . realpath($_SERVER['MYSQL_HOME']) . "\\" . $real_name . "\"";
 				$mysql_bin = str_replace("\\", "\\\\", $mysql_home);
 				$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' ' . $current_db . ' < ' . $file_path;
+				// echo $mysql_con;
 				exec($mysql_con);
 				$recovery_status = true;
-				$this->delete_file($file_path);
+				
+
+				$db_config_file =  str_replace('\tools', '', FCPATH).'application/config/db_conf.php';
+
+			if(file_exists($db_config_file)){
+
+				$file = fopen($db_config_file,"w");
+
+				fwrite($file,"". "\r\n");
+				fwrite($file,"<?php ". "\r\n");
+				fwrite($file,"\$db['default']['hostname'] = '$hostname';". "\r\n");
+				fwrite($file,"\$db['default']['username'] = '$username';". "\r\n");
+				fwrite($file,"\$db['default']['password'] = '$password';". "\r\n");
+				fwrite($file,"\$db['default']['database'] = '$current_db';". "\r\n");
+				fwrite($file,"\$db['default']['port'] = $port;". "\r\n");
+				fclose($file);
+
+			}
+
+
 			}
 		}
+				// $this->delete_file($file_path);
 		echo $recovery_status;
 	}
 	public function delete_file($file_path) {
@@ -218,10 +212,11 @@ class Recover extends MY_Controller {
 
 	public function uncompress_zip($file_path) {
 		$this -> load -> library('unzip');
-		// $destination_path = realpath(".zip","",$file_path);
+		$destination_path = realpath(".zip","",$file_path);
+		// $destination_path = realpath($file_path);
 
 		$this -> unzip -> allow(array('sql'));
-		if ($this -> unzip -> extract($file_path, $destination_path))
+		if ($this -> unzip -> extract($file_path, substr($destination_path, 0,-4)))
 			{return true;}else{return false;}
 
 	}
