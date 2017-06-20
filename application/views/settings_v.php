@@ -297,12 +297,8 @@
 								<li>
 									<a href="#" class="settings/listing/regimen_service_type" title="Service Management" id="index">Regimen Service Type</a>
 								</li>
-								<li>
-									<a href="#" class="order_settings/listing/sync_regimen" title="Order Regimen Management">Regimens Order</a>
-								</li>
-								<li>
-									<a href="#" class="order_settings/listing/sync_regimen_category" title="Order Regimen Category Management">Regimen Category Order</a>
-								</li>
+								<!-- <li><a href="#" class="order_settings/listing/sync_regimen" title="Order Regimen Management">Regimens Order</a></li> -->
+								<!-- <li><a href="#" class="order_settings/listing/sync_regimen_category" title="Order Regimen Category Management">Regimen Category Order</a></li> -->
 							</ul>
 						</li>
 						<li class="divider-vertical"></li>
@@ -348,9 +344,7 @@
 								<li>
 									<a href="#" class="dossing_chart" title="Drug Balances Management">Pediatric Dossing Chart</a>
 								</li>
-								<li>
-									<a href="#" class="order_settings/listing/sync_drug" title="Order Drug Management">Drugs Order</a>
-								</li>
+								<!-- <li><a href="#" class="order_settings/listing/sync_drug" title="Order Drug Management">Drugs Order</a></li> -->
 								<li>
 									<a href="#" class="drug_stock_balance_sync/update_balances" title="Drug Stock Balances">Drug Stock Balances </a>
 								</li>

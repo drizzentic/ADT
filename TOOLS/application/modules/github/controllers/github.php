@@ -17,24 +17,11 @@ class Github extends MY_Controller {
 	}
 
 	public function index($facility = "") {
-		// $git_releases = $this->fetch_url_contents('https://api.github.com/repos/KevinMarete/ADT/releases');
-		// echo "<pre>";		var_dump(json_decode($git_releases));die;
+		$data['git_releases'] = json_decode($this->fetch_url_contents('https://api.github.com/repos/KevinMarete/ADT/releases'));
+		// echo "<pre?";
+		// print_r($data['git_releases']);die;
 
-		$this -> session -> set_userdata("facility", $facility);
-		$sql = "SELECT hash_value,update_time FROM git_log ORDER BY id desc";
-		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
 		$data['active_menu'] = 3;
-
-		$headings = array('Hash value', 'Timestamp');
-		$options = '';
-		$this -> load -> module('table');
-		$data['update_log'] = $this -> table -> load_table($headings, $results, $options, 0);
-
-		if (file_exists($this -> session -> userdata("temp_file"))) {
-			unlink($this -> session -> userdata("temp_file"));
-			$this -> session -> unset_userdata("temp_file");
-		}
 		$data['update_status'] = $this -> checkUpdate();
 		$data['content_view'] = "github/github_v";
 		$data['title'] = "Dashboard | System Update";
