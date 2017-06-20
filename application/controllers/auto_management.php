@@ -348,7 +348,7 @@ class Auto_management extends MY_Controller {
 	public function updatePatientData() {
 		$days_to_lost_followup=$this -> session -> userdata('lost_to_follow_up');//Default lost to follow up
 		$days_to_pep_end = 30;
-		$days_to_prep_inactive = 1; //They should not be late for their appointments
+		$days_to_prep_inactive = 30; //They should not be late for their appointments
 		$days_in_year = date("z", mktime(0, 0, 0, 12, 31, date('Y'))) + 1;
 		$adult_age = 12;
 		$active = 'active';

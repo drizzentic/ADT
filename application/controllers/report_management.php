@@ -2322,21 +2322,25 @@ public function patient_enrolled($from = "", $to = "", $supported_by = 0) {
 	$overall_adult_male_art = 0;
 	$overall_adult_male_pep = 0;
 	$overall_adult_male_oi = 0;
+	$overall_adult_male_prep = 0;
 
 	$overall_adult_female_art = 0;
 	$overall_adult_female_pep = 0;
 	$overall_adult_female_pmtct = 0;
 	$overall_adult_female_oi = 0;
+	$overall_adult_female_prep = 0;
 
 	$overall_child_male_art = 0;
 	$overall_child_male_pep = 0;
 	$overall_child_male_pmtct = 0;
 	$overall_child_male_oi = 0;
+	$overall_child_male_prep = 0;
 
 	$overall_child_female_art = 0;
 	$overall_child_female_pep = 0;
 	$overall_child_female_pmtct = 0;
 	$overall_child_female_oi = 0;
+	$overall_child_female_prep = 0;
 
 	if ($supported_by == 0) {
 		$supported_query = " ";
@@ -2353,17 +2357,17 @@ public function patient_enrolled($from = "", $to = "", $supported_by = 0) {
 	<tr>
 		<th ></th>
 		<th >Total</th><th></th>
-		<th > Adult</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
-		<th > Children </th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+		<th > Adult</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+		<th > Children </th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 	</tr>
 	<tr>
 		<th></th>
 		<th ></th>
 		<th ></th>
-		<th >Male</th><th></th><th></th><th></th><th></th><th></th>
-		<th >Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 		<th >Male</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
-		<th >Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+		<th >Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+		<th >Male</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+		<th >Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 	</tr>
 	<tr>
 		<th></th>
@@ -2372,21 +2376,33 @@ public function patient_enrolled($from = "", $to = "", $supported_by = 0) {
 		<th >ART</th><th></th>
 		<th >PEP</th><th></th>
 		<th >OI</th><th></th>
+		<th >PREP</th><th></th>
 		<th >ART</th><th></th>
 		<th >PEP</th><th></th>
 		<th >PMTCT</th><th></th>
 		<th >OI</th><th></th>
+		<th >PREP</th><th></th>
 		<th >ART</th><th></th>
 		<th >PEP</th><th></th>
 		<th >PMTCT</th><th></th>
 		<th >OI</th><th></th>
+		<th >PREP</th><th></th>
 		<th >ART</th><th></th>
 		<th >PEP</th><th></th>
 		<th >PMTCT</th><th></th>
 		<th >OI</th><th></th>
+		<th >PREP</th><th></th>
 	</tr>
 	<tr>
 		<th>Source</th>
+		<th>No.</th>
+		<th>%</th>
+		<th>No.</th>
+		<th>%</th>
+		<th>No.</th>
+		<th>%</th>
+		<th>No.</th>
+		<th>%</th>
 		<th>No.</th>
 		<th>%</th>
 		<th>No.</th>
@@ -2450,9 +2466,13 @@ if ($results) {
 		$total_adult_male_art = "-";
 		$total_adult_male_pep = "-";
 		$total_adult_male_oi = "-";
+		$total_adult_male_prep = "-";
+
 		$total_adult_male_art_percentage = "-";
 		$total_adult_male_pep_percentage = "-";
 		$total_adult_male_oi_percentage = "-";
+		$total_adult_male_prep_percentage = "-";
+
 		if ($results) {
 			foreach ($results as $result) {
 				$total_adult_male = $result['total_adult_male'];
@@ -2470,13 +2490,17 @@ if ($results) {
 					$overall_adult_male_oi += $total_adult_male;
 					$total_adult_male_oi = number_format($total_adult_male);
 					$total_adult_male_oi_percentage = number_format(($total_adult_male_oi / $source_total) * 100, 1);
+				} else if (strtoupper($service_name) == "PREP") {
+					$overall_adult_male_prep += $total_adult_male;
+					$total_adult_male_prep = number_format($total_adult_male);
+					$total_adult_male_prep_percentage = number_format(($total_adult_male_prep / $source_total) * 100, 1);
 				}
 
 			}
-			$dyn_table .= "<td>$total_adult_male_art</td><td>$total_adult_male_art_percentage</td><td>$total_adult_male_pep</td><td>$total_adult_male_pep_percentage</td><td>$total_adult_male_oi</td><td>$total_adult_male_oi_percentage</td>";
+			$dyn_table .= "<td>$total_adult_male_art</td><td>$total_adult_male_art_percentage</td><td>$total_adult_male_pep</td><td>$total_adult_male_pep_percentage</td><td>$total_adult_male_oi</td><td>$total_adult_male_oi_percentage</td><td>$total_adult_male_prep</td><td>$total_adult_male_prep_percentage</td>";
 
 		} else {
-			$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
+			$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 
 		}
 				//SQL for Adult Female Source
@@ -2490,10 +2514,13 @@ if ($results) {
 		$total_adult_female_pep = "-";
 		$total_adult_female_pmtct = "-";
 		$total_adult_female_oi = "-";
+		$total_adult_female_prep = "-";
+
 		$total_adult_female_art_percentage = "-";
 		$total_adult_female_pep_percentage = "-";
 		$total_adult_female_pmtct_percentage = "-";
 		$total_adult_female_oi_percentage = "-";
+		$total_adult_female_prep_percentage = "-";
 
 		if ($results) {
 			foreach ($results as $result) {
@@ -2516,11 +2543,15 @@ if ($results) {
 					$overall_adult_female_oi += $total_adult_female;
 					$total_adult_female_oi = number_format($total_adult_female);
 					$total_adult_female_oi_percentage = number_format(($total_adult_female_oi / $source_total) * 100, 1);
+				} else if (strtoupper($service_name) == "OI Only") {
+					$overall_adult_female_prep += $total_adult_female;
+					$total_adult_female_prep = number_format($total_adult_female);
+					$total_adult_female_prep_percentage = number_format(($total_adult_female_prep / $source_total) * 100, 1);
 				}
 			}
-			$dyn_table .= "<td>$total_adult_female_art</td><td>$total_adult_female_art_percentage</td><td>$total_adult_female_pep</td><td>$total_adult_female_pep_percentage</td><td>$total_adult_female_pmtct</td><td>$total_adult_female_pmtct_percentage</td><td>$total_adult_female_oi</td><td>$total_adult_female_oi_percentage</td>";
+			$dyn_table .= "<td>$total_adult_female_art</td><td>$total_adult_female_art_percentage</td><td>$total_adult_female_pep</td><td>$total_adult_female_pep_percentage</td><td>$total_adult_female_pmtct</td><td>$total_adult_female_pmtct_percentage</td><td>$total_adult_female_oi</td><td>$total_adult_female_oi_percentage</td><td>$total_adult_female_prep</td><td>$total_adult_female_prep_percentage</td>";
 		} else {
-			$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
+			$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 		}
 				//SQL for Child Male Source
 		$sql = "SELECT count(*) AS total_child_male,p.source,ps.name,p.service,rst.name as service_name FROM patient p LEFT JOIN patient_source ps ON ps.id = p.source LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=1 AND FLOOR(datediff('$from',p.dob)/365)<=15 AND  p.source='$source_code' GROUP BY p.source,p.service";
@@ -2530,10 +2561,13 @@ if ($results) {
 		$total_child_male_pep = "-";
 		$total_child_male_pmtct = "-";
 		$total_child_male_oi = "-";
+		$total_child_male_prep = "-";
+
 		$total_child_male_art_percentage = "-";
 		$total_child_male_pep_percentage = "-";
 		$total_child_male_pmtct_percentage = "-";
 		$total_child_male_oi_percentage = "-";
+		$total_child_male_prep_percentage = "-";
 		if ($results) {
 			foreach ($results as $result) {
 				$total_child_male = $result['total_child_male'];
@@ -2555,12 +2589,16 @@ if ($results) {
 					$overall_child_male_oi += $total_child_male;
 					$total_child_male_oi = number_format($total_child_male);
 					$total_child_male_oi_percentage = number_format(($total_child_male_oi / $source_total) * 100, 1);
+				} else if (strtoupper($service_name) == "PREP") {
+					$overall_child_male_prep += $total_child_male;
+					$total_child_male_prep = number_format($total_child_male);
+					$total_child_male_prep_percentage = number_format(($total_child_male_prep / $source_total) * 100, 1);
 				}
 
 			}
-			$dyn_table .= "<td>$total_child_male_art</td><td>$total_child_male_art_percentage</td><td>$total_child_male_pep</td><td>$total_child_male_pep_percentage</td><td>$total_child_male_pmtct</td><td>$total_child_male_pmtct_percentage</td><td>$total_child_male_oi</td><td>$total_child_male_oi_percentage</td>";
+			$dyn_table .= "<td>$total_child_male_art</td><td>$total_child_male_art_percentage</td><td>$total_child_male_pep</td><td>$total_child_male_pep_percentage</td><td>$total_child_male_pmtct</td><td>$total_child_male_pmtct_percentage</td><td>$total_child_male_oi</td><td>$total_child_male_oi_percentage</td><td>$total_child_male_prep</td><td>$total_child_male_prep_percentage</td>";
 		} else {
-			$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
+			$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 		}
 				//SQL for Child Female Source
 		$sql = "SELECT count(*) AS total_child_female,p.source,ps.name,p.service,rst.name as service_name FROM patient p LEFT JOIN patient_source ps ON ps.id = p.source LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=2 AND FLOOR(datediff('$from',p.dob)/365) < 15 AND  p.source='$source_code' GROUP BY p.source,p.service";
@@ -2570,10 +2608,13 @@ if ($results) {
 		$total_child_female_pep = "-";
 		$total_child_female_pmtct = "-";
 		$total_child_female_oi = "-";
+		$total_child_female_prep = "-";
+
 		$total_child_female_art_percentage = "-";
 		$total_child_female_pep_percentage = "-";
 		$total_child_female_pmtct_percentage = "-";
 		$total_child_female_oi_percentage = "-";
+		$total_child_female_prep_percentage = "-";
 		$overall_child_female = 0;
 		$service_name = "";
 		$overall_child_male = 0;
@@ -2598,33 +2639,42 @@ if ($results) {
 					$overall_child_female_oi += $total_child_female;
 					$total_child_female_oi = number_format($total_child_female);
 					$total_child_female_oi_percentage = number_format(($total_child_female_oi / $source_total) * 100, 1);
+				} else if (strtoupper($service_name) == "PREP") {
+					$overall_child_female_prep += $total_child_female;
+					$total_child_female_prep = number_format($total_child_female);
+					$total_child_female_prep_percentage = number_format(($total_child_female_prep / $source_total) * 100, 1);
 				}
 
 			}
-			$dyn_table .= "<td>$total_child_female_art</td><td>$total_child_female_art_percentage</td><td>$total_child_female_pep</td><td>$total_child_female_pep_percentage</td><td>$total_child_female_pmtct</td><td>$total_child_female_pmtct_percentage</td><td>$total_child_female_oi</td><td>$total_child_female_oi_percentage</td>";
+			$dyn_table .= "<td>$total_child_female_art</td><td>$total_child_female_art_percentage</td><td>$total_child_female_pep</td><td>$total_child_female_pep_percentage</td><td>$total_child_female_pmtct</td><td>$total_child_female_pmtct_percentage</td><td>$total_child_female_oi</td><td>$total_child_female_oi_percentage</td><td>$total_child_female_prep</td><td>$total_child_female_prep_percentage</td>";
 		} else {
-			$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
+			$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 		}
 	}
 	$overall_art_male_percent = number_format(($overall_adult_male_art / $total) * 100, 1);
 	$overall_pep_male_percent = number_format(($overall_adult_male_pep / $total) * 100, 1);
 	$overall_oi_male_percent = number_format(($overall_adult_male_oi / $total) * 100, 1);
+	$overall_prep_male_percent = number_format(($overall_adult_male_prep / $total) * 100, 1);
 
 	$overall_art_female_percent = number_format(($overall_adult_female_art / $total) * 100, 1);
 	$overall_pep_female_percent = number_format(($overall_adult_female_pep / $total) * 100, 1);
 	$overall_pmtct_female_percent = number_format(($overall_adult_female_pmtct / $total) * 100, 1);
 	$overall_oi_female_percent = number_format(($overall_adult_female_oi / $total) * 100, 1);
+	$overall_prep_female_percent = number_format(($overall_adult_female_prep / $total) * 100, 1);
 
 	$overall_art_childmale_percent = number_format(($overall_child_male_art / $total) * 100, 1);
 	$overall_pep_childmale_percent = number_format(($overall_child_male_pep / $total) * 100, 1);
 	$overall_pmtct_childmale_percent = number_format(($overall_child_male_pmtct / $total) * 100, 1);
 	$overall_oi_childmale_percent = number_format(($overall_child_male_oi / $total) * 100, 1);
+	$overall_prep_childmale_percent = number_format(($overall_child_male_prep / $total) * 100, 1);
 
 	$overall_art_childfemale_percent = number_format(($overall_child_female_art / $total) * 100, 1);
 	$overall_pep_childfemale_percent = number_format(($overall_child_female_pep / $total) * 100, 1);
 	$overall_pmtct_childfemale_percent = number_format(($overall_child_female_pmtct / $total) * 100, 1);
 	$overall_oi_childfemale_percent = number_format(($overall_child_female_oi / $total) * 100, 1);
-	$dyn_table .= "</tbody><tfoot><tr><td>TOTALS</td><td>$total</td><td>100</td><td>$overall_adult_male_art</td><td>$overall_art_male_percent</td><td>$overall_adult_male_pep</td><td>$overall_pep_male_percent</td><td>$overall_adult_male_oi</td><td>$overall_oi_male_percent</td><td>$overall_adult_female_art</td><td>$overall_art_female_percent</td><td>$overall_adult_female_pep</td><td>$overall_pep_female_percent</td><td>$overall_adult_female_pmtct</td><td>$overall_pmtct_female_percent</td><td>$overall_adult_female_oi</td><td>$overall_oi_female_percent</td><td>$overall_child_male_art</td><td>$overall_art_childmale_percent</td><td>$overall_child_male_pep</td><td>$overall_pep_childmale_percent</td><td>$overall_child_male_pmtct</td><td>$overall_pmtct_childmale_percent</td><td>$overall_child_male_oi</td><td>$overall_oi_childmale_percent</td><td>$overall_child_female_art</td><td>$overall_art_childfemale_percent</td><td>$overall_child_female_pep</td><td>$overall_pep_childfemale_percent</td><td>$overall_child_female_pmtct</td><td>$overall_pmtct_childfemale_percent</td><td>$overall_child_female_oi</td><td>$overall_oi_childfemale_percent</td></tr></tfoot></table>";
+	$overall_prep_childfemale_percent = number_format(($overall_child_female_prep / $total) * 100, 1);
+
+	$dyn_table .= "</tbody><tfoot><tr><td>TOTALS</td><td>$total</td><td>100</td><td>$overall_adult_male_art</td><td>$overall_art_male_percent</td><td>$overall_adult_male_pep</td><td>$overall_pep_male_percent</td><td>$overall_adult_male_oi</td><td>$overall_oi_male_percent</td><td>$overall_adult_male_prep</td><td>$overall_prep_male_percent</td><td>$overall_adult_female_art</td><td>$overall_art_female_percent</td><td>$overall_adult_female_pep</td><td>$overall_pep_female_percent</td><td>$overall_adult_female_pmtct</td><td>$overall_pmtct_female_percent</td><td>$overall_adult_female_oi</td><td>$overall_oi_female_percent</td><td>$overall_adult_female_prep</td><td>$overall_prep_female_percent</td><td>$overall_child_male_art</td><td>$overall_art_childmale_percent</td><td>$overall_child_male_pep</td><td>$overall_pep_childmale_percent</td><td>$overall_child_male_pmtct</td><td>$overall_pmtct_childmale_percent</td><td>$overall_child_male_oi</td><td>$overall_oi_childmale_percent</td><td>$overall_child_male_prep</td><td>$overall_prep_childmale_percent</td><td>$overall_child_female_art</td><td>$overall_art_childfemale_percent</td><td>$overall_child_female_pep</td><td>$overall_pep_childfemale_percent</td><td>$overall_child_female_pmtct</td><td>$overall_pmtct_childfemale_percent</td><td>$overall_child_female_oi</td><td>$overall_oi_childfemale_percent</td><td>$overall_child_female_prep</td><td>$overall_prep_childfemale_percent</td></tr></tfoot></table>";
 
 } else {
 	$dyn_table .= "<tbody></tbody><tfoot>";
@@ -4275,7 +4325,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 										$this -> load -> view('template', $data);
 									}
 
-									public function cumulative_patients($from = "2013-06-06", $type = '1') {
+									public function cumulative_patients($from = "", $type = '1') {
 		//Variables
 										$facility_code = $this -> session -> userdata("facility");
 										$from = date('Y-m-d', strtotime($from));
@@ -4284,18 +4334,22 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 										$total_adult_male_art = 0;
 										$total_adult_male_pep = 0;
 										$total_adult_male_oi = 0;
+										$total_adult_male_prep = 0;
 										$total_adult_female_art = 0;
 										$total_adult_female_pep = 0;
 										$total_adult_female_pmtct = 0;
 										$total_adult_female_oi = 0;
+										$total_adult_female_prep = 0;
 										$total_child_male_art = 0;
 										$total_child_male_pep = 0;
 										$total_child_male_pmtct = 0;
 										$total_child_male_oi = 0;
+										$total_child_male_prep = 0;
 										$total_child_female_art = 0;
 										$total_child_female_pep = 0;
 										$total_child_female_pmtct = 0;
 										$total_child_female_oi = 0;
+										$total_child_female_prep = 0;
 
 		//Get Total Count of all patients
 										$sql = "select count(*) as total from patient p,patient_status ps,regimen_service_type rst,gender g where(p.date_enrolled <= '$from' or p.date_enrolled='') and ps.id=p.current_status and p.service=rst.id and p.gender=g.id and facility_code='$facility_code' and p.active='1'";
@@ -4304,21 +4358,22 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 										$results = $query -> result_array();
 										$patient_total = $results[0]['total'];
 
-										$row_string = "<table border='1' cellpadding='5' id='tblcumulpatients' class='dataTables' >
-										<thead><tr>
+										$row_string = "<table border='1' cellpadding='5' id='tblcumulpatients' class='dataTables'>
+										<thead>
+										<tr>
 											<th style='width:15%;'>Current Status</th>
 											<th>Total</th><th>Total</th>
-											<th > Adult</th><th></th><th></th><th></th><th></th><th></th><th></th>
-											<th > Children </th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+											<th>Adult</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+											<th>Children</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 										</tr>
 										<tr>
 											<th>-</th>
-											<th >No.</th>
-											<th >%</th>
-											<th >Male</th><th></th><th></th>
-											<th >Female</th><th></th><th></th><th></th>
-											<th >Male</th><th></th><th></th><th></th>
-											<th >Female</th><th></th><th></th><th></th>
+											<th>No.</th>
+											<th>%</th>
+											<th>Male</th><th></th><th></th><th></th>
+											<th>Female</th><th></th><th></th><th></th><th></th>
+											<th>Male</th><th></th><th></th><th></th><th></th>
+											<th>Female</th><th></th><th></th><th></th><th></th>
 										</tr>
 										<tr>
 											<th></th>
@@ -4327,18 +4382,22 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 											<th>ART</th>
 											<th>PEP</th>
 											<th>OI</th>
+											<th>PREP</th>
 											<th>ART</th>
 											<th>PEP</th>
 											<th>PMTCT</th>
 											<th>OI</th>
+											<th>PREP</th>
 											<th>ART</th>
 											<th>PEP</th>
 											<th>PMTCT</th>
 											<th>OI</th>
+											<th>PREP</th>
 											<th>ART</th>
 											<th>PEP</th>
 											<th>PMTCT</th>
 											<th>OI</th>
+											<th>PREP</th>
 										</tr></thead><tbody>";
 
 		//Get Totals for each Status
@@ -4355,14 +4414,14 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 												$patient_percentage = number_format(($status_totals[$current_status] / $patient_total) * 100, 1);
 												$row_string .= "<tr><td>$status_name</td><td>$status_totals[$current_status]</td><td>$patient_percentage</td>";
 				//SQL for Adult Male Status
-												$service_list = array('ART', 'PEP', 'OI Only');
+												$service_list = array('ART', 'PEP', 'OI Only', 'PREP');
 												$sql = "SELECT count(*) as total_adult_male, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=1 AND p.service !=3 AND FLOOR(datediff('$from',p.dob)/365)>15 and p.active='1' GROUP BY service";
 												$query = $this -> db -> query($sql);
 												$results = $query -> result_array();
 												$i = 0;
 												$j = 0;
 												if ($results) {
-													while ($j < 3) {
+													while ($j < sizeof($service_list)) {
 														$patient_current_total = @$results[$i]['total_adult_male'];
 														$service = @$results[$i]['Service'];
 														if ($service == @$service_list[$j]) {
@@ -4373,6 +4432,8 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 																$total_adult_male_pep += $patient_current_total;
 															} else if ($service == "OI Only") {
 																$total_adult_male_oi += $patient_current_total;
+															}else if (strtoupper($service) == "PREP") {
+																$total_adult_male_prep += $patient_current_total;
 															}
 															$i++;
 															$j++;
@@ -4383,17 +4444,17 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 													}
 
 												} else {
-													$row_string .= "<td>-</td><td>-</td><td>-</td>";
+													$row_string .= "<td>-</td><td>-</td><td>-</td><td>-</td>";
 												}
 				//SQL for Adult Female Status
-												$service_list = array('ART', 'PEP', 'PMTCT', 'OI Only');
+												$service_list = array('ART', 'PEP', 'PMTCT', 'OI Only', 'PREP');
 												$sql = "SELECT count(*) as total_adult_female, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=2  AND FLOOR(datediff('$from',p.dob)/365)>15 and p.active='1' GROUP BY service";
 												$query = $this -> db -> query($sql);
 												$results = $query -> result_array();
 												$i = 0;
 												$j = 0;
 												if ($results) {
-													while ($j < 4) {
+													while ($j < sizeof($service_list)) {
 														$patient_current_total = @$results[$i]['total_adult_female'];
 														$service = @$results[$i]['Service'];
 														if ($service == @$service_list[$j]) {
@@ -4406,6 +4467,8 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 																$total_adult_female_pmtct += $patient_current_total;
 															} else if ($service == "OI Only") {
 																$total_adult_female_oi += $patient_current_total;
+															} else if ($service == "PREP") {
+																$total_adult_female_prep += $patient_current_total;
 															}
 															$i++;
 															$j++;
@@ -4415,17 +4478,17 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 														}
 													}
 												} else {
-													$row_string .= "<td>-</td><td>-</td><td>-</td><td>-</td>";
+													$row_string .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 												}
 				//SQL for Child Male Status
-												$service_list = array('ART', 'PEP', 'PMTCT', 'OI Only');
+												$service_list = array('ART', 'PEP', 'PMTCT', 'OI Only', 'PREP');
 												$sql = "SELECT count(*) as total_child_male, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=1  AND FLOOR(datediff('$from',p.dob)/365)<=15 and p.active='1' GROUP BY service";
 												$query = $this -> db -> query($sql);
 												$results = $query -> result_array();
 												$i = 0;
 												$j = 0;
 												if ($results) {
-													while ($j < 4) {
+													while ($j < sizeof($service_list)) {
 														$patient_current_total = @$results[$i]['total_child_male'];
 														$service = @$results[$i]['Service'];
 														if ($service == @$service_list[$j]) {
@@ -4438,6 +4501,8 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 																$total_child_male_pmtct += $patient_current_total;
 															} else if ($service == "OI Only") {
 																$total_child_male_oi += $patient_current_total;
+															} else if ($service == "PREP") {
+																$total_child_male_prep += $patient_current_total;
 															}
 															$i++;
 															$j++;
@@ -4447,17 +4512,17 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 														}
 													}
 												} else {
-													$row_string .= "<td>-</td><td>-</td><td>-</td><td>-</td>";
+													$row_string .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 												}
 				//SQL for Child Female Status
-												$service_list = array('ART', 'PEP', 'PMTCT', 'OI Only');
+												$service_list = array('ART', 'PEP', 'PMTCT', 'OI Only', 'PREP');
 												$sql = "SELECT count(*) as total_child_female, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=2  AND FLOOR(datediff('$from',p.dob)/365)<=15 and p.active='1' GROUP BY service";
 												$query = $this -> db -> query($sql);
 												$results = $query -> result_array();
 												$i = 0;
 												$j = 0;
 												if ($results) {
-													while ($j < 4) {
+													while ($j < sizeof($service_list)) {
 														$patient_current_total = @$results[$i]['total_child_female'];
 														$service = @$results[$i]['Service'];
 														if ($service == @$service_list[$j]) {
@@ -4470,6 +4535,8 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 																$total_child_female_pmtct += $patient_current_total;
 															} else if ($service == "OI Only") {
 																$total_child_female_oi += $patient_current_total;
+															} else if ($service == "PREP") {
+																$total_child_female_prep += $patient_current_total;
 															}
 															$i++;
 															$j++;
@@ -4479,11 +4546,11 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 														}
 													}
 												} else {
-													$row_string .= "<td>-</td><td>-</td><td>-</td><td>-</td>";
+													$row_string .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 												}
 												$row_string .= "</tr>";
 											}
-											$row_string .= "</tbody><tfoot><tr class='tfoot'><td><b>Total:</b></td><td><b>$patient_total</b></td><td><b>100</b></td><td><b>$total_adult_male_art</b></td><td><b>$total_adult_male_pep</b></td><td><b>$total_adult_male_oi</b></td><td><b>$total_adult_female_art</b></td><td><b>$total_adult_female_pep</b></td><td><b>$total_adult_female_pmtct</b></td><td><b>$total_adult_female_oi</b></td><td><b>$total_child_male_art</b></td><td><b>$total_child_male_pep</b></td><td><b>$total_child_male_pmtct</b></td><td><b>$total_child_male_oi</b></td><td><b>$total_child_female_art</b></td><td><b>$total_child_female_pep</b></td><td><b>$total_child_female_pmtct</b></td><td><b>$total_child_female_oi</b></td></tr>";
+											$row_string .= "</tbody><tfoot><tr class='tfoot'><td><b>Total:</b></td><td><b>$patient_total</b></td><td><b>100</b></td><td><b>$total_adult_male_art</b></td><td><b>$total_adult_male_pep</b></td><td><b>$total_adult_male_oi</b></td><td><b>$total_adult_male_prep</b></td><td><b>$total_adult_female_art</b></td><td><b>$total_adult_female_pep</b></td><td><b>$total_adult_female_pmtct</b></td><td><b>$total_adult_female_oi</b></td><td><b>$total_adult_female_prep</b></td><td><b>$total_child_male_art</b></td><td><b>$total_child_male_pep</b></td><td><b>$total_child_male_pmtct</b></td><td><b>$total_child_male_oi</b></td><td><b>$total_child_male_prep</b></td><td><b>$total_child_female_art</b></td><td><b>$total_child_female_pep</b></td><td><b>$total_child_female_pmtct</b></td><td><b>$total_child_female_oi</b></td><td><b>$total_child_female_prep</b></td></tr>";
 											$row_string .= "</tfoot></table>";
 
 										}
@@ -7643,21 +7710,25 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 			$overall_adult_male_art = 0;
 			$overall_adult_male_pep = 0;
 			$overall_adult_male_oi = 0;
+			$overall_adult_male_prep = 0;
 
 			$overall_adult_female_art = 0;
 			$overall_adult_female_pep = 0;
 			$overall_adult_female_pmtct = 0;
 			$overall_adult_female_oi = 0;
+			$overall_adult_female_prep = 0;
 
 			$overall_child_male_art = 0;
 			$overall_child_male_pep = 0;
 			$overall_child_male_pmtct = 0;
 			$overall_child_male_oi = 0;
+			$overall_child_male_prep = 0;
 
 			$overall_child_female_art = 0;
 			$overall_child_female_pep = 0;
 			$overall_child_female_pmtct = 0;
 			$overall_child_female_oi = 0;
+			$overall_child_female_prep = 0;
 
 		//Get Total of all patients
 			$sql = "SELECT p.current_regimen,count(*) as total FROM patient p 
@@ -7682,19 +7753,19 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 			if ($results) {
 				$dyn_table = "<table id='patient_listingh' border='1' cellpadding='5' class='dataTables'><thead>
 				<tr>
-					<th ></th>
+					<th></th>
 					<th>Total</th><th></th>
-					<th> Adult</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
-					<th> Children </th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+					<th>Adult</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+					<th>Children</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 				</tr>
 				<tr>
 					<th></th>
 					<th></th>
 					<th></th>
-					<th>Male</th><th></th><th></th><th></th><th></th><th></th>
-					<th>Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
-					<th>Male</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
-					<th>Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+					<th>Male</th><th></th><th></th><th></th><th></th><th></th><th></th>
+					<th>Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+					<th>Male</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+					<th>Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 				</tr>
 				<tr>
 					<th></th>
@@ -7703,21 +7774,33 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 					<th>ART</th><th></th>
 					<th>PEP</th><th></th>
 					<th>OI</th><th></th>
+					<th>PREP</th><th></th>
 					<th>ART</th><th></th>
 					<th>PEP</th><th></th>
 					<th>PMTCT</th><th></th>
 					<th>OI</th><th></th>
+					<th>PREP</th><th></th>
 					<th>ART</th><th></th>
 					<th>PEP</th><th></th>
 					<th>PMTCT</th><th></th>
 					<th>OI</th><th></th>
+					<th>PREP</th><th></th>
 					<th>ART</th><th></th>
 					<th>PEP</th><th></th>
 					<th>PMTCT</th><th></th>
 					<th>OI</th><th></th>
+					<th>PREP</th><th></th>
 				</tr>
 				<tr>
 					<th>Regimen</th>
+					<th>No.</th>
+					<th>%</th>
+					<th>No.</th>
+					<th>%</th>
+					<th>No.</th>
+					<th>%</th>
+					<th>No.</th>
+					<th>%</th>
 					<th>No.</th>
 					<th>%</th>
 					<th>No.</th>
@@ -7775,9 +7858,12 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 					$total_adult_male_art = "-";
 					$total_adult_male_pep = "-";
 					$total_adult_male_oi = "-";
+					$total_adult_male_prep = "-";
+					
 					$total_adult_male_art_percentage = "-";
 					$total_adult_male_pep_percentage = "-";
 					$total_adult_male_oi_percentage = "-";
+					$total_adult_male_prep_percentage = "-";
 					if ($results) {
 						foreach ($results as $result) {
 							$total_adult_male = $result['total'];
@@ -7795,12 +7881,16 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 								$overall_adult_male_oi += $total_adult_male;
 								$total_adult_male_oi = number_format($total_adult_male);
 								$total_adult_male_oi_percentage = number_format(($total_adult_male_oi / $total) * 100, 1);
+							} else if (strtoupper($service_name) == "PREP") {
+								$overall_adult_male_prep += $total_adult_male;
+								$total_adult_male_prep = number_format($total_adult_male);
+								$total_adult_male_prep_percentage = number_format(($total_adult_male_prep / $total) * 100, 1);
 							}
 
 						}
-						$dyn_table .= "<td>$total_adult_male_art</td><td>$total_adult_male_art_percentage</td><td>$total_adult_male_pep</td><td>$total_adult_male_pep_percentage</td><td>$total_adult_male_oi</td><td>$total_adult_male_oi_percentage</td>";
+						$dyn_table .= "<td>$total_adult_male_art</td><td>$total_adult_male_art_percentage</td><td>$total_adult_male_pep</td><td>$total_adult_male_pep_percentage</td><td>$total_adult_male_oi</td><td>$total_adult_male_oi_percentage</td><td>$total_adult_male_prep</td><td>$total_adult_male_prep_percentage</td>";
 					} else {
-						$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
+						$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 					}
 
 				//SQL for Adult Female Regimens
@@ -7811,10 +7901,13 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 					$total_adult_female_pep = "-";
 					$total_adult_female_pmtct = "-";
 					$total_adult_female_oi = "-";
+					$total_adult_female_prep = "-";
+					
 					$total_adult_female_art_percentage = "-";
 					$total_adult_female_pep_percentage = "-";
 					$total_adult_female_pmtct_percentage = "-";
 					$total_adult_female_oi_percentage = "-";
+					$total_adult_female_prep_percentage = "-";
 					if ($results) {
 						foreach ($results as $result) {
 							$total_adult_female = $result['total'];
@@ -7836,12 +7929,16 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 								$overall_adult_female_oi += $total_adult_female;
 								$total_adult_female_oi = number_format($total_adult_female);
 								$total_adult_female_oi_percentage = number_format(($total_adult_female_oi / $total) * 100, 1);
+							} else if (strtoupper($service_name) == "PREP") {
+								$overall_adult_female_prep += $total_adult_female;
+								$total_adult_female_prep = number_format($total_adult_female);
+								$total_adult_female_prep_percentage = number_format(($total_adult_female_prep / $total) * 100, 1);
 							}
 
 						}
-						$dyn_table .= "<td>$total_adult_female_art</td><td>$total_adult_female_art_percentage</td><td>$total_adult_female_pep</td><td>$total_adult_female_pep_percentage</td><td>$total_adult_female_pmtct</td><td>$total_adult_female_pmtct_percentage</td><td>$total_adult_female_oi</td><td>$total_adult_female_oi_percentage</td>";
+						$dyn_table .= "<td>$total_adult_female_art</td><td>$total_adult_female_art_percentage</td><td>$total_adult_female_pep</td><td>$total_adult_female_pep_percentage</td><td>$total_adult_female_pmtct</td><td>$total_adult_female_pmtct_percentage</td><td>$total_adult_female_oi</td><td>$total_adult_female_oi_percentage</td><td>$total_adult_female_prep</td><td>$total_adult_female_prep_percentage</td>";
 					} else {
-						$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
+						$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 					}
 
 				//SQL for Child Male Regimens
@@ -7852,11 +7949,13 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 					$total_child_male_pep = "-";
 					$total_child_male_pmtct = "-";
 					$total_child_male_oi = "-";
+					$total_child_male_prep = "-";
 
 					$total_child_male_art_percentage = "-";
 					$total_child_male_pep_percentage = "-";
 					$total_child_male_pmtct_percentage = "-";
 					$total_child_male_oi_percentage = "-";
+					$total_child_male_prep_percentage = "-";
 					if ($results) {
 						foreach ($results as $result) {
 							$total_child_male = $result['total'];
@@ -7878,12 +7977,16 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 								$overall_child_male_oi += $total_child_male;
 								$total_child_male_oi = number_format($total_child_male);
 								$total_child_male_oi_percentage = number_format(($total_child_male_oi / $total) * 100, 1);
+							} else if (strtoupper($service_name) == "PREP") {
+								$overall_child_male_prep += $total_child_male;
+								$total_child_male_prep = number_format($total_child_male);
+								$total_child_male_prep_percentage = number_format(($total_child_male_prep / $total) * 100, 1);
 							}
 
 						}
-						$dyn_table .= "<td>$total_child_male_art</td><td>$total_child_male_art_percentage</td><td>$total_child_male_pep</td><td>$total_child_male_pep_percentage</td><td>$total_child_male_pmtct</td><td>$total_child_male_pmtct_percentage</td><td>$total_child_male_oi</td><td>$total_child_male_oi_percentage</td>";
+						$dyn_table .= "<td>$total_child_male_art</td><td>$total_child_male_art_percentage</td><td>$total_child_male_pep</td><td>$total_child_male_pep_percentage</td><td>$total_child_male_pmtct</td><td>$total_child_male_pmtct_percentage</td><td>$total_child_male_oi</td><td>$total_child_male_oi_percentage</td><td>$total_child_male_prep</td><td>$total_child_male_prep_percentage</td>";
 					} else {
-						$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
+						$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 					}
 
 				//SQL for Child Female Regimens
@@ -7894,10 +7997,13 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 					$total_child_female_pep = "-";
 					$total_child_female_pmtct = "-";
 					$total_child_female_oi = "-";
+					$total_child_female_prep = "-";
+					
 					$total_child_female_art_percentage = "-";
 					$total_child_female_pep_percentage = "-";
 					$total_child_female_pmtct_percentage = "-";
 					$total_child_female_oi_percentage = "-";
+					$total_child_female_prep_percentage = "-";
 					if ($results) {
 						foreach ($results as $result) {
 							$total_child_female = $result['total'];
@@ -7919,35 +8025,43 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 								$overall_child_female_oi += $total_child_female;
 								$total_child_female_oi = number_format($total_child_female);
 								$total_child_female_oi_percentage = number_format(($total_child_female_oi / $total) * 100, 1);
+							}else if (strtoupper($service_name) == "PREP") {
+								$overall_child_female_prep += $total_child_female;
+								$total_child_female_prep = number_format($total_child_female);
+								$total_child_female_prep_percentage = number_format(($total_child_female_prep / $total) * 100, 1);
 							}
 
 						}
-						$dyn_table .= "<td>$total_child_female_art</td><td>$total_child_female_art_percentage</td><td>$total_child_female_pep</td><td>$total_child_female_pep_percentage</td><td>$total_child_female_pmtct</td><td>$total_child_female_pmtct_percentage</td><td>$total_child_female_oi</td><td>$total_child_female_oi_percentage</td>";
+						$dyn_table .= "<td>$total_child_female_art</td><td>$total_child_female_art_percentage</td><td>$total_child_female_pep</td><td>$total_child_female_pep_percentage</td><td>$total_child_female_pmtct</td><td>$total_child_female_pmtct_percentage</td><td>$total_child_female_oi</td><td>$total_child_female_oi_percentage</td><td>$total_child_female_prep</td><td>$total_child_female_prep_percentage</td>";
 					} else {
-						$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
+						$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 					}
 					$dyn_table .= "</tr>";
 				}
 				$overall_art_male_percent = number_format(($overall_adult_male_art / $total) * 100, 1);
 				$overall_pep_male_percent = number_format(($overall_adult_male_pep / $total) * 100, 1);
 				$overall_oi_male_percent = number_format(($overall_adult_male_oi / $total) * 100, 1);
+				$overall_prep_male_percent = number_format(($overall_adult_male_prep / $total) * 100, 1);
 
 				$overall_art_female_percent = number_format(($overall_adult_female_art / $total) * 100, 1);
 				$overall_pep_female_percent = number_format(($overall_adult_female_pep / $total) * 100, 1);
 				$overall_pmtct_female_percent = number_format(($overall_adult_female_pmtct / $total) * 100, 1);
 				$overall_oi_female_percent = number_format(($overall_adult_female_oi / $total) * 100, 1);
+				$overall_prep_female_percent = number_format(($overall_adult_female_prep / $total) * 100, 1);
 
 				$overall_art_childmale_percent = number_format(($overall_child_male_art / $total) * 100, 1);
 				$overall_pep_childmale_percent = number_format(($overall_child_male_pep / $total) * 100, 1);
 				$overall_oi_childmale_percent = number_format(($overall_child_male_pmtct / $total) * 100, 1);
 				$overall_pmtct_childmale_percent = number_format(($overall_child_male_oi / $total) * 100, 1);
+				$overall_prep_childmale_percent = number_format(($overall_child_male_prep / $total) * 100, 1);
 
 				$overall_art_childfemale_percent = number_format(($overall_child_female_art / $total) * 100, 1);
 				$overall_pep_childfemale_percent = number_format(($overall_child_female_pep / $total) * 100, 1);
 				$overall_pmtct_childfemale_percent = number_format(($overall_child_female_pmtct / $total) * 100, 1);
 				$overall_oi_childfemale_percent = number_format(($overall_child_female_oi / $total) * 100, 1);
+				$overall_prep_childfemale_percent = number_format(($overall_child_female_prep / $total) * 100, 1);
 
-				$dyn_table .= "</tbody><tfoot><tr><td>TOTALS</td><td>$total</td><td>100</td><td>$overall_adult_male_art</td><td>$overall_art_male_percent</td><td>$overall_adult_male_pep</td><td>$overall_pep_male_percent</td><td>$overall_adult_male_oi</td><td>$overall_oi_male_percent</td><td>$overall_adult_female_art</td><td>$overall_art_female_percent</td><td>$overall_adult_female_pep</td><td>$overall_pep_female_percent</td><td>$overall_adult_female_pmtct</td><td>$overall_pmtct_female_percent</td><td>$overall_adult_female_oi</td><td>$overall_oi_female_percent</td><td>$overall_child_male_art</td><td>$overall_art_childmale_percent</td><td>$overall_child_male_pep</td><td>$overall_pep_childmale_percent</td><td>$overall_child_male_pmtct</td><td>$overall_pmtct_childmale_percent</td><td>$overall_child_male_oi</td><td>$overall_oi_childmale_percent</td><td>$overall_child_female_art</td><td>$overall_art_childfemale_percent</td><td>$overall_child_female_pep</td><td>$overall_pep_childfemale_percent</td><td>$overall_child_female_pmtct</td><td>$overall_pmtct_childfemale_percent</td><td>$overall_child_female_oi</td><td>$overall_oi_childfemale_percent</td></tr></tfoot></table>";
+				$dyn_table .= "</tbody><tfoot><tr><td>TOTALS</td><td>$total</td><td>100</td><td>$overall_adult_male_art</td><td>$overall_art_male_percent</td><td>$overall_adult_male_pep</td><td>$overall_pep_male_percent</td><td>$overall_adult_male_oi</td><td>$overall_oi_male_percent</td><td>$overall_adult_male_prep</td><td>$overall_prep_male_percent</td><td>$overall_adult_female_art</td><td>$overall_art_female_percent</td><td>$overall_adult_female_pep</td><td>$overall_pep_female_percent</td><td>$overall_adult_female_pmtct</td><td>$overall_pmtct_female_percent</td><td>$overall_adult_female_oi</td><td>$overall_oi_female_percent</td><td>$overall_adult_female_prep</td><td>$overall_prep_female_percent</td><td>$overall_child_male_art</td><td>$overall_art_childmale_percent</td><td>$overall_child_male_pep</td><td>$overall_pep_childmale_percent</td><td>$overall_child_male_pmtct</td><td>$overall_pmtct_childmale_percent</td><td>$overall_child_male_oi</td><td>$overall_oi_childmale_percent</td><td>$overall_child_male_prep</td><td>$overall_prep_childmale_percent</td><td>$overall_child_female_art</td><td>$overall_art_childfemale_percent</td><td>$overall_child_female_pep</td><td>$overall_pep_childfemale_percent</td><td>$overall_child_female_pmtct</td><td>$overall_pmtct_childfemale_percent</td><td>$overall_child_female_oi</td><td>$overall_oi_childfemale_percent</td><td>$overall_child_female_prep</td><td>$overall_prep_childfemale_percent</td></tr></tfoot></table>";
 			} else {
 				$dyn_table = "<h4 style='text-align: center'><span >No Data Available</span></h4>";
 			}
