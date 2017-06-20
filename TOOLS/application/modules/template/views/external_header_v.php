@@ -16,7 +16,7 @@
         <li><a href="<?= base_url() ?>">Recover <span class="sr-only">(current)</span></a></li>
         <li><a href="<?= base_url() ?>backup">Backup<span class="sr-only">(current)</span></a></li>
         <li><a href="<?= base_url() ?>github">System Update</a></li>
-        <li><a href="<?= base_url() ?>dbmanager">DB Manager</a></li>
+        <li><a href="<?= base_url() ?>adminer" target="_blank">DB Manager</a></li>
         <li><a href="<?= base_url() ?>dbmanager">Help</a></li>
       </ul>
     </div><!--/.nav-collapse -->
