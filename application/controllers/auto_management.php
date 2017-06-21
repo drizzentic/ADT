@@ -550,7 +550,6 @@ class Auto_management extends MY_Controller {
 				if ($file_name != '.' && $file_name != '..' && in_array($ext, $accepted_files) && !in_array($file_name, $migrations)) {
 					//Get query statements
 					$query_file = $queries_dir . '/' . $file_name;
-					echo $query_file.'<br/>';
 					$query_stmt = file_get_contents($query_file);
 					//Execute query statements
 					$statements = explode($delimeter, $query_stmt);
