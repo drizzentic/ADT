@@ -33,4 +33,3 @@
 <script src="<?php echo base_url().'assets/scripts/jquery.uploadify.js'?>" type="text/javascript"></script>
 <script src="<?php echo base_url().'assets/scripts/nascop.js'?>" type="text/javascript"></script>
 <script src="<?php echo base_url().'assets/scripts/datatable/dataTables.bootstrap.js'?>" type="text/javascript"></script>
-

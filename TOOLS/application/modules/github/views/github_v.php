@@ -17,7 +17,7 @@
 								<p class="text-left">
 								<?= str_replace("#", "<br />#", $release->body); ?>
 								</p>
-								<a href="<?= $release->zipball_url; ?>" download="ADT-<?= $release->name; ?>" class="btn btn-xs btn-primary">Download</a>
+								<a href="<?= $release->zipball_url; ?>" download="Web-ADT" class="btn btn-xs btn-primary">Download</a>
 						</div>
 					</div>
 				</div>

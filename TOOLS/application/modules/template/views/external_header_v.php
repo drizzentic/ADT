@@ -15,6 +15,13 @@
       <ul class="nav navbar-nav navbar-right">
         <li><a href="<?= base_url() ?>">Recover <span class="sr-only">(current)</span></a></li>
         <li><a href="<?= base_url() ?>backup">Backup<span class="sr-only">(current)</span></a></li>
+       <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Migrate <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Edit - WebADT</a></li>
+            <li><a href="#">Access - WebADT</a></li>
+          </ul>
+        </li>
         <li><a href="<?= base_url() ?>github">System Update</a></li>
         <li><a href="<?= base_url() ?>adminer" target="_blank">DB Manager</a></li>
         <li><a href="<?= base_url() ?>help">Help</a></li>
@@ -27,6 +34,7 @@
     $('.nav li a, .navbar-brand').css('color','#fff');
     $('.nav li:nth-child(<?= $active_menu;?>)').addClass('active');
     $('.nav .active a').css('color','grey');
+    $('.dropdown li a').css('color','black')
 
   });
 </script>

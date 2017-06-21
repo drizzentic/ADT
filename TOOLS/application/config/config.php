@@ -245,7 +245,7 @@ $config['encryption_key'] = '67d573de98323509593b1e2f258ee47e';
 */
 $config['sess_cookie_name']		= 'nascop_session';
 $config['sess_expiration']		= 7200;
-$config['sess_expire_on_close']	= TRUE;
+// $config['sess_expire_on_close']	= TRUE;
 $config['sess_encrypt_cookie']	= TRUE;
 $config['sess_use_database']	= FALSE;
 $config['sess_table_name']		= 'ci_sessions';

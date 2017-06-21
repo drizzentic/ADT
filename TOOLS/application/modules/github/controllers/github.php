@@ -17,7 +17,7 @@ class Github extends MY_Controller {
 	}
 
 	public function index($facility = "") {
-		$data['git_releases'] = json_decode($this->fetch_url_contents('https://api.github.com/repos/KevinMarete/ADT/releases'));
+		$data['git_releases'] = json_decode($this->fetch_url_contents('https://api.github.com/repos/nascop/ADT/releases?client_id=b576d4860bc586d89868&client_secret=282a631c881b9f4a307826713283df887a9f892d'));
 		// echo "<pre?";
 		// print_r($data['git_releases']);die;
 
