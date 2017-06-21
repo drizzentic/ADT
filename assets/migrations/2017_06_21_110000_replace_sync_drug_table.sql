@@ -1,19 +1,3 @@
-CREATE TABLE IF NOT EXISTS `sync_drug` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `abbreviation` varchar(255) DEFAULT NULL,
-  `strength` varchar(255) NOT NULL,
-  `packsize` int(7) DEFAULT NULL,
-  `formulation` varchar(255) DEFAULT NULL,
-  `unit` varchar(255) DEFAULT NULL,
-  `note` varchar(255) DEFAULT NULL,
-  `weight` int(4) DEFAULT '999',
-  `category_id` int(11) UNSIGNED DEFAULT NULL,
-  `regimen_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8//
-ALTER TABLE `sync_drug` ADD PRIMARY KEY (`id`)//
-ALTER TABLE `sync_drug` MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=245//
-ALTER TABLE `sync_drug` ADD `Active` varchar(2) NOT NULL DEFAULT '1'//
 REPLACE INTO `sync_drug` (`id`, `name`, `abbreviation`, `strength`, `packsize`, `formulation`, `unit`, `note`, `weight`, `category_id`, `regimen_id`) VALUES
 (1, 'Zidovudine/Lamivudine/Nevirapine', 'AZT/3TC/NVP', '300/150/200mg', 60, 'FDC Tabs', '', '', 0, 1, 0),
 (2, 'Zidovudine/Lamivudine', 'AZT/3TC', '300/150mg', 60, 'FDC Tabs', '', '', 0, 1, 0),
@@ -84,4 +68,19 @@ REPLACE INTO `sync_drug` (`id`, `name`, `abbreviation`, `strength`, `packsize`, 
 (241, 'Raltegravir Susp', 'RAL', '100mg/5ml', 60, 'Suspension', '', '', 999, 2, 0),
 (242, 'Isoniazid (H)', '', '300mg', 672, 'Tabs', '', '', 999, 1, 0),
 (244, 'Ritonavir', '', '100mg', 60, '', '', '', 999, 1, 0)//
-UPDATE `sync_facility` SET `Active` = '1' WHERE `Active` = ''//
+
+REPLACE INTO `sync_drug` (`id`, `name`, `abbreviation`, `strength`, `packsize`, `formulation`, `unit`, `note`, `weight`, `category_id`, `regimen_id`) VALUES
+(245, 'Tenofovir/Emtricitabine', 'TDF/FTC', '300/200mg', 30, 'FDC Tabs', '', '', 0, 1, 0),
+(246, 'Abacavir/Lamivudine', 'ABC/3TC', '600mg/300mg', 60, 'FDC Tabs', '', '', 0, 1, 0),
+(247, 'Efavirenz', 'EFV', '400mg', 30, 'tabs', '', '', 0, 1, 0),
+(248, 'Dolutegravir', 'DTG', '50mg', 30, 'tabs', '', '', 0, 1, 0),
+(249, 'Abacavir/Lamivudine', 'ABC/3TC', '120mg/60mg', 60, 'FDC Tabs', '', '', 0, 2, 0),
+(250, 'Lopinavir/ritonavir', 'LPV/r', '40/10mg', 120, 'Caps', '', '', 0, 2, 0),
+(251, 'Atazanavir', 'ATV', '100mg', 60, 'Caps', '', '', 0, 2, 0),
+(252, 'Fluconazole', '', '50mg', 100, 'Tabs', '', '', 0, 3, 0),
+(253, 'Pyridoxine', '', '25mg', 100, 'Tabs', '', '', 0, 3, 0),
+(254, 'Isoniazid', 'H', '300mg', 672, 'Tabs (for Pack of 672 tabs)', '', '', 0, 3, 0),
+(255, 'Ethambutol', '', '400mg', 28, 'Tab (for Pack of 28 tabs)', '', '', 0, 4, 0),
+(256, 'Pyrazinamide', '', '500mg', 28, 'Tab (for Pack of 28 tabs)', '', '', 0, 4, 0),
+(257, 'Rifabutin', '', '150mg', 30, 'Tab', '', '', 0, 4, 0),
+(258, 'Tenofovir/Lamivudine/Efavirenz', 'TDF/3TC/EFV', '300/300/400mg', 30, 'FDC Tabs', '', '', 0, 1, 0)//

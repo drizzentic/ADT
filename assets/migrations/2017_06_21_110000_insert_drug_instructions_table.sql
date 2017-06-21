@@ -1,9 +1,3 @@
-CREATE TABLE IF NOT EXISTS `drug_instructions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `active` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=35//
 INSERT INTO `drug_instructions` (`id`, `name`, `active`) VALUES
 (1, 'Warning. May cause drowsiness', 1),
 (2, 'Warning. May cause drowsiness. If affected to do not drive or operate machinery.Avoid alcoholic drink', 1),

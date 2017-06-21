@@ -1,3 +1,8 @@
+UPDATE regimen r 
+LEFT JOIN sync_regimen sr ON sr.code = r.regimen_code
+SET r.map = sr.id
+WHERE r.map = ''//
+
 UPDATE regimen r
 SET r.type_of_service = (SELECT id FROM regimen_service_type WHERE name LIKE '%ART%')
 WHERE (r.regimen_code LIKE 'A%' OR r.regimen_code LIKE 'C%')//

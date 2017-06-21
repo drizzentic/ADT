@@ -1,13 +1,3 @@
-CREATE TABLE IF NOT EXISTS `sync_regimen` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `code` varchar(5) DEFAULT NULL,
-  `old_code` varchar(45) DEFAULT NULL,
-  `description` text NOT NULL,
-  `category_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8//
-ALTER TABLE `sync_regimen` ADD `Active` varchar(2) NOT NULL DEFAULT '1'//
 REPLACE INTO `sync_regimen` (`id`, `name`, `code`, `old_code`, `description`, `category_id`) VALUES
 (1, 'AZT + 3TC + NVP', 'AF1A', '', 'Zidovudine + Lamivudine + Nevirapine', 4),
 (2, 'AZT + 3TC + EFV', 'AF1B', '', 'Zidovudine + Lamivudine + Efavirenz', 4),
@@ -92,5 +82,52 @@ REPLACE INTO `sync_regimen` (`id`, `name`, `code`, `old_code`, `description`, `c
 (241, 'Revisit patients with CM on Diflucan (For Diflucan Donation Program ONLY)', 'CM3R', '', 'Total number of Revisit Patients / Clients on Diflucan - disaggregated by Cryptococcal meningitis (CM)', 21),
 (242, 'New patients with OC on Diflucan (For Diflucan Donation Program ONLY)', 'OC3N', '', 'Total number of New Patients / Clients on Diflucan - disaggregated by Oesophageal candidiasis (OC)', 21),
 (243, 'Revisit patients with OC on Diflucan (For Diflucan Donation Program ONLY)', 'OC3R', '', 'Total number of Revisit Patients / Clients on Diflucan - disaggregated by Oesophageal candidiasis (OC)', 21)//
-DELETE FROM `sync_regimen` WHERE id > 243 AND id < 268//
-UPDATE `sync_regimen_category` SET `Active` = '1' WHERE `Active` = ''//
+
+REPLACE INTO `sync_regimen` (`id`, `name`, `code`, `old_code`, `description`, `category_id`) VALUES
+(270, 'AZT + 3TC + DTG', 'AF1D', '', '', 4),
+(271, 'TDF + 3TC + ATV/r', 'AF2D', '', '', 4),
+(272, 'TDF + 3TC + DTG', 'AF2E', '', '', 4),
+(273, 'TDF + 3TC + LPV/r (1L Adults <40kg)', 'AF2F', '', '', 4),
+(274, 'TDF + 3TC + RAL (PWIDs intoIerant to ATV)', 'AF2G', '', '', 4),
+(275, 'TDF + FTC + ATV/r', 'AF2H', '', '', 4),
+(276, 'ABC + 3TC + DTG', 'AF4C', '', '', 4),
+(277, 'RAL + DRV + RTV + ETV + other backbone ARVs', 'AT1D', '', '', 17),
+(278, 'RAL + ETV + other backbone ARVs', 'AT1E', '', '', 17),
+(279, 'RAL + DRV + RTV + other backbone ARVs', 'AT1F', '', '', 17),
+(280, 'RAL + other backbone ARVs (2nd Line patients failing treatment)', 'AT1G', '', '', 17),
+(281, 'ETV + other backbone ARVs', 'AT2B', '', '', 17),
+(282, 'ETV + DRV + RTV + other backbone ARVs', 'AT2C', '', '', 17),
+(283, 'DRV + RTV + other backbone ARVs', 'AT3A', '', '', 17),
+(284, 'DTG + DRV + RTV + ETV + other backbone ARVs', 'AT4A', '', '', 17),
+(285, 'DTG + ETV + other backbone ARVs', 'AT4B', '', '', 17),
+(286, 'DTG + DRV + RTV + other backbone ARVs', 'AT4C', '', '', 17),
+(287, 'DTG + other backbone ARVs (2nd Line patients failing treatment)', 'AT4D', '', '', 17),
+(288, 'AZT + 3TC + RAL', 'CF1E', '', '', 7),
+(289, 'ABC + 3TC + RAL', 'CF2F', '', '', 7),
+(290, 'TDF + 3TC + NVP (children > 35kg)', 'CF4A', '', '', 7),
+(291, 'TDF + 3TC + EFV', 'CF4B', '', '', 7),
+(292, 'TDF + 3TC + LPV/r', 'CF4C', '', '', 7),
+(293, 'TDF + 3TC + ATV/r', 'CF4D', '', '', 7),
+(294, 'RAL + DRV + RTV + ETV + other backbone ARVs', 'CT1D', '', '', 18),
+(295, 'RAL + ETV + other backbone ARVs', 'CT1E', '', '', 18),
+(296, 'RAL + DRV + RTV + other backbone ARVs', 'CT1F', '', '', 18),
+(297, 'RAL + other backbone ARVs', 'CT1G', '', '', 18),
+(298, 'ETV + other backbone ARVs', 'CT2B', '', '', 18),
+(299, 'ETV + DRV + RTV + other backbone ARVs', 'CT2C', '', '', 18),
+(300, 'DRV + RTV + other backbone ARVs', 'CT3A', '', '', 18),
+(301, 'DTG + DRV + RTV + ETV + other backbone ARVs', 'CT4A', '', '', 18),
+(302, 'DTG + ETV + other backbone ARVs', 'CT4B', '', '', 18),
+(303, 'DTG + DRV + RTV + other backbone ARVs', 'CT4C', '', '', 18),
+(304, 'DTG + other backbone ARVs', 'CT4D', '', '', 18),
+(305, 'AZT liquid BID + NVP liquid OD for 6 weeks then NVP liquid OD for 6 weeks', 'PC7', '', '', 11),
+(306, 'AZT liquid BID + NVP liquid OD for 6 weeks then NVP liquid OD until 6 weeks after complete cessation of Breastfeeding (mother NOT on ART)', 'PC8', '', '', 11),
+(307, 'AZT liquid BID for 12 weeks', 'PC9', '', '', 11),
+(308, 'TDF + FTC (PrEP)', 'PRP1A', '', '', 22),
+(309, 'TDF + 3TC (PrEP)', 'PRP1B', '', '', 22),
+(310, 'TDF (PrEP)', 'PRP1C', '', '', 22),
+(311, 'TDF + 3TC (HIV-ve HepB patients)', 'HPB1A', '', '', 23),
+(312, 'TDF + FTC (HIV-ve HepB patients)', 'HPB1B', '', '', 23),
+(313, 'Adult patients (=>15 Yrs) newly started on IPT in the month', 'OI4AN', '', '', 24),
+(314, 'Paed patients (<15 Yrs) newly started on IPT in the month', 'OI4CN', '', '', 24),
+(315, 'Adult patients (=>15 Yrs) on Fluconazole in the month', 'OI5A', '', '', 24),
+(316, 'Paed patients (<15 Yrs) on Fluconazole in the month', 'OI5C', '', '', 24)//

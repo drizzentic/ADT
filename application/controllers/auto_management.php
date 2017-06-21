@@ -1,6 +1,4 @@
 <?php
-ob_start();
-//error_reporting(0);
 class Auto_management extends MY_Controller {
 	var $remote_url = "";
 	var $viral_load_url="";
@@ -22,16 +20,14 @@ class Auto_management extends MY_Controller {
 		$last_update = (int)$log['last_index'];
 		//if not updated today
 		if ($today != $last_update || $manual==TRUE) {
-			//Function to create stored procedures
-			//$message .= $this->createStoredProcedures();
-			//Function to add table indexes
-			$message .= $this->addIndex();
 			//function to update destination column to 1 in drug_stock_movement table for issued transactions that have name 'pharm'
 			$message .= $this->updateIssuedTo();
 			//function to update source_destination column in drug_stock_movement table where it is zero
 			$message .= $this->updateSourceDestination();
 			//function to update ccc_store_sp column in drug_stock_movement table for pharmacy transactions
 			$message .= $this->updateCCC_Store();
+			//function to set negative batches to zero
+			$message .= $this->setBatchBalance();
 			//function to update patients without current_regimen with last regimen dispensed
 			$message .= $this->update_current_regimen(); 
 			//function to update patient data such as active to lost_to_follow_up	
@@ -40,24 +36,13 @@ class Auto_management extends MY_Controller {
 			$message .= $this->updateFixes();
 			//function to add new facilities list
 			$message .= $this->updateFacilties();
-			//function to create new tables into adt
-			$message .= $this->update_database_tables();
-			//function to create new columns into table
-			$message .= $this->update_database_columns();
 			//function to get viral load data
 			$message .= $this->updateViralLoad();
-			//function to set negative batches to zero
-			$message .= $this->setBatchBalance();
-			//fucntion to update patient visit dose from id to name
+			//function to update patient visit dose from id to name
 			$message .= $this->update_dose_name();
-			// To clean the sync_regimen_category table incase of the duplicates
-			// $message .= $this->delete_dulicates();
-			//function to update hash value of system to nascop
-			//$message .= $this->update_system_version();
-            //function to download guidelines from nascop
-            //$message .= $this->get_guidelines();
-			//function to update facility admin that reporting deadline is close
-			//$message .= $this->update_reporting();
+			//function to run_migrations
+			$message .= $this->run_migrations();			
+
 	        //finally update the log file for auto_update 
 	        if ($this -> session -> userdata("curl_error") == '') {
 	        	$sql="UPDATE migration_log SET last_index='$today' WHERE source='auto_update'";
@@ -69,73 +54,6 @@ class Auto_management extends MY_Controller {
           	$message="<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>&times;</button>".$message."</div>";
 	    }
 	    echo $message;
-	}
-
-	public function updateDrugId() {
-		//function to update drug_id column in drug_stock_movement table where drug_id column is zero
-		//Get batches for drugs which are associateed with those drugs
-		$sql = "SELECT batch_number
-				FROM  `drug_stock_movement` 
-				WHERE drug =0 AND batch_number!=''
-				ORDER BY  `drug_stock_movement`.`drug` ";
-		$query = $this -> db -> query($sql);
-		$res = $query -> result_array();
-		$counter = 0;
-		if($res){
-			foreach ($res as $value) {
-				$batch_number = $value['batch_number'];
-				//Get drug  id from drug_stock_balance
-				$sql = "SELECT drug_id FROM drug_stock_balance WHERE batch_number = '$batch_number' LIMIT 1";
-				$query = $this -> db -> query($sql);
-				$res = $query -> result_array();
-				if (count($res) > 0) {
-					$drug_id = $res[0]['drug_id'];
-					//Update drug id in drug stock movement
-					$sql = "UPDATE drug_stock_movement SET drug = '$drug_id' WHERE batch_number = '$batch_number' AND drug = 0 ";
-					$query = $this -> db -> query($sql);
-					$counter++;
-				}
-			}
-		}
-		$message="";
-		if($counter>0){
-			$message=$counter . " records have been updated!<br/>";
-		}
-		return $message;
-	}
-
-	public function updateDrugPatientVisit() {
-		//function to update drug column in patient_visit table where drug column is zero
-		//Get batches for drugs which are associateed with those drugs
-		$sql = "SELECT batch_number
-				FROM  `patient_visit` 
-				WHERE drug_id =0 AND batch_number!=''
-				ORDER BY  `patient_visit`.`drug_id` ";
-		$query = $this -> db -> query($sql);
-		$res = $query -> result_array();
-		$counter = 0;
-		if($res){
-			foreach ($res as $value) {
-				$batch_number = $value['batch_number'];
-				//Get drug  id from drug_stock_balance
-				$sql = "SELECT drug_id FROM drug_stock_balance WHERE batch_number = '$batch_number' LIMIT 1";
-				$query = $this -> db -> query($sql);
-				$res = $query -> result_array();
-				if (count($res) > 0) {
-					$drug_id = $res[0]['drug_id'];
-					//Update drug id in patient visit
-					$sql = "UPDATE patient_visit SET drug_id = '$drug_id' WHERE batch_number = '$batch_number' AND drug_id = '0' ";
-					//echo $sql;die();
-					$query = $this -> db -> query($sql);
-					$counter++;
-				}
-			}
-		}
-		$message="";
-		if($counter>0){
-			$message=$counter . " records have been updated!<br/>";
-		}
-		return $message;
 	}
 
 	public function updateIssuedTo(){
@@ -238,111 +156,6 @@ class Auto_management extends MY_Controller {
 			$message="";
 		}
 		return $message;
-	}
-    
-    public function updateSms() {
-    	$alert="";
-		$facility_name=$this -> session -> userdata('facility_name');
-		$facility_phone=$this->session->userdata("facility_phone");
-		$facility_sms_consent=$this->session->userdata("facility_sms_consent");
-		if($facility_sms_consent==TRUE){
-			/* Find out if today is on a weekend */
-			$weekDay = date('w');
-			if ($weekDay == 6) {
-				$tommorrow = date('Y-m-d', strtotime('+2 day'));
-			} else {
-				$tommorrow = date('Y-m-d', strtotime('+1 day'));
-			}
-			$nextweek=date('Y-m-d', strtotime('+1 week'));
-			$phone_minlength = '8';
-			$phone = "";
-			$phone_list = "";
-			$messages_list="";
-			$first_part = "";
-			$kenyacode = "254";
-			$arrDelimiters = array("/", ",", "+");
-			/*Get All Patient Who Consented Yes That have an appointment Tommorow */
-			$sql = "SELECT p.phone,p.patient_number_ccc,p.nextappointment,temp.patient,temp.appointment,temp.machine_code as status,temp.id
-						FROM patient p
-						LEFT JOIN 
-						(SELECT pa.id,pa.patient, pa.appointment, pa.machine_code
-						FROM patient_appointment pa
-						WHERE pa.appointment IN ('$tommorrow','$nextweek')
-						GROUP BY pa.patient) as temp ON temp.patient=p.patient_number_ccc
-						WHERE p.sms_consent =  '1'
-						AND p.nextappointment =temp.appointment
-						AND char_length(p.phone)>$phone_minlength
-						AND temp.machine_code !='s'
-						GROUP BY p.patient_number_ccc";
-			$query = $this -> db -> query($sql);
-			$results = $query -> result_array();
-			$phone_data=array();
-			if ($results) {
-				foreach ($results as $result) {
-					$phone = $result['phone'];
-					$appointment = $result['appointment'];
-					$newphone = substr($phone, -$phone_minlength);
-					$first_part = str_replace($newphone, "", $phone);
-					$message = "You have an Appointment on " . date('l dS-M-Y', strtotime($appointment)) . " at $facility_name Contact Phone: $facility_phone";
-					if (strlen($first_part) < 7) {
-						if ($first_part === '07') {
-							$phone = "+" . $kenyacode . substr($phone, 1);
-							$phone_list .= $phone;
-							$messages_list .= "+" .$message;
-						} else if ($first_part == '7') {
-							$phone = "0" . $phone;
-							$phone = "+" . $kenyacode . substr($phone, 1);
-							$phone_list .= $phone;
-							$messages_list .= "+" .$message;
-						} else if ($first_part == '+' . $kenyacode . '07') {
-							$phone = str_replace($kenyacode . '07', $kenyacode . '7', $phone);
-							$phone_list .= $phone;
-							$messages_list .= "+" .$message;
-						}
-					} else {
-						/*If Phone Does not meet requirements*/
-						$phone = str_replace($arrDelimiters, "-|-", $phone);
-						$phones = explode("-|-", $phone);
-						foreach ($phones as $phone) {
-							$newphone = substr($phone, -$phone_minlength);
-							$first_part = str_replace($newphone, "", $phone);
-							if (strlen($first_part) < 7) {
-								if ($first_part === '07') {
-									$phone = "+" . $kenyacode . substr($phone, 1);
-									$phone_list .= $phone;
-									$messages_list .= "+" .$message;
-									break;
-								} else if ($first_part == '7') {
-									$phone = "0" . $phone;
-									$phone = "+" . $kenyacode . substr($phone, 1);
-									$phone_list .= $phone;
-									$messages_list .= "+" .$message;
-									break;
-								} else if ($first_part == '+' . $kenyacode . '07') {
-									$phone = str_replace($kenyacode . '07', $kenyacode . '7', $phone);
-									$phone_list .= $phone;
-									$messages_list .= "+" .$message;
-									break;
-								}
-							}
-						}
-					}
-					$stmt = "update patient_appointment set machine_code='s' where id='" . $result['id'] . "'";
-					$q = $this -> db -> query($stmt);
-				}
-				$phone_list = substr($phone_list, 1);
-				$messages_list = substr($messages_list, 1);
-				$phone_list = explode("+", $phone_list);
-			    $messages_list = explode("+", $messages_list);
-			
-				foreach ($phone_list as $counter=>$contact) {
-					$message = urlencode($messages_list[$counter]);
-					//file("http://41.57.109.242:13000/cgi-bin/sendsms?username=clinton&password=ch41sms&to=$contact&text=$message");
-				}
-				$alert = "Patients notified (<b>" . sizeof($phone_list) . "</b>)";
-			}
-		}
-		return $alert;
 	}
 
 	public function updatePatientData() {
@@ -568,53 +381,6 @@ class Auto_management extends MY_Controller {
         return $message;
 	}
 
-	public function updateViralLoad(){
-		$facility_code = $this -> session -> userdata("facility");
-		$url = $this -> viralload_url . "vlapi.php?mfl=" . $facility_code;
-		$patient_tests=array();
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		$json_data = curl_exec($ch); 
-		if (empty($json_data)) {
-			$message = "cURL Error: " . curl_error($ch)."<br/>";
-			//$this -> session -> set_userdata("curl_error", 1);
-		} else {
-			$data = json_decode($json_data, TRUE); 
-			$lab_data=$data['posts'];
-			$message="Viral Load Download Failed!<br/>";
-			if(!empty($lab_data)){
-				foreach($lab_data as $lab){
-					foreach($lab as $tests){
-						$id = intval($tests['ID']);
-					   	$ccc_no = trim($tests['Patient']);
-					   	$result = $tests['Result'];
-					    $date_tested = $tests['DateTested'];
-					    $justification = $tests['Justification'];
-						//An array to store patient viral Load data
-						$sql = "CALL proc_check_viralload(?, ?, ?, ?, ?)";
-						$parameters = array($id, $ccc_no, $date_tested, $result, $justification);
-						$this->db->query($sql, $parameters);
-						// echo $this->db->last_query().'<br/>';
-	               }
-				}
-		    	$message="Viral Load Download Success!<br/>";
-			}
-		}
-
-		return $message;
-	}
-
-	public function get_viral_load($patient_no){
-		$this->db->select('*');
-		$this->db->where('patient_ccc_number', $patient_no);
-    	$this->db->from('patient_viral_load');
-    	$this->db->order_by('test_date','desc');
-    	$query = $this->db->get();
-    	$result = $query->result_array();
-    	echo json_encode($result);
-	}
-
 	public function updateFacilties(){
 		$total=Facilities::getTotalNumber();
 		$message="";
@@ -699,87 +465,44 @@ class Auto_management extends MY_Controller {
 		return $message;
 	}
 
-	public function update_database_tables(){
-		$count = 0;
-		$delimeter = "//";
-		$queries_dir  = 'assets/migrations';
-		$accepted_files = array('sql');
-		if (is_dir($queries_dir)) {
-			$files = scandir($queries_dir);
-			foreach ($files as $file_name) {
-				$ext = pathinfo($file_name, PATHINFO_EXTENSION);
-				if ($file_name != '.' && $file_name != '..' && in_array($ext, $accepted_files)) {
-					//Get query statements
-					$query_file = $queries_dir . '/' . $file_name;
-					$query_stmt = file_get_contents($query_file);
-					//Execute query statements
-					$statements = explode($delimeter, $query_stmt);
-					foreach($statements as $statement){
-						$statement = trim($statement);
-						if ($statement){
-							if (!$this->db->simple_query($statement))
-							{
-								$error = $file_name.'==>'.$this->db->_error_message().'<br/>';
-							}
-						}
-					}
-					$count++;
+	public function updateViralLoad(){
+		$facility_code = $this -> session -> userdata("facility");
+		$url = $this -> viralload_url . "vlapi.php?mfl=" . $facility_code;
+		$patient_tests=array();
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$json_data = curl_exec($ch); 
+		if (empty($json_data)) {
+			$message = "cURL Error: " . curl_error($ch)."<br/>";
+		} else {
+			$data = json_decode($json_data, TRUE); 
+			$lab_data=$data['posts'];
+			$message="Viral Load Download Failed!<br/>";
+			if(!empty($lab_data)){
+				foreach($lab_data as $lab){
+					foreach($lab as $tests){
+						$id = intval($tests['ID']);
+					   	$ccc_no = trim($tests['Patient']);
+					   	$result = $tests['Result'];
+					    $date_tested = $tests['DateTested'];
+					    $justification = $tests['Justification'];
+						//An array to store patient viral Load data
+						$sql = "CALL proc_check_viralload(?, ?, ?, ?, ?)";
+						$parameters = array($id, $ccc_no, $date_tested, $result, $justification);
+						$this->db->query($sql, $parameters);
+	               }
 				}
+		    	$message="Viral Load Download Success!<br/>";
 			}
 		}
-        return "(".$count.") rows affected!<br/>";
-	}
 
-	public function update_database_columns(){
-		$message='';
-		$statements['isoniazid_start_date']='ALTER TABLE patient ADD isoniazid_start_date varchar(20)';
-		$statements['isoniazid_end_date']='ALTER TABLE patient ADD isoniazid_end_date varchar(20)';
-		$statements['tb_category']='ALTER TABLE patient ADD tb_category varchar(2)';
-		$statements['spouses']='ALTER TABLE `spouses` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT';
-		$statements['dependants']='ALTER TABLE `dependants` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT';
-		$statements['source_destination'] = "ALTER TABLE  `drug_stock_movement` CHANGE  `Source_Destination`  `Source_Destination` VARCHAR( 50 )";
-		$statements['maps_issynched']="ALTER TABLE `maps` ADD `issynched` varchar(5) NOT NULL DEFAULT 'N'";
-		$statements['maps_item_issynched']="ALTER TABLE `maps_item` ADD `issynched` varchar(5) NOT NULL DEFAULT 'N'";
-		$statements['cdrr_item_adjustments_neg']="ALTER TABLE `cdrr_item` ADD `adjustments_neg` INT(11) NULL AFTER `adjustments`";
-
-		if ($statements) {
-			foreach ($statements as $column => $statement) {
-				if ($statement != null) {
-				    $db_debug = $this->db->db_debug;
-					$this->db->db_debug = false;
-					$this -> db -> query($statement);
-					$this->db->db_debug = $db_debug;
-				}
-			}
-		}
 		return $message;
 	}
-   
-    public function get_guidelines(){
-        $this->load->library('ftp');
-        $config['hostname'] = $this->remote_url;
-        $config['username'] = 'demo';
-        $config['password'] = 'demo';
-        $config['port']     = 21;
-        $config['passive']  = TRUE;
-        $config['debug']    = TRUE;
-        $this->ftp->connect($config);
-        $server_file="/";
-        $dir = realpath($_SERVER['DOCUMENT_ROOT']);
-       
-        $files = $this->ftp->list_files($server_file);
-        if(!empty($files))
-        {
-	        foreach($files as $file){
-	             $local_file = $dir . "/ADT/assets/guidelines". $file;
-	             $downloadfile= $this->ftp->download($file,$local_file , 'ascii');
-	        }
-        }
-    }
-   
-   //function to update dose on patient visit from id to dose name 
-   public function update_dose_name(){
-   	$message = '';
+
+   	public function update_dose_name(){
+   		//function to update dose on patient visit from id to dose name 
+   		$message = '';
    		$sql="SELECT id, Name FROM dose";
    		$query = $this -> db -> query($sql);
 		$doses = $query -> result_array();
@@ -792,204 +515,184 @@ class Auto_management extends MY_Controller {
 		}
 
 		return $message;
+   	}
 
-   }
-    public function update_system_version(){
-		$url = $this -> remote_url . "sync/gitlog";
-		$facility_code = $this -> session -> userdata("facility");
-		$hash=Git_Log::getLatestHash();
-		$results = array("facility_code" => $facility_code, "hash_value" => $hash);
-		$json_data = json_encode($results, JSON_PRETTY_PRINT);
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, array('json_data' => $json_data));
-		$json_data = curl_exec($ch);
-		if (empty($json_data)) {
-			$message = "cURL Error: " . curl_error($ch)."<br/>";
-		} else {
-			$messages = json_decode($json_data, TRUE);
-			$message = $messages[0]."<br/>";
+	public function run_migrations(){
+		$count = 0;
+		$delimeter = "//";
+		$queries_dir  = 'assets/migrations';
+		$accepted_files = array('sql');
+		$duplicate_error_codes = array(1022, 1060, 1061, 1062, 1064);
+		if (is_dir($queries_dir)) {
+			$files = scandir($queries_dir);
+			//Create migrations table
+			$migration_tbl_sql = "CREATE TABLE IF NOT EXISTS `migrations` (
+								  `id` int(11) NOT NULL AUTO_INCREMENT,
+								  `migration` varchar(100) NOT NULL,
+								  `run_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+								  PRIMARY KEY (`id`)
+								) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+			$this->db->query($migration_tbl_sql);
+			//Get all executed migrations
+			$migrations = array();
+			$get_migrations_sql = "SELECT migration from migrations";
+			$results = $this->db->query($get_migrations_sql)->result_array();
+			if(!empty($results)){
+				foreach ($results as $result) {
+					$migrations[] = $result['migration'];
+				}
+			}
+
+			//Get migration files
+			foreach ($files as $file_name) {
+				$error_status = 0;
+				$ext = pathinfo($file_name, PATHINFO_EXTENSION);
+				if ($file_name != '.' && $file_name != '..' && in_array($ext, $accepted_files) && !in_array($file_name, $migrations)) {
+					//Get query statements
+					$query_file = $queries_dir . '/' . $file_name;
+					echo $query_file.'<br/>';
+					$query_stmt = file_get_contents($query_file);
+					//Execute query statements
+					$statements = explode($delimeter, $query_stmt);
+					foreach($statements as $statement){
+						$statement = trim($statement);
+						if ($statement){
+							if (!$this->db->simple_query($statement))
+							{	
+								$error_code = $this->db->_error_number();
+								$error_status = 1;
+								$error = $file_name.'==>'.$this->db->_error_message().'<br/>';
+							}
+						}
+					}
+					$count++;
+					//If no error or is duplicate error_code then insert migration into migrations table
+					if($error_status == 0 || in_array($error_code, $duplicate_error_codes)){
+						$data = array(
+							'migration' => $file_name
+						);
+						$this->db->insert('migrations', $data);
+					}
+				}
+			}
 		}
-		curl_close($ch);
-		return $message;
+        return "(".$count.") rows affected!<br/>";
 	}
 
-	public function update_reporting() {
-		$deadline = date('Y-m-10');
-		$today = date('Y-m-d');
-		$notification_days = 10;
-		$notification = "";
-		$message = "";
-		$notification_link = site_url('order');
-		if ($deadline > $today) {
-			$diff = abs(strtotime($deadline) - strtotime($today));
-			$years = floor($diff / (365 * 60 * 60 * 24));
-			$months = floor(($diff - $years * 365 * 60 * 60 * 24) / (30 * 60 * 60 * 24));
-			$period = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
-			if ($notification_days >= $period) {
-				$notification = "Dear webADT User,<br/>";
-				$notification .= "The order reporting deadline is in " . $period . " days.<br/>";
-				$notification .= "The Satellites List is below: <br/>";
+    public function updateSms() {
+    	$alert="";
+		$facility_name=$this -> session -> userdata('facility_name');
+		$facility_phone=$this->session->userdata("facility_phone");
+		$facility_sms_consent=$this->session->userdata("facility_sms_consent");
+		if($facility_sms_consent==TRUE){
+			/* Find out if today is on a weekend */
+			$weekDay = date('w');
+			if ($weekDay == 6) {
+				$tommorrow = date('Y-m-d', strtotime('+2 day'));
+			} else {
+				$tommorrow = date('Y-m-d', strtotime('+1 day'));
 			}
-			//get reporting satellites
-			$start_date = date('Y-m-01', strtotime("-1 month"));
-			$facility_code = $this -> session -> userdata("facility");
-			$central_site = Sync_Facility::getId($facility_code, 0);
-			$central_site = $central_site['id'];
-			$sql = "SELECT sf.name as facility_name,sf.code as facility_code,IF(c.id,'reported','not reported') as status
-			        FROM sync_facility sf
-			        LEFT JOIN cdrr c ON c.facility_id=sf.id AND c.period_begin='$start_date' 
-			        WHERE sf.parent_id='$central_site'
-			        AND sf.category LIKE '%satellite%'
-			        AND sf.name NOT LIKE '%dispensing%'
-			        GROUP BY sf.id";
+			$nextweek=date('Y-m-d', strtotime('+1 week'));
+			$phone_minlength = '8';
+			$phone = "";
+			$phone_list = "";
+			$messages_list="";
+			$first_part = "";
+			$kenyacode = "254";
+			$arrDelimiters = array("/", ",", "+");
+			/*Get All Patient Who Consented Yes That have an appointment Tommorow */
+			$sql = "SELECT p.phone,p.patient_number_ccc,p.nextappointment,temp.patient,temp.appointment,temp.machine_code as status,temp.id
+						FROM patient p
+						LEFT JOIN 
+						(SELECT pa.id,pa.patient, pa.appointment, pa.machine_code
+						FROM patient_appointment pa
+						WHERE pa.appointment IN ('$tommorrow','$nextweek')
+						GROUP BY pa.patient) as temp ON temp.patient=p.patient_number_ccc
+						WHERE p.sms_consent =  '1'
+						AND p.nextappointment =temp.appointment
+						AND char_length(p.phone)>$phone_minlength
+						AND temp.machine_code !='s'
+						GROUP BY p.patient_number_ccc";
 			$query = $this -> db -> query($sql);
-			$satellites = $query -> result_array();
-			$notification .= "<table border='1'>";
-			$notification .= "<thead><tr><th>Name</th><th>Code</th><th>Status</th></tr></thead><tbody>";
-			if ($satellites) {
-				foreach ($satellites as $satellite) {
-					$notification .= "<tr><td>" . $satellite['facility_name'] . "</td><td>" . $satellite['facility_code'] . "</td><td>" . $satellite['status'] . "</td></tr>";
+			$results = $query -> result_array();
+			$phone_data=array();
+			if ($results) {
+				foreach ($results as $result) {
+					$phone = $result['phone'];
+					$appointment = $result['appointment'];
+					$newphone = substr($phone, -$phone_minlength);
+					$first_part = str_replace($newphone, "", $phone);
+					$message = "You have an Appointment on " . date('l dS-M-Y', strtotime($appointment)) . " at $facility_name Contact Phone: $facility_phone";
+					if (strlen($first_part) < 7) {
+						if ($first_part === '07') {
+							$phone = "+" . $kenyacode . substr($phone, 1);
+							$phone_list .= $phone;
+							$messages_list .= "+" .$message;
+						} else if ($first_part == '7') {
+							$phone = "0" . $phone;
+							$phone = "+" . $kenyacode . substr($phone, 1);
+							$phone_list .= $phone;
+							$messages_list .= "+" .$message;
+						} else if ($first_part == '+' . $kenyacode . '07') {
+							$phone = str_replace($kenyacode . '07', $kenyacode . '7', $phone);
+							$phone_list .= $phone;
+							$messages_list .= "+" .$message;
+						}
+					} else {
+						/*If Phone Does not meet requirements*/
+						$phone = str_replace($arrDelimiters, "-|-", $phone);
+						$phones = explode("-|-", $phone);
+						foreach ($phones as $phone) {
+							$newphone = substr($phone, -$phone_minlength);
+							$first_part = str_replace($newphone, "", $phone);
+							if (strlen($first_part) < 7) {
+								if ($first_part === '07') {
+									$phone = "+" . $kenyacode . substr($phone, 1);
+									$phone_list .= $phone;
+									$messages_list .= "+" .$message;
+									break;
+								} else if ($first_part == '7') {
+									$phone = "0" . $phone;
+									$phone = "+" . $kenyacode . substr($phone, 1);
+									$phone_list .= $phone;
+									$messages_list .= "+" .$message;
+									break;
+								} else if ($first_part == '+' . $kenyacode . '07') {
+									$phone = str_replace($kenyacode . '07', $kenyacode . '7', $phone);
+									$phone_list .= $phone;
+									$messages_list .= "+" .$message;
+									break;
+								}
+							}
+						}
+					}
+					$stmt = "update patient_appointment set machine_code='s' where id='" . $result['id'] . "'";
+					$q = $this -> db -> query($stmt);
 				}
-			}
-			$notification .= "</tbody></table>";
-			//send notification via email 
-			ini_set("SMTP", "ssl://smtp.gmail.com");
-			ini_set("smtp_port", "465");
-			$sql = "SELECT DISTINCT(Email_Address) as email 
-			        FROM users u
-			        LEFT JOIN access_level al ON al.id=u.Access_Level
-			        WHERE al.Level_Name LIKE '%facility%' 
-                    AND u.Facility_Code = '$facility_code'
-			        AND Email_Address !=''
-			        AND Email_Address !='kevomarete@gmail.com'";
-			$query = $this -> db -> query($sql);
-			$emails = $query -> result_array();
-			if ($emails) {
-				foreach($emails as $email)
-				{
-					$mail_list[] = $email['email'];
+				$phone_list = substr($phone_list, 1);
+				$messages_list = substr($messages_list, 1);
+				$phone_list = explode("+", $phone_list);
+			    $messages_list = explode("+", $messages_list);
+			
+				foreach ($phone_list as $counter=>$contact) {
+					$message = urlencode($messages_list[$counter]);
+					//file("http://41.57.109.242:13000/cgi-bin/sendsms?username=clinton&password=ch41sms&to=$contact&text=$message");
 				}
-			}
-			if(!empty($mail_list))
-			{
-				$mail_list = implode(",", $mail_list);
-				$config['mailtype'] = "html";
-				$config['protocol'] = 'smtp';
-				$config['smtp_host'] = 'ssl://smtp.googlemail.com';
-				$config['smtp_port'] = 465;
-				$config['smtp_user'] = stripslashes('webadt.chai@gmail.com');
-				$config['smtp_pass'] = stripslashes('WebAdt_052013');
-				$this -> load -> library('email', $config);
-				$this -> email -> set_newline("\r\n");
-				$this -> email -> from('webadt.chai@gmail.com', "WEB_ADT CHAI");
-				$this -> email -> to("$mail_list");
-				$this -> email -> subject("ORDER REPORTING NOTIFICATION");
-				$this -> email -> message("$notification");
-				if ($this -> email -> send()) {
-					$message = 'Reporting Notification was sent!<br/>';
-					$this -> email -> clear(TRUE);
-				} else {
-					$message = 'Reporting Notification Failed!<br/>';
-				}
+				$alert = "Patients notified (<b>" . sizeof($phone_list) . "</b>)";
 			}
 		}
-		return $message;
+		return $alert;
 	}
-	
-	public function createStoredProcedures(){
-		$data =array();
-		
-		$data["MAPS: Patient Revisit OC CM Stored Procedure"] ="
-			DROP procedure IF EXISTS `sp_GetRevisitCMOC`;
-			
-			DELIMITER $$
-			CREATE PROCEDURE `sp_GetRevisitCMOC` (IN start_date DATE, IN end_date DATE)
-			BEGIN
-				SELECT IF(temp2.other_illnesses LIKE '%cryptococcal%','revisit_cm','revisit_oc') as OI,COUNT(temp2.ccc_number) as total
-				FROM (SELECT DISTINCT(pv.patient_id) as ccc_number,oi.name as opportunistic_infection FROM patient_visit pv
-								INNER JOIN  opportunistic_infection oi ON oi.indication = pv.indication
-							) as temp1
-				INNER JOIN (
-						SELECT DISTINCT(p.patient_number_ccc) as ccc_number,other_illnesses FROM patient p
-						INNER JOIN patient_status ps ON ps.id = p.current_status
-						WHERE p.date_enrolled < start_date
-						AND ps.name LIKE '%active%'
-				) as temp2 ON temp2.ccc_number = temp1.ccc_number
-				WHERE temp2.other_illnesses LIKE '%cryptococcal%' OR temp1.opportunistic_infection LIKE '%oesophageal%';
-			END$$
-			
-			DELIMITER ;";
-		
-		$data["MAPS: Revisit Patient By Gender Stored Procedure"] ="
-			DROP procedure IF EXISTS `sp_GetRevisitPatient`;
-			
-			DELIMITER $$
-			CREATE  PROCEDURE `sp_GetRevisitPatient`(IN start_date DATE, IN end_date DATE)
-			BEGIN
-			        SELECT COUNT(DISTINCT(p.id)) as total,IF(p.gender=1,'new_male','new_female') as  gender 
-							FROM patient p
-							LEFT JOIN patient_visit pv ON pv.patient_id = p.patient_number_ccc
-							INNER JOIN patient_status ps ON ps.id=p.current_status
-							WHERE p.date_enrolled < start_date 
-							AND ( pv.dispensing_date BETWEEN start_date AND end_date)
-							AND ps.name LIKE '%active%'
-							GROUP BY p.gender;
-			END$$
-			
-			DELIMITER ;";
-			$message = "";	
-			foreach ($data as $key => $value) {
-				echo $value;$this ->db ->query($value);
-				if($this->db->affected_rows() >0){
-					$message.=$key. " successfully created ! <br>";
-				}else{
-					$message.=$key. " could not be created ! ".$this->db->_error_message()." <br>";
-				}
-			}
-		return $message;
+
+	public function get_viral_load($patient_no){
+		$this->db->select('*');
+		$this->db->where('patient_ccc_number', $patient_no);
+    	$this->db->from('patient_viral_load');
+    	$this->db->order_by('test_date','desc');
+    	$query = $this->db->get();
+    	$result = $query->result_array();
+    	echo json_encode($result);
 	}
-	
-	public function addIndex(){
-		$columns = array(
-						array(
-							"table"=>"patient_visit",
-							"column"=>"dispensing_date",
-							"message"=>"Dispensing date index (Patient Visit) "
-								),
-						array(
-							"table"=>"patient",
-							"column"=>"date_enrolled",
-							"message"=>"Date Enrolled index (Patient)"
-								),
-						array(
-							"table"=>"drug_stock_movement",
-							"column"=>"Source_Destination",
-							"message"=>"Transaction Date index (Drug Stock Movement)"
-								)
-								);
-		$message = "";
-		foreach ($columns as $value) {
-			$sql ="SHOW INDEX FROM ".$value['table']." WHERE KEY_NAME =  '".$value['column']."'";
-			$res = $this ->db ->query($sql);
-			if($result = $res->result_array()){
-				$index_to_drop = $result[0]['Key_name'];
-				$this ->db ->query("ALTER TABLE  ".$value['table']." DROP INDEX `$index_to_drop`");
-			}
-			$sql = "ALTER TABLE ".$value['table']." ADD INDEX (`".$value['column']."`)";
-				
-			if($this ->db ->query($sql)){
-				$message.=$value['message']. " successfully created ! <br>";
-			}else{
-				$message.=$value['message']. " could not be created ! ".$this->db->_error_message()." <br>";
-			}
-			
-		}
-		
-		return $message;
-	}
+
 }
-ob_get_clean();
 ?>
