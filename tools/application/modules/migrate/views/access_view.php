@@ -16,108 +16,113 @@
 	}
 </style>
 
-<div class="full-content">
-   <div class="row-fluid">
-       <div class="span8 offset2" id="migration_complete_msg"></div>
-   </div>
-   <form id="fmMigration" action="migration_management/migrate" method="post">
-   <div class="row-fluid">
-       <div class="span8 offset2">
-       	<h3>Migration Settings</h3>
-       </div>
-   </div>
-   <div class="row-fluid">
-       <div class="span8 offset2">
-       	 <div class="span5">
-					<div class="form-group">
-				      <label for="facility_code">Facility</label>
-				      <input type="text" id="facility_code" name="facility_code" class="form-control span6 validate" style="width:90%" />
-				    </div>
-				    <div class="form-group" id="fg_ccc_pharmacy">
-				      <label for="ccc_pharmacy">Pharmacy</label>
-					      <select id="ccc_pharmacy" name="ccc_pharmacy" class="form-control span10 validate">
-					        <option value=""> Select Pharmacy </option>
-					        <?php 
-					          foreach($stores as $store){
-					        ?>
-	                           <option value="<?php echo $store['ccc_id'];?>"><?php echo $store['ccc_name']; ?></option>
-	                        <?php
-					          }
-					        ?>
-					      </select>
-				    </div>
-		  </div>
-		  <div class="span5">
-					<div class="form-group">
-				      <label for="source_database">Database</label>
-				      <select id="source_database" name="source_database" class="form-control validate" style="width:90%">
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-12 col-md-12" id="migration_complete_msg"></div>
+	</div>
+	<form id="fmMigration" action="migration_management/migrate" method="post">
+		<div class="row">
+			<div class="col-sm-12 col-md-12">
+				<h3>Access to webADT Migration</h3>
+			</div>
+		</div>
+		<div class="row">
+       	 	<div class="col-sm-6 col-md-6">
+				<div class="form-group">
+			      	<label for="facility_code">Facility</label>
+			      	<input type="text" id="facility_code" name="facility_code" class="form-control validate" style="width:90%">
+			    </div>
+			</div>
+			<div class="col-sm-6 col-md-6">
+				<div class="form-group">
+				    <label for="source_database">Database</label>
+				    <select id="source_database" name="source_database" class="form-control validate" style="width:90%">
 				        <option value=""> Select Database </option>
 				        <?php 
 				          foreach($databases as $database){
 				        ?>
-                           <option value="<?php echo $database['Database'];?>"><?php echo $database['Database']; ?></option>
+                        <option value="<?php echo $database['Database'];?>"><?php echo $database['Database']; ?></option>
                         <?php
 				          }
 				        ?>
-				      </select>
-				    </div>
-				    <div class="form-group">
-	                    <label for="table" id="lbltable" name="lbltable">Tables</label> 
-						<select class=" form-control multiselect span10 validate" id="table" name="table" multiple="multiple" required="required">
+				    </select>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6 col-md-6">
+			    <div class="form-group" id="fg_ccc_pharmacy">
+			      	<label for="ccc_pharmacy">Pharmacy</label>
+			      	<select id="ccc_pharmacy" name="ccc_pharmacy" class="form-control col-md-12 validate">
+			        	<option value=""> Select Pharmacy </option>
 				        <?php 
-				          foreach($tables as $table=>$table_config){
+				          foreach($stores as $store){
 				        ?>
-                           <option value="<?php echo $table;?>"><?php echo $table; ?></option>
+                           <option value="<?php echo $store['ccc_id'];?>"><?php echo $store['ccc_name']; ?></option>
                         <?php
 				          }
 				        ?>
-						</select>
-	                </div>
-			</div>
+			      	</select>
+			    </div>
+		  	</div>
+		  	<div class="col-sm-6 col-md-6">
+		  		<div class="form-group">
+                    <label for="table" id="lbltable" name="lbltable">Tables</label> 
+					<select class=" form-control multiselect col-md-12 validate" id="table" name="table" multiple="multiple" required="required">
+			        <?php 
+			          foreach($tables as $table=>$table_config){
+			        ?>
+                       <option value="<?php echo $table;?>"><?php echo $table; ?></option>
+                    <?php
+			          }
+			        ?>
+					</select>
+                </div>
+		  	</div>
+		</div>
        </div>
-   </div>
-   <!--start button-->
-   <div class="row-fluid">
-     <div class="span8 offset2">
-		<div class="form-group">
-			<button type="submit" id="migrate_btn" class="btn btn-primary">Start Migration</button>
+		<!--start button-->
+		<div class="row">
+			<div class="col-lg-offset-8 col-sm-4 col-md-4">
+				<div class="form-group">
+					<button type="submit" id="migrate_btn" class="btn btn-primary">Start Migration</button>
+				</div>
+			</div>	
 		</div>
-	 </div>	
-   </div>
-   <!--bottom-->
-   <div class="row-fluid">
-	   <div class="span8 offset2">
-	   	<h3>Migration Progress</h3>
-	   </div>
-   </div>
-   <!--overall progress-->
-   <div class="row-fluid">
-        <div class="span8 offset2">
-			<label>Overall Progress</label>
-			<div id="overall_progress_bar" class="progress active">
-				<div id="migration_overall_progress" class="bar" style="width:0%;"></div>
+		<!--bottom-->
+		<div class="row">
+			<div class="col-sm-12 col-md-12">
+				<h3>Migration Progress</h3>
 			</div>
 		</div>
-	</div>
-	<!--line separator-->
-	<div class="row-fluid">
-	  <div class="span8 offset2">
-	    <p>
-	     <hr size="2">
-	     </p>
-	  </div>
-	</div>
-	<!--table progress-->
-	<div class="row-fluid">
-		<div class="span8 offset2" id="table_progress">
-		 <div id="migrate_table_result_holder">
-		 </div>
+		<!--overall progress-->
+		<div class="row">
+			<div class="col-sm-12 col-md-12">
+				<label>Overall Progress</label>
+					<div id="overall_progress_bar" class="progress active">
+						<div id="migration_overall_progress" class="progress-bar" style="width:0%;"></div>
+					</div>
+			</div>
 		</div>
-    </div>
+		<!--line separator-->
+		<div class="row">
+			<div class="col-sm-12 col-md-12">
+				<p></p>
+				<hr size="2">
+			 	<p></p>
+			</div>
+		</div>
+		<!--table progress-->
+		<div class="row">
+			<div class="col-sm-12 col-md-12" id="table_progress">
+			 	<div id="migrate_table_result_holder">
+			</div>
+		</div>
     </form>
-</div> <!--end full-content-->
+</div>
 
-
+<link href="<?php echo main_url().'assets/styles/bootstrap-multiselect.css'; ?>" type="text/css" rel="stylesheet"/>
+<link href="<?php echo main_url().'assets/styles/select2-3.4.8/select2.css'; ?>" type="text/css" rel="stylesheet"/>
 <!--scripts-->
 <script src="<?php echo main_url();?>assets/scripts/bootstrap/bootstrap-multiselect.js"></script>
 <script src="<?php echo main_url();?>assets/scripts/plugin/jquery-validate/jquery.validate.min.js"></script>

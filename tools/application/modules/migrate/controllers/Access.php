@@ -10,8 +10,7 @@ class Access extends MY_Controller {
 	}
 
 	public function index() {
-		echo "Help";
-		$data['active_menu'] = 3;
+		
 
         //get cc_store_pharmacy
         $sql = "SELECT id as ccc_id,name as ccc_name 
@@ -28,7 +27,7 @@ class Access extends MY_Controller {
 		//migration view
 		$data['content_view'] = "migrate/access_view";
 		$data['banner_text'] = "Data Migration";
-		//$this->base_params($data);
+		$data['active_menu'] = 3;
 		$this -> template($data);
 	}
 	/**
@@ -874,16 +873,11 @@ class Access extends MY_Controller {
 		}
 		echo $temp;
 	}
-
-	public function base_params($data){
-	    $data['hide_side_menu'] = 1;
-		$data['title'] = 'Tools | Access Migration';
-		$this -> load -> view('template',$data);
-	}
-
+	
 	public function template($data) {
 		$data['show_menu'] = 0;
 		$data['show_sidemenu'] = 0;
+		$data['title'] = 'Tools | Access Migration';
 		$this -> load -> module('template');
 		$this -> template -> index($data);
 	}
