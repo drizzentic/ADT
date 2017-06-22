@@ -80,7 +80,7 @@
 					Government of Kenya &copy; <?php echo date('Y');?>.
 					All Rights Reserved
 					<br/><br/>
-						<strong>Web-ADT version 3.2.1</strong>
+						<strong>Web-ADT version <?= $this->config->item('adt_version'); ?></strong>
 					</div>
 				</div>
 				</div>
