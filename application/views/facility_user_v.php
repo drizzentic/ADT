@@ -54,6 +54,8 @@ $("#district").attr("value","<?php echo @$facility['district'];?>");
 $("#central_site").attr("value","<?php echo @$facility['parent'];?>");
 $("#county").attr("value","<?php echo @$facility['county'];?>");
 $("#sms_map").val("<?php echo $facility['map'];?>");
+$("#autobackup").val("<?php echo $facility['autobackup'];?>");
+
 });
 </script>
 	<div class="container-fluid">
@@ -101,7 +103,7 @@ $("#sms_map").val("<?php echo $facility['map'];?>");
 									<td><input type="text" name="weekend_max" id="weekend_max" class="input-small" value="<?php echo @$facility['weekend_max'];?>"></td>
 								</tr>
 										<!-- <tr><td><strong class="label">Lost to follow_up days</strong></td>
-								<td><input type="hidden" name="lost_to_follow_up" id="lost_to_follow_up" class="input-small" style="color:green" value="90" >
+								<td><input type="hidden" name="lost_to_follow_up" id="lost_to_follow_up" class="input-small" style="color:green" value="90" >
 									</td>
 								</tr> -->
 								<tr><td><strong class="label">Facility Type</strong></td>
@@ -148,6 +150,15 @@ $("#sms_map").val("<?php echo $facility['map'];?>");
 								    <td><strong class="label">Does Facilty want to send sms to patients?</strong></td>
 									<td>
 									<select name="sms_map" id="sms_map">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+									</select>
+									</td>
+								</tr>
+								<tr>
+								    <td><strong class="label">Do you want to enable AutoBackup?</strong></td>
+									<td>
+									<select name="autobackup" id="autobackup">
                                         <option value="0">No</option>
                                         <option value="1">Yes</option>
 									</select>

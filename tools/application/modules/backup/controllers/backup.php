@@ -5,7 +5,7 @@ if (!defined('BASEPATH'))
 class Backup extends MY_Controller {
 	var $backup_dir = "./backup_db";
 
-	var $config = array (
+	var $ftp_config = array (
 		'hostname' => 'commodities.nascop.org',
 		'username' => 'ftpuser',
 		'password' => 'ftpuser',
@@ -261,19 +261,19 @@ class Backup extends MY_Controller {
 
 			$mysql_home = realpath($_SERVER['MYSQL_HOME']) . "\mysqldump";
 			// $outer_file = "webadt_" . date('d-M-Y h-i-sa') . ".sql";
-			$outer_file = $facility_code."_" . date('YmdHis') . ".sql";
+			$outer_file = $facility_code."_" . date('YmdHis') .'_v'.$this->config->item('adt_version'). ".sql";
 			$file_path = "\"" . $file_path . "//" . $outer_file . "\"";
 			$mysql_bin = str_replace("//", "////", $mysql_home);
-			$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' -P '.$port.' '. $current_db . ' > ' . $file_path;
+			$mysql_con = $mysql_bin.'' . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' -P '.$port.' '. $current_db . ' > ' . $file_path;
 			exec($mysql_con);
-			$error_message = "<div class='alert-success'><button type='button' class='close' data-dismiss='alert'>&times;</button><strong>Backup!</strong> Database Backup Successful</div>";
+			$error_message = "<div class='alert-success'><button type='button' class='close' data-dismiss='alert'>&times;</button><strong>Backup!</strong> Database Backup Successful. $outer_file </div>";
 			$this -> session -> set_flashdata('error_message', $error_message);
 			// redirect("backup_management");
 			// echo str_replace('"', "", $file_path);
 			if($this->zip_backup(str_replace('"', "", $file_path))){
 
 				$this->delete_file(str_replace('"', "", $file_path));
-				echo "Backup Successful";
+				echo "Backup Success - " . $outer_file.'.zip';
 
 			}
 			else{
@@ -315,12 +315,12 @@ class Backup extends MY_Controller {
 
 		$this->load->library('ftp');
 
-		$config['hostname'] = 'ftp.inclusion.co.ke';
-		$config['username'] = 'adtftp';
-		$config['password'] = 'Kuwesa1!1';
-		$config['debug']	= FALSE;
+		$ftp_config['hostname'] = 'ftp.inclusion.co.ke';
+		$ftp_config['username'] = 'adtftp';
+		$ftp_config['password'] = 'Kuwesa1!1';
+		$ftp_config['debug']	= FALSE;
 
-		if($this->ftp->connect($config)){
+		if($this->ftp->connect($ftp_config)){
 			$this->ftp->download($remote_path, $file_path, 'ascii');
 			$this->ftp->close();
 			echo "Backup download successful";
@@ -330,8 +330,9 @@ class Backup extends MY_Controller {
 		}
 	}
 
-	public function upload_backup() {
-		$file_name =$_POST['file_name'];
+	public function upload_backup($file_name = null) {
+		// $file_name =$_POST['file_name'];
+		$file_name = (isset($file_name)) ? $file_name : $_POST['file_name'] ;
 		$file_path =  FCPATH.'backup_db/'.$file_name;
 		// echo $file_path." fp";die;
 
@@ -372,7 +373,7 @@ class Backup extends MY_Controller {
 			echo "Backup deleted";
 		}
 		else{
-			echo "failed to delete backup";
+			echo "Failed to delete backup";
 		}
 
 
@@ -401,7 +402,7 @@ class Backup extends MY_Controller {
 			}
 		}
 		public function connect_ftp(){
-			if($this->ftp->connect($this -> config)){
+			if($this->ftp->connect($this -> ftp_config)){
 				return true;
 			}
 			else{
