@@ -42,24 +42,26 @@ class Auto_management extends MY_Controller {
 			$message .= $this->update_dose_name();
 			//function to run_migrations
 			$message .= $this->run_migrations();			
+			//function to auto_backup
+			$message .= $this->auto_backup();			
 
 	        //finally update the log file for auto_update 
-	        if ($this -> session -> userdata("curl_error") == '') {
-	        	$sql="UPDATE migration_log SET last_index='$today' WHERE source='auto_update'";
+			if ($this -> session -> userdata("curl_error") == '') {
+				$sql="UPDATE migration_log SET last_index='$today' WHERE source='auto_update'";
 				$this -> db -> query($sql);
 				$this -> session -> set_userdata("curl_error", "");
 			} 
-	    }
-	    if($manual==TRUE){
-          	$message="<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>&times;</button>".$message."</div>";
-	    }
-	    echo $message;
+		}
+		if($manual==TRUE){
+			$message="<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>&times;</button>".$message."</div>";
+		}
+		echo $message;
 	}
 
 	public function updateIssuedTo(){
 		$sql="UPDATE drug_stock_movement
-		      SET destination='1'
-		      WHERE destination LIKE '%pharm%'";
+		SET destination='1'
+		WHERE destination LIKE '%pharm%'";
 		$this->db->query($sql);
 		$count=$this->db->affected_rows();
 		$message="(".$count.") issued to transactions updated!<br/>";
@@ -72,21 +74,21 @@ class Auto_management extends MY_Controller {
 
 	public function updateSourceDestination(){
 		$values=array(
-			      'received from'=>'source',
-			      'returns from'=>'destination',
-			      'issued to'=>'destination',
-			      'returns to'=>'source'
-			      );
+			'received from'=>'source',
+			'returns from'=>'destination',
+			'issued to'=>'destination',
+			'returns to'=>'source'
+			);
 		$message="";
 		foreach($values as $transaction=>$column){
-				$sql="UPDATE drug_stock_movement dsm
-					  LEFT JOIN transaction_type t ON t.id=dsm.transaction_type
-					  SET dsm.source_destination=IF(dsm.$column=dsm.facility,'1',dsm.$column)
-				      WHERE t.name LIKE '%$transaction%'
-					  AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination='0')";
-                $this->db->query($sql);
-                $count=$this->db->affected_rows();
-                $message.=$count." ".$transaction." transactions missing source_destination(".$column.") have been updated!<br/>";
+			$sql="UPDATE drug_stock_movement dsm
+			LEFT JOIN transaction_type t ON t.id=dsm.transaction_type
+			SET dsm.source_destination=IF(dsm.$column=dsm.facility,'1',dsm.$column)
+			WHERE t.name LIKE '%$transaction%'
+			AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination='0')";
+			$this->db->query($sql);
+			$count=$this->db->affected_rows();
+			$message.=$count." ".$transaction." transactions missing source_destination(".$column.") have been updated!<br/>";
 		}
 		if($count<=0){
 			$message="";
@@ -95,16 +97,16 @@ class Auto_management extends MY_Controller {
 	}
 
 	public function updateCCC_Store(){
-        $facility_code=$this->session->userdata("facility");
+		$facility_code=$this->session->userdata("facility");
 		$sql="UPDATE drug_stock_movement dsm
-		      SET ccc_store_sp='1'
-		      WHERE dsm.source !=dsm.destination
-		      AND ccc_store_sp='2' 
-		      AND (dsm.source='$facility_code' OR dsm.destination='$facility_code')";
-        $this->db->query($sql);
-        $count=$this->db->affected_rows();
-        $message="(".$count.") transactions changed from main pharmacy to main store!<br/>";
-        if($count<=0){
+		SET ccc_store_sp='1'
+		WHERE dsm.source !=dsm.destination
+		AND ccc_store_sp='2' 
+		AND (dsm.source='$facility_code' OR dsm.destination='$facility_code')";
+		$this->db->query($sql);
+		$count=$this->db->affected_rows();
+		$message="(".$count.") transactions changed from main pharmacy to main store!<br/>";
+		if($count<=0){
 			$message="";
 		}
 		return $message;
@@ -113,13 +115,13 @@ class Auto_management extends MY_Controller {
 	public function setBatchBalance(){
 		$facility_code=$this->session->userdata("facility");
 		$sql="UPDATE drug_stock_balance dsb
-		      SET dsb.balance=0
-		      WHERE dsb.balance<0 
-		      AND dsb.facility_code='$facility_code'";
-        $this->db->query($sql);
-        $count=$this->db->affected_rows();
-        $message="(".$count.") batches with negative balance have been updated!<br/>";
-        if($count<=0){
+		SET dsb.balance=0
+		WHERE dsb.balance<0 
+		AND dsb.facility_code='$facility_code'";
+		$this->db->query($sql);
+		$count=$this->db->affected_rows();
+		$message="(".$count.") batches with negative balance have been updated!<br/>";
+		if($count<=0){
 			$message="";
 		}
 		return $message;
@@ -129,10 +131,10 @@ class Auto_management extends MY_Controller {
 		$count=1;
 		//Get all patients without current regimen and who are not active
 		$sql_get_current_regimen = "SELECT p.id,p.patient_number_ccc, p.current_regimen ,ps.name
-									FROM patient p 
-									INNER JOIN patient_status ps ON ps.id = p.current_status
-									WHERE current_regimen = '' 
-									AND ps.name != 'active'";
+		FROM patient p 
+		INNER JOIN patient_status ps ON ps.id = p.current_status
+		WHERE current_regimen = '' 
+		AND ps.name != 'active'";
 		$query = $this -> db -> query($sql_get_current_regimen);
 		$result_array = $query -> result_array();
 		if($result_array){
@@ -151,8 +153,8 @@ class Auto_management extends MY_Controller {
 				}
 			}   
 		}     
-        $message="(".$count.") patients without current_regimen have been updated with last dispensed regimen!<br/>";
-        if($count<=0){
+		$message="(".$count.") patients without current_regimen have been updated with last dispensed regimen!<br/>";
+		if($count<=0){
 			$message="";
 		}
 		return $message;
@@ -180,186 +182,186 @@ class Auto_management extends MY_Controller {
 			$q = $this -> db -> query($s);
 			$rs = $q -> result_array();
 			if($rs){
-			    $state[$status] = $rs[0]['id'];
+				$state[$status] = $rs[0]['id'];
 			} else{
                 $state[$status]='NAN'; //If non existant
             }	
-		}
-		if(!empty($state)){
-			/*Change Last Appointment to Next Appointment*/
-			$sql['Change Last Appointment to Next Appointment'] = "(SELECT patient_number_ccc,nextappointment,temp.appointment,temp.patient
-						FROM patient p
-						LEFT JOIN 
-						(SELECT MAX(pa.appointment)as appointment,pa.patient
-						FROM patient_appointment pa
-						GROUP BY pa.patient) as temp ON p.patient_number_ccc =temp.patient
-						WHERE p.nextappointment !=temp.patient
-						AND DATEDIFF(temp.appointment,p.nextappointment)>0
-						GROUP BY p.patient_number_ccc) as p1
-						SET p.nextappointment=p1.appointment";
-			/*Change Active to Lost_to_follow_up*/
-			if(isset($state[$lost])){
-				$sql['Change Active to Lost_to_follow_up'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
-					   FROM patient p
-					   LEFT JOIN patient_status ps ON ps.id=p.current_status
-					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
-					   WHERE ps.Name LIKE '%$active%'
-					   AND (DATEDIFF(CURDATE(),nextappointment )) >= $days_to_lost_followup
-					   AND p.status_change_date != CURDATE()
-					   AND rst.name NOT LIKE '%$pep%'
-					   AND rst.name NOT LIKE '%$prep%') as p1
-					   SET p.current_status = '$state[$lost]', p.status_change_date = CURDATE()";
-			}
-			
-			/*Change Lost_to_follow_up to Active */
-			if(isset($state[$active])){
-				$sql['Change Lost_to_follow_up to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
-					   FROM patient p
-					   LEFT JOIN patient_status ps ON ps.id=p.current_status
-					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
-					   WHERE ps.Name LIKE '%$lost%'
-					   AND (DATEDIFF(CURDATE(),nextappointment )) < $days_to_lost_followup
-					   AND rst.name NOT LIKE '%$pep%'
-					   AND rst.name NOT LIKE '%$prep%') as p1
-					   SET p.current_status = '$state[$active]', p.status_change_date = CURDATE()";
-			}
-			
-			/*Change Active to PEP End*/
-			if(isset($state[$pep])){
-				$sql['Change Active to PEP End'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
-					   FROM patient p
-					   LEFT JOIN regimen_service_type rst ON rst.id=p.service
-					   LEFT JOIN patient_status ps ON ps.id=p.current_status
-					   WHERE (DATEDIFF(CURDATE(),date_enrolled))>=$days_to_pep_end 
-					   AND rst.name LIKE '%$pep%' 
-					   AND ps.Name NOT LIKE '%$pep%') as p1
-					   SET p.current_status = '$state[$pep]', p.status_change_date = CURDATE()";
-			}
-			
-			/*Change PEP End to Active*/
-			if(isset($state[$active])){
-				$sql['Change PEP End to Active'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
-					   FROM patient p
-					   LEFT JOIN regimen_service_type rst ON rst.id=p.service
-					   LEFT JOIN patient_status ps ON ps.id=p.current_status
-					   WHERE (DATEDIFF(CURDATE(),date_enrolled))<$days_to_pep_end 
-					   AND rst.name LIKE '%$pep%' 
-					   AND ps.Name NOT LIKE '%$active%') as p1
-					   SET p.current_status = '$state[$active]', p.status_change_date = CURDATE()";
-			}
-			
-			/*Change Active to PMTCT End(children)*/
-			if(isset($state[$pmtct])){
-				$sql['Change Active to PMTCT End(children)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
-					   FROM patient p
-					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
-					   LEFT JOIN patient_status ps ON ps.id = p.current_status
-					   WHERE (DATEDIFF(CURDATE(),dob )) >=$two_year_days
-					   AND (DATEDIFF(CURDATE(),dob)) <$adult_days
-					   AND rst.name LIKE  '%$pmtct%'
-					   AND ps.Name NOT LIKE  '%$pmtct%') as p1
-					   SET p.current_status = '$state[$pmtct]', p.status_change_date = CURDATE()";
-			}
-			
-			/*Change PMTCT End to Active(Adults)*/
-			if(isset($state[$active])){
-				$sql['Change PMTCT End to Active(Adults)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
-					   FROM patient p
-					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
-					   LEFT JOIN patient_status ps ON ps.id = p.current_status 
-					   WHERE (DATEDIFF(CURDATE(),dob)) >=$two_year_days 
-					   AND (DATEDIFF(CURDATE(),dob)) >=$adult_days 
-					   AND rst.name LIKE '%$pmtct%'
-					   AND ps.Name LIKE '%$pmtct%') as p1
-					   SET p.current_status = '$state[$active]', p.status_change_date = CURDATE()";
-			}
+        }
+        if(!empty($state)){
+        	/*Change Last Appointment to Next Appointment*/
+        	$sql['Change Last Appointment to Next Appointment'] = "(SELECT patient_number_ccc,nextappointment,temp.appointment,temp.patient
+        	FROM patient p
+        	LEFT JOIN 
+        	(SELECT MAX(pa.appointment)as appointment,pa.patient
+        	FROM patient_appointment pa
+        	GROUP BY pa.patient) as temp ON p.patient_number_ccc =temp.patient
+        	WHERE p.nextappointment !=temp.patient
+        	AND DATEDIFF(temp.appointment,p.nextappointment)>0
+        	GROUP BY p.patient_number_ccc) as p1
+        	SET p.nextappointment=p1.appointment";
+        	/*Change Active to Lost_to_follow_up*/
+        	if(isset($state[$lost])){
+        		$sql['Change Active to Lost_to_follow_up'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+        		FROM patient p
+        		LEFT JOIN patient_status ps ON ps.id=p.current_status
+        		LEFT JOIN regimen_service_type rst ON rst.id = p.service
+        		WHERE ps.Name LIKE '%$active%'
+        		AND (DATEDIFF(CURDATE(),nextappointment )) >= $days_to_lost_followup
+        		AND p.status_change_date != CURDATE()
+        		AND rst.name NOT LIKE '%$pep%'
+        		AND rst.name NOT LIKE '%$prep%') as p1
+        		SET p.current_status = '$state[$lost]', p.status_change_date = CURDATE()";
+        	}
 
-			/*Change PREP Active to Lost To Follow Up*/
-			$sql['Change PREP Active to Lost to FollowUp'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
-				   FROM patient p
-				   LEFT JOIN patient_status ps ON ps.id=p.current_status
-				   LEFT JOIN regimen_service_type rst ON rst.id = p.service
-				   WHERE ps.Name LIKE '%$active%'
-				   AND rst.name LIKE '%$prep%'
-				   AND (DATEDIFF(CURDATE(), nextappointment)) >= $days_to_prep_inactive) as p1
-				   SET p.current_status = '$state[$lost]', p.status_change_date = CURDATE()";
+        	/*Change Lost_to_follow_up to Active */
+        	if(isset($state[$active])){
+        		$sql['Change Lost_to_follow_up to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+        		FROM patient p
+        		LEFT JOIN patient_status ps ON ps.id=p.current_status
+        		LEFT JOIN regimen_service_type rst ON rst.id = p.service
+        		WHERE ps.Name LIKE '%$lost%'
+        		AND (DATEDIFF(CURDATE(),nextappointment )) < $days_to_lost_followup
+        		AND rst.name NOT LIKE '%$pep%'
+        		AND rst.name NOT LIKE '%$prep%') as p1
+        		SET p.current_status = '$state[$active]', p.status_change_date = CURDATE()";
+        	}
 
-			/*Change PREP Lost To Follow Up to Active*/
-			$sql['Change PREP Lost to FollowUp to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
-				   FROM patient p
-				   LEFT JOIN patient_status ps ON ps.id=p.current_status
-				   LEFT JOIN regimen_service_type rst ON rst.id = p.service
-				   WHERE ps.Name LIKE '%$lost%'
-				   AND rst.name LIKE '%$prep%'
-				   AND (DATEDIFF(CURDATE(), nextappointment)) < $days_to_prep_inactive) as p1
-				   SET p.current_status = '$state[$active]', p.status_change_date = CURDATE()";
-			
-			foreach ($sql as $i => $q) {
-				$stmt1 = "UPDATE patient p,";
-				$stmt2 = " WHERE p.patient_number_ccc=p1.patient_number_ccc;";
-				$stmt1 .= $q;
-				$stmt1 .= $stmt2;
+        	/*Change Active to PEP End*/
+        	if(isset($state[$pep])){
+        		$sql['Change Active to PEP End'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
+        		FROM patient p
+        		LEFT JOIN regimen_service_type rst ON rst.id=p.service
+        		LEFT JOIN patient_status ps ON ps.id=p.current_status
+        		WHERE (DATEDIFF(CURDATE(),date_enrolled))>=$days_to_pep_end 
+        		AND rst.name LIKE '%$pep%' 
+        		AND ps.Name NOT LIKE '%$pep%') as p1
+        		SET p.current_status = '$state[$pep]', p.status_change_date = CURDATE()";
+        	}
 
-				$q = $this -> db -> query($stmt1);
-				if ($this -> db -> affected_rows() > 0) {
-					$message .= $i . "(<b>" . $this -> db -> affected_rows() . "</b>) rows affected<br/>";
-				}
-			}
-		}
-		return $message;
-	}
+        	/*Change PEP End to Active*/
+        	if(isset($state[$active])){
+        		$sql['Change PEP End to Active'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
+        		FROM patient p
+        		LEFT JOIN regimen_service_type rst ON rst.id=p.service
+        		LEFT JOIN patient_status ps ON ps.id=p.current_status
+        		WHERE (DATEDIFF(CURDATE(),date_enrolled))<$days_to_pep_end 
+        		AND rst.name LIKE '%$pep%' 
+        		AND ps.Name NOT LIKE '%$active%') as p1
+        		SET p.current_status = '$state[$active]', p.status_change_date = CURDATE()";
+        	}
 
-	public function updateFixes(){
+        	/*Change Active to PMTCT End(children)*/
+        	if(isset($state[$pmtct])){
+        		$sql['Change Active to PMTCT End(children)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
+        		FROM patient p
+        		LEFT JOIN regimen_service_type rst ON rst.id = p.service
+        		LEFT JOIN patient_status ps ON ps.id = p.current_status
+        		WHERE (DATEDIFF(CURDATE(),dob )) >=$two_year_days
+        		AND (DATEDIFF(CURDATE(),dob)) <$adult_days
+        		AND rst.name LIKE  '%$pmtct%'
+        		AND ps.Name NOT LIKE  '%$pmtct%') as p1
+        		SET p.current_status = '$state[$pmtct]', p.status_change_date = CURDATE()";
+        	}
+
+        	/*Change PMTCT End to Active(Adults)*/
+        	if(isset($state[$active])){
+        		$sql['Change PMTCT End to Active(Adults)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
+        		FROM patient p
+        		LEFT JOIN regimen_service_type rst ON rst.id = p.service
+        		LEFT JOIN patient_status ps ON ps.id = p.current_status 
+        		WHERE (DATEDIFF(CURDATE(),dob)) >=$two_year_days 
+        		AND (DATEDIFF(CURDATE(),dob)) >=$adult_days 
+        		AND rst.name LIKE '%$pmtct%'
+        		AND ps.Name LIKE '%$pmtct%') as p1
+        		SET p.current_status = '$state[$active]', p.status_change_date = CURDATE()";
+        	}
+
+        	/*Change PREP Active to Lost To Follow Up*/
+        	$sql['Change PREP Active to Lost to FollowUp'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+        	FROM patient p
+        	LEFT JOIN patient_status ps ON ps.id=p.current_status
+        	LEFT JOIN regimen_service_type rst ON rst.id = p.service
+        	WHERE ps.Name LIKE '%$active%'
+        	AND rst.name LIKE '%$prep%'
+        	AND (DATEDIFF(CURDATE(), nextappointment)) >= $days_to_prep_inactive) as p1
+        	SET p.current_status = '$state[$lost]', p.status_change_date = CURDATE()";
+
+        	/*Change PREP Lost To Follow Up to Active*/
+        	$sql['Change PREP Lost to FollowUp to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+        	FROM patient p
+        	LEFT JOIN patient_status ps ON ps.id=p.current_status
+        	LEFT JOIN regimen_service_type rst ON rst.id = p.service
+        	WHERE ps.Name LIKE '%$lost%'
+        	AND rst.name LIKE '%$prep%'
+        	AND (DATEDIFF(CURDATE(), nextappointment)) < $days_to_prep_inactive) as p1
+        	SET p.current_status = '$state[$active]', p.status_change_date = CURDATE()";
+
+        	foreach ($sql as $i => $q) {
+        		$stmt1 = "UPDATE patient p,";
+        		$stmt2 = " WHERE p.patient_number_ccc=p1.patient_number_ccc;";
+        		$stmt1 .= $q;
+        		$stmt1 .= $stmt2;
+
+        		$q = $this -> db -> query($stmt1);
+        		if ($this -> db -> affected_rows() > 0) {
+        			$message .= $i . "(<b>" . $this -> db -> affected_rows() . "</b>) rows affected<br/>";
+        		}
+        	}
+        }
+        return $message;
+    }
+
+    public function updateFixes(){
 		$days_to_lost_followup = $this -> session -> userdata('lost_to_follow_up');//Default lost to follow up
 		//Rename the prophylaxis cotrimoxazole
-        $fixes[]="UPDATE drug_prophylaxis
-        	      SET name='cotrimoxazole'
-        	      WHERE name='cotrimozazole'";
+		$fixes[]="UPDATE drug_prophylaxis
+		SET name='cotrimoxazole'
+		WHERE name='cotrimozazole'";
         //Remove start_regimen_date in OI only patients records
-        $fixes[]="UPDATE patient p
-                  LEFT JOIN regimen_service_type rst ON p.service=rst.id
-                  SET p.start_regimen_date='' 
-                  WHERE rst.name LIKE '%oi%'
-                  AND p.start_regimen_date IS NOT NULL";
+		$fixes[]="UPDATE patient p
+		LEFT JOIN regimen_service_type rst ON p.service=rst.id
+		SET p.start_regimen_date='' 
+		WHERE rst.name LIKE '%oi%'
+		AND p.start_regimen_date IS NOT NULL";
         //Update status_change_date for lost_to_follow_up patients @180
-        $fixes[]="UPDATE patient p,(SELECT p.id,CASE WHEN p.nextappointment != '' THEN INTERVAL $days_to_lost_followup DAY + p.nextappointment ELSE CASE WHEN p.start_regimen_date != '' THEN INTERVAL $days_to_lost_followup DAY + p.start_regimen_date ELSE INTERVAL $days_to_lost_followup DAY + p.date_enrolled END END AS choosen_date FROM patient p LEFT JOIN patient_status ps ON ps.id = p.current_status WHERE ps.Name LIKE '%lost%' AND p.status_change_date = '') as test SET p.status_change_date=test.choosen_date WHERE p.id=test.id";
+		$fixes[]="UPDATE patient p,(SELECT p.id,CASE WHEN p.nextappointment != '' THEN INTERVAL $days_to_lost_followup DAY + p.nextappointment ELSE CASE WHEN p.start_regimen_date != '' THEN INTERVAL $days_to_lost_followup DAY + p.start_regimen_date ELSE INTERVAL $days_to_lost_followup DAY + p.date_enrolled END END AS choosen_date FROM patient p LEFT JOIN patient_status ps ON ps.id = p.current_status WHERE ps.Name LIKE '%lost%' AND p.status_change_date = '') as test SET p.status_change_date=test.choosen_date WHERE p.id=test.id";
 	    //Update patients without service lines ie Pep end status should have pep as a service line
-        $fixes[]="UPDATE patient p
-			 	  LEFT JOIN patient_status ps ON ps.id=p.current_status,
-			 	  (SELECT id 
-			 	   FROM regimen_service_type
-			 	   WHERE name LIKE '%pep%') as rs
-			 	  SET p.service=rs.id
-			 	  WHERE ps.name LIKE '%pep end%'
-			 	  AND p.service=''";
+		$fixes[]="UPDATE patient p
+		LEFT JOIN patient_status ps ON ps.id=p.current_status,
+		(SELECT id 
+		FROM regimen_service_type
+		WHERE name LIKE '%pep%') as rs
+		SET p.service=rs.id
+		WHERE ps.name LIKE '%pep end%'
+		AND p.service=''";
 		//Updating patients without service lines ie PMTCT status should have PMTCT as a service line
-        $fixes[]= "UPDATE patient p
-				   LEFT JOIN patient_status ps ON ps.id=p.current_status,
-				   (SELECT id 
-				 	FROM regimen_service_type
-				 	WHERE name LIKE '%pmtct%') as rs
-				    SET p.service=rs.id
-				    WHERE ps.name LIKE '%pmtct end%'
-				 	AND p.service=''";
+		$fixes[]= "UPDATE patient p
+		LEFT JOIN patient_status ps ON ps.id=p.current_status,
+		(SELECT id 
+		FROM regimen_service_type
+		WHERE name LIKE '%pmtct%') as rs
+		SET p.service=rs.id
+		WHERE ps.name LIKE '%pmtct end%'
+		AND p.service=''";
 		//Remove ??? in drug instructions
 		$fixes[]="UPDATE drug_instructions 
-				  SET name=REPLACE(name, '?', '.')
-				  WHERE name LIKE '%?%'";
+		SET name=REPLACE(name, '?', '.')
+		WHERE name LIKE '%?%'";
 		$facility_code=$this->session->userdata("facility");
 		//Auto Update Supported and supplied columns for satellite facilities
 		$fixes[] = "UPDATE facilities f, 
-						(SELECT facilitycode,supported_by,supplied_by
-					     FROM facilities 
-					     WHERE facilitycode='$facility_code') as temp
-	                SET f.supported_by=temp.supported_by,
-	                f.supplied_by=temp.supplied_by
-	                WHERE f.parent='$facility_code'
-	                AND f.parent !=f.facilitycode";
+		(SELECT facilitycode,supported_by,supplied_by
+		FROM facilities 
+		WHERE facilitycode='$facility_code') as temp
+		SET f.supported_by=temp.supported_by,
+		f.supplied_by=temp.supplied_by
+		WHERE f.parent='$facility_code'
+		AND f.parent !=f.facilitycode";
 	    //Auto Update to trim other_drugs,adr and other_illnesses
-	    $fixes[]="UPDATE patient p
-				  SET p.other_drugs = TRIM(Replace(Replace(Replace(p.other_drugs,'\t',''),'\n',''),'\r','')),
-				  p.other_illnesses = TRIM(Replace(Replace(Replace(p.other_illnesses,'\t',''),'\n',''),'\r','')),
-				  p.adr = TRIM(Replace(Replace(Replace(p.adr,'\t',''),'\n',''),'\r',''))";
+		$fixes[]="UPDATE patient p
+		SET p.other_drugs = TRIM(Replace(Replace(Replace(p.other_drugs,'\t',''),'\n',''),'\r','')),
+		p.other_illnesses = TRIM(Replace(Replace(Replace(p.other_illnesses,'\t',''),'\n',''),'\r','')),
+		p.adr = TRIM(Replace(Replace(Replace(p.adr,'\t',''),'\n',''),'\r',''))";
 		//Execute fixes
 		$total=0;
 		foreach ($fixes as $fix) {
@@ -372,13 +374,13 @@ class Auto_management extends MY_Controller {
 			if ($this -> db -> affected_rows() > 0) {
 				$total += $this -> db -> affected_rows();
 			}
-	    }
-        
-        $message="(".$total.") rows affected by fixes applied!<br/>";
-	    if($total>0){
+		}
+
+		$message="(".$total.") rows affected by fixes applied!<br/>";
+		if($total>0){
 			$message="";
 		}
-        return $message;
+		return $message;
 	}
 
 	public function updateFacilties(){
@@ -427,41 +429,41 @@ class Auto_management extends MY_Controller {
 				if(in_array($facility_id,$lists)){
 					$details=Facilities::getCurrentFacility($facility_id);
 					if($details){
-	                   	$parent=$details[0]['parent'];
+						$parent=$details[0]['parent'];
 						$supported_by=$details[0]['supported_by'];
 						$supplied_by=$details[0]['supplied_by'];
 						$service_pep=$details[0]['service_pep'];
 						$weekday_max=$details[0]['weekday_max'];
-					    $weekend_max=$details[0]['weekend_max'];
-					    $map=$details[0]['map'];
+						$weekend_max=$details[0]['weekend_max'];
+						$map=$details[0]['map'];
 					}
 				}
 				//append to facilities data array
 				$facilities[$row]=array(
-					                'facilitycode'=>$facility_id,
-					                'name'=>$facility_name,
-					                'facilitytype'=>$facility_type_id,
-					                'district'=>$district_id,
-					                'county'=>$county_id,
-					                'email'=>$email,
-					                'phone'=>$phone,
-					                'adult_age'=>$adult_age,
-					                'weekday_max'=>$weekday_max,
-					                'weekend_max'=>$weekend_max,
-					                'supported_by'=>$supported_by,
-					                'service_art'=>$service_art,
-					                'service_pmtct'=>$service_pmtct,
-					                'service_pep'=>$service_pep,
-					                'supplied_by'=>$supplied_by,
-					                'parent'=>$parent,
-					                'map'=>$map);
+					'facilitycode'=>$facility_id,
+					'name'=>$facility_name,
+					'facilitytype'=>$facility_type_id,
+					'district'=>$district_id,
+					'county'=>$county_id,
+					'email'=>$email,
+					'phone'=>$phone,
+					'adult_age'=>$adult_age,
+					'weekday_max'=>$weekday_max,
+					'weekend_max'=>$weekend_max,
+					'supported_by'=>$supported_by,
+					'service_art'=>$service_art,
+					'service_pmtct'=>$service_pmtct,
+					'service_pep'=>$service_pep,
+					'supplied_by'=>$supplied_by,
+					'parent'=>$parent,
+					'map'=>$map);
 			}
 			$sql="TRUNCATE facilities";
 			$this->db->query($sql);
 			$this->db->insert_batch('facilities',$facilities);
 			$counter=count($facilities);
 			$message=$counter . " facilities have been added!<br/>";
-	    }
+		}
 		return $message;
 	}
 
@@ -483,39 +485,39 @@ class Auto_management extends MY_Controller {
 				foreach($lab_data as $lab){
 					foreach($lab as $tests){
 						$id = intval($tests['ID']);
-					   	$ccc_no = trim($tests['Patient']);
-					   	$result = $tests['Result'];
-					    $date_tested = $tests['DateTested'];
-					    $justification = $tests['Justification'];
+						$ccc_no = trim($tests['Patient']);
+						$result = $tests['Result'];
+						$date_tested = $tests['DateTested'];
+						$justification = $tests['Justification'];
 						//An array to store patient viral Load data
 						$sql = "CALL proc_check_viralload(?, ?, ?, ?, ?)";
 						$parameters = array($id, $ccc_no, $date_tested, $result, $justification);
 						$this->db->query($sql, $parameters);
-	               }
+					}
 				}
-		    	$message="Viral Load Download Success!<br/>";
+				$message="Viral Load Download Success!<br/>";
 			}
 		}
 
 		return $message;
 	}
 
-   	public function update_dose_name(){
+	public function update_dose_name(){
    		//function to update dose on patient visit from id to dose name 
-   		$message = '';
-   		$sql="SELECT id, Name FROM dose";
-   		$query = $this -> db -> query($sql);
+		$message = '';
+		$sql="SELECT id, Name FROM dose";
+		$query = $this -> db -> query($sql);
 		$doses = $query -> result_array();
 		foreach ($doses as $dose) {
 			$dose_id= $dose['id'];
 			$dose_name=$dose['Name'];
 			$sql1="UPDATE patient_visit set dose='$dose_name' where dose='$dose_id' ";
-   			$query1 = $this -> db -> query($sql1);
-   			$message = 'Updated Dose Records in Visits ('.$this-> db -> affected_rows().')';
+			$query1 = $this -> db -> query($sql1);
+			$message = 'Updated Dose Records in Visits ('.$this-> db -> affected_rows().')';
 		}
 
 		return $message;
-   	}
+	}
 
 	public function run_migrations(){
 		$count = 0;
@@ -527,11 +529,11 @@ class Auto_management extends MY_Controller {
 			$files = scandir($queries_dir);
 			//Create migrations table
 			$migration_tbl_sql = "CREATE TABLE IF NOT EXISTS `migrations` (
-								  `id` int(11) NOT NULL AUTO_INCREMENT,
-								  `migration` varchar(100) NOT NULL,
-								  `run_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-								  PRIMARY KEY (`id`)
-								) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+			`id` int(11) NOT NULL AUTO_INCREMENT,
+			`migration` varchar(100) NOT NULL,
+			`run_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=latin1";
 			$this->db->query($migration_tbl_sql);
 			//Get all executed migrations
 			$migrations = array();
@@ -569,17 +571,41 @@ class Auto_management extends MY_Controller {
 					if($error_status == 0 || in_array($error_code, $duplicate_error_codes)){
 						$data = array(
 							'migration' => $file_name
-						);
+							);
 						$this->db->insert('migrations', $data);
 					}
 				}
 			}
 		}
-        return "(".$count.") rows affected!<br/>";
+		return "(".$count.") rows affected!<br/>";
 	}
 
-    public function updateSms() {
-    	$alert="";
+	public function auto_backup(){
+		$returnable = "AutoBackup: ";
+		$autobackup=$this->session->userdata("autobackup");
+
+		if($autobackup ==1) {
+
+		// check if auto backup is set
+			$backup_result = file_get_contents(base_url().'tools/backup/run_backup');
+			if (strpos($backup_result, 'Error') !== false){
+				$returnable .='Backup:Failed, Upload:Failed';
+
+			}else{
+
+				$upload_result = file_get_contents(base_url().'tools/backup/upload_backup/'.str_replace(" ", "", explode('-', $backup_result)[1]));
+				$returnable .='Backup:Success, ';
+				$returnable .=$upload_result.'<br />';
+			}
+			return $returnable;
+		}
+		else {
+			return $returnable.'disabled';
+		}
+	}
+
+	public function updateSms() {
+		$alert="";
 		$facility_name=$this -> session -> userdata('facility_name');
 		$facility_phone=$this->session->userdata("facility_phone");
 		$facility_sms_consent=$this->session->userdata("facility_sms_consent");
@@ -601,17 +627,17 @@ class Auto_management extends MY_Controller {
 			$arrDelimiters = array("/", ",", "+");
 			/*Get All Patient Who Consented Yes That have an appointment Tommorow */
 			$sql = "SELECT p.phone,p.patient_number_ccc,p.nextappointment,temp.patient,temp.appointment,temp.machine_code as status,temp.id
-						FROM patient p
-						LEFT JOIN 
-						(SELECT pa.id,pa.patient, pa.appointment, pa.machine_code
-						FROM patient_appointment pa
-						WHERE pa.appointment IN ('$tommorrow','$nextweek')
-						GROUP BY pa.patient) as temp ON temp.patient=p.patient_number_ccc
-						WHERE p.sms_consent =  '1'
-						AND p.nextappointment =temp.appointment
-						AND char_length(p.phone)>$phone_minlength
-						AND temp.machine_code !='s'
-						GROUP BY p.patient_number_ccc";
+			FROM patient p
+			LEFT JOIN 
+			(SELECT pa.id,pa.patient, pa.appointment, pa.machine_code
+			FROM patient_appointment pa
+			WHERE pa.appointment IN ('$tommorrow','$nextweek')
+			GROUP BY pa.patient) as temp ON temp.patient=p.patient_number_ccc
+			WHERE p.sms_consent =  '1'
+			AND p.nextappointment =temp.appointment
+			AND char_length(p.phone)>$phone_minlength
+			AND temp.machine_code !='s'
+			GROUP BY p.patient_number_ccc";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			$phone_data=array();
@@ -671,8 +697,8 @@ class Auto_management extends MY_Controller {
 				$phone_list = substr($phone_list, 1);
 				$messages_list = substr($messages_list, 1);
 				$phone_list = explode("+", $phone_list);
-			    $messages_list = explode("+", $messages_list);
-			
+				$messages_list = explode("+", $messages_list);
+
 				foreach ($phone_list as $counter=>$contact) {
 					$message = urlencode($messages_list[$counter]);
 					//file("http://41.57.109.242:13000/cgi-bin/sendsms?username=clinton&password=ch41sms&to=$contact&text=$message");
@@ -686,11 +712,11 @@ class Auto_management extends MY_Controller {
 	public function get_viral_load($patient_no){
 		$this->db->select('*');
 		$this->db->where('patient_ccc_number', $patient_no);
-    	$this->db->from('patient_viral_load');
-    	$this->db->order_by('test_date','desc');
-    	$query = $this->db->get();
-    	$result = $query->result_array();
-    	echo json_encode($result);
+		$this->db->from('patient_viral_load');
+		$this->db->order_by('test_date','desc');
+		$query = $this->db->get();
+		$result = $query->result_array();
+		echo json_encode($result);
 	}
 
 }

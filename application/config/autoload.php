@@ -80,7 +80,7 @@ $autoload['helper'] = array('url','form','cookie','path','asset');
 |
 */
 
-$autoload['config'] = array();
+$autoload['config'] = array('adt_config');
 
 
 /*

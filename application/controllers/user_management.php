@@ -373,15 +373,11 @@ class User_management extends MY_Controller {
 						             'facility_id' => $facility_details[0]['id'],
 						             'county' => $facility_details[0]['county'],
 						             'facility_phone' => $facility_details[0]['phone'],
-						             'facility_sms_consent'=>$facility_details[0]['map']
+						             'facility_sms_consent'=>$facility_details[0]['map'],
+						             'lost_to_follow_up'=> ((@$facility_details[0]['lost_to_follow_up'])!== null) ? @$facility_details[0]['lost_to_follow_up'] : 90 ,
+						             'autobackup'=> ((@$facility_details[0]['autobackup'])!== null) ? @$facility_details[0]['autobackup'] : 0 
 						             );
-					//Check if value exists
-					// if(@$facility_details[0]['lost_to_follow_up'] !== NULL){
-					// 	$session_data['lost_to_follow_up'] = $facility_details[0]['lost_to_follow_up'];
-					// }else{
-					// 	$session_data['lost_to_follow_up'] = 90;
-					// }
-					$session_data['lost_to_follow_up'] = 90;
+
 					
 					$this -> session -> set_userdata($session_data);
 

@@ -76,73 +76,8 @@ class Notification_management extends MY_Controller {
 	}
 
 	public function update_notification() {
-		/*
-		ini_set("max_execution_time", "1000000");
-		$this -> load -> library('Curl');
-
-		$main_link=base_url()."github/";
-		$main_link=str_replace("ADT", "UPDATE", $main_link);
-
-		$url = $main_link . "checkJsonUpdate";
-		$curl = new Curl();
-		$curl -> get($url);
-		$temp = "";
-		$order_link = $main_link;
-		$changelog_link=base_url().'changelog.txt';
-
-		//check if update is needed
-		if ($curl -> error) {
-			//shows when error
-			$curl -> error_code;
-			$temp .= "Error: " . $curl -> error_code;
-		} else {
-			//shows if request successful
-			$main_array = json_decode($curl -> response, TRUE);
-			if($main_array == true){
-				//check if update session is present
-				if($this->session->userdata("update_session") ==""){
-	                //update needed
-	                $main_link=base_url()."github/";
-			        $main_link=str_replace("ADT", "UPDATE", $main_link);
-			        $url = $main_link . "runGithubUpdater";
-			        //create update session
-			        $this->session->set_userdata("update_session",true);
-			        //get update
-			        $curl -> get($url);
-			        if ($curl -> error) {
-			        	//error when getting update
-				        $curl -> error_code;
-				        $temp = "Error: " . $curl -> error_code;
-			        }else{
-			        	$temp = "<li><a href='$changelog_link' target='_blank'><i class='icon-th'></i>System Up to Date</a></li>";
-			        	//delete update file
-			        	$hash=Git_Log::getLatestHash();
-					    $file=$_SERVER['DOCUMENT_ROOT']."/UPDATE/".$hash.".zip";
-					    if(is_file($file)){
-		                   unlink($file); 
-					    }
-			        }
-			        //on completion unset update session
-			        $this->session->set_userdata("update_session","");
-			    }else{
-                   //update in progress
-			       $temp = "<li><a href='#' target='_blank'><i class='icon-th'></i>Update in Progress...</a></li>";
-			    }
-			}else{
-				//system up to date
-			    $temp = "<li><a href='$changelog_link' target='_blank'><i class='icon-th'></i>System Up to Date</a></li>";
-			    //delete update file
-			    $hash=Git_Log::getLatestHash();
-			    $file=$_SERVER['DOCUMENT_ROOT']."/UPDATE/".$hash.".zip";
-			    if(is_file($file)){
-                   unlink($file); 
-			    }
-			}
-		}
-		echo $temp;
-		*/
 		$changelog_link=base_url().'README.md';
-		echo "<li><a href='$changelog_link' target='_blank'><i class='icon-th'></i>System Up to Date</a></li>";
+		echo "<li><a href='$changelog_link' target='_blank'><i class='icon-th'></i>ChangeLog</a></li>";
 	}
 
 	public function error_notification($display_array=false) {
