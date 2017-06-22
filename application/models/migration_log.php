@@ -23,7 +23,7 @@ class Migration_log extends Doctrine_Record {
 		return $migration;
 	}
 
-	public function getLog($source) {
+	public static function getLog($source) {
 		$query = Doctrine_Query::create() -> select("*") -> from("migration_log") -> where("source='$source'");
 		$migration = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return @$migration[0];

@@ -12,14 +12,35 @@ class Auto_management extends MY_Controller {
 		$this -> viralload_url = "http://viralload.nascop.org/";
 	}
 
-	public function index($manual=FALSE){
+	public function index($manual = FALSE){
 		$message ="";
-		$today = (int)date('Ymd');
+		$retry_seconds = 3600 ; //1 hour (60*60)
+		$today =  date('YmdHis');
 		//get last update time of log file for auto_update
 		$log=Migration_Log::getLog('auto_update');
-		$last_update = (int)$log['last_index'];
-		//if not updated today
-		if ($today != $last_update || $manual==TRUE) {
+		$last_update = $log['last_index'];
+		$status = (int)$log['count'];
+
+		$last_update = strtotime($last_update);
+		$time_diff = time()-$last_update;
+		$retry = ($time_diff > $retry_seconds) ? TRUE : FALSE ;
+
+		/*
+		 * Conditions:
+		 *------------------------------------------
+		 * TodayDate is not equal to LastUpdateDate
+		 * Retry(Difference in seconds btwn the CurrentTime and LastUpdateTime should be greater than RetrySeconds) 
+		 * Status as false in the database
+		 * Manual is TRUE
+		 * Testing string: 
+		 	echo 'TodayDate:='.date('Y-m-d').',LastUpdateDate:='.date('Y-m-d', $last_update).',Retry:='.$retry.',Status:='.$status.',TimeDiff:='.$time_diff.',RetrySeconds:='.$retry_seconds;die();
+		*/
+
+		if ((date('Y-m-d') != date('Y-m-d', $last_update)) || ($retry && $status == 0) || $manual == TRUE) {
+			// Update today's date before starting process
+			$sql="UPDATE migration_log SET last_index='$today', count = 0 WHERE source='auto_update'";
+			$this -> db -> query($sql);
+
 			//function to update destination column to 1 in drug_stock_movement table for issued transactions that have name 'pharm'
 			$message .= $this->updateIssuedTo();
 			//function to update source_destination column in drug_stock_movement table where it is zero
@@ -47,7 +68,7 @@ class Auto_management extends MY_Controller {
 
 	        //finally update the log file for auto_update 
 			if ($this -> session -> userdata("curl_error") == '') {
-				$sql="UPDATE migration_log SET last_index='$today' WHERE source='auto_update'";
+				$sql="UPDATE migration_log SET  count = 1 WHERE source='auto_update'";
 				$this -> db -> query($sql);
 				$this -> session -> set_userdata("curl_error", "");
 			} 
@@ -585,8 +606,7 @@ class Auto_management extends MY_Controller {
 		$autobackup=$this->session->userdata("autobackup");
 
 		if($autobackup ==1) {
-
-		// check if auto backup is set
+			// check if auto backup is set
 			$backup_result = file_get_contents(base_url().'tools/backup/run_backup');
 			if (strpos($backup_result, 'Error') !== false){
 				$returnable .='Backup:Failed, Upload:Failed';
