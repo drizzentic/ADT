@@ -2,7 +2,34 @@ ADT
 ================================
 This is an ARV Dispensing Tool.
 
-Version 3.2.1 23/03/2017 (Latest)
+Version 3.2.2 22/06/2017 (Latest)
+==============================================
+- Added: Ensure to make PEP/PREP reasons required 
+- Added: EWI to Link Viral Load to Regimen/Drug(Resistance)
+- Added: Show those not put on IPT
+- Added: Cross Platform Functionality(Linux)
+- Added: Cross Browser Functionality(All browsers)
+- Added: Backup/Restore Functionality
+- Added: System Update Functionality
+- Added: Remote Sharing of data with a central server
+- Added: Include unique identifier for VL Results to remove duplications
+- Added: PEP/PREP Reason Report
+- Added: Add Column 'Service' to any report listings e.g Patients Scheduled for Visit
+- Added: Create viral load results report and allow export
+- Added: Ensure editing of Store/CCC to be possible (Check pharmacy/store radio button)
+- Fixed: Change Lost to Follow-up to 90(Disable Edit)
+- Fixed: Modify PREP Summary Report to Include new labels e.g Number Started (New) on PrEP
+- Fixed: Set select2 for selecting multiple drugs in Paediatric Doing Chart
+- Fixed: Ensure store inventory colours to be red
+- Fixed: Change PRIORITY to ORDER PRIORITY
+- Fixed: Change District to Sub County
+- Fixed: Remove red validate error while dispensing
+- Fixed: Report for Visited for Refill to Show only Single Patient visit and average adherence
+- Fixed: Edit Dispensing Not Loading Batches
+- Fixed: Ensure Paediatric Dosing Chart works (Fix Dispensing Module First)
+- Fixed: Add Total to Drug Prophylaxis Listing
+
+Version 3.2.1 23/03/2017 
 ==============================================
 - Added: Allows database access on non-default port
 - Added: PREP Reasons and Functionality
