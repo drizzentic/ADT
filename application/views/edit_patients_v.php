@@ -185,9 +185,8 @@ foreach($results as $result){
 			$("#sms_no").attr("checked", "true");	
 			}
 	        
-	        
 	        $('#physical').val("<?php echo $result['physical'];?>");
-	        $('#alternate').val("<?php echo $result['alternate'];?>");
+	        $('#alternate').val("<?php echo trim(preg_replace('/\s\s+/', '\n ', $result['alternate']));?>");
 	        
 	        $('#partner_status').val("<?php echo $result['partner_status'];?>");
 	        $('#disclosure').val("<?php echo $result['disclosure'];?>");
