@@ -93,21 +93,21 @@ class Regimen_management extends MY_Controller {
 
 		$data['regimen_categories'] = Regimen_Category::getAll();
 		$data['regimen_service_types'] = Regimen_Service_Type::getAll();
-        
-        $sql = "SELECT s.id,s.code,s.name,sr.Name as category_name,s.category_id
-                FROM sync_regimen s 
-                LEFT JOIN sync_regimen_category sr ON sr.id = s.category_id
-                WHERE s.Active = '1'
-                AND sr.Active = '1'
-                AND s.id NOT IN(SELECT r.map
-                                  FROM regimen r
-                                  WHERE r.map !='0')
-                OR s.name LIKE '%other%'
-                OR s.code LIKE '%x%'
-                ORDER BY s.category_id,s.code asc";
+
+		$sql = "SELECT s.id,s.code,s.name,sr.Name as category_name,s.category_id
+		FROM sync_regimen s 
+		LEFT JOIN sync_regimen_category sr ON sr.id = s.category_id
+		WHERE s.Active = '1'
+		AND sr.Active = '1'
+		AND s.id NOT IN(SELECT r.map
+		FROM regimen r
+		WHERE r.map !='0')
+		OR s.name LIKE '%other%'
+		OR s.code LIKE '%x%'
+		ORDER BY s.category_id,s.code asc";
 		$query = $this -> db -> query($sql);
-        $unmapped_regimens = $query->result_array();                               
-        $sync_regimens = Sync_Regimen::getActive();
+		$unmapped_regimens = $query->result_array();                               
+		$sync_regimens = Sync_Regimen::getActive();
 		$data['edit_mappings'] = $unmapped_regimens;
 		$data['mappings'] = $sync_regimens;
 
@@ -115,28 +115,45 @@ class Regimen_management extends MY_Controller {
 	}
 
 	public function save() {
-		$access_level = $this -> session -> userdata('user_indicator');
-		$source = 0;
-		if ($access_level == "pharmacist") {
-			$source = $this -> session -> userdata('facility');
-		}
-		$regimen = new Regimen();
-		$regimen -> Regimen_Code = $this -> input -> post('regimen_code');
-		$regimen -> Regimen_Desc = $this -> input -> post('regimen_desc');
-		$regimen -> Category = $this -> input -> post('category');
-		$regimen -> Line = $this -> input -> post('line');
-		$regimen -> Type_Of_Service = $this -> input -> post('type_of_service');
-		$regimen -> Remarks = $this -> input -> post('remarks');
-		$regimen -> Enabled = "1";
-		$regimen -> Source = $source;
-		$regimen -> map = $this -> input -> post('regimen_mapping');
+			$regimencode = $this -> input -> post('regimen_code');
+		if (!strripos($regimencode, "X")){
+		
+		// check for duplicate code before 
+			$query = $this->db->query("SELECT * FROM regimen WHERE regimen_code = '$regimencode'");
+			if (count($query->result()) > 0) {
 
-		$regimen -> save();
-		$this -> session -> set_userdata('message_counter', '1');
-		$this -> session -> set_userdata('msg_success', $this -> input -> post('regimen_code') . ' was added.');
-		$this -> session -> set_flashdata('filter_datatable', $this -> input -> post('regimen_code'));
-		//Filter after saving
-		redirect('settings_management');
+			$this -> session -> set_userdata('msg_error', 'Regimen Code already exists!');
+			$this -> session -> set_flashdata('filter_datatable', $results -> Regimen_Code);
+			redirect('settings_management');
+			}
+
+			else{
+
+				
+				$access_level = $this -> session -> userdata('user_indicator');
+				$source = 0;
+				if ($access_level == "pharmacist") {
+					$source = $this -> session -> userdata('facility');
+				}
+				$regimen = new Regimen();
+				$regimen -> Regimen_Code = $this -> input -> post('regimen_code');
+				$regimen -> Regimen_Desc = $this -> input -> post('regimen_desc');
+				$regimen -> Category = $this -> input -> post('category');
+				$regimen -> Line = $this -> input -> post('line');
+				$regimen -> Type_Of_Service = $this -> input -> post('type_of_service');
+				$regimen -> Remarks = $this -> input -> post('remarks');
+				$regimen -> Enabled = "1";
+				$regimen -> Source = $source;
+				$regimen -> map = $this -> input -> post('regimen_mapping');
+		
+				$regimen -> save();
+				$this -> session -> set_userdata('message_counter', '1');
+				$this -> session -> set_userdata('msg_success', $this -> input -> post('regimen_code') . ' was added.');
+				$this -> session -> set_flashdata('filter_datatable', $this -> input -> post('regimen_code'));
+				//Filter after saving
+				redirect('settings_management');
+			}
+		}
 	}
 
 	public function edit() {
@@ -181,7 +198,7 @@ class Regimen_management extends MY_Controller {
 			$this -> session -> set_userdata('msg_success', $results -> Regimen_Code . ' was enabled');
 			$this -> session -> set_flashdata('filter_datatable', $results -> Regimen_Code);
 			//Filter
-	
+
 			redirect('settings_management');
 		}
 		
@@ -286,16 +303,16 @@ class Regimen_management extends MY_Controller {
 	}
 
 	public function getAllDrugs($regimen = null) {
-		 
+
 		$cond = ($regimen == null) ? "UNION SELECT id as drug_id,drug as drug_name FROM drugcode" : "  WHERE (rd.regimen='$regimen' or r.regimen_code LIKE '%oi%') 
-		        AND (d.drug !='NULL') GROUP BY d.id ORDER BY d.drug ASC" ;
+		AND (d.drug !='NULL') GROUP BY d.id ORDER BY d.drug ASC" ;
 		$sql = "SELECT 
-		            rd.drugcode as drug_id,
-		            d.drug as drug_name 
-		        FROM regimen_drug rd  
-		        LEFT JOIN regimen r ON r.id=rd.regimen 
-      			LEFT JOIN drugcode d ON d.id=rd.drugcode
-		        $cond";
+		rd.drugcode as drug_id,
+		d.drug as drug_name 
+		FROM regimen_drug rd  
+		LEFT JOIN regimen r ON r.id=rd.regimen 
+		LEFT JOIN drugcode d ON d.id=rd.drugcode
+		$cond";
 
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
@@ -307,15 +324,15 @@ class Regimen_management extends MY_Controller {
 	public function getNonMappedRegimens($param='0'){
 		$data = array();
 		$query = $this->db->query("SELECT s.id,s.code,s.name,sr.Name as category_name,s.category_id
-                                       FROM sync_regimen s 
-                                       LEFT JOIN sync_regimen_category sr ON sr.id = s.category_id
-                                       WHERE s.Active = '1'
-                                       AND sr.Active = '1'
-                                       AND s.id NOT IN(SELECT r.map
-                                                         FROM regimen r
-                                                         WHERE r.map !='0')
-                                                         OR s.name LIKE '%other%'
-                                       ORDER BY s.category_id,s.code asc");
+			FROM sync_regimen s 
+			LEFT JOIN sync_regimen_category sr ON sr.id = s.category_id
+			WHERE s.Active = '1'
+			AND sr.Active = '1'
+			AND s.id NOT IN(SELECT r.map
+			FROM regimen r
+			WHERE r.map !='0')
+			OR s.name LIKE '%other%'
+			ORDER BY s.category_id,s.code asc");
 		$data['sync_regimen'] = $query->result_array();
 		if($param==1){
 			echo json_encode($data['sync_regimen']);
@@ -323,7 +340,7 @@ class Regimen_management extends MY_Controller {
 		}
 		
 		$data['non_mapped_regimen'] = Regimen::getNonMappedRegimens();//Not mapped regimens
-		 
+
 		echo json_encode($data);
 	}
 	
@@ -341,7 +358,7 @@ class Regimen_management extends MY_Controller {
 		$age = $this ->input ->post("age");
 		$regimens = "";
 		if($age==''){
-		   $regimens = Regimen::getRegimens();
+			$regimens = Regimen::getRegimens();
 		}else{
 			if($age>=15){
 				//adult regimens
