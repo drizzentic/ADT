@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	$('.dataTables').dataTable({
-		"bJQueryUI" : true,
+		"bJQueryUI" : false,
 		"sPaginationType" : "full_numbers",
 		"bProcessing" : true,
 		"bServerSide" : false,

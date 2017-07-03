@@ -119,10 +119,20 @@
 								<label class="control-label" for="inputUpload">Recovery Upload</label>
 								<div class="controls">
 									<input type="hidden" id="log3_status" name="log3_status" value="0" />
-									<input type="file" id="file" name="file"  required/>
+									<span class="btn btn-success fileinput-button">
+								        <i class="glyphicon glyphicon-plus"></i>
+								        <span>Select files...</span>
+								        <!-- The file input field used as target for the file upload widget -->
+								        <input id="fileupload" type="file" name="files[]" multiple>
+								    </span>
+								    <br>
+								    <br>
+								    <!-- The global progress bar -->
+								    <div id="progress" class="progress">
+								        <div class="progress-bar progress-bar-success"></div>
+								    </div>
 								</div>
 							</div>
-
 
 							<div id="progress-panel" style="display: none;">
 								<span id="progress-text">Performing Recovery</span>
@@ -177,39 +187,12 @@
         			} else {
         				$("#log2_status").val(1);
         			}
-        			var mystatus = $("#inputLog1").text() + "\n" + data;
-        			$("#inputLog2").text(mystatus);
+        			$("#inputLog2").val($.trim(data));
         		}
         	});
         	e.preventDefault();
         });
-	    //File Upload Form	
-	    $('#file').uploadify({
-	    	'method'  : 'post',
-	    	'formData'     : {
-	    		'timestamp' : '<?php echo $timestamp;?>',
-	    		'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
-	    	},
-	    	'swf'      : '<?php echo base_url()."assets/images/" ?>uploadify.swf',
-	    	'uploader' : 'recover/start_database',
-	    	'onUploadSuccess' : function(file, data, response) {
-	    		if(data==1){
-	    			alert('The file ' + file.name + ' was successfully');
-	    			$("#backup_files").load("recover/showdir",function(){
-	    				$('.dataTables').dataTable({
-	    					"bJQueryUI" : false,
-	    					"sPaginationType" : "full_numbers",
-	    					"bProcessing" : true,
-	    					"bServerSide" : false,
-	    				});
-	    			});
-	    		}else{
-	    			alert('The file ' + file.name + ' upload failed '+data);
-	    		}
-	    	}
-	    });
-
-
+	   	//Start Recovery Process
 	    $('.recover').live('click', function(e) {
 	    	$('#progress-panel').show();
 	    	$('.recover').addClass('disabled');
@@ -240,6 +223,33 @@
 	    	});
 	    	e.preventDefault();
 	    });
-	});
+	    //Upload Recovery Files
+	    $('#fileupload').fileupload({
+	        url: 'recover/start_database',
+	        done: function (e, data) {
+	            $.each(data.files, function (index, file) {
+	                alert('The file ' + file.name + ' was successfully');
+	            });
 
+	            $("#backup_files").load("recover/showdir",function(){
+					$('.dataTables').dataTable({
+						"bJQueryUI" : false,
+						"sPaginationType" : "full_numbers",
+						"bProcessing" : true,
+						"bServerSide" : false,
+					});
+					//Reset progressbar
+					$('#progress .progress-bar').css('width', '0%');
+				});
+	        },
+	        progressall: function (e, data) {
+	            var progress = parseInt(data.loaded / data.total * 100, 10);
+	            $('#progress .progress-bar').css(
+	                'width',
+	                progress + '%'
+	            );
+	        }
+	    }).prop('disabled', !$.support.fileInput)
+	        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+	});
 </script>

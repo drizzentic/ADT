@@ -26,7 +26,6 @@ class Recover extends MY_Controller {
 	}
 
 	public function check_server() {
-		// $host_name = $this -> input -> post("inputHost");
 		$host_name = ($this -> input -> post("inputHost")!= null) ? $this -> input -> post("inputHost") : 'localhost';
 		$host_user = $this -> input -> post("inputUser");
 		$host_password = $this -> input -> post("inputPassword");
@@ -56,47 +55,25 @@ class Recover extends MY_Controller {
 		$link = @mysql_connect($host_name, $host_user, $host_password);
 		$db_selected = @mysql_select_db($database_name, $link);
 		if (!$db_selected) {
-			$status = "Database does not exist!";
+			$status = "\nConnection Success!\nDatabase does not exist!";
 			$sql = "CREATE DATABASE $database_name";
 			if (@mysql_query($sql, $link)) {
-				$status .= "\nDatabase created successfully";
+				$status .= "\nDatabase created successfully!";
 				$this -> session -> set_userdata("db_name", $database_name);
 			} else {
 				$status = 0;
 			}
 		} else {
-			$status = "Database Exists!";
+			$status = "\nConnection Success!\nDatabase Exists!";
 			$this -> session -> set_userdata("db_name", $database_name);
-		}
-			// write new credentials to project's config file
-		// check file Exists
-					
+		}			
 		echo $status;
 	}
 
 	public function start_database() {
-		$targetFolder = '/UPDATE/backup_db';
-		// Relative to the root
-
-		$verifyToken = md5('unique_salt' . $_POST['timestamp']);
-
-		if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
-			$tempFile = $_FILES['Filedata']['tmp_name'];
-			$targetPath = $_SERVER['DOCUMENT_ROOT'] . $targetFolder;
-			$targetFile = rtrim($targetPath, '/') . '/' . $_FILES['Filedata']['name'];
-
-			// Validate the file type
-			$fileTypes = array('zip');
-			// File extensions
-			$fileParts = pathinfo($_FILES['Filedata']['name']);
-
-			if (in_array($fileParts['extension'], $fileTypes)) {
-				move_uploaded_file($tempFile, $targetFile);
-				echo '1';
-			} else {
-				echo 'Invalid file type.';
-			}
-		}
+		error_reporting(E_ALL | E_STRICT);
+		$this->load->library('UploadHandler');
+		$upload_handler = new UploadHandler();
 	}
 
 	public function checkdir() {
@@ -141,11 +118,8 @@ class Recover extends MY_Controller {
 
 	public function start_recovery() {
 		$file_name =$_POST['file_name'];
-		// echo "file_name".$file_name;
-
 		$file_path =  FCPATH.'backup_db/'.$file_name;
-		$unzip = $this -> uncompress_zip($file_path);
-		// $file_path = ($unzip) ? str_replace(".zip", "", $file_path) : $file_path;
+		$unzip = $this -> uncompress_zip($file_path);;
 		$file_path = str_replace(".zip", "", $file_path);
 
 		$CI = &get_instance();
@@ -166,35 +140,27 @@ class Recover extends MY_Controller {
 			$count = mysql_num_rows($result);
 			if ($count==0) {
 				$mysql_home = realpath($_SERVER['MYSQL_HOME']) . "\mysql";
-				// $file_path = "\"" . realpath($_SERVER['MYSQL_HOME']) . "\\" . $real_name . "\"";
 				$mysql_bin = str_replace("\\", "\\\\", $mysql_home);
 				$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' ' . $current_db . ' < ' . $file_path;
-				// echo $mysql_con;
 				exec($mysql_con);
 				$recovery_status = true;
 				
-
 				$db_config_file =  str_replace('\tools', '', FCPATH).'application/config/db_conf.php';
 
-			if(file_exists($db_config_file)){
-
-				$file = fopen($db_config_file,"w");
-
-				fwrite($file,"". "\r\n");
-				fwrite($file,"<?php ". "\r\n");
-				fwrite($file,"\$db['default']['hostname'] = '$hostname';". "\r\n");
-				fwrite($file,"\$db['default']['username'] = '$username';". "\r\n");
-				fwrite($file,"\$db['default']['password'] = '$password';". "\r\n");
-				fwrite($file,"\$db['default']['database'] = '$current_db';". "\r\n");
-				fwrite($file,"\$db['default']['port'] = $port;". "\r\n");
-				fclose($file);
-
-			}
-
-
+				if(file_exists($db_config_file)){
+					$file = fopen($db_config_file,"w");
+					fwrite($file,"". "\r\n");
+					fwrite($file,"<?php ". "\r\n");
+					fwrite($file,"\$db['default']['hostname'] = '$hostname';". "\r\n");
+					fwrite($file,"\$db['default']['username'] = '$username';". "\r\n");
+					fwrite($file,"\$db['default']['password'] = '$password';". "\r\n");
+					fwrite($file,"\$db['default']['database'] = '$current_db';". "\r\n");
+					fwrite($file,"\$db['default']['port'] = $port;". "\r\n");
+					fclose($file);
+				}
 			}
 		}
-				// $this->delete_file($file_path);
+		$this->delete_file($file_path);
 		echo $recovery_status;
 	}
 	public function delete_file($file_path) {
@@ -206,19 +172,16 @@ class Recover extends MY_Controller {
 		}
 	}
 
-
-
-
-
 	public function uncompress_zip($file_path) {
 		$this -> load -> library('unzip');
 		$destination_path = realpath(".zip","",$file_path);
-		// $destination_path = realpath($file_path);
-
 		$this -> unzip -> allow(array('sql'));
-		if ($this -> unzip -> extract($file_path, substr($destination_path, 0,-4)))
-			{return true;}else{return false;}
 
+		if ($this -> unzip -> extract($file_path, substr($destination_path, 0,-4))){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	public function template($data) {
