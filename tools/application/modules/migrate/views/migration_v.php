@@ -120,10 +120,10 @@
     </form>
 </div> <!--end full-content-->
 
-
+<?= base_url(); ?>
 <!--scripts-->
-<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/bootstrap/bootstrap-multiselect.js"></script>
-<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/plugin/jquery-validate/jquery.validate.min.js"></script>
-<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/select2-3.4.8/select2.js"></script>
-<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/migration.js"></script>
+<script src="<?= base_url() ?>assets/scripts/bootstrap/bootstrap-multiselect.js"></script>
+<script src="<?= base_url() ?>assets/scripts/plugin/jquery-validate/jquery.validate.min.js"></script>
+<script src="<?= base_url() ?>assets/scripts/select2-3.4.8/select2.js"></script>
+<script src="<?= base_url() ?>assets/scripts/access-migration.js"></script>
 

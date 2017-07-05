@@ -14,7 +14,7 @@ body {
 	display: inline-block;
 }
 .external-content {
- 	margin: auto;
+	margin: auto;
 	padding: 1% 0% 1% 0%;
 }
 .full-content {
@@ -22,4 +22,15 @@ body {
 	padding: 10% 1% 5% 1%;
 	zoom: 0.8;
 	-moz-transform: scale(0.9);
+}
+
+h3{
+	line-height: 2em;
+	-webkit-margin-before: 0.5em;
+	color: #fff;
+	font-size: 1em;
+	padding: 0 0 0 1em;
+	background: #2B597E;
+	box-shadow: 0 1.2px 3px 1px #000;
+	-webkit-box-shadow: 0 1.2px 3px 1px #000;
 }

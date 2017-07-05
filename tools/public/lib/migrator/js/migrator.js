@@ -23,7 +23,7 @@ $(function(){
   var rows_selected = [];
   //Create migration tables
   var table = $('#migration_tbl').DataTable({
-    'ajax':'migrator/get_tables',
+    'ajax':'editt/get_tables',
     'columnDefs': [
       {
         'targets': 0,
@@ -209,9 +209,9 @@ function validateSteps(step){
         $('.msgBox').hide();
         $('#wizard').smartWizard('setError',{stepnum:step,iserror:false});
         //Load Facilities
-        loadSelect2Data('#facility', 'migrator/get_facilities')
+        loadSelect2Data('#facility', 'editt/get_facilities')
         //Load Stores
-        loadSelect2Data('#store', 'migrator/get_stores')
+        loadSelect2Data('#store', 'editt/get_stores')
       }
     }
   }
@@ -431,7 +431,7 @@ function establishDBConnection(category){
   //Asynchronous post
   $.ajax({
     type: 'POST',
-    url: 'migrate/get_db_connection/'+category,
+    url: 'editt/get_db_connection/'+category,
     data: params,
     dataType: 'json',
     async: false,

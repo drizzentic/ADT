@@ -32,7 +32,7 @@
 	<table align="center" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td> 
-				<form id="migration_frm" action="<?php echo base_url().'migrator/start_migration';?>" method="POST">
+				<form id="migration_frm" action="<?php echo base_url().'migrate/editt/start_migration';?>" method="POST">
 				  	<input type='hidden' name="issubmit" value="1">
 					<!-- Tabs -->
 			  		<div id="wizard" class="swMain">

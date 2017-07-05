@@ -7,6 +7,7 @@ class Access extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		$this -> load -> library('encrypt');
+		// $this -> helper -> library('url');
 	}
 
 	public function index() {
