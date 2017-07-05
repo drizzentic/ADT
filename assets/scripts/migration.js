@@ -47,7 +47,7 @@ $(function() {
 	$("#facility_code").select2({
         minimumInputLength: 2,
 	    ajax: {
-	      url: "getFacilities",
+	      url: "migration_management/getFacilities",
 	      dataType: 'json',
 	      data: function (term, page) {
 	        return {

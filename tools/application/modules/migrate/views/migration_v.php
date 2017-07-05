@@ -1,6 +1,3 @@
-<link type="text/css" rel="stylesheet" href="http://localhost:81/ADT/assets/cache/14969380371cd61b25796ccb6cbf22d8e1527cc816.css" media="screen" />
-<script type="text/javascript" src="http://localhost:81/ADT/assets/cache/1496872163ca1b943a45a1aca524c9fc3e8a2147ff.js" charset="UTF-8"></script>
-
 <style type="text/css">
 	.progress{
 		margin-top:0;
@@ -120,10 +117,10 @@
     </form>
 </div> <!--end full-content-->
 
-<?= base_url(); ?>
+
 <!--scripts-->
-<script src="<?= base_url() ?>assets/scripts/bootstrap/bootstrap-multiselect.js"></script>
-<script src="<?= base_url() ?>assets/scripts/plugin/jquery-validate/jquery.validate.min.js"></script>
-<script src="<?= base_url() ?>assets/scripts/select2-3.4.8/select2.js"></script>
-<script src="<?= base_url() ?>assets/scripts/access-migration.js"></script>
+<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/bootstrap/bootstrap-multiselect.js"></script>
+<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/plugin/jquery-validate/jquery.validate.min.js"></script>
+<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/select2-3.4.8/select2.js"></script>
+<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/access-migration.js"></script>
 
