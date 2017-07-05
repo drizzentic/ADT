@@ -18,8 +18,8 @@
        <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Migrate <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Edit - WebADT</a></li>
-            <li><a href="#">Access - WebADT</a></li>
+            <li><a href="<?= base_url();?>migrate/editt">Edit - WebADT</a></li>
+            <li><a href="<?= base_url();?>migrate/access">Access - WebADT</a></li>
           </ul>
         </li>
         <li><a href="<?= base_url() ?>github">System Update</a></li>

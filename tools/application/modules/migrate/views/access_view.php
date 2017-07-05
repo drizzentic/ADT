@@ -20,23 +20,23 @@
 	<div class="row">
 		<div class="col-sm-12 col-md-12" id="migration_complete_msg"></div>
 	</div>
-	<form id="fmMigration" action="migration_management/migrate" method="post">
+	<form id="fmMigration" action="access/migrate" method="post">
 		<div class="row">
 			<div class="col-sm-12 col-md-12">
 				<h3>Access to webADT Migration</h3>
 			</div>
 		</div>
 		<div class="row">
-       	 	<div class="col-sm-6 col-md-6">
+       	 	<div class="col-sm-6">
 				<div class="form-group">
-			      	<label for="facility_code">Facility</label>
-			      	<input type="text" id="facility_code" name="facility_code" class="form-control validate" style="width:90%">
+			      	<label for="facility_code">Facility</label><br />
+			      	<input type="text" id="facility_code" name="facility_code" class=" validate" style="width:90%">
 			    </div>
 			</div>
-			<div class="col-sm-6 col-md-6">
+			<div class="col-sm-6">
 				<div class="form-group">
 				    <label for="source_database">Database</label>
-				    <select id="source_database" name="source_database" class="form-control validate" style="width:90%">
+				    <select id="source_database" name="source_database" class=" validate" style="width:90%">
 				        <option value=""> Select Database </option>
 				        <?php 
 				          foreach($databases as $database){
@@ -50,10 +50,10 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-6 col-md-6">
+			<div class="col-sm-6">
 			    <div class="form-group" id="fg_ccc_pharmacy">
-			      	<label for="ccc_pharmacy">Pharmacy</label>
-			      	<select id="ccc_pharmacy" name="ccc_pharmacy" class="form-control col-md-12 validate">
+			      	<label for="ccc_pharmacy">Pharmacy</label><br />
+			      	<select id="ccc_pharmacy" name="ccc_pharmacy" class="validate" style="width:90%;">
 			        	<option value=""> Select Pharmacy </option>
 				        <?php 
 				          foreach($stores as $store){
@@ -67,7 +67,7 @@
 		  	</div>
 		  	<div class="col-sm-6 col-md-6">
 		  		<div class="form-group">
-                    <label for="table" id="lbltable" name="lbltable">Tables</label> 
+                    <label for="table" id="lbltable" name="lbltable">Tables</label> <br />
 					<select class=" form-control multiselect col-md-12 validate" id="table" name="table" multiple="multiple" required="required">
 			        <?php 
 			          foreach($tables as $table=>$table_config){
@@ -79,16 +79,12 @@
 					</select>
                 </div>
 		  	</div>
-		</div>
-       </div>
-		<!--start button-->
-		<div class="row">
-			<div class="col-lg-offset-8 col-sm-4 col-md-4">
-				<div class="form-group">
+		  	<div class="col-sm-6 col-md-6">
 					<button type="submit" id="migrate_btn" class="btn btn-primary">Start Migration</button>
-				</div>
-			</div>	
+
+		  	</div>
 		</div>
+
 		<!--bottom-->
 		<div class="row">
 			<div class="col-sm-12 col-md-12">
@@ -118,13 +114,16 @@
 			 	<div id="migrate_table_result_holder">
 			</div>
 		</div>
+		</div>
+       </div>
+       
     </form>
 </div>
 
-<link href="<?php echo main_url().'assets/styles/bootstrap-multiselect.css'; ?>" type="text/css" rel="stylesheet"/>
-<link href="<?php echo main_url().'assets/styles/select2-3.4.8/select2.css'; ?>" type="text/css" rel="stylesheet"/>
+<link href="<?php echo base_url().'assets/styles/bootstrap-multiselect.css'; ?>" type="text/css" rel="stylesheet"/>
+<link href="<?php echo str_replace("/tools", "", base_url()).'assets/styles/select2-3.4.8/select2.css'; ?>" type="text/css" rel="stylesheet"/>
 <!--scripts-->
-<script src="<?php echo main_url();?>assets/scripts/bootstrap/bootstrap-multiselect.js"></script>
-<script src="<?php echo main_url();?>assets/scripts/plugin/jquery-validate/jquery.validate.min.js"></script>
-<script src="<?php echo main_url();?>assets/scripts/select2-3.4.8/select2.js"></script>
-<script src="<?php echo main_url();?>assets/scripts/migration.js"></script>
+<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/bootstrap-multiselect.js"></script>
+<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/plugin/jquery-validate/jquery.validate.min.js"></script>
+<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/select2-3.4.8/select2.js"></script>
+<script src="<?php echo base_url()?>assets/scripts/access-migration.js"></script>
