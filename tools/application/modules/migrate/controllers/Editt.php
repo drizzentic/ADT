@@ -6,7 +6,7 @@ class Editt extends MY_Controller {
 
 	var $source_db = "";
 	var $target_db = "";
-	var $cfg = array();
+	var $conf = array();
 	var $migration_db = array();
 
 	function __construct() {
@@ -14,7 +14,7 @@ class Editt extends MY_Controller {
 		ini_set("max_execution_time", "100000");
 		ini_set("memory_limit", '2048M');
 		//Load defaults
-		$this->cfg = $this->get_config('migrator'); 
+		$this->conf = $this->get_config('migrator'); 
 		$this->migration_db = array('source' => '', 'target' => '');
 	}
 
@@ -42,8 +42,8 @@ class Editt extends MY_Controller {
 		if(!$this->session->userdata('source_database')){
 			$this->session->set_userdata($conf);
 		}
-		$this->cfg = $this->session->userdata();
-		return $this->cfg;
+		$conf = $this->session->userdata();
+		return $conf;
 	}
 	/*	
 	*	Get database connection
@@ -79,7 +79,6 @@ class Editt extends MY_Controller {
 		$con = mysqli_connect($hostname.':'.$port,$username,$password,$database);
 		if (!$con){echo json_encode(array('status' => false)); die;}
 
-		// echo $dsn;var_dump($connected);die;
 		if ($connected){
 			//Initialize DB Object
 			$this->migration_db[$category] = $db_obj;
@@ -156,15 +155,16 @@ class Editt extends MY_Controller {
 	{	
 		//Pass to source database object
 		$this->myforge = $this->load->dbforge($this->get_db_connection('source'), TRUE);
-
+		$conf = $this->config->config;
+		
 		//Set column to be added
-		$fields[$this->cfg['migration_flag_column']] = array(
-			'type' => $this->cfg['migration_flag_type'],
-			'default' => $this->cfg['migration_flag_default']
+		$fields[$conf['migration_flag_column']] = array(
+			'type' => $conf['migration_flag_type'],
+			'default' => $conf['migration_flag_default']
 			);
 
 		//Add column to source database tables
-		foreach ($this->cfg['tables'] as $destination_tbl => $source_tbl) {
+		foreach ($conf['tables'] as $destination_tbl => $source_tbl) {
 			$this->myforge->add_column($source_tbl, $fields);
 		}	
 	}
@@ -177,15 +177,10 @@ class Editt extends MY_Controller {
 		//Initialize tables for migration
 		$this->initialize_tables();
 		$data = array('data' => array());
-		// $tables = $this->cfg['tables'];
-
 
 		$conf = $this->config->config;
 		$tables = $conf['tables'];
-		// var_dump($tables);die;
 
-
-		// var_dump($this->cfg);die;
 		$migration_flag_column = $conf['migration_flag_column'];
 		$migration_flag_default = $conf['migration_flag_default'];
 		foreach ($tables as $destination_tbl => $source_tbl) {
