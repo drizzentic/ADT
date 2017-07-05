@@ -19,6 +19,9 @@
 <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 <link rel="stylesheet" href="<?php echo base_url().'public/lib/fileuploader/css/jquery.fileupload.css'; ?>">
 <link href="<?php echo base_url().'assets/styles/adt-tools.css'?>"  type="text/css" rel="stylesheet" media="all">
+<?php foreach ($css as $script) {?>
+<link href="<?= base_url().$script?>"  type="text/css" rel="stylesheet" media="all">
+<?php } ?>
 
 <link href="<?php echo base_url().'assets/images/favicon.ico'?>" rel="shortcut icon">
 
@@ -39,3 +42,6 @@
 <script src="<?php echo base_url().'public/lib/fileuploader/js/jquery.iframe-transport.js';?>"></script>
 <!-- The basic File Upload plugin -->
 <script src="<?php echo base_url().'public/lib/fileuploader/js/jquery.fileupload.js';?>"></script>
+<?php foreach ($js as $script) {?>
+<script src="<?= base_url().$script;?>"></script>
+<?php } ?>
