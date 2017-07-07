@@ -15,6 +15,7 @@
 |
 */
 $config['base_url'] = 'http://'. $_SERVER['SERVER_NAME'] .':'.$_SERVER['SERVER_PORT']. '/ADT/tools/';
+$config['adt_url'] = 'http://'. $_SERVER['SERVER_NAME'] .':'.$_SERVER['SERVER_PORT']. '/ADT/';
 /*
 |--------------------------------------------------------------------------
 | Index File
