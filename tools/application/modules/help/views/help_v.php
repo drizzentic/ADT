@@ -11,9 +11,3 @@
    </div>
  </div>
 </div>
-<script type="text/javascript">
-  $(document).ready(function(){  
-    $(".active").removeClass();
-    $("#guidelines").addClass("active");
-  });
-</script>
