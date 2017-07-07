@@ -119,11 +119,10 @@
        
     </form>
 </div>
-
-<link href="<?php echo base_url().'assets/styles/bootstrap-multiselect.css'; ?>" type="text/css" rel="stylesheet"/>
-<link href="<?php echo str_replace("/tools", "", base_url()).'assets/styles/select2-3.4.8/select2.css'; ?>" type="text/css" rel="stylesheet"/>
+<link href="<?= $this->config->item('adt_url').'assets/styles/bootstrap-multiselect.css'; ?>" type="text/css" rel="stylesheet"/>
+<link href="<?=$this->config->item('adt_url').'assets/styles/select2-3.4.8/select2.css'; ?>" type="text/css" rel="stylesheet"/>
 <!--scripts-->
-<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/bootstrap-multiselect.js"></script>
-<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/plugin/jquery-validate/jquery.validate.min.js"></script>
-<script src="<?php echo str_replace("/tools", "", base_url());?>assets/scripts/select2-3.4.8/select2.js"></script>
-<script src="<?php echo base_url()?>assets/scripts/access-migration.js"></script>
+<script src="<?= $this->config->item('adt_url');?>assets/scripts/bootstrap-multiselect.js"></script>
+<script src="<?= $this->config->item('adt_url');?>assets/scripts/plugin/jquery-validate/jquery.validate.min.js"></script>
+<script src="<?= $this->config->item('adt_url');?>assets/scripts/select2-3.4.8/select2.js"></script>
+<script src="<?= base_url()?>assets/scripts/access-migration.js"></script>

@@ -11,9 +11,6 @@
 		overflow-y:scroll;
 		padding:0.4em;
 	}
-	.select2-drop-active{
-		zoom:0.8;
-	}
 </style>
 
 <div class="full-content">
