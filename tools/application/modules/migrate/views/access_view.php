@@ -11,6 +11,9 @@
 		overflow-y:scroll;
 		padding:0.4em;
 	}
+	em.invalid{
+		display: block;
+	}
 </style>
 
 <div class="container-fluid">

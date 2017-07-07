@@ -41,7 +41,7 @@ class Editt extends MY_Controller {
 		if(!$this->session->userdata('source_database')){
 			$this->session->set_userdata($conf);
 		}
-		$this->cfg = $this->session->userdata();
+		$this->cfg = $this->session->userdata;
 		return $this->cfg;
 	}
 	/*	
@@ -261,7 +261,11 @@ class Editt extends MY_Controller {
 				}
 				$update_data[$index][$conf['migration_flag_column']] = TRUE;
 			}
-			$this->get_db_connection('source')->update_batch($source_tbl, $update_data, array_values($matching_indices)[0]);
+			$this->get_db_connection('source')->where('name','My Name 2');
+			//echo $source_tbl;
+			//echo '<pre>';print_r($update_data);echo '</pre>';die();
+			//print_r(array_values($matching_indices)[0]);die();
+			@$this->get_db_connection('source')->update_batch($source_tbl, $update_data, array_values($matching_indices)[0]);
 
 			//Set offset
 			if(($total-$offset) < $conf['migration_limit']){

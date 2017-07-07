@@ -71,7 +71,7 @@ $(function() {
     
     //$("#migrate_btn").attr('disabled', 'disabled');
     var database_name = $(this).val();
-    var link = 'migration_management/checkDB/' + database_name;
+    var link = 'access/checkDB/' + database_name;
     $.ajax({
       url : link,
       type : 'POST',
@@ -84,7 +84,7 @@ $(function() {
           //$("#migrate_btn:disabled").removeAttr('disabled');
           //toastr.success('Database successfully selected!', 'Migration', opts);
         } else {
-          console.log(data);
+          //console.log(data);
           //display error wrong database chosen
           $("<em class='invalid' id='incorrect_database'>Database selected cannot be migrated !</em>").insertAfter("#source_database");
         }
@@ -216,7 +216,7 @@ function getCurrentTable(table_counter,selected_tables,overall_total,facility_co
 //function to start migration
 function migrate(source_table, table_counter, overall_total, facility_code,ccc_pharmacy,database,selected_tables,migrated_tables) {
   
-  var link = 'migration_management/migrate';
+  var link = 'access/migrate';
   $.ajax({
     url : link,
     type : 'POST',
@@ -240,7 +240,7 @@ function migrate(source_table, table_counter, overall_total, facility_code,ccc_p
       var table_migration_progress = (count/total) *100;
       table_migration_progress = Math.round(table_migration_progress);
       var width_table_migration_progress = table_migration_progress+"%";
-      console.log('table: '+current_table+', '+count+' - '+total+' --->'+data.limit);
+      //console.log('table: '+current_table+', '+count+' - '+total+' --->'+data.limit);
       
       //If count is not equal to total( table has not finishhed migrating), run migration for same table
       if(parseInt(count)<parseInt(total)){

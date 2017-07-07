@@ -56,27 +56,27 @@ $config['query_delimiter'] = '//';
 $config['query_filetype'] = array('sql');
 
 /*Migration source queries*/
-$config['dose_query'] = 'public/sql/editt/dose.sql';
-$config['drug_classification_query'] = 'public/sql/editt/drug_classification.sql';
-$config['drug_stock_movement_query'] = 'public/sql/editt/drug_stock_movement.sql';
-$config['drug_unit_query'] = 'public/sql/editt/drug_unit.sql';
-$config['drugcode_query'] = 'public/sql/editt/drugcode.sql';
-$config['family_planning_query'] = 'public/sql/editt/family_planning.sql';
-$config['generic_name_query'] = 'public/sql/editt/generic_name.sql';
-$config['opportunistic_infection_query'] = 'public/sql/editt/opportunistic_infection.sql';
-$config['patient_query'] = 'public/sql/editt/patient.sql';
-$config['patient_source_query'] = 'public/sql/editt/patient_source.sql';
-$config['patient_status_query'] = 'public/sql/editt/patient_status.sql';
-$config['patient_visit_query'] = 'public/sql/editt/patient_visit.sql';
-$config['regimen_query'] = 'public/sql/editt/regimen.sql';
-$config['regimen_category_query'] = 'public/sql/editt/regimen_category.sql';
-$config['regimen_change_purpose_query'] = 'public/sql/editt/regimen_change_purpose.sql';
-$config['regimen_drug_query'] = 'public/sql/editt/regimen_drug.sql';
-$config['regimen_service_type_query'] = 'public/sql/editt/regimen_service_type.sql';
-$config['supporter_query'] = 'public/sql/editt/supporter.sql';
-$config['transaction_type_query'] = 'public/sql/editt/transaction_type.sql';
-$config['users_query'] = 'public/sql/editt/users.sql';
-$config['visit_purpose_query'] = 'public/sql/editt/visit_purpose.sql';
+$config['dose_query'] = 'assets/public/sql/editt/dose.sql';
+$config['drug_classification_query'] = 'assets/public/sql/editt/drug_classification.sql';
+$config['drug_stock_movement_query'] = 'assets/public/sql/editt/drug_stock_movement.sql';
+$config['drug_unit_query'] = 'assets/public/sql/editt/drug_unit.sql';
+$config['drugcode_query'] = 'assets/public/sql/editt/drugcode.sql';
+$config['family_planning_query'] = 'assets/public/sql/editt/family_planning.sql';
+$config['generic_name_query'] = 'assets/public/sql/editt/generic_name.sql';
+$config['opportunistic_infection_query'] = 'assets/public/sql/editt/opportunistic_infection.sql';
+$config['patient_query'] = 'assets/public/sql/editt/patient.sql';
+$config['patient_source_query'] = 'assets/public/sql/editt/patient_source.sql';
+$config['patient_status_query'] = 'assets/public/sql/editt/patient_status.sql';
+$config['patient_visit_query'] = 'assets/public/sql/editt/patient_visit.sql';
+$config['regimen_query'] = 'assets/public/sql/editt/regimen.sql';
+$config['regimen_category_query'] = 'assets/public/sql/editt/regimen_category.sql';
+$config['regimen_change_purpose_query'] = 'assets/public/sql/editt/regimen_change_purpose.sql';
+$config['regimen_drug_query'] = 'assets/public/sql/editt/regimen_drug.sql';
+$config['regimen_service_type_query'] = 'assets/public/sql/editt/regimen_service_type.sql';
+$config['supporter_query'] = 'assets/public/sql/editt/supporter.sql';
+$config['transaction_type_query'] = 'assets/public/sql/editt/transaction_type.sql';
+$config['users_query'] = 'assets/public/sql/editt/users.sql';
+$config['visit_purpose_query'] = 'assets/public/sql/editt/visit_purpose.sql';
 
 /*Migration update matching indices*/
 $config['dose_indices'] = array('Name' => 'name', 'value' => 'value', 'frequency' => 'frequency');
@@ -102,10 +102,10 @@ $config['users_indices'] = array('Username' => 'username', 'Time_Created' => 'cr
 $config['visit_purpose_indices'] = array('name' => 'name');
 
 /*Migration update queries*/
-$config['drug_stock_movement_update'] = 'public/sql/editt/update/drug_stock_movement.sql';
-$config['drugcode_update'] = 'public/sql/editt/update/drugcode.sql';
-$config['family_planning_update'] = 'public/sql/editt/update/family_planning.sql';
-$config['patient_update'] = 'public/sql/editt/update/patient.sql'; 
-$config['patient_visit_update'] = 'public/sql/editt/update/patient_visit.sql';
-$config['regimen_update'] = 'public/sql/editt/update/regimen.sql';
-$config['regimen_drug_update'] = 'public/sql/editt/update/regimen_drug.sql';
+$config['drug_stock_movement_update'] = 'assets/public/sql/editt/update/drug_stock_movement.sql';
+$config['drugcode_update'] = 'assets/public/sql/editt/update/drugcode.sql';
+$config['family_planning_update'] = 'assets/public/sql/editt/update/family_planning.sql';
+$config['patient_update'] = 'assets/public/sql/editt/update/patient.sql'; 
+$config['patient_visit_update'] = 'assets/public/sql/editt/update/patient_visit.sql';
+$config['regimen_update'] = 'assets/public/sql/editt/update/regimen.sql';
+$config['regimen_drug_update'] = 'assets/public/sql/editt/update/regimen_drug.sql';
