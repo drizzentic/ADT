@@ -19,16 +19,11 @@ class Help extends MY_Controller {
 	public function index() {
 		$dir = "../assets/manuals";
 		// $data['backup_files'] = $this -> checkdir();
-		$data['active_menu'] = 5;
+		$data['active_menu'] = 6;
 		$data['content_view'] = "help/help_v";
 		$data['title'] = "Dashboard | System Recovery";
 
 		$data['ftp_status'] = '';
-		// $files = scandir($dir, 1);
-// echo "<pre>";
-// print_r($files);die;
-
-
 		$this -> load -> library('table');
 
 $this->load->helper('directory');
