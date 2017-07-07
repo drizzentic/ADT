@@ -21,7 +21,7 @@ class Github extends MY_Controller {
 		// echo "<pre?";
 		// print_r($data['git_releases']);die;
 
-		$data['active_menu'] = 3;
+		$data['active_menu'] = 4;
 		$data['update_status'] = $this -> checkUpdate();
 		$data['content_view'] = "github/github_v";
 		$data['title'] = "Dashboard | System Update";

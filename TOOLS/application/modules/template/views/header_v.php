@@ -17,7 +17,7 @@
 <link href="<?php echo base_url().'assets/styles/sticky-footer-navbar.css'?>"  type="text/css" rel="stylesheet" media="all">
 <link href="<?php echo base_url().'assets/styles/datatable/dataTables.bootstrap.css'?>"  type="text/css" rel="stylesheet" media="all">
 <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-<link rel="stylesheet" href="<?php echo base_url().'public/lib/fileuploader/css/jquery.fileupload.css'; ?>">
+<link rel="stylesheet" href="<?php echo base_url().'assets/public/lib/fileuploader/css/jquery.fileupload.css'; ?>">
 <link href="<?php echo base_url().'assets/styles/adt-tools.css'?>"  type="text/css" rel="stylesheet" media="all">
 <?php foreach ($css as $script) {?>
 <link href="<?= base_url().$script?>"  type="text/css" rel="stylesheet" media="all">
@@ -37,11 +37,11 @@
 <script src="<?php echo base_url().'assets/scripts/nascop.js'?>" type="text/javascript"></script>
 <!--<script src="<?php //echo base_url().'assets/scripts/datatable/dataTables.bootstrap.js'?>" type="text/javascript"></script>-->
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-<script src="<?php echo base_url().'public/lib/fileuploader/js/vendor/jquery.ui.widget.js';?>"></script>
+<script src="<?php echo base_url().'assets/public/lib/fileuploader/js/vendor/jquery.ui.widget.js';?>"></script>
 <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-<script src="<?php echo base_url().'public/lib/fileuploader/js/jquery.iframe-transport.js';?>"></script>
+<script src="<?php echo base_url().'assets/public/lib/fileuploader/js/jquery.iframe-transport.js';?>"></script>
 <!-- The basic File Upload plugin -->
-<script src="<?php echo base_url().'public/lib/fileuploader/js/jquery.fileupload.js';?>"></script>
+<script src="<?php echo base_url().'assets/public/lib/fileuploader/js/jquery.fileupload.js';?>"></script>
 <?php foreach ($js as $script) {?>
 <script src="<?= base_url().$script;?>"></script>
 <?php } ?>

@@ -11,7 +11,6 @@ class Access extends MY_Controller {
 	}
 
 	public function index() {
-		
 
         //get cc_store_pharmacy
         $sql = "SELECT id as ccc_id,name as ccc_name 

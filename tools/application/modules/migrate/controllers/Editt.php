@@ -6,7 +6,7 @@ class Editt extends MY_Controller {
 
 	var $source_db = "";
 	var $target_db = "";
-	var $conf = array();
+	var $cfg = array();
 	var $migration_db = array();
 
 	function __construct() {
@@ -14,7 +14,7 @@ class Editt extends MY_Controller {
 		ini_set("max_execution_time", "100000");
 		ini_set("memory_limit", '2048M');
 		//Load defaults
-		$this->conf = $this->get_config('migrator'); 
+		$this->cfg = $this->get_config('migrator'); 
 		$this->migration_db = array('source' => '', 'target' => '');
 	}
 
@@ -24,9 +24,8 @@ class Editt extends MY_Controller {
 		$data['active_menu'] = 3;
 		$data['title'] = 'Migration | Toolkit';
 
-	$data['js']= ['public/js/jquery.min.js','public/lib/smartwizard/js/jquery.smartWizard.js','public/lib/select2/js/select2.full.min.js','public/lib/datatables/js/jquery.dataTables.min.js','public/lib/datatables/js/dataTables.select.min.js','public/lib/progressbar/js/progressbar.min.js','public/lib/migrator/js/migrator.js'];
-	$data['css']= ['public/lib/smartwizard/css/smart_wizard.css','public/lib/select2/css/select2.min.css','public/lib/datatables/css/jquery.dataTables.min.css','public/lib/migrator/css/migrator.css'];
-	// ['public/js/jquery.min.js','public/lib/smartwizard/js/jquery.smartWizard.js','public/lib/select2/js/select2.full.min.js','public/lib/datatables/js/jquery.dataTables.min.js','public/lib/datatables/js/dataTables.select.min.js','public/lib/progressbar/js/progressbar.min.js','public/lib/migrator/js/migrator.js'];
+		$data['js']= ['assets/public/js/jquery.min.js','assets/public/lib/smartwizard/js/jquery.smartWizard.js','assets/public/lib/select2/js/select2.full.min.js','assets/public/lib/datatables/js/jquery.dataTables.min.js','assets/public/lib/datatables/js/dataTables.select.min.js','assets/public/lib/progressbar/js/progressbar.min.js','assets/public/lib/migrator/js/migrator.js'];
+		$data['css']= ['assets/public/lib/smartwizard/css/smart_wizard.css','assets/public/lib/select2/css/select2.min.css','assets/public/lib/datatables/css/jquery.dataTables.min.css','assets/public/lib/migrator/css/migrator.css'];
 		$data['content_view'] = "migrate/migrator_view";
 		$this -> template($data);
 
@@ -42,8 +41,8 @@ class Editt extends MY_Controller {
 		if(!$this->session->userdata('source_database')){
 			$this->session->set_userdata($conf);
 		}
-		$conf = $this->session->userdata();
-		return $conf;
+		$this->cfg = $this->session->userdata();
+		return $this->cfg;
 	}
 	/*	
 	*	Get database connection
@@ -78,7 +77,6 @@ class Editt extends MY_Controller {
 		$connected = $db_obj->initialize();
 		$con = mysqli_connect($hostname.':'.$port,$username,$password,$database);
 		if (!$con){echo json_encode(array('status' => false)); die;}
-
 		if ($connected){
 			//Initialize DB Object
 			$this->migration_db[$category] = $db_obj;
@@ -152,21 +150,28 @@ class Editt extends MY_Controller {
 	*	@return none
 	*/
 	public function initialize_tables()
-	{	
-		//Pass to source database object
-		$this->myforge = $this->load->dbforge($this->get_db_connection('source'), TRUE);
-		$conf = $this->config->config;
-		
-		//Set column to be added
-		$fields[$conf['migration_flag_column']] = array(
-			'type' => $conf['migration_flag_type'],
-			'default' => $conf['migration_flag_default']
-			);
+	{
 
-		//Add column to source database tables
+		$conf = $this->config->config;
+		  //Get source database object
+		$source_db = $this->get_db_connection('source');
+
+  //Set column configuration
+		$new_column_name = $conf['migration_flag_column'];
+		$new_column_type = $conf['migration_flag_type'];
+		$new_column_default_value = $conf['migration_flag_default'];
+
+  //Add column to source database tables
 		foreach ($conf['tables'] as $destination_tbl => $source_tbl) {
-			$this->myforge->add_column($source_tbl, $fields);
-		}	
+   //Check if column exists in table then add if it does not
+			$sql = "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE  table_schema = ? AND table_name = ?  AND column_name = ?";
+			$is_column = $source_db->query($sql, array($source_tbl, $source_db->database, $new_column_name))->result_array();
+			if(empty($is_column)){
+				$sql = "ALTER TABLE $source_tbl ADD $new_column_name $new_column_type DEFAULT $new_column_default_value";
+				$source_db->query($sql);
+			}
+		}
+
 	}
 	/*	
 	*	Get tables
@@ -185,6 +190,7 @@ class Editt extends MY_Controller {
 		$migration_flag_default = $conf['migration_flag_default'];
 		foreach ($tables as $destination_tbl => $source_tbl) {
 			$records = $this->get_db_connection('source')->get_where($source_tbl, array($migration_flag_column => $migration_flag_default))->num_rows();
+
 			if($records > 0){
 				$records_progress_bar = '<div id="'.$source_tbl.'_bar" total="'.$records.'"></div>';
 				$data['data'][] = array($destination_tbl, $source_tbl, $records_progress_bar);
@@ -240,10 +246,8 @@ class Editt extends MY_Controller {
 			'{migration_limit}' => $conf['migration_limit'],
 			'{migration_offset}' => $conf['migration_offset']
 			);
-		// var_dump($conf[$destination_tbl.'_query']);
 		$source_result = $this->run_sql_file($conf[$destination_tbl.'_query'], $this->get_db_connection('source'), $source_params);
 		$source_data = $source_result->result_array();
-		// echo "<pre>";var_dump($source_data);die;
 		if($source_data){
 			//Save data to destination
 			$this->get_db_connection('target')->insert_batch($destination_tbl, $source_data);
