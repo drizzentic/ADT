@@ -708,10 +708,8 @@ class Access extends MX_Controller {
 			}
 			return $tables;
 	}
-
+	
 	public function migrate(){
-		ini_set('memory_limit', '-1'); 
-		
 		//get posted data
 		$facility_code=$this->input->post('facility_code',TRUE);
 		$ccc_pharmacy=$this->input->post('ccc_pharmacy',TRUE);

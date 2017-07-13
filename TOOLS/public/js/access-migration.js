@@ -250,21 +250,18 @@ function migrate(source_table, table_counter, overall_total, facility_code,ccc_p
             '<div class="ticket migration_notification_holder" id="'+current_table+'"></div>'
           );
         }
-        
-        
+
         //Table progress bar
         $("#"+current_table+"").html(
           '<span title="" class="ticket-title">'+source_table+'</span>'+
           '<div class="progress  ticket-label" style="width: 30%">'+
-            '<div class="bar" style="width:'+width_table_migration_progress+'">'+
-              '<span >'+width_table_migration_progress+' Complete</span>'+
+            '<div class="progress-bar" role="progressbar" aria-valuenow="'+width_table_migration_progress+'" aria-valuemin="0" aria-valuemax="100" style="width:'+width_table_migration_progress+'">'+
+              width_table_migration_progress+
             '</div>'+
           '</div>'
         )
         
-          getCurrentTable(table_counter,selected_tables,overall_total,facility_code,ccc_pharmacy,database,migrated_tables);
-      
-        
+        getCurrentTable(table_counter,selected_tables,overall_total,facility_code,ccc_pharmacy,database,migrated_tables); 
       }
       else{//Check if current table has finished migration
         $("#"+current_table+"").remove();

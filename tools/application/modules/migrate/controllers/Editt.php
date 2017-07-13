@@ -23,7 +23,7 @@ class Editt extends MX_Controller {
 	{	
 		$data = $this->cfg;
 		$data['active_menu'] = 3;
-		$data['title'] = 'Migration | Toolkit';
+		$data['title'] = 'Tools | Editt Migration';
 		$this->load->view('migrator_view', $data);
 	}
 	/*	

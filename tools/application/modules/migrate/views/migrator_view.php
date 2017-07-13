@@ -4,7 +4,7 @@
 	<!--title-->
 	<title><?php echo $title;?></title>
 	<!--favicon-->
-	<link rel="shortcut icon" type="text/css" href="<?php echo base_url().'public/img/favicon.ico';?>">
+	<link rel="shortcut icon" type="text/css" href="<?php echo base_url().'public/assets/images/favicon.ico';?>">
 	<!--smartwizard-css-->
 	<link href="<?php echo base_url().'public/lib/smartwizard/css/smart_wizard.css';?>" rel="stylesheet" type="text/css">
 	<!--select2-css-->
@@ -13,6 +13,8 @@
 	<link href="<?php echo base_url().'public/lib/datatables/css/jquery.dataTables.min.css';?>" rel="stylesheet" type="text/css">
 	<!--migrator-css-->
 	<link href="<?php echo base_url().'public/lib/migrator/css/migrator.css';?>" rel="stylesheet" type="text/css">
+	<!--boostrap_css-->
+	<link href="<?php echo base_url().'public/assets/styles/bootstrap/bootstrap.min.css'?>"  type="text/css" rel="stylesheet" media="all">
 	<!--jquery-->
 	<script type="text/javascript" src="<?php echo base_url().'public/js/jquery.min.js';?>"></script>
 	<!--smartwizard-js-->
@@ -25,10 +27,10 @@
 	<script type="text/javascript" src="<?php echo base_url().'public/lib/datatables/js/dataTables.select.min.js';?>"></script>
 	<!--progressbar-->
 	<script type="text/javascript" src="<?php echo base_url().'public/lib/progressbar/js/progressbar.min.js';?>"></script>
+	<!--boostrap_js-->
+	<script src="<?php echo base_url().'public/assets/scripts/bootstrap/bootstrap.min.js'?>" type="text/javascript"></script>
 	<!--migrator-js-->
 	<script type="text/javascript" src="<?php echo base_url().'public/lib/migrator/js/migrator.js';?>"></script>
-	<link href="<?php echo base_url().'public/assets/styles/bootstrap/bootstrap.min.css'?>"  type="text/css" rel="stylesheet" media="all">
-
 </head>
 <body>
 	<?php $this -> load -> view('template/external_header_v');?>
@@ -37,7 +39,7 @@
 	<table align="center" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td> 
-				<form id="migration_frm" action="<?php echo base_url().'migrator/start_migration';?>" method="POST">
+				<form id="migration_frm" action="<?php echo base_url().'migrate/editt/start_migration';?>" method="POST">
 				  	<input type='hidden' name="issubmit" value="1">
 					<!-- Tabs -->
 			  		<div id="wizard" class="swMain">
