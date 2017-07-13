@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Help extends MY_Controller {
+class Help extends MX_Controller {
 	var $backup_dir = "./backup_db";
 
 	var $config = array (

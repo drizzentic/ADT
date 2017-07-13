@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Backup extends MY_Controller {
+class Backup extends MX_Controller {
 	var $backup_dir = "./backup_db";
 
 	var $ftp_config = array (
@@ -10,14 +10,16 @@ class Backup extends MY_Controller {
 		'username' => 'ftpuser',
 		'password' => 'ftpuser',
 		'debug'	=> FALSE);
+	var $ftp_root = '/backups/';
 
 	function __construct() {
 		parent::__construct();
 		$this->load->library('ftp');
+	    $this->load->library('session');
+
 	}
 
 	public function index() {
-		// $data['backup_files'] = $this -> checkdir();
 
 		$data['active_menu'] = 2;
 		$data['content_view'] = "backup/backup_v";
@@ -32,7 +34,7 @@ class Backup extends MY_Controller {
 		$sql = "SELECT Facility_Code from users limit 1";
 		$result = $CI->db->query($sql);
 		$facility_code = $result->result_array()[0]['Facility_Code'];
-		$remote_dir = "/$facility_code/";
+		$remote_dir = $this->ftp_root."$facility_code/";
 
 
 
@@ -52,7 +54,7 @@ class Backup extends MY_Controller {
 				$table .='<td>'.$files[$key].'</td>';
 				$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button></td>';
 
-				$table .='</td><td align="center"><img src="./assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./assets/img/check-mark.png" height="25px"></td></tr>';
+				$table .='</td><td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
 				$table .='</tr>';
 			}	
 			else{
@@ -60,7 +62,7 @@ class Backup extends MY_Controller {
 				$table .='<td>'.$files[$key].'</td>';
 				$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button>
 				<button class="btn btn-info btn-sm upload" >Upload</button> </td>';
-				$table .='<td align="center"><img src="./assets/img/check-mark.png" height="25px"></td><td align="center"><img src="./assets/img/x-mark.png" height="20px"></td></tr>';
+				$table .='<td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"><img src="./public/assets/img/x-mark.png" height="20px"></td></tr>';
 				$table .='</tr>';
 			}
 
@@ -74,7 +76,7 @@ class Backup extends MY_Controller {
 
 				$table .='<td>'.$file.'</td>';
 				$table .='<td><button class="btn btn-warning btn-sm download" >Download</button> </td>';
-				$table .='<td align="center"><img src="./assets/img/x-mark.png" height="20px"></td><td align="center"> <img src="./assets/img/check-mark.png" height="25px"></td></tr>';
+				$table .='<td align="center"><img src="./public/assets/img/x-mark.png" height="20px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
 				$table .='</tr>';
 
 			}
@@ -196,11 +198,13 @@ class Backup extends MY_Controller {
 	}
 
 	public function start_recovery() {
+		ini_set('memory_limit', '-1'); 
+
 		$file_name = $this -> input -> post("file_name", TRUE);
-		$targetFolder = '/UPDATE/backup_db';
+		$targetFolder = $this -> backup_dir;
 		$targetPath = $_SERVER['DOCUMENT_ROOT'] . $targetFolder;
 		$file_path = rtrim($targetPath, '/') . '/' . $file_name;
-		$file_path = realpath($file_path);
+		// $file_path = realpath($file_path);
 
 		$CI = &get_instance();
 		$CI -> load -> database();
@@ -273,7 +277,7 @@ class Backup extends MY_Controller {
 			if($this->zip_backup(str_replace('"', "", $file_path))){
 
 				$this->delete_file(str_replace('"', "", $file_path));
-				echo "Backup Success - " . $outer_file.'.zip';
+				echo "Backup Success - " . $outer_file.'.zip';die;
 
 			}
 			else{
@@ -292,35 +296,20 @@ class Backup extends MY_Controller {
 		$result = $CI->db->query($sql);
 		$facility_code = $result->result_array()[0]['Facility_Code']; 
 
-		// echo "time before  connection" .date('h:i:s',time()) .'<br />';
-		// if($this->ftp->connect($this -> config)){
-			// echo "time after connection" .date('h:i:s',time()).'<br />';
-		// var_dump($this->ftp->list_files('/11289/'));
-			$list = $this->ftp->list_files('/');
+			$list = $this->ftp->list_files($this->ftp_root.'/');
 
-			if (!in_array('/'.$facility_code.'', $list)){
-				$this->ftp->mkdir('/'.$facility_code.'/', 0755);
+			if (!in_array($this->ftp_root.'/'.$facility_code.'', $list)){
+				$this->ftp->mkdir($this->ftp_root.$facility_code.'/', 0755);
 			}
-			$uploaded_backups = $this->ftp->list_files('/'.$facility_code.'/');
-			// echo "time after checking files" .date('h:i:s',time()).'<br />';
-			// $this->ftp->close();			echo "time after closing connection" .date('h:i:s',time()).'<br />';
+			$uploaded_backups = $this->ftp->list_files($this->ftp_root.$facility_code.'/');
 			return $uploaded_backups;
-		// }
-		// else {return false;}
 	}
 
 	public function download_remote_file($remote_path = null){
 		$remote_path =$_POST['remote_path'];
-		$file_path =  FCPATH.'backup_db/'.explode('/', $remote_path)[2];
+		$file_path =  FCPATH.'backup_db/'.explode('/', $remote_path)[3];
 
-		$this->load->library('ftp');
-
-		$ftp_config['hostname'] = 'ftp.inclusion.co.ke';
-		$ftp_config['username'] = 'adtftp';
-		$ftp_config['password'] = 'Kuwesa1!1';
-		$ftp_config['debug']	= FALSE;
-
-		if($this->ftp->connect($ftp_config)){
+		if($this->connect_ftp()){
 			$this->ftp->download($remote_path, $file_path, 'ascii');
 			$this->ftp->close();
 			echo "Backup download successful";
@@ -347,15 +336,15 @@ class Backup extends MY_Controller {
 		$facility_code = $result->result_array()[0]['Facility_Code']; 
 
 
-		$list = $this->ftp->list_files('/');
+		$list = $this->ftp->list_files($this->ftp_root);
 		
-		if (!in_array('/'.$facility_code.'', $list)){
-			$this->ftp->mkdir('/'.$facility_code.'/', 0755);
+		if (!in_array($this->ftp_root.$facility_code.'', $list)){
+			$this->ftp->mkdir($this->ftp_root.$facility_code.'/', 0755);
 		}
-		$uploaded_backups = $this->ftp->list_files('/'.$facility_code.'/');
+		$uploaded_backups = $this->ftp->list_files($this->ftp_root.$facility_code.'/');
 		
-		if (!in_array('/'.$facility_code.'/'.$file_name, $uploaded_backups)){
-			$this->ftp->upload($file_path, '/'.$facility_code.'/'.$file_name, 'ascii', 0775);
+		if (!in_array($this->ftp_root.$facility_code.'/'.$file_name, $uploaded_backups)){
+			$this->ftp->upload($file_path,$this->ftp_root.$facility_code.'/'.$file_name, 'ascii', 0775);
 			echo "Upload  Successful";
 		}
 		else{
@@ -383,10 +372,10 @@ class Backup extends MY_Controller {
 
 	public function zip_backup($file_path = null) {
 		$this->load->library('zip');
-
+		ini_set('memory_limit', '-1'); 
 
 		$data = $this->zip->read_file($file_path,FALSE);
-		// $data = file_get_contents($file_path);
+		
 		$this->zip->add_data($file_path, $data);
 		// Write the zip file to a folder on your server. Name it "my_backup.zip"
 		if ($this->zip->archive($file_path.'.zip')){

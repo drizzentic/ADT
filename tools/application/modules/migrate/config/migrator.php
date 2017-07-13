@@ -14,7 +14,7 @@ $config['target_hostname'] = 'localhost';
 $config['target_port'] = 3306;
 $config['target_username'] = 'root';
 $config['target_password'] = 'root';
-$config['target_database'] = 'testadt';
+$config['target_database'] = 'testadt2';
 $config['target_driver'] = 'mysqli';
 
 /*Migration flags*/
@@ -39,13 +39,13 @@ $config['tables'] = array(
 	'regimen_category' => 'regimen_type',
 	'regimen_service_type' => 'service_type',
 	'regimen_change_purpose' => 'regimen_change_reason',
+	'regimen' => 'regimen',
+	'drugcode' => 'drug',
 	'supporter' => 'supporting_organization',
 	'transaction_type' => 'transaction_type',
 	'users' => 'user',
 	'visit_purpose' => 'visit_type',
-	'drugcode' => 'drug',
-	'regimen' => 'regimen',
-	'regimen_drug' => 'xxdrugsinregimen',
+	'regimen_drug' => 'regimen_drug',
 	'patient' => 'patient',
 	'drug_stock_movement' => 'transaction',
 	'patient_visit' => 'visit'
@@ -94,7 +94,7 @@ $config['patient_visit_indices'] = array('migration_id' => 'id');
 $config['regimen_indices'] = array('regimen_code' => 'code', 'regimen_desc' => 'name', 'line' => 'line');
 $config['regimen_category_indices'] = array('Name' => 'name');
 $config['regimen_change_purpose_indices'] = array('name' => 'name');
-$config['regimen_drug_indices'] = array('regimen' => 'Regimencode', 'drugcode' => 'DrugInRegimen');
+$config['regimen_drug_indices'] = array('Merged_From' => 'regimen_id');
 $config['regimen_service_type_indices'] = array('name' => 'name');
 $config['supporter_indices'] = array('Name' => 'name');
 $config['transaction_type_indices'] = array('name' => 'name', 'desc' => 'description');
@@ -109,3 +109,4 @@ $config['patient_update'] = 'public/sql/editt/update/patient.sql';
 $config['patient_visit_update'] = 'public/sql/editt/update/patient_visit.sql';
 $config['regimen_update'] = 'public/sql/editt/update/regimen.sql';
 $config['regimen_drug_update'] = 'public/sql/editt/update/regimen_drug.sql';
+$config['users_update'] = 'public/sql/editt/update/users.sql';

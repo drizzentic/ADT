@@ -13,7 +13,7 @@
       </form>
       <div id="progress-panel" style="display: none;">
       <span id="progress-text"></span>
-        <img src="<?= base_url() ?>assets/img/loader.gif" >
+        <img src="<?= base_url() ?>public/assets/img/loader.gif" >
       </div>
       <hr />
     </div>
@@ -79,6 +79,7 @@ $("#backup_frm").on('submit',function(e){
               // $("#backup_btn").attr("disabled",false);
               // $('.modal form').hide();
               alert("Error: Cannot conect to database for backup.");
+              window.location.href = "";
             })
 
 
@@ -127,7 +128,6 @@ $(".upload").click(function() {
         console.log(response);
         $('.alert').text(response);    
         window.location.href = "";
-        // alert(response);
       }
     });
 });

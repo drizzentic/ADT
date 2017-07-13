@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
 exit('No direct script access allowed');
 
-class Access extends MY_Controller {
+class Access extends MX_Controller {
 
 	function __construct() {
 		parent::__construct();
@@ -710,6 +710,8 @@ class Access extends MY_Controller {
 	}
 
 	public function migrate(){
+		ini_set('memory_limit', '-1'); 
+		
 		//get posted data
 		$facility_code=$this->input->post('facility_code',TRUE);
 		$ccc_pharmacy=$this->input->post('ccc_pharmacy',TRUE);
