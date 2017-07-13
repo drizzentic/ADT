@@ -2,10 +2,13 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Recover extends MY_Controller {
+class Recover extends MX_Controller {
 	var $backup_dir = "./backup_db";
 	function __construct() {
 		parent::__construct();
+			ini_set("max_execution_time", "100000");
+		ini_set("memory_limit", '2048M');
+
 	}
 
 	public function index() {
@@ -92,8 +95,8 @@ class Recover extends MY_Controller {
 		} else {
 			mkdir($dir);
 		}
-		$this -> load -> module('table');
-		return $this -> table -> load_table($backup_headings, $backup_files, $options);
+		$this -> load -> module('tables');
+		return $this -> tables -> load_table($backup_headings, $backup_files, $options);
 	}
 
 	public function showdir() {
@@ -112,11 +115,12 @@ class Recover extends MY_Controller {
 		} else {
 			mkdir($dir);
 		}
-		$this -> load -> module('table');
-		echo $this -> table -> load_table($backup_headings, $backup_files, $options);
+		$this -> load -> module('tables');
+		echo $this -> tables -> load_table($backup_headings, $backup_files, $options);
 	}
 
 	public function start_recovery() {
+		ini_set('memory_limit', '-1'); 
 		$file_name =$_POST['file_name'];
 		$file_path =  FCPATH.'backup_db/'.$file_name;
 		$unzip = $this -> uncompress_zip($file_path);;
@@ -172,18 +176,44 @@ class Recover extends MY_Controller {
 		}
 	}
 
-	public function uncompress_zip($file_path) {
+	public function uncompress_zip($file_path = null) {
 		$this -> load -> library('unzip');
-		$destination_path = realpath(".zip","",$file_path);
-		$this -> unzip -> allow(array('sql'));
+		$return_status = FALSE;
+		$destination_path = realpath($file_path);
+		$zip = new ZipArchive;
+		if ($zip->open($destination_path) === TRUE) 
+		{
+			$zip->extractTo($this->backup_dir);
+			$zip->close();
+			$this->deleteDirectory($this->backup_dir.'/xampp');
+			$return_status = TRUE;
 
-		if ($this -> unzip -> extract($file_path, substr($destination_path, 0,-4))){
-			return true;
-		}else{
-			return false;
 		}
+		return $return_status;
 	}
 
+	function deleteDirectory($dir) {
+		if (!file_exists($dir)) {
+			return true;
+		}
+
+		if (!is_dir($dir)) {
+			return unlink($dir);
+		}
+
+		foreach (scandir($dir) as $item) {
+			if ($item == '.' || $item == '..') {
+				continue;
+			}
+
+			if (!$this->deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
+				return false;
+			}
+
+		}
+
+		return rmdir($dir);
+	}
 	public function template($data) {
 		$data['show_menu'] = 0;
 		$data['show_sidemenu'] = 0;

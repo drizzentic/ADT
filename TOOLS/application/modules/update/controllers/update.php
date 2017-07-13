@@ -2,14 +2,14 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Update extends MY_Controller {
+class Update extends MX_Controller {
 	var $nascop_url = "";
 	function __construct() {
 		parent::__construct();
 		ini_set("max_execution_time", "100000");
 		ini_set("allow_url_fopen", '1');
-		$this -> load -> library('github_updater');
-		$this -> load -> library('Unzip');
+		// $this -> load -> library('github_updater');
+		// $this -> load -> library('Unzip');
 
 		$dir = realpath($_SERVER['DOCUMENT_ROOT']);
 	    $link = $dir . "\\ADT\\assets\\nascop.txt";

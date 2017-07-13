@@ -2,11 +2,13 @@
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
 
-class Template extends MY_Controller {
+class Template extends MX_Controller {
 
 	function __construct() {
 		parent::__construct();
+	    $this->load->library('session');
 	}
+
 
 	public function index($data) {
 		// $user_session = $this -> check_session();
