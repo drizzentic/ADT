@@ -163,13 +163,13 @@ class Auto_management extends MY_Controller {
 				$patient_id = $value['id'];
 				$patient_ccc = $value['patient_number_ccc'];
 				//Get last regimen
-				$sql_last_regimen = "SELECT pv.last_regimen FROM patient_visit pv WHERE pv.patient_id='" . $patient_ccc . "' ORDER BY id DESC LIMIT 1";
-				$query = $this -> db -> query($sql_last_regimen);
+				$sql_last_regimen = "SELECT pv.last_regimen FROM patient_visit pv WHERE pv.patient_id= ? ORDER BY id DESC LIMIT 1";
+				$query = $this -> db -> query($sql_last_regimen, $patient_ccc);
 				$res = $query -> result_array();
 				if (count($res) > 0) {
 					$last_regimen_id = $res[0]['last_regimen'];
-					$sql = "UPDATE patient p SET p.current_regimen ='" . $last_regimen_id . "'  WHERE p.id = '" . $patient_id . "'";
-					$query = $this -> db -> query($sql);
+					$sql = "UPDATE patient p SET p.current_regimen = ?  WHERE p.id = ?";
+					$query = $this -> db -> query($sql, array($last_regimen_id, $patient_id));
 					$count++;
 				}
 			}   
