@@ -11,6 +11,7 @@ class Patient extends Doctrine_Record {
 		$this -> hasColumn('Pob', 'varchar', 100);
 		$this -> hasColumn('Gender', 'varchar', 2);
 		$this -> hasColumn('Pregnant', 'varchar', 2);
+		$this -> hasColumn('Breastfeeding', 'varchar', 2);
 		$this -> hasColumn('Weight', 'varchar', 5);
 		$this -> hasColumn('Height', 'varchar', 5);
 		$this -> hasColumn('Sa', 'varchar', 5);
@@ -48,6 +49,7 @@ class Patient extends Doctrine_Record {
 		$this -> hasColumn('Start_Regimen_Merged_From', 'varchar', 20);
 		$this -> hasColumn('Current_Regimen_Merged_From', 'varchar', 20);
 		$this -> hasColumn('NextAppointment', 'varchar', 20);
+		$this -> hasColumn('clinicalappointment', 'varchar', 20);
 		$this -> hasColumn('Start_Height', 'varchar', 20);
 		$this -> hasColumn('Start_Weight', 'varchar', 20);
 		$this -> hasColumn('Start_Bsa', 'varchar', 20);
@@ -177,7 +179,7 @@ class Patient extends Doctrine_Record {
 	}
 	
 	public function get_patient_details($id){
-		$query = Doctrine_Query::create() -> select("p.Patient_Number_CCC,CONCAT_WS(' ',first_name,last_name,other_name) as names,Height,Weight,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as Dob,Pregnant,Tb") -> from("Patient p") -> where( "p.id = $id");
+		$query = Doctrine_Query::create() -> select("p.Patient_Number_CCC,CONCAT_WS(' ',first_name,last_name,other_name) as names,Height,Weight,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as Dob,p.clinicalappointment,Pregnant,Tb") -> from("Patient p") -> where( "p.id = $id");
 		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return @$patients[0];
 	}

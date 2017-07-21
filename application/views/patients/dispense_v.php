@@ -149,6 +149,25 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row-fluid">
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label><span class='astericks'>*</span>Days to Next Clinical Appointment</label>
+                                <input  type="text" name="days_to_next_clinical" id="days_to_next_clinical" class="validate[required]">
+                            </div>
+                        </div>
+                        <div class="span6 dispensing-field">
+                            <div class="control-group">
+                                <label><span class='astericks'>*</span>Date of Next Clinical Appointment</label>
+                                <input  type="text" name="next_clinical_appointment_date" id="next_clinical_appointment_date" class="validate[required]" >
+                                <input  type="hidden" name="next_clinical_appointment" id="next_clinical_appointment" class="validate[required]" >
+
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="row-fluid">
                         <div class="span10 dispensing-field">
                             <span id="scheduled_patients" style="display:none;background:#9CF;"></span>
@@ -276,11 +295,11 @@
                                 <input type="text" name="expiry[]" name="expiry" class="expiry input-small" id="expiry_date" readonly="" size="15"/>
                             </td>
                             <td class="dose_col">
-                             <!-- <select name="dose[]" class="next_pill input-small dose  span2"></select></td>-->
-                             <input  name="dose[]" list="dose" id="doselist" class="input-small next_pill dose icondose"> 
-                             <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist> 
-                         </td>
-                         <td>
+                               <!-- <select name="dose[]" class="next_pill input-small dose  span2"></select></td>-->
+                               <input  name="dose[]" list="dose" id="doselist" class="input-small next_pill dose icondose"> 
+                               <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist> 
+                           </td>
+                           <td>
                             <input type="text" name="pill_count[]" class="pill_count input-small" readonly="readonly" />
                         </td>
                         <td>
@@ -339,25 +358,25 @@
             </div>
             <!--end modal-->
         </div>
-<script src="<?php echo base_url().'assets/scripts/bootbox/v4/bootbox.min.js'; ?>"></script>
+        <script src="<?php echo base_url().'assets/scripts/bootbox/v4/bootbox.min.js'; ?>"></script>
 
-<script type="text/javascript">
-    $(document).ready(function(){
-        var loopcounter = 0;
-        var patient_id="<?php echo $patient_id; ?>";
-        var service = "<?php echo $service_name; ?>"
-        var base_url="<?php echo base_url();?>";
-        var link = base_url + "patient_management/get_viral_load_info/" + patient_id;
-        var request_viral_load=$.ajax({
-            url: link,
-            type: 'POST',
-            dataType: "json",
-            success: function(data) {
-                if(data!=0){
-                    bootbox.alert("<h4>ViralLoad Alert!</h4>" + data);
-                }
-            }
-        });
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var loopcounter = 0;
+                var patient_id="<?php echo $patient_id; ?>";
+                var service = "<?php echo $service_name; ?>"
+                var base_url="<?php echo base_url();?>";
+                var link = base_url + "patient_management/get_viral_load_info/" + patient_id;
+                var request_viral_load=$.ajax({
+                    url: link,
+                    type: 'POST',
+                    dataType: "json",
+                    success: function(data) {
+                        if(data!=0){
+                            bootbox.alert("<h4>ViralLoad Alert!</h4>" + data);
+                        }
+                    }
+                });
 
         //Check if 'PREP' patient has been tested
         checkIfTested(service, patient_id)
@@ -401,12 +420,33 @@
                 var days_difference = difference / one_day;
                 $("#days_to_next").attr("value", days_difference);
                 retrieveAppointedPatients();
+            validateAppointments();
+            }
+        });
+        // add datepicker for next clinical appointment date
+        $("#next_clinical_appointment_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: $.datepicker.ATOM,
+            onSelect: function(dateText, inst) {
+                validateAppointments();
+                var base_date = new Date();
+                var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
+                var today_timestamp = today.getTime();
+                var one_day = 1000 * 60 * 60 * 24;
+                var appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
+                var difference = appointment_timestamp - today_timestamp;
+                var days_difference = difference / one_day;
+                $("#days_to_next_clinical").attr("value", days_difference);
+                retrieveAppointedPatients();
             }
         });
         //Add listener to the 'days_to_next' field so that the date picker can reflect the correct number of days!
         $("#days_to_next").change(function() {
             var days = $("#days_to_next").attr("value");
+
             if(days > 0){
+            validateAppointments();
                 var base_date = new Date();
                 var appointment_date = $("#next_appointment_date");
                 var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
@@ -415,8 +455,8 @@
                 appointment_date.datepicker("setDate", new Date(appointment_timestamp));
                 retrieveAppointedPatients();
             }else{
-             bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
-         }
+               bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
+           }
             //Loop through Table to calculate pill counts for all rows
             $.each($(".drug"), function(i, v) {
                 var row = $(this);
@@ -424,6 +464,24 @@
                 var dose_val = row.closest("tr").find(".dose option:selected").attr("dose_val");
                 var dose_freq = row.closest("tr").find(".dose option:selected").attr("dose_freq");
             });
+        });
+
+         //Add listener to the 'days_to_next_clinical' field so that the date picker can reflect the correct number of days!
+         $("#days_to_next_clinical").change(function() {
+            validateAppointments();
+
+            var days_to_next_clinical = $("#days_to_next_clinical").attr("value");
+            if(days_to_next_clinical > 0){
+                var base_date = new Date();
+                var clinical_appointment_date = $("#next_clinical_appointment_date");
+                var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
+                var today_timestamp = today.getTime();
+                var appointment_timestamp = (1000 * 60 * 60 * 24 * days_to_next_clinical) + today_timestamp;
+                clinical_appointment_date.datepicker("setDate", new Date(appointment_timestamp));
+                // retrieveAppointedPatients();
+            }else{
+               bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
+           }
         });
         // -------------------------- Dispensing date, date picker settings and checks end--------------------------
         
@@ -560,70 +618,70 @@
                             <td class="span10">\
                                 <div class="row-fluid">\
                                   <div class="span9">\
-                                     <label class="inline">\
-                                         Drugname:\
-                                         <input type="text" name="print_drug_name[]" class="span9 label_drug" value="' + drug_name + '" required readonly/>\
-                                     </label>\
-                                 </div>\
-                                 <div class="span3">\
+                                   <label class="inline">\
+                                       Drugname:\
+                                       <input type="text" name="print_drug_name[]" class="span9 label_drug" value="' + drug_name + '" required readonly/>\
+                                   </label>\
+                               </div>\
+                               <div class="span3">\
                                   <label class="inline">\
-                                     Qty:\
-                                     <input type="number" name="print_qty[]" class="span3 label_qty" value="' + qty + '" required readonly/>\
-                                 </label>\
-                             </div>\
-                         </div>\
-                         <div class="row-fluid">\
-                           <div class="span12">\
-                              <label class="inline">\
-                                  Tablets/Capsules:\
-                                  <input type="number" name="print_dose_value[]" class="span1 label_dose_value" value="' + dose_value + '" required/> to be taken\
-                                  <input type="number" name="print_dose_frequency[]" class="span1 label_dose_frequency" value="' + dose_frequency + '" required/> times a day after every\
-                                  <input type="number" name="print_dose_hours[]" class="span1 label_hours" value="' + dose_hours + '" required/> hours\
-                              </label>\
-                          </div>\
-                      </div>\
-                      <div class="row-fluid">\
-                       <div class="span12">\
+                                   Qty:\
+                                   <input type="number" name="print_qty[]" class="span3 label_qty" value="' + qty + '" required readonly/>\
+                               </label>\
+                           </div>\
+                       </div>\
+                       <div class="row-fluid">\
+                         <div class="span12">\
                           <label class="inline">\
-                              Before/After Meals:\
-                              <textarea name="print_drug_info[]"  row="5" class="span8 label_info">' + drug_instructions + '</textarea>\
+                              Tablets/Capsules:\
+                              <input type="number" name="print_dose_value[]" class="span1 label_dose_value" value="' + dose_value + '" required/> to be taken\
+                              <input type="number" name="print_dose_frequency[]" class="span1 label_dose_frequency" value="' + dose_frequency + '" required/> times a day after every\
+                              <input type="number" name="print_dose_hours[]" class="span1 label_hours" value="' + dose_hours + '" required/> hours\
                           </label>\
                       </div>\
                   </div>\
                   <div class="row-fluid">\
-                   <div class="span4">\
+                     <div class="span12">\
+                      <label class="inline">\
+                          Before/After Meals:\
+                          <textarea name="print_drug_info[]"  row="5" class="span8 label_info">' + drug_instructions + '</textarea>\
+                      </label>\
+                  </div>\
+              </div>\
+              <div class="row-fluid">\
+                 <div class="span4">\
                     <label class="inline">\
-                       Name: <input type="text" name="print_patient_name" class="span9 label_patient" value="' + patient_name + '" required readonly/>\
-                   </label>\
-               </div>\
-               <div class="span4">\
-                  <label class="inline">\
-                    Pharmacy: <input type="text" name="print_pharmacy[]" class="span8 label_patient" value="Pharmacy"/>\
-                </label>\
-            </div>\
-            <div class="span4">\
-                <label class="inline">\
-                    Date: <input type="text" name="print_date" class="span6 label_date" value="<?php echo date('d/m/Y'); ?>" readonly/>\
-                </label>\
-            </div>\
-        </div>\
-        <div class="row-fluid">\
-          <div class="span12">\
-              <label style="text-align:center;">Keep all medicines in a cold dry place out of reach of children.</label>\
-          </div>\
-      </div>\
-      <div class="row-fluid">\
-          <div class="span6">\
-            <label class="inline">\
-                Facility Name:<input type="text" name="print_facility_name" class="span8 label_facility" value="<?php echo $this->session->userdata("facility_name"); ?>" readonly/>\
+                     Name: <input type="text" name="print_patient_name" class="span9 label_patient" value="' + patient_name + '" required readonly/>\
+                 </label>\
+             </div>\
+             <div class="span4">\
+              <label class="inline">\
+                Pharmacy: <input type="text" name="print_pharmacy[]" class="span8 label_patient" value="Pharmacy"/>\
             </label>\
         </div>\
-        <div class="span6">\
+        <div class="span4">\
             <label class="inline">\
-                Facility Phone:<input type="text" name="print_facility_phone" class="span4 label_contact" value="<?php echo $this->session->userdata("facility_phone"); ?>" readonly/>\
+                Date: <input type="text" name="print_date" class="span6 label_date" value="<?php echo date('d/m/Y'); ?>" readonly/>\
             </label>\
         </div>\
     </div>\
+    <div class="row-fluid">\
+      <div class="span12">\
+          <label style="text-align:center;">Keep all medicines in a cold dry place out of reach of children.</label>\
+      </div>\
+  </div>\
+  <div class="row-fluid">\
+      <div class="span6">\
+        <label class="inline">\
+            Facility Name:<input type="text" name="print_facility_name" class="span8 label_facility" value="<?php echo $this->session->userdata("facility_name"); ?>" readonly/>\
+        </label>\
+    </div>\
+    <div class="span6">\
+        <label class="inline">\
+            Facility Phone:<input type="text" name="print_facility_phone" class="span4 label_contact" value="<?php echo $this->session->userdata("facility_phone"); ?>" readonly/>\
+        </label>\
+    </div>\
+</div>\
 </td>\
 <td class="span1">\
     <label class="inline">\
@@ -685,6 +743,19 @@
             $("#height").val(data.Height);
             $("#weight").val(data.Weight);
             $("#patient_names").text(data.names);
+            $("#next_clinical_appointment_date").val(data.clinicalappointment);
+            $("#next_clinical_appointment").val(data.clinicalappointment);
+
+             var base_date = new Date();
+                var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
+                var today_timestamp = today.getTime();
+                var one_day = 1000 * 60 * 60 * 24;
+                var appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
+                var difference = appointment_timestamp - today_timestamp;
+                var days_difference = difference / one_day;
+                $("#days_to_next_clinical").attr("value", days_difference);
+
+
             is_pregnant = data.Pregnant;
             has_tb      = data.Tb;
             var age = data.age;
@@ -799,8 +870,8 @@
                     request.fail(function(jqXHR, textStatus) {
                         bootbox.alert("<h4>Who Error </h4>\n\<hr/>\n\<center>Could not retrieve Who information : </center>" + textStatus);
                     });
+                }
             }
-        }
         //adherence rate
         getAdherenceRate();
     });
@@ -877,7 +948,7 @@
                 data: {"weight": weight,"drug_id":$( this ).val() ,"age":age},
                 type: 'post',
                 dataType: "json"
-                });
+            });
             request_one_dose.done(function(data_single_dose) {
                 var current_dose = data_single_dose[0].dose;
                 row.closest("tr").find(".dose option").remove();
@@ -885,7 +956,7 @@
             });
         });
     });
-   
+
     
     //drug change event
     $(".drug").change(function() {
@@ -1026,7 +1097,7 @@
 
                                 });
                             });
-                    });
+                        });
 
                     });
 
@@ -1140,11 +1211,11 @@ request.fail(function(jqXHR, textStatus) {
         var dose_freq = row.closest("tr").find(".dose option:selected").attr("dose_freq");
     });
     $(".duration").on('keyup', function() {
-       duration_quantity($(this));
-   });
+     duration_quantity($(this));
+ });
     $(".dose").on('input', function() {
-       duration_quantity($(this));
-   });
+     duration_quantity($(this));
+ });
 
     //function to change quantity based on the duration 
     function duration_quantity(row){
@@ -1168,6 +1239,17 @@ request.fail(function(jqXHR, textStatus) {
             row.closest("tr").find(".duration").removeClass("input_error");
         }
     }
+
+       function validateAppointments() {
+                var days_to_next_clinical = $("#days_to_next_clinical").attr("value");
+                var days = $("#days_to_next").attr("value");
+              if(parseInt(days)>parseInt(days_to_next_clinical)){
+                $("#days_to_next_clinical").val(days);
+
+                alert('pharmacy appointments must on or be before clinical appointment');
+                $("#next_clinical_appointment_date").val($("#next_appointment_date").attr("value"));
+            }
+            }
 
     //function to add drug row in table 
     $(".add").click(function() {
@@ -1272,9 +1354,9 @@ request.fail(function(jqXHR, textStatus) {
                 }
             });                                            
         }else{
-         bootbox.alert("<h4>Remove Alert!</h4>\n\<hr/><center>Error!Cannot Delete Last Row Try Reset!</center>");
-     }
- });
+           bootbox.alert("<h4>Remove Alert!</h4>\n\<hr/><center>Error!Cannot Delete Last Row Try Reset!</center>");
+       }
+   });
     $("#reset").click(function (e){
         e.preventDefault();
         
@@ -1380,13 +1462,13 @@ request.fail(function(jqXHR, textStatus) {
         });
         //Show Bootbox
         if(msg !=''){
-         bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
-         return;
-     }
+           bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
+           return;
+       }
 
-     var rowCount = $('#drugs_table>tbody tr').length;
-     return true;
- }
+       var rowCount = $('#drugs_table>tbody tr').length;
+       return true;
+   }
 
     //------------------------------ END DATA PROCESSING ---------------------------------
     
@@ -1540,8 +1622,8 @@ request.fail(function(jqXHR, textStatus) {
                                                 callback: function (test_result) {
                                                     var test_result_url = "<?php echo base_url(); ?>"+'dispensement_management/update_prep_test/'+patient_id+'/'+prep_reason+'/'+is_tested+'/'+test_date+'/'+test_result
                                                     $.get(test_result_url, function(msg){
-                                                       bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
-                                                   });
+                                                     bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
+                                                 });
                                                 }
                                             });
                                         }
@@ -1663,8 +1745,8 @@ request.fail(function(jqXHR, textStatus) {
     function getRoutineDrugs(visits,total_visits,count){
       //loop and add rows 
       for(var count=0;count<(visits.length-1);count++){
-       var row = $('#tbl-dispensing-drugs tr:last');
-       var cloned_row = row.clone(true);
+         var row = $('#tbl-dispensing-drugs tr:last');
+         var cloned_row = row.clone(true);
          //show remove link for cloned row
          cloned_row.find(".remove").show();
          //insert after cloned row
@@ -1744,12 +1826,12 @@ request.fail(function(jqXHR, textStatus) {
     function checkAppointment(){
         if($("#days_to_next").val()!= " ")
         {
-           var days = $("#days_to_next").val();
-           $("#days_to_next").val();
+         var days = $("#days_to_next").val();
+         $("#days_to_next").val();
 
-       }
+     }
 
-   }
+ }
     //function to calculate adherence rate(%)
     function getAdherenceRate(){
         $("#adherence").attr("value", " ");

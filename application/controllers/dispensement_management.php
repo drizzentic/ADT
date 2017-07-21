@@ -90,7 +90,7 @@ class Dispensement_management extends MY_Controller {
 		$data['appointments'] = "";
 		$dispensing_date = date('Y-m-d');
 
-		$sql = "select ps.name as patient_source,p.patient_number_ccc,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, LOWER(rst.name) as service_name from patient p 
+		$sql = "select ps.name as patient_source,p.patient_number_ccc,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, LOWER(rst.name) as service_name , p.clinicalappointment from patient p 
 				LEFT JOIN patient_source ps ON ps.id = p.source
 				LEFT JOIN regimen_service_type rst ON rst.id = p.service
 				where p.id='$record_no' and facility_code='$facility_code'
@@ -351,6 +351,9 @@ class Dispensement_management extends MY_Controller {
         $record_no = $this -> session -> userdata('record_no');
 		$patient_name= $this -> input -> post("patient_details");
 		$next_appointment_date = $this -> input -> post("next_appointment_date");
+		$next_clinical_appointment_date = $this -> input -> post("next_clinical_appointment_date");
+		$next_clinical_appointment = $this -> input -> post("next_clinical_appointment");
+
 		$last_appointment_date = $this -> input -> post("last_appointment_date");
 		$last_appointment_date = date('Y-m-d', strtotime($last_appointment_date));
 		$dispensing_date = $this -> input -> post("dispensing_date");
@@ -368,6 +371,7 @@ class Dispensement_management extends MY_Controller {
 		$quantity = $this -> input -> post("qty_disp");
 		$qty_available = $this -> input -> post("soh");
 		$brand = $this -> input -> post("brand");
+
 		$soh = $this -> input -> post("soh");
 		$indication = $this -> input -> post("indication");
 		$mos = $this -> input -> post("next_pill_count");
@@ -440,21 +444,41 @@ class Dispensement_management extends MY_Controller {
 			$trans_id = $result[0]['id'];
 			$add_query.= ", current_status = '$trans_id' ";
 		}
-		
+
+			/// save clinical appointment $ return clinical appointment id then tie it to appointment date
+
+		if ($next_clinical_appointment_date !== $next_clinical_appointment) {
+			$q = "SELECT id FROM clinic_appointment WHERE patient = '$patient' AND appointment = '$next_clinical_appointment' LIMIT 1";
+			$query = $this ->db ->query($q);
+			$result = $query->result_array();
+			$clinical_appointment_id = $result[0]['id'];
+			$sql_str = ($clinical_appointment_id>0) ? "UPDATE clinic_appointment set appointment='$next_clinical_appointment_date' where id = $clinical_appointment_id " : "insert into clinic_appointment (patient,appointment,facility) values ('$patient', '$next_clinical_appointment_date', 'facility') " ;
+			$query = $this ->db ->query($sql_str);
+
+			$q = "SELECT id FROM clinic_appointment WHERE patient = '$patient' AND appointment = '$next_clinical_appointment_date' LIMIT 1";
+			$query = $this ->db ->query($q);
+			$result = $query->result_array();
+			$clinical_appointment_id = $result[0]['id'];
+
+			}
+			// <!-- save clinical appointment
+
+
+
 		if ($last_appointment_date) {
 			if ($last_appointment_date > $dispensing_date) {
 				//come early for appointment
 				$sql .= "update patient_appointment set appointment='$dispensing_date',machine_code='1' where patient='$patient' and appointment='$last_appointment_date';";
 			}
 		}
-		$sql .= "insert into patient_appointment (patient,appointment,facility) values ('$patient','$next_appointment_date','$facility');";
+		$sql .= "insert into patient_appointment (patient,appointment,facility,clinical_appointment) values ('$patient','$next_appointment_date','$facility','$clinical_appointment_id');";
 
 
 		/*
 		 * Update patient Info
 		 */
 
-		$sql .= "update patient SET weight='$weight',height='$height',current_regimen='$current_regimen',nextappointment='$next_appointment_date' $add_query where patient_number_ccc ='$patient' and facility_code='$facility';";
+		$sql .= "update patient SET weight='$weight',height='$height',current_regimen='$current_regimen',nextappointment='$next_appointment_date',clinicalappointment = '$next_clinical_appointment_date' $add_query where patient_number_ccc ='$patient' and facility_code='$facility';";
 
 		/*
 		 * Update Visit and Drug Info

@@ -132,6 +132,7 @@
 						}
                    });     
                 }else {
+                	$('#breastfeeding').val(0)
                    	$("#service").removeAttr("value");
                 }
             });
@@ -546,6 +547,7 @@
 			var age_in_years = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
 			var pregnantDiv = document.getElementById('pregnant_view');
 			var pregnant = $("#pregnant");
+			var breastfeeding = $("#breastfeeding");
 
 			//Ensure is 'female' and age >= 14
 			if(age_in_years >= 14 && gender == 'female'){
@@ -553,6 +555,7 @@
 			}else{
 				pregnantDiv.style.display = "none";
 				pregnant.val(0);
+				breastfeeding.val(0)
 			}
 		}
 		</script>
@@ -635,20 +638,26 @@
 							</div>
 						</div>
 						<div class="max-row">
-							<div class="mid-row">
-								<label><span class='astericks'>*</span>Gender</label>				
-								<select name="gender" id="gender" class="validate[required]" onchange="showDiv(this)">
-								<option value="">--Select--</option>
-								<?php
-									foreach($genders as $gender){
-										echo "<option value='".$gender['id']."'>".$gender['name']."</option>";
-									}
-									?>
-								</select>
-							</div>
-							<div id="pregnant_view" class="mid-row" style="display:none;">
+							<label><span class='astericks'>*</span>Gender</label>				
+							<select name="gender" id="gender" class="validate[required]" onchange="showDiv(this)">
+							<option value="">--Select--</option>
+							<?php
+								foreach($genders as $gender){
+									echo "<option value='".$gender['id']."'>".$gender['name']."</option>";
+								}
+								?>
+							</select>
+						</div>
+						<div class="max-row" id="pregnant_view" style="display:none;">
+							<div  class="mid-row" >
 								<label id="pregnant_container"> Pregnant?</label>
 								<select name="pregnant" id="pregnant">
+									<option value="0">No</option><option value="1">Yes</option>
+								</select>
+							</div>
+							<div class="mid-row">
+								<label id="pregnant_container"> Breast Feeding?</label>
+								<select name="breastfeeding" id="breastfeeding">
 									<option value="0">No</option><option value="1">Yes</option>
 								</select>
 							</div>
@@ -971,7 +980,7 @@
 						<div class="max-row">
 							<label id="start_of_regimen"><span class='astericks'>*</span>Start Regimen </label>
 							<select name="regimen" id="regimen" class="validate[required] start_regimen" >
-								<option value=" ">--Select One--</option>
+								<option value="">--Select One--</option>
 								
 							</select>
 

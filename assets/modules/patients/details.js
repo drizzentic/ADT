@@ -224,6 +224,12 @@ function sanitizeForm(){
 	if($("#source").text().toLowerCase().replace(' ', '_') == 'transfer_in'){
 		$(".transfer_from").show();
 	}
+
+	//Show/Hide pregnant_view
+	$("#pregnant_view").hide()
+	if($("#gender option:selected").text().toLowerCase()=='female'){
+		$("#pregnant_view").show()
+	}
 }
 
 function getViralLoad(){

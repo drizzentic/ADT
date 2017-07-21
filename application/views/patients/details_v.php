@@ -106,14 +106,22 @@
 					</div>
 				</div>
 				<div class="row-fluid">
-					<div class="span6">
+					<div class="span12">
 						<label><span class='astericks'>*</span>Gender</label>
 						<select name="gender" id="gender" class="span8" class="validate[required]">
 						</select>
 					</div>
+				</div>
+				<div class="row-fluid" id="pregnant_view">
 					<div class="span6 pregnant">
-						<label id="pregnant_container"> Pregnant?</label>
+						<label> Pregnant?</label>
 						<select name="pregnant" id="pregnant" class="span8">
+							<option value="0">No</option><option value="1">Yes</option>
+						</select>
+					</div>
+					<div class="span6 breastfeeding">
+						<label> Breastfeeding?</label>
+						<select name="breastfeeding" id="breastfeeding" class="span8">
 							<option value="0">No</option><option value="1">Yes</option>
 						</select>
 					</div>
@@ -323,6 +331,16 @@
 					<div class="span4">
 						<label> Days to Next Appointment</label>
 						<input  type="text"name="days_to_next" id="days_to_next" class="span12 red">
+					</div>								
+				</div>
+				<div class="row-fluid">
+					<div class="span4">
+						<label> Date of Next Clinical Appointment</label>
+						<input type="text" name="nextappointment_clinical" id="nextappointment_clinical"  class="span12 red">
+					</div>
+					<div class="span4">
+						<label> Days to Next Clinical Appointment</label>
+						<input  type="text"name="days_to_next_clinical" id="days_to_next_clinical" class="span12 red">
 					</div>								
 				</div>
 	     	</fieldset>
