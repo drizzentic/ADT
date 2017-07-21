@@ -618,6 +618,11 @@ class Patient_management extends MY_Controller {
         //Check if appointment exists
         $prev_appointment = $this -> input -> post('prev_appointment_date', TRUE);
         $appointment = $this -> input -> post('next_appointment_date', TRUE);
+        $prev_clinicalappointment = $this -> input -> post('prev_clinical_appointment_date', TRUE);
+        $clinicalappointment = $this -> input -> post('next_clinical_appointment_date', TRUE);
+
+        
+
         $facility = $this -> session -> userdata('facility');
         $patient = $this -> input -> post('patient_number', TRUE);
 
@@ -637,6 +642,22 @@ class Patient_management extends MY_Controller {
             $this -> db -> query($sql);
         }
 
+        if ($clinicalappointment) {
+            $sql = "select * from clinic_appointment where patient='$patient' and appointment='$prev_clinicalappointment' and facility='$facility'";
+            $query = $this -> db -> query($sql);
+            $results = $query -> result_array();
+           
+            if ($results) {
+                $record_no = $results[0]['id'];
+
+                //If exisiting appointment(Update new Record)
+                $sql = "update clinic_appointment set appointment='$clinicalappointment' where id='$record_no'";
+            } else {
+                //If no appointment(Insert new record)
+                $sql = "insert clinic_appointment(patient,appointment,facility)VALUES('$patient','$appointment','$facility')";
+            }
+            $this -> db -> query($sql);
+        }
 
         $family_planning = $this -> input -> post('family_planning_holder', TRUE);
         if ($family_planning == null) {
@@ -710,6 +731,7 @@ class Patient_management extends MY_Controller {
             'Partner_Status' => $this -> input -> post('partner_status', TRUE),
             'Disclosure' => $this -> input -> post('disclosure', TRUE),
             'Fplan' => $family_planning,
+            'clinicalappointment' => $this -> input -> post('next_clinical_appointment_date', TRUE),
             'Other_Illnesses' => $other_illness_listing,
             'Other_Drugs' => $other_drugs,
             'Adr' => $other_allergies_listing,
@@ -1534,7 +1556,6 @@ class Patient_management extends MY_Controller {
             'hide_side_menu' => '1',
             'patient_msg' => $this->get_patient_relations($id)
         );
-
         $this -> base_params($config[$page_id]);
     }
 
@@ -1667,6 +1688,8 @@ class Patient_management extends MY_Controller {
             'p.Startphase AS startphase',
             'p.Endphase AS endphase',
             'p.NextAppointment AS nextappointment',
+            'p.clinicalappointment AS nextappointment_clinical',
+            'DATEDIFF(p.clinicalappointment,CURDATE()) AS days_to_next_clinical',
             'DATEDIFF(p.NextAppointment,CURDATE()) AS days_to_next',
             'p.Date_Enrolled AS date_enrolled',
             'p.Current_Status AS current_status',

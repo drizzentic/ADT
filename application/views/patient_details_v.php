@@ -564,6 +564,10 @@ if(isset($results)){
 	       
 	       $("#next_appointment_date").val("<?php echo $result['nextappointment'];?>");
 	       $("#prev_appointment_date").val("<?php echo $result['nextappointment'];?>");
+
+	       $("#next_clinical_appointment_date").val("<?php echo $result['clinicalappointment'];?>");
+ 	       
+
 	       
 	       var appointment=$("#next_appointment_date").val();
 	       var days = getDays(appointment);
@@ -1200,6 +1204,19 @@ if(isset($results)){
 				<div class="mid-row">
 				<label> Days to Next Appointment</label>
 				<input  type="text"name="days_to_next" id="days_to_next" style="color:red">
+				</div>								
+			  </div>
+
+
+			   <div class="max-row">
+				<div class="mid-row">
+				<label> Date of Next Clinical Appointment</label>
+				<input type="text" name="next_clinical_appointment_date" id="next_clinical_appointment_date"  style="color:red"/>
+				<input type="hidden" name="prev_clinical_appointment_date" id="prev_clinical_appointment_date" />
+				</div>
+				<div class="mid-row">
+				<label> Days to Next Clinical Appointment</label>
+				<input  type="text"name="days_to_next_clinical" id="days_to_next_clinical" style="color:red">
 				</div>								
 			  </div>
 			</fieldset>

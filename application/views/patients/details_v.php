@@ -325,6 +325,16 @@
 						<input  type="text"name="days_to_next" id="days_to_next" class="span12 red">
 					</div>								
 				</div>
+				<div class="row-fluid">
+					<div class="span4">
+						<label> Date of Next Clinical Appointment</label>
+						<input type="text" name="nextappointment_clinical" id="nextappointment_clinical"  class="span12 red">
+					</div>
+					<div class="span4">
+						<label> Days to Next Clinical Appointment</label>
+						<input  type="text"name="days_to_next_clinical" id="days_to_next_clinical" class="span12 red">
+					</div>								
+				</div>
 	     	</fieldset>
 	    </div>
 	    <!--patient information column-->
