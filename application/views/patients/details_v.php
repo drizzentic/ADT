@@ -117,6 +117,13 @@
 							<option value="0">No</option><option value="1">Yes</option>
 						</select>
 					</div>
+
+						<div class="span6 breastfeeding">
+						<label id="pregnant_container"> Breastfeeding?</label>
+						<select name="breastfeeding" id="breastfeeding" class="span8">
+							<option value="0">No</option><option value="1">Yes</option>
+						</select>
+					</div>
 				</div>
 				<div class="row-fluid">
 					<div class="span6">

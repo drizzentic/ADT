@@ -499,6 +499,7 @@ class Patient_management extends MY_Controller {
         $new_patient -> Pob = $this -> input -> post('pob', TRUE);
         $new_patient -> Gender = $this -> input -> post('gender', TRUE);
         $new_patient -> Pregnant = $this -> input -> post('pregnant', TRUE);
+        $new_patient -> Breastfeeding = $this -> input -> post('breastfeeding', TRUE);
         $new_patient -> Start_Weight = $this -> input -> post('weight', TRUE);
         $new_patient -> Start_Height = $this -> input -> post('height', TRUE);
         $new_patient -> Start_Bsa = $this -> input -> post('surface_area', TRUE);
@@ -718,6 +719,7 @@ class Patient_management extends MY_Controller {
             'Pob' => $this -> input -> post('pob', TRUE),
             'Gender' => $this -> input -> post('gender', TRUE),
             'pregnant' => $this -> input -> post('pregnant', TRUE),
+            'breastfeeding' => $this -> input -> post('breastfeeding', TRUE),
             'Start_Weight' => $this -> input -> post('start_weight', TRUE),
             'Start_Height' => $this -> input -> post('start_height', TRUE),
             'Start_Bsa' => $this -> input -> post('start_bsa', TRUE),
@@ -732,6 +734,7 @@ class Patient_management extends MY_Controller {
             'Disclosure' => $this -> input -> post('disclosure', TRUE),
             'Fplan' => $family_planning,
             'clinicalappointment' => $this -> input -> post('next_clinical_appointment_date', TRUE),
+            'breastfeeding' => $this -> input -> post('breastfeeding', TRUE),
             'Other_Illnesses' => $other_illness_listing,
             'Other_Drugs' => $other_drugs,
             'Adr' => $other_allergies_listing,

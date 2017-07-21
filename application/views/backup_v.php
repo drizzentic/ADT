@@ -4,9 +4,7 @@
        	<h3>Backup Settings</h3>
        </div>
     </div>
-    <div class="row-fluid">
-
-    
+    <div class="row-fluid">    
        <div class="span8 offset2">
         <?php echo $this -> session -> flashdata('error_message');?>
         <form id="backup_frm" action="<?php echo base_url().'backup_management/backup_db'; ?>" method="POST">

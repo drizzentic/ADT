@@ -124,6 +124,8 @@
 	
             //if female is pregnant put them on pmtct service 
 			$("#pregnant").change(function(){
+				$('#breastfeeding_view').toggle();
+
                 var selected_value=$(this).attr("value");
                 if(selected_value==1){
                 	$("#service > option").each(function() {
@@ -649,6 +651,12 @@
 							<div id="pregnant_view" class="mid-row" style="display:none;">
 								<label id="pregnant_container"> Pregnant?</label>
 								<select name="pregnant" id="pregnant">
+									<option value="0">No</option><option value="1">Yes</option>
+								</select>
+							</div>
+							<div id="breastfeeding_view" class="mid-row" style="display:none;">
+								<label id="pregnant_container"> Breast Feeding?</label>
+								<select name="breastfeeding" id="breastfeeding">
 									<option value="0">No</option><option value="1">Yes</option>
 								</select>
 							</div>

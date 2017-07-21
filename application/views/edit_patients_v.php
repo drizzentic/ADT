@@ -138,13 +138,23 @@ foreach($results as $result){
 			$("#who_stage").val("<?php echo $result['who_stage']; ?>");
 			$("#match_parent").val("<?php echo $result['parent']; ?>");
 			$("#match_spouse").val("<?php echo $result['secondary_spouse']; ?>");
+			$("#breastfeeding").val("<?php echo $result['breastfeeding']; ?>");
+
+
 			
 			//Display Gender Tab
 			if($("#gender").val()==2){
 				$("#pregnant_view").show();
 			}
+
+			if($("#breastfeeding").val()==1){
+				$("#breastfeeding_view").show();
+			}
+
 			$("#pregnant").val("<?php echo $result['pregnant'];?>");
 			$("#pregnant").change(function(){
+				$('#breastfeeding_view').toggle();
+
 				var selected_value=$(this).attr("value");
 				if(selected_value==1){
 					$("#service > option").each(function() {
@@ -1025,6 +1035,13 @@ function getAge(dateString) {
 										<option value="0">No</option><option value="1">Yes</option>
 									</select>
 								</div>
+										<div id="breastfeeding_view" class="mid-row" style="display:none;">
+								<label id="pregnant_container"> Breast Feeding?</label>
+								<select name="breastfeeding" id="breastfeeding">
+									<option value="0">No</option><option value="1">Yes</option>
+								</select>
+							</div>
+
 							</div>
 							<div class="max-row">
 								<div class="mid-row">

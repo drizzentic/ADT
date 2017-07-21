@@ -11,6 +11,7 @@ class Patient extends Doctrine_Record {
 		$this -> hasColumn('Pob', 'varchar', 100);
 		$this -> hasColumn('Gender', 'varchar', 2);
 		$this -> hasColumn('Pregnant', 'varchar', 2);
+		$this -> hasColumn('Breastfeeding', 'varchar', 2);
 		$this -> hasColumn('Weight', 'varchar', 5);
 		$this -> hasColumn('Height', 'varchar', 5);
 		$this -> hasColumn('Sa', 'varchar', 5);
