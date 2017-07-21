@@ -1429,6 +1429,18 @@ foreach ($results as $result) {
                         </div>
 
 
+       <div class="max-row">
+                            <div class="mid-row">
+                                <label><span class='astericks'>*</span>Days to Next Clinical Appointment</label>
+                                <input  type="text" name="days_to_next_clinical" id="days_to_next_clinical" class="validate[required]">
+                            </div>
+                            <div class="mid-row">
+                                <label><span class='astericks'>*</span>Date of Next Clinical Appointment</label>
+                                <input  type="text" name="next_clinical_appointment_date" id="next_clinical_appointment_date" class="validate[required]" >
+                            </div>
+                        </div>
+
+
                         <div class="max-row">
                             <br/>
                             <span id="scheduled_patients" style="display:none;background:#9CF;padding:5px;">
