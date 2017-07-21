@@ -404,7 +404,7 @@ class Dispensement_management extends MY_Controller {
         $patient_service=$service_res[0]['service'];
         
         if($patient_service!=$service){
-            $sql="UPDATE patient SET service='$service' WHERE service='$patient_service' AND patient_number_ccc='$patient'";
+            $sql="UPDATE patient SET service='$service' WHERE service='$patient_service' AND patient_number_ccc='$patient';";
             $this->db->query($sql);
         }
         //end update service type
@@ -452,7 +452,7 @@ class Dispensement_management extends MY_Controller {
 			$query = $this ->db ->query($q);
 			$result = $query->result_array();
 			$clinical_appointment_id = $result[0]['id'];
-			$sql_str = ($clinical_appointment_id>0) ? "UPDATE clinic_appointment set appointment='$next_clinical_appointment_date' where id = $clinical_appointment_id " : "insert into clinic_appointment (patient,appointment,facility) values ('$patient', '$next_clinical_appointment_date', 'facility') " ;
+			$sql_str = ($clinical_appointment_id>0) ? "UPDATE clinic_appointment set appointment='$next_clinical_appointment_date' where id = $clinical_appointment_id " : "insert into clinic_appointment (patient,appointment,facility) values ('$patient', '$next_clinical_appointment_date', 'facility'); " ;
 			$query = $this ->db ->query($sql_str);
 
 			$q = "SELECT id FROM clinic_appointment WHERE patient = '$patient' AND appointment = '$next_clinical_appointment_date' LIMIT 1";
@@ -513,6 +513,7 @@ class Dispensement_management extends MY_Controller {
 
 		}
 		$queries = explode(";", $sql);
+		// echo "<pre>";		var_dump($queries);die;
 		$count = count($queries);
 		$c = 0;
 		foreach ($queries as $query) {
@@ -596,7 +597,6 @@ class Dispensement_management extends MY_Controller {
 				if($prev_batch_balance>0){
 					//Update drug_stock_balance
 					$sql = "UPDATE drug_stock_balance SET balance=balance+" . @$_POST["qty_disp"] . " WHERE drug_id='" . @$_POST["original_drug"] . "' AND batch_number='" . @$_POST["batch"] . "' AND expiry_date='" . @$_POST["original_expiry_date"] . "' AND stock_type='$ccc_id' AND facility_code='$facility'";
-					//echo $sql;die();
 					$this -> db -> query($sql);
 				}else{
 					
