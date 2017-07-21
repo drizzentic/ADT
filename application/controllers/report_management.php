@@ -2730,7 +2730,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 							WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 360 THEN 'Over 1 Year'
 							ELSE 'N/A'
 						END AS appointment_description
-					FROM patient_appointment pa 
+					FROM clinic_appointment pa 
 					INNER JOIN 
 					(
 						SELECT 
@@ -2824,7 +2824,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 								WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 360 THEN 'Over 1 Year'
 								ELSE 'N/A'
 							END AS appointment_description
-						FROM patient_appointment pa 
+						FROM clinic_appointment pa 
 						INNER JOIN 
 						(
 							SELECT 

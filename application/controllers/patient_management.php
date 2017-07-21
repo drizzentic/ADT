@@ -1334,7 +1334,7 @@ class Patient_management extends MY_Controller {
             $art_service_id = $result[0]['id'];
             $extra = ", service = '$art_service_id' ";
         }
-        $sql = "UPDATE patient SET pregnant = '0' $extra WHERE patient_number_ccc ='$patient_ccc'";
+        $sql = "UPDATE patient SET pregnant = '0', breastfeeding = '0' $extra WHERE patient_number_ccc ='$patient_ccc'";
         $this ->db ->query($sql);
         $count = $this -> db -> affected_rows();
 
