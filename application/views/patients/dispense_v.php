@@ -362,6 +362,9 @@
 
         <script type="text/javascript">
             $(document).ready(function(){
+
+$('#ccc_store_id').val(<?= $ccc_store;?>);
+$('#ccc_store_id').attr('disabled','true');
                 var loopcounter = 0;
                 var patient_id="<?php echo $patient_id; ?>";
                 var service = "<?php echo $service_name; ?>"

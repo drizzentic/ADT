@@ -10,6 +10,7 @@ class Users extends Doctrine_Record {
 		$this -> hasColumn('Created_By', 'varchar', 5);
 		$this -> hasColumn('Time_Created', 'varchar', 32);
 		$this -> hasColumn('Phone_Number', 'varchar', 50);
+		$this -> hasColumn('ccc_store_sp', 'int', 11);		
 		$this -> hasColumn('Email_Address', 'varchar', 50);
 		$this -> hasColumn('Active', 'varchar', 2);
 		$this -> hasColumn('Signature', 'varchar', 50);

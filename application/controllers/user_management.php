@@ -370,6 +370,7 @@ class User_management extends MY_Controller {
 						             'Email_Address' => $logged_in -> Email_Address, 
 						             'Phone_Number' => $phone, 
 						             'facility' => $logged_in -> Facility_Code, 
+						             'ccc_store' => $logged_in -> ccc_store_sp, 
 						             'facility_id' => $facility_details[0]['id'],
 						             'county' => $facility_details[0]['county'],
 						             'facility_phone' => $facility_details[0]['phone'],
@@ -377,7 +378,6 @@ class User_management extends MY_Controller {
 						             'lost_to_follow_up'=> ((@$facility_details[0]['lost_to_follow_up'])!== null) ? @$facility_details[0]['lost_to_follow_up'] : 90 ,
 						             'autobackup'=> ((@$facility_details[0]['autobackup'])!== null) ? @$facility_details[0]['autobackup'] : 0 
 						             );
-
 					
 					$this -> session -> set_userdata($session_data);
 

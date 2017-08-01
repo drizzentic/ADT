@@ -83,7 +83,7 @@ class Dispensement_management extends MY_Controller {
 
 	public function dispense($record_no) {
 		$facility_code = $this -> session -> userdata('facility');
-                
+
 		$dispensing_date = "";
 		$data['last_regimens'] = "";
 		$data['visits'] = "";
@@ -127,6 +127,8 @@ class Dispensement_management extends MY_Controller {
 			$results = $query -> result_array();
 		}
 		$data = array();
+		$data['ccc_store'] = $this -> session -> userdata('ccc_store')[0]['id'];
+		
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
 		$data['purposes'] = Visit_Purpose::getAll();
@@ -513,7 +515,6 @@ class Dispensement_management extends MY_Controller {
 
 		}
 		$queries = explode(";", $sql);
-		// echo "<pre>";		var_dump($queries);die;
 		$count = count($queries);
 		$c = 0;
 		foreach ($queries as $query) {
