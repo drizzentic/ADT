@@ -123,8 +123,10 @@ class Recover extends MX_Controller {
 		ini_set('memory_limit', '-1'); 
 		$file_name =$_POST['file_name'];
 		$file_path =  FCPATH.'backup_db/'.$file_name;
-		$unzip = $this -> uncompress_zip($file_path);;
+		$unzip = $this -> uncompress_zip($file_path);
 		$file_path = str_replace(".zip", "", $file_path);
+		$file_path = (strpos($file_path, '.sql') !== false) ? $file_path : $file_path.'.sql' ;
+		$file_path =  '"'.realpath($file_path).'"';
 
 		$CI = &get_instance();
 		$CI -> load -> database();
@@ -145,7 +147,7 @@ class Recover extends MX_Controller {
 			if ($count==0) {
 				$mysql_home = realpath($_SERVER['MYSQL_HOME']) . "\mysql";
 				$mysql_bin = str_replace("\\", "\\\\", $mysql_home);
-				$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password . ' -h ' . $hostname . ' ' . $current_db . ' < ' . $file_path;
+				$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password .  ' -P' . $port . ' -h ' . $hostname . ' ' . $current_db . ' < ' . $file_path;
 				exec($mysql_con);
 				$recovery_status = true;
 				
