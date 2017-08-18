@@ -311,7 +311,7 @@
                         <td>
                             <input type="number" name="qty_disp[]" class="qty_disp input-small next_pill validate[requireds]"  id="qty_disp"/>
                             <td>
-                                <input type="text" name="soh[]" class="soh input-small" readonly="readonly"/>
+                                <input type="text" name="soh[]" class="soh input-small" id="soh" readonly="readonly"/>
                             </td>
                         </td>
                         <!--                        <td><select name="brand[]" class="brand input-small"></select></td>-->
@@ -745,7 +745,7 @@ $('#ccc_store_id').attr('disabled','true');
             $("#patient").val(data.Patient_Number_CCC);
             $("#patient_details").val(data.names);
             $("#height").val(data.Height);
-            $("#weight").val(data.Weight);
+            // $("#weight").val(data.Weight);
             $("#patient_names").text(data.names);
             $("#next_clinical_appointment_date").val(data.clinicalappointment);
             $("#next_clinical_appointment").val(data.clinicalappointment);
@@ -1210,6 +1210,21 @@ request.fail(function(jqXHR, textStatus) {
     });
 
 
+    //check if quantity dispensed is greater than quantity available
+    $(".qty_disp").change(function() {
+        var row = $(this);
+        var qty_disp = row.closest("tr").find(".qty_disp").val();
+        var soh = row.closest("tr").find(".soh").val();
+
+        if (qty_disp>soh){
+            alert('You cannot more than ' +soh);
+            row.closest("tr").find(".qty_disp").val(soh);
+
+        }
+
+    });
+
+
     //next pill count change event
     $(".next_pill").change(function() {
         var row = $(this);
@@ -1253,7 +1268,7 @@ request.fail(function(jqXHR, textStatus) {
         if(parseInt(days)>parseInt(days_to_next_clinical)){
             $("#days_to_next_clinical").val(days);
 
-            alert('pharmacy appointments must on or be before clinical appointment');
+            alert('Pharmacy appointments must be on or before clinical appointment.');
             $("#next_clinical_appointment_date").val($("#next_appointment_date").attr("value"));
         }
     }
