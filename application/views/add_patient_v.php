@@ -140,7 +140,7 @@
 			$(".match_spouse").css("display","none");
             $('#partner_status').change(function(){
 				var selected_value= $(this).val();
-				if (selected_value == 1) {
+				if (selected_value == 1 || selected_value == 2) {
 					$(".match_spouse").css("display","block");
 				}else{
 				    $(".match_spouse").css("display","none");	
@@ -736,6 +736,7 @@
 								<option value="0" selected="selected">No Partner</option>
 								<option value="1" > Concordant</option>
 								<option value="2" > Discordant</option>
+								<option value="3" > Unknown</option>
 							</select>
 						
 

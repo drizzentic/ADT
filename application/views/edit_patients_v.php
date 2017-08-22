@@ -1143,6 +1143,7 @@ function getAge(dateString) {
 											<option value="0" selected="selected">No Partner</option>
 											<option value="1" > Concordant</option>
 											<option value="2" > Discordant</option>
+											<option value="3" > Unknown</option>
 										</select>
 
 									</div>
