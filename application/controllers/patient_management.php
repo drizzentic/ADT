@@ -503,9 +503,11 @@ class Patient_management extends MY_Controller {
         $new_patient -> Start_Weight = $this -> input -> post('weight', TRUE);
         $new_patient -> Start_Height = $this -> input -> post('height', TRUE);
         $new_patient -> Start_Bsa = $this -> input -> post('surface_area', TRUE);
+        $new_patient -> Start_Bmi = $this -> input -> post('start_bmi', TRUE);
         $new_patient -> Weight = $this -> input -> post('weight', TRUE);
         $new_patient -> Height = $this -> input -> post('height', TRUE);
         $new_patient -> Sa = $this -> input -> post('surface_area', TRUE);
+        $new_patient -> Bmi = $this -> input -> post('start_bmi', TRUE);
         $new_patient -> Phone = $this -> input -> post('phone', TRUE);
         $new_patient -> SMS_Consent = $this -> input -> post('sms_consent', TRUE);
         $new_patient -> Physical = $this -> input -> post('physical', TRUE);
@@ -703,6 +705,7 @@ class Patient_management extends MY_Controller {
             $other_drugs = "";
         }
 
+
         $data = array(
             'drug_prophylaxis' => $drug_prophylaxis,
             'isoniazid_start_date'=>$this->input->post('iso_start_date',TRUE),
@@ -726,6 +729,7 @@ class Patient_management extends MY_Controller {
             'Weight' => $this -> input -> post('current_weight', TRUE),
             'Height' => $this -> input -> post('current_height', TRUE),
             'Sa' => $this -> input -> post('current_bsa', TRUE),
+            'Bmi' => $this -> input -> post('current_bmi', TRUE),
             'Phone' => $this -> input -> post('phone', TRUE),
             'SMS_Consent' => $this -> input -> post('sms_consent', TRUE),
             'Physical' => $this -> input -> post('physical', TRUE),
@@ -893,6 +897,7 @@ class Patient_management extends MY_Controller {
 				left join drug_prophylaxis dp on dp.id=p.drug_prophylaxis
 				WHERE facility_code='$facility_code'
 				ORDER BY p.patient_number_ccc ASC";
+                // echo $sql;die();
         $query = $this -> db -> query($sql);
         $results = $query -> result_array();
 
@@ -1669,7 +1674,9 @@ class Patient_management extends MY_Controller {
             'p.Start_Height AS start_height',
             'p.Height AS height',
             'p.Start_Bsa AS start_bsa',
+            'p.Start_Bmi AS start_bmi',
             'p.Sa AS sa',
+            'p.Bmi AS bmi',
             'p.Phone AS phone',
             'IF(p.SMS_Consent ="1","sms_yes","sms_no") AS sms_consent',
             'p.Physical AS physical',

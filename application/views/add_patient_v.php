@@ -506,6 +506,11 @@
 		   var height = $('#height').attr('value');
 		   var MSQ = Math.sqrt((parseInt(weight) * parseInt(height)) / 3600);
 		   $('#surface_area').attr('value', MSQ);
+
+
+		   	var BMI = (parseInt(weight) / (parseInt(height)/100 * parseInt(height)/100));
+		   	$('#start_bmi').attr('value', BMI);
+
 	    }
 	  
 	
@@ -677,7 +682,12 @@
 							<input type="text" name="surface_area" id="surface_area" value="" readonly="readonly" class="validate[required]">
 
 						</div>
-											
+						<div class="max-row">
+							<label><span class='astericks'>*</span> Body Mass Index (BMI)</label>
+							<input type="text" name="start_bmi" id="start_bmi" value="" readonly="readonly" class="validate[required]">
+
+						</div>
+
 						<div class="max-row">
 							<div class="mid-row">
 								<label> Patient's Phone Contact(s)</label>

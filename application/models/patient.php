@@ -15,6 +15,7 @@ class Patient extends Doctrine_Record {
 		$this -> hasColumn('Weight', 'varchar', 5);
 		$this -> hasColumn('Height', 'varchar', 5);
 		$this -> hasColumn('Sa', 'varchar', 5);
+		$this -> hasColumn('Bmi', 'varchar', 5);
 		$this -> hasColumn('Phone', 'varchar', 30);
 		$this -> hasColumn('Physical', 'varchar', 100);
 		$this -> hasColumn('Alternate', 'varchar', 50);
@@ -53,6 +54,7 @@ class Patient extends Doctrine_Record {
 		$this -> hasColumn('Start_Height', 'varchar', 20);
 		$this -> hasColumn('Start_Weight', 'varchar', 20);
 		$this -> hasColumn('Start_Bsa', 'varchar', 20);
+		$this -> hasColumn('Start_Bmi', 'varchar', 20);
 		$this -> hasColumn('Transfer_From', 'varchar', 100);
 		$this -> hasColumn('Active', 'int', 5);
 		$this -> hasColumn('Drug_Allergies', 'text');

@@ -177,6 +177,7 @@ foreach($results as $result){
 			$('#start_weight').val("<?php echo $result['start_weight'];?>");
 			$('#start_height').val("<?php echo $result['start_height'];?>");
 			$('#start_bsa').val("<?php echo $result['start_bsa'];?>");
+			$('#start_bmi').val("<?php echo $result['start_bmi'];?>");
 			$('#current_weight').val("<?php echo $result['weight'];?>");
 			$('#current_height').val("<?php echo $result['height'];?>");
 			$('#current_bsa').val("<?php echo $result['sa'];?>");
@@ -828,7 +829,7 @@ foreach($results as $result){
 	       
 	       //Function to check if female is pregnant
 	       $("#gender").change(function() {
-	       		var selected_value = $(this).attr("value");
+	       	var selected_value = $(this).attr("value");
 				//if female, display the prengancy selector
 				if(selected_value == 2) {
 					//If female show pregnant container
@@ -848,6 +849,10 @@ function getMSQ() {
 	var height = $('#current_height').attr('value');
 	var MSQ = Math.sqrt((parseInt(weight) * parseInt(height)) / 3600);
 	$('#current_bsa').attr('value', MSQ);
+
+	var BMI = (parseInt(weight) / (parseInt(height)/100 * parseInt(height)/100));
+	$('#current_bmi').attr('value', BMI);
+
 }
 
 function getStartMSQ() {
@@ -855,7 +860,11 @@ function getStartMSQ() {
 	var height = $('#start_height').attr('value');
 	var MSQ = Math.sqrt((parseInt(weight) * parseInt(height)) / 3600);
 	$('#start_bsa').attr('value', MSQ);
+
+	var BMI = (parseInt(weight) / (parseInt(height)/100 * parseInt(height)/100));
+	$('#start_bmi').attr('value', BMI);
 }
+
 
 function getDays(dateString) {
 	var base_date = new Date();
@@ -1076,6 +1085,16 @@ function getAge(dateString) {
 									<input type="text" name="current_bsa" id="current_bsa" value="" >
 								</div>
 							</div>
+							<div class="max-row">
+								<div class="mid-row">
+									<label > Start Body Mass Index  <br/> (BMI)</label>
+									<input type="text" name="start_bmi" id="start_bmi" value="" >
+								</div>
+								<div class="mid-row">
+									<label > Current Body Mass Index (BMI)</label>
+									<input type="text" name="current_bmi" id="current_bmi" value="" >
+								</div>
+							</div>								
 							<div class="max-row">
 								<div class="mid-row">
 									<label> Patient's Phone Contact(s)</label>

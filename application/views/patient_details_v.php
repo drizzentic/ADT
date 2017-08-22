@@ -770,6 +770,13 @@ if(isset($results)){
 	  var MSQ = Math.sqrt((parseInt(weight) * parseInt(height)) / 3600);
 	  $('#start_bsa').attr('value', MSQ);
 	}
+	
+	function getStartMSQ() {
+	  var weight = $('#start_weight').attr('value');
+	  var height = $('#start_height').attr('value');
+	  var MSQ = Math.sqrt((parseInt(weight) * parseInt(height)) / 3600);
+	  $('#start_bsa').attr('value', MSQ);
+	}
 
 	function getDays(dateString) {
         var base_date = new Date();
@@ -994,6 +1001,11 @@ if(isset($results)){
 						<label > Current Body Surface Area (MSQ)</label>
 						<input type="text" name="current_bsa" id="current_bsa" value="" >
 					</div>
+					<div class="mid-row">
+						<label > Current Body Mass Index (BMI)</label>
+						<input type="text" name="current_bmi" id="current_bmi" value="" >
+					</div>
+
 				</div>
 				<div class="max-row">
 				<div class="mid-row">
