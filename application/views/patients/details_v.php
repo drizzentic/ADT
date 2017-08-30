@@ -173,17 +173,7 @@
 					</div>
 					<div class="span6">
 						<label> Current Body Mass Index (BMI)</label>
-						<input type="text" class="span8" name="sa" id="bmi">
-					</div>
-				</div>
-				<div class="row-fluid">
-					<div class="span6">
-						<label> Body Mass Index (BMI)</label>
-						<input type="text" class="span8" name="start_bmi" id="start_bmi">
-					</div>
-					<div class="span6">
-						<label> Current Body Surface Area (MSQ)</label>
-						<input type="text" class="span8" name="sa" id="sa">
+						<input type="text" class="span8" name="bmi" id="bmi">
 					</div>
 				</div>
 			    <div class="row-fluid">

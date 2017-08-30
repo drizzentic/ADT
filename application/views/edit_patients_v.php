@@ -180,7 +180,8 @@ foreach($results as $result){
 	    $('#start_bmi').val("<?php echo $result['start_bmi'];?>");
 	    $('#current_weight').val("<?php echo $result['weight'];?>");
 	    $('#current_height').val("<?php echo $result['height'];?>");
-	    $('#current_bsa').val("<?php echo $result['sa'];?>");
+	    $('#bmi').val("<?php echo $result['bmi'];?>");
+	    $('#bsa').val("<?php echo $result['sa'];?>");
 	    $('#phone').val("<?php echo $result['phone'];?>");
 
 	    //To Check Sms Consent
@@ -855,10 +856,10 @@ function getMSQ() {
 	var weight = $('#current_weight').attr('value');
 	var height = $('#current_height').attr('value');
 	var MSQ = Math.sqrt((parseInt(weight) * parseInt(height)) / 3600);
-	$('#current_bsa').attr('value', MSQ);
+	$('#bsa').attr('value', MSQ);
 
 	var BMI = (parseInt(weight) / (parseInt(height)/100 * parseInt(height)/100));
-	$('#current_bmi').attr('value', BMI);
+	$('#bmi').attr('value', BMI);
 
 }
 
@@ -1065,11 +1066,11 @@ function getAge(dateString) {
 							<div class="max-row">
 								<div class="mid-row">
 									<label >Start Weight (KG)</label>
-									<input type="text"name="start_weight" id="start_weight">
+									<input type="text"name="start_weight" id="start_weight" onblur="getStartMSQ()">
 								</div>
 								<div class="mid-row">
 									<label>Current Weight (KG) </label>
-									<input type="text"name="current_weight" id="current_weight">
+									<input type="text"name="current_weight" id="current_weight" onblur="getMSQ()">
 								</div>
 							</div>
 							<div class="max-row">
@@ -1085,21 +1086,21 @@ function getAge(dateString) {
 							<div class="max-row">
 								<div class="mid-row">
 									<label > Start Body Surface Area  <br/> (MSQ)</label>
-									<input type="text" name="start_bsa" id="start_bsa" value="" >
+									<input type="text" name="start_bsa" id="start_bsa" value="" disabled="" >
 								</div>
 								<div class="mid-row">
 									<label > Current Body Surface Area (MSQ)</label>
-									<input type="text" name="current_bsa" id="current_bsa" value="" >
+									<input type="text" name="bsa" id="bsa" value="" disabled="" >
 								</div>
 							</div>
 							<div class="max-row">
 								<div class="mid-row">
 									<label > Start Body Mass Index  <br/> (BMI)</label>
-									<input type="text" name="start_bmi" id="start_bmi" value="" >
+									<input type="text" name="start_bmi" id="start_bmi" value=""  disabled="">
 								</div>
 								<div class="mid-row">
 									<label > Current Body Mass Index (BMI)</label>
-									<input type="text" name="current_bmi" id="current_bmi" value="" >
+									<input type="text" name="bmi" id="bmi" value=""  disabled="">
 								</div>
 							</div>								
 							<div class="max-row">
