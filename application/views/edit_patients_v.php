@@ -204,7 +204,7 @@ foreach($results as $result){
 	    }
 	    $('#partner_status').change(function() {
 	    	var selected_value = $(this).val();
-	    	if (selected_value == 1) {
+	    	if (selected_value == 1 ||  selected_value == 2) {
 	    		$(".status_hidden").css("display", "block");
 	    		$("#match_spouse").val("<?php echo $result['secondary_spouse']; ?>");
 	    	} else {
