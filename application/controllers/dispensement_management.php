@@ -82,6 +82,8 @@ class Dispensement_management extends MY_Controller {
 	}
 
 	public function dispense($record_no) {
+
+
 		$facility_code = $this -> session -> userdata('facility');
 
 		$dispensing_date = "";
@@ -98,7 +100,6 @@ class Dispensement_management extends MY_Controller {
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		
-		       
 		if ($results) {
 			$patient_no = $results[0]['patient_number_ccc'];
 			$age=@$results[0]['age'];
@@ -127,7 +128,15 @@ class Dispensement_management extends MY_Controller {
 			$results = $query -> result_array();
 		}
 		$data = array();
-		$data['ccc_store'] = $this -> session -> userdata('ccc_store')[0]['id'];
+		
+		$username = ($this -> session -> userdata('username'));
+		$sql = "select ccc_store_sp from users where Username = '$username'";
+		$query = $this -> db -> query($sql);
+		$results = $query -> result_array();
+		if ($results) {
+		$data['ccc_store'] = $results[0]['ccc_store_sp'];
+		// $data['ccc_store'] = $this -> session -> userdata('ccc_store')[0]['id'];
+		}
 		
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
