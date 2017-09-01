@@ -761,6 +761,8 @@ class Patient_management extends MY_Controller {
             'Start_Regimen_Date' => $this -> input -> post('service_started', TRUE),
             'Current_Regimen' => $this -> input -> post('current_regimen', TRUE),
             'Nextappointment' => $this -> input -> post('next_appointment_date', TRUE));
+        // echo "<pre>";
+        // var_dump($data);die;
         $this -> db -> update('patients');
         $this -> db -> where('id', $record_id);
         $this -> db -> update('patient', $data);

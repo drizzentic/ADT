@@ -22,9 +22,9 @@ class Dispensement_management extends MY_Controller {
 		$record_no = $this -> input -> post('record_no');
 		$facility_code = $this -> session -> userdata('facility');
 		$sql = "select ps.name as patient_source,p.patient_number_ccc,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age from patient p 
-				LEFT JOIN patient_source ps ON ps.id = p.source
-				where p.id='$record_no' and facility_code='$facility_code'
-				";
+		LEFT JOIN patient_source ps ON ps.id = p.source
+		where p.id='$record_no' and facility_code='$facility_code'
+		";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		echo json_encode($results);
@@ -41,32 +41,32 @@ class Dispensement_management extends MY_Controller {
 		$data = array();
 		/*Dispensing information*/
 		$sql = "SELECT 
-					p.ccc_store_sp,
-					p.patient_number_ccc AS patient_id,
-					UPPER(CONCAT_WS(' ', CONCAT_WS(' ', p.first_name, p.other_name), p.last_name)) AS patient_name,
-					UPPER(CONCAT_WS(' ', CONCAT_WS(' ', p.first_name, p.other_name), p.last_name)) AS patient_name_link,
-					CURDATE() AS dispensing_date,
-					p.height AS current_height,
-					p.weight AS current_weight,
-					p.nextappointment AS appointment_date
-				FROM patient p
-				WHERE p.id = ?";
+		p.ccc_store_sp,
+		p.patient_number_ccc AS patient_id,
+		UPPER(CONCAT_WS(' ', CONCAT_WS(' ', p.first_name, p.other_name), p.last_name)) AS patient_name,
+		UPPER(CONCAT_WS(' ', CONCAT_WS(' ', p.first_name, p.other_name), p.last_name)) AS patient_name_link,
+		CURDATE() AS dispensing_date,
+		p.height AS current_height,
+		p.weight AS current_weight,
+		p.nextappointment AS appointment_date
+		FROM patient p
+		WHERE p.id = ?";
 		$query = $this->db->query($sql, array($patient_id));
 		$data = $query->row_array();
 		if(!empty($data)){
 			/*Visit information*/
 			$sql = "SELECT 
-						v.dispensing_date AS prev_visit_date,
-						v.last_regimen AS prev_regimen_id,
-						d.drug AS prev_drug_name,
-						v.quantity AS prev_drug_qty,
-						v.drug_id AS prev_drug_id,
-						v.dose AS prev_drug_dose,
-						v.duration AS prev_duration
-					FROM patient_visit v
-					LEFT JOIN drugcode d ON d.id = v.drug_id
-					WHERE v.patient_id = ?
-					AND v.dispensing_date IN (SELECT MAX(dispensing_date) FROM patient_visit WHERE patient_id = ?)";
+			v.dispensing_date AS prev_visit_date,
+			v.last_regimen AS prev_regimen_id,
+			d.drug AS prev_drug_name,
+			v.quantity AS prev_drug_qty,
+			v.drug_id AS prev_drug_id,
+			v.dose AS prev_drug_dose,
+			v.duration AS prev_duration
+			FROM patient_visit v
+			LEFT JOIN drugcode d ON d.id = v.drug_id
+			WHERE v.patient_id = ?
+			AND v.dispensing_date IN (SELECT MAX(dispensing_date) FROM patient_visit WHERE patient_id = ?)";
 			$query = $this->db->query($sql, array($data['patient_id'], $data['patient_id']));
 			$visits = $query->result_array();
 			$data['prev_visit_data'] = "";
@@ -93,10 +93,10 @@ class Dispensement_management extends MY_Controller {
 		$dispensing_date = date('Y-m-d');
 
 		$sql = "select ps.name as patient_source,p.patient_number_ccc,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, LOWER(rst.name) as service_name , p.clinicalappointment from patient p 
-				LEFT JOIN patient_source ps ON ps.id = p.source
-				LEFT JOIN regimen_service_type rst ON rst.id = p.service
-				where p.id='$record_no' and facility_code='$facility_code'
-				";
+		LEFT JOIN patient_source ps ON ps.id = p.source
+		LEFT JOIN regimen_service_type rst ON rst.id = p.service
+		where p.id='$record_no' and facility_code='$facility_code'
+		";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		
@@ -116,14 +116,14 @@ class Dispensement_management extends MY_Controller {
 		if($results1){
 			$dated=$results1['dispensing_date'];
 			$sql = "SELECT d.id as drug_id,d.drug,d.dose,d.duration, pv.quantity,pv.dispensing_date,pv.pill_count,r.id as regimen_id,r.regimen_desc,r.regimen_code,pv.months_of_stock as mos,ds.value,ds.frequency
-						FROM patient_visit pv
-						LEFT JOIN drugcode d ON d.id = pv.drug_id
-						LEFT JOIN dose ds ON ds.Name=d.dose
-						LEFT JOIN regimen r ON r.id = pv.regimen
-						WHERE pv.patient_id =  '$patient_no'
-						AND pv.active=1
-						AND pv.dispensing_date = '$dated'
-					ORDER BY dispensing_date DESC";	
+			FROM patient_visit pv
+			LEFT JOIN drugcode d ON d.id = pv.drug_id
+			LEFT JOIN dose ds ON ds.Name=d.dose
+			LEFT JOIN regimen r ON r.id = pv.regimen
+			WHERE pv.patient_id =  '$patient_no'
+			AND pv.active=1
+			AND pv.dispensing_date = '$dated'
+			ORDER BY dispensing_date DESC";	
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 		}
@@ -134,7 +134,7 @@ class Dispensement_management extends MY_Controller {
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
-		$data['ccc_store'] = $results[0]['ccc_store_sp'];
+			$data['ccc_store'] = $results[0]['ccc_store_sp'];
 		// $data['ccc_store'] = $this -> session -> userdata('ccc_store')[0]['id'];
 		}
 		
@@ -149,7 +149,7 @@ class Dispensement_management extends MY_Controller {
 		$data['hide_side_menu'] = 1;
 		$data['content_view'] = "patients/dispense_v";
 		$this -> base_params($data);
-                
+		
 	}
 
 	public function get_prep_reasons(){
@@ -164,23 +164,23 @@ class Dispensement_management extends MY_Controller {
 	public function update_prep_test($patient_id, $prep_reason_id, $is_tested, $test_date, $test_result){
 		$message = '';
 		$test_data = array(
-            'patient_id' => $patient_id,
-            'prep_reason_id' => $prep_reason_id,
-            'is_tested' => $is_tested,
-            'test_date' => $test_date,
-            'test_result' => $test_result
-        );
+			'patient_id' => $patient_id,
+			'prep_reason_id' => $prep_reason_id,
+			'is_tested' => $is_tested,
+			'test_date' => $test_date,
+			'test_result' => $test_result
+			);
 		$prev_test_data = $this->db->get_where('patient_prep_test', $test_data)->row_array();
-        if(empty($prev_test_data)){
-            $this->db->insert('patient_prep_test', $test_data);
-            $message .= 'Test Result Updated Successfully!<br/>';
-        }else{
-        	$message .= 'Test Result Already Exist!<br/>';
-        }
-    	if($test_result == TRUE){
-        	$message .= 'Switch Patient from PREP to ART service!<br/>';
-        }
-        echo $message;
+		if(empty($prev_test_data)){
+			$this->db->insert('patient_prep_test', $test_data);
+			$message .= 'Test Result Updated Successfully!<br/>';
+		}else{
+			$message .= 'Test Result Already Exist!<br/>';
+		}
+		if($test_result == TRUE){
+			$message .= 'Switch Patient from PREP to ART service!<br/>';
+		}
+		echo $message;
 	}
 	
 	public function get_other_dispensing_details(){
@@ -197,33 +197,33 @@ class Dispensement_management extends MY_Controller {
 		$patient_ccc = $this ->input ->post("patient_ccc");
 		//$patient_ccc=1088816;
 		$sql = "SELECT d.id as drug_id,d.drug,d.dose,pv.duration, pv.quantity,pv.dispensing_date,pv.pill_count,r.id as regimen_id,r.regimen_desc,r.regimen_code,pv.months_of_stock as mos,ds.value,ds.frequency
-					FROM patient_visit pv
-					LEFT JOIN drugcode d ON d.id = pv.drug_id
-					LEFT JOIN dose ds ON ds.Name=d.dose
-					LEFT JOIN regimen r ON r.id = pv.regimen
-					WHERE pv.patient_id =  '$patient_ccc'
-					AND pv.active=1
-					AND pv.dispensing_date = (SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '$patient_ccc' AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1)
-				ORDER BY dispensing_date DESC";	
+		FROM patient_visit pv
+		LEFT JOIN drugcode d ON d.id = pv.drug_id
+		LEFT JOIN dose ds ON ds.Name=d.dose
+		LEFT JOIN regimen r ON r.id = pv.regimen
+		WHERE pv.patient_id =  '$patient_ccc'
+		AND pv.active=1
+		AND pv.dispensing_date = (SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '$patient_ccc' AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1)
+		ORDER BY dispensing_date DESC";	
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		echo json_encode($results);
 	} 
 	//Get list of drugs for a specific regimen
 	public function getDrugsRegimens() {
-		 $regimen_id = $this -> input -> post('selected_regimen');
+		$regimen_id = $this -> input -> post('selected_regimen');
 		$and_stocktype = "";
 		if ($this -> input -> post('stock_type')) {
 			$stock_type = $this -> input -> post('stock_type');
 			$and_stocktype = "AND dsb.stock_type = '$stock_type' ";
 		}  
 		$sql = "SELECT DISTINCT(d.id),UPPER(d.drug) as drug,IF(none_arv = 1, FALSE, TRUE) as is_arv
-		        FROM regimen_drug rd
-		        LEFT JOIN regimen r ON r.id = rd.regimen 
-		        LEFT JOIN drugcode d ON d.id=rd.drugcode 
-				WHERE d.enabled='1'
-				AND (rd.regimen='" . $regimen_id . "' OR r.regimen_code LIKE '%oi%')  
-				ORDER BY d.drug asc";
+		FROM regimen_drug rd
+		LEFT JOIN regimen r ON r.id = rd.regimen 
+		LEFT JOIN drugcode d ON d.id=rd.drugcode 
+		WHERE d.enabled='1'
+		AND (rd.regimen='" . $regimen_id . "' OR r.regimen_code LIKE '%oi%')  
+		ORDER BY d.drug asc";
 		$get_drugs_sql = $this -> db -> query($sql);
 		$get_drugs_array = $get_drugs_sql -> result_array();
 		echo json_encode($get_drugs_array);
@@ -231,7 +231,7 @@ class Dispensement_management extends MY_Controller {
 //die();
 	}
 
-    public function getBrands() {
+	public function getBrands() {
 		$drug_id = $this -> input -> post("selected_drug");
 		$get_drugs_sql = $this -> db -> query("SELECT DISTINCT id,brand FROM brand WHERE drug_id='" . $drug_id . "' AND brand!=''");
 		$get_drugs_array = $get_drugs_sql -> result_array();
@@ -256,10 +256,10 @@ class Dispensement_management extends MY_Controller {
 
 		if ($age < $adult_age){
 			$sql = "select drug_id as id,Name as dose from dossing_chart d  inner join dose do on do.id=d.dose_id 
-					where min_weight <= $weight
-					and max_weight >= $weight
-					and drug_id=$drug_id
-					and is_active = 1";
+			where min_weight <= $weight
+			and max_weight >= $weight
+			and drug_id=$drug_id
+			and is_active = 1";
 			$get_dose_sql = $this -> db -> query($sql);
 			$dose_array = $get_dose_sql -> result_array();
 		}
@@ -292,29 +292,29 @@ class Dispensement_management extends MY_Controller {
 		$drug_id = $this -> input -> post("drug_id");
 		$get_indication_array=array();
 		$sql="SELECT * 
-		      FROM regimen_drug rd
-		      LEFT JOIN regimen r ON r.id=rd.regimen
-		      WHERE rd.drugcode='$drug_id'
-		      AND r.regimen_code LIKE '%oi%'";
-        $query=$this->db->query($sql);
-        $results=$query->result_array();
+		FROM regimen_drug rd
+		LEFT JOIN regimen r ON r.id=rd.regimen
+		WHERE rd.drugcode='$drug_id'
+		AND r.regimen_code LIKE '%oi%'";
+		$query=$this->db->query($sql);
+		$results=$query->result_array();
         //if drug is an OI show indications
 		if($results){
 			$get_indication_sql = $this -> db -> query("SELECT id,Name,Indication FROM opportunistic_infection where active='1'");
 			$get_indication_array = $get_indication_sql -> result_array();
-	    }
+		}
 		echo json_encode($get_indication_array);
 	}
 
 	public function edit($record_no) {
 		$facility_code = $this -> session -> userdata('facility');
 		$ccc_id ='2';
-		 $sql = "select pv.*,p.first_name,p.other_name,p.last_name,p.id as p_id "
-                        . "from patient_visit pv,"
-                        . "patient p "
-                        . "where pv.id='$record_no' "
-                        . "and pv.patient_id=p.patient_number_ccc "
-                        . "and facility='$facility_code'";
+		$sql = "select pv.*,p.first_name,p.other_name,p.last_name,p.id as p_id "
+		. "from patient_visit pv,"
+		. "patient p "
+		. "where pv.id='$record_no' "
+		. "and pv.patient_id=p.patient_number_ccc "
+		. "and facility='$facility_code'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
                 //print_r($results);
@@ -358,8 +358,8 @@ class Dispensement_management extends MY_Controller {
 	public function save() {
 		$period = date("M-Y");
 		$ccc_id = $this -> input -> post("ccc_store_id");
-        $this -> session -> set_userdata('ccc_store_id',$ccc_id);
-        $record_no = $this -> session -> userdata('record_no');
+		$this -> session -> set_userdata('ccc_store_id',$ccc_id);
+		$record_no = $this -> session -> userdata('record_no');
 		$patient_name= $this -> input -> post("patient_details");
 		$next_appointment_date = $this -> input -> post("next_appointment_date");
 		$next_clinical_appointment_date = $this -> input -> post("next_clinical_appointment_date");
@@ -403,21 +403,21 @@ class Dispensement_management extends MY_Controller {
 		$adherence = $this -> input -> post("adherence");
 		
 		$stock_type_text = $this -> input -> post("stock_type_text");
-                
+		
         //update service type
-        $sql_get_service="SELECT type_of_service FROM regimen WHERE id='$current_regimen'";
-        $results=  $this->db->query($sql_get_service);
-        $res=$results->result_array();
-        $service=$res[0]['type_of_service'];
-        $sql_get_patient_service="SELECT service FROM patient WHERE patient_number_ccc='$patient'";
-        $service_results=  $this->db->query($sql_get_patient_service);
-        $service_res=$service_results->result_array();
-        $patient_service=$service_res[0]['service'];
-        
-        if($patient_service!=$service){
-            $sql="UPDATE patient SET service='$service' WHERE service='$patient_service' AND patient_number_ccc='$patient';";
-            $this->db->query($sql);
-        }
+		$sql_get_service="SELECT type_of_service FROM regimen WHERE id='$current_regimen'";
+		$results=  $this->db->query($sql_get_service);
+		$res=$results->result_array();
+		$service=$res[0]['type_of_service'];
+		$sql_get_patient_service="SELECT service FROM patient WHERE patient_number_ccc='$patient'";
+		$service_results=  $this->db->query($sql_get_patient_service);
+		$service_res=$service_results->result_array();
+		$patient_service=$service_res[0]['service'];
+		
+		if($patient_service!=$service){
+			$sql="UPDATE patient SET service='$service' WHERE service='$patient_service' AND patient_number_ccc='$patient';";
+			$this->db->query($sql);
+		}
         //end update service type
 		//echo var_dump($dose);die();
 		
@@ -471,7 +471,7 @@ class Dispensement_management extends MY_Controller {
 			$result = $query->result_array();
 			$clinical_appointment_id = $result[0]['id'];
 
-			}
+		}
 			// <!-- save clinical appointment
 
 
@@ -514,7 +514,7 @@ class Dispensement_management extends MY_Controller {
 			}
 			/*if ($mos != "") {//If transaction has actual pill count, actual pill count will pill count + amount dispensed
 			 $mos[$i] = $quantity[$i] + (int)$mos[$i];
-			 }*/
+			}*/
 			
 			
 			$sql .= "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason',$last_regimen ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id');";
@@ -529,13 +529,13 @@ class Dispensement_management extends MY_Controller {
 		foreach ($queries as $query) {
 			//$c++;
 			//if (strlen($query) > 0) {
-				$this -> db -> query($query);
+			$this -> db -> query($query);
 			//}
 
 		}
 
 		$this -> session -> set_userdata('msg_save_transaction', 'success');
-        $this -> session -> set_flashdata('dispense_updated', 'Dispensing to patient No. ' . $patient . ' successfully completed!');
+		$this -> session -> set_flashdata('dispense_updated', 'Dispensing to patient No. ' . $patient . ' successfully completed!');
 		redirect("patient_management");
 	}
 
@@ -698,8 +698,8 @@ class Dispensement_management extends MY_Controller {
 				$value=str_ireplace("-","", $value);
 				if ($drug == $value) {
 					$is_allergic = 1;
-			 	}
-		   }
+				}
+			}
 		}
 		echo $is_allergic;
 	}
@@ -788,21 +788,21 @@ class Dispensement_management extends MY_Controller {
 		$results=$query->result_array();
 		if($results){
           //get values
-          $values=$results[0]['instructions'] ;
+			$values=$results[0]['instructions'] ;
           //get instruction names
-          if($values !=""){
-	          $values=explode(",",$values);
-	          foreach($values as $value){
-	     		$sql="SELECT name FROM drug_instructions WHERE id='$value'";
-				$query=$this->db->query($sql);
-				$results=$query->result_array();
-				if($results){
-				  foreach($results as $result){
-                     $instructions.=$result['name']."\n";
-				  }
+			if($values !=""){
+				$values=explode(",",$values);
+				foreach($values as $value){
+					$sql="SELECT name FROM drug_instructions WHERE id='$value'";
+					$query=$this->db->query($sql);
+					$results=$query->result_array();
+					if($results){
+						foreach($results as $result){
+							$instructions.=$result['name']."\n";
+						}
+					}
 				}
-	          }
-	      } 
+			} 
 		}
 		echo ($instructions);
 	}
@@ -818,8 +818,8 @@ class Dispensement_management extends MY_Controller {
 		$session_name = $this -> input -> post("session_name",TRUE);
 		$session_value = $this -> input -> post("session_value",TRUE);
 		$this -> session -> set_userdata($session_name,$session_value);
-        
-        echo $this -> session -> userdata($session_name);
+		
+		echo $this -> session -> userdata($session_name);
 	}
 
 

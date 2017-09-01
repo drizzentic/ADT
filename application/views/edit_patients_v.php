@@ -199,7 +199,7 @@ foreach($results as $result){
 	    $('#disclosure').val("<?php echo $result['disclosure'];?>");
 	    //if partner status is not concordant do not show spouse field
 	    partner_status = "<?php echo $result['partner_status'];?>";
-	    if (partner_status != 1) {
+	    if (partner_status != 1 && partner_status != 2) {
 	    	$(".status_hidden").css("display", "none");
 	    	$("#match_spouse").val("");
 	    }
@@ -403,13 +403,6 @@ foreach($results as $result){
 	    $('#prep_test_answer').val("<?php echo $result['prep_test_answer'];?>");
 	    $('#prep_test_date').val("<?php echo $result['prep_test_date'];?>");
 	    $('#prep_test_result').val("<?php echo $result['prep_test_result'];?>");
-	    if ($('#prep_test_answer').val() == 1) {
-	    	$('#prep_reason_listing').show();
-	    	$('#prep_test_question').show();
-	    	$('#prep_test_date_view').show();
-	    	$('#prep_test_result_view').show();
-	    }
-
 
 
 	    $('#smoke').val("<?php echo $result['smoke'];?>");
@@ -604,7 +597,8 @@ foreach($results as $result){
 	    // console.log('service - ' +$("#service").text() );
 			
 
-	    if($("#service :selected").text() !== 'PREP' ||  $("#service :selected").text() !== 'PEP'){
+	    if($("#service :selected").text() !== 'PREP' &&  $("#service :selected").text() !== 'PEP')
+	    	{
 
 	    	$("#prep_test_question").hide();
 	    	$("#prep_test_date_view").hide();
@@ -614,6 +608,16 @@ foreach($results as $result){
 
 
 	    }
+	    if ($('#prep_test_answer').val() == 1 && $("#service :selected").text() == 'PREP') {
+	    	$('#prep_reason_listing').show();
+	    	$('#prep_test_question').show();
+	    	$('#prep_test_date_view').show();
+	    	$('#prep_test_result_view').show();
+	    }
+
+
+
+
 
 	    $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
 
@@ -1086,21 +1090,21 @@ function getAge(dateString) {
 							<div class="max-row">
 								<div class="mid-row">
 									<label > Start Body Surface Area  <br/> (MSQ)</label>
-									<input type="text" name="start_bsa" id="start_bsa" value="" disabled="" >
+									<input type="text" name="start_bsa" id="start_bsa" value="" readonly/>
 								</div>
 								<div class="mid-row">
 									<label > Current Body Surface Area (MSQ)</label>
-									<input type="text" name="bsa" id="bsa" value="" disabled="" >
+									<input type="text" name="bsa" id="bsa" value="" readonly/>
 								</div>
 							</div>
 							<div class="max-row">
 								<div class="mid-row">
 									<label > Start Body Mass Index  <br/> (BMI)</label>
-									<input type="text" name="start_bmi" id="start_bmi" value=""  disabled="">
+									<input type="text" name="start_bmi" id="start_bmi" value=""  readonly/>
 								</div>
 								<div class="mid-row">
 									<label > Current Body Mass Index (BMI)</label>
-									<input type="text" name="bmi" id="bmi" value=""  disabled="">
+									<input type="text" name="bmi" id="bmi" value=""  readonly/>
 								</div>
 							</div>								
 							<div class="max-row">
