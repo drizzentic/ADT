@@ -67,8 +67,8 @@ class Api extends MX_Controller {
 	function processPatientRegistration($patient){
 // internal & external patient ID matching
 		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
-// var_dump($SENDING_FACILITY);
-  //   SENDING_APPLICATION: 'IQCARE',
+
+// SENDING_APPLICATION: 'IQCARE',
 // SENDING_FACILITY: '10829',
 // RECEIVING_APPLICATION: 'IL',
 // RECEIVING_FACILITY: '10829',
@@ -78,6 +78,14 @@ class Api extends MX_Controller {
 // PROCESSING_ID: 'P'
 
 		$EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
+				$internal_patient = $this->api_model->getPatient(null,$EXTERNAL_PATIENT_ID);
+
+		if ($internal_patient){
+			echo "Patient already exists";
+
+			die;
+		}
+
 
 // internal identification is an array of objects
 		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
@@ -131,17 +139,18 @@ class Api extends MX_Controller {
 			$observations[$ob->OBSERVATION_IDENTIFIER] = $ob->OBSERVATION_VALUE;
 
 		}
-// var_dump($observations);die;
-		$START_HEIGHT = $observations['START_HEIGHT'];
-		$START_WEIGHT = $observations['START_WEIGHT'];
-		$IS_PREGNANT = $observations['IS_PREGNANT'];
-		$PRENGANT_EDD = $observations['PRENGANT_EDD'];
-		$CURRENT_REGIMEN = $observations['CURRENT_REGIMEN'];
-		$IS_SMOKER = $observations['IS_SMOKER'];
-		$IS_ALCOHOLIC = $observations['IS_ALCOHOLIC'];
+		$START_HEIGHT = (isset($observations['START_HEIGHT'])) ? $observations['START_HEIGHT'] : false ;
+		$START_WEIGHT = (isset($observations['START_WEIGHT'])) ? $observations['START_WEIGHT'] : false ;
+		// $IS_PREGNANT = $observations['IS_PREGNANT'];
+		$IS_PREGNANT = (isset($observations['IS_PREGNANT'])) ? $observations['IS_PREGNANT'] : false ;
+		$PRENGANT_EDD = (isset($observations['PRENGANT_EDD'])) ? $observations['PRENGANT_EDD'] : false ;
+		$CURRENT_REGIMEN = (isset($observations['CURRENT_REGIMEN'])) ? $observations['CURRENT_REGIMEN'] : false ;
+		$IS_SMOKER = (isset($observations['IS_SMOKER'])) ? $observations['IS_SMOKER'] : false ;
+		$IS_ALCOHOLIC = (isset($observations['IS_ALCOHOLIC'])) ? $observations['IS_ALCOHOLIC'] : false ;
 
 
-		$patient = array('facility_code'=>$SENDING_FACILITY,
+		$patient = array(
+			'facility_code'=>$SENDING_FACILITY,
 			'alcohol'=>$IS_ALCOHOLIC,
 			'current_regimen'=>$CURRENT_REGIMEN,
 			'dob'=>$DATE_OF_BIRTH,
@@ -241,15 +250,20 @@ class Api extends MX_Controller {
 
 		}
 // var_dump($observations);die;
-		$START_HEIGHT = $observations['START_HEIGHT'];
-		$START_WEIGHT = $observations['START_WEIGHT'];
-		$IS_PREGNANT = $observations['IS_PREGNANT'];
-		$PRENGANT_EDD = $observations['PRENGANT_EDD'];
-		$CURRENT_REGIMEN = $observations['CURRENT_REGIMEN'];
-		$IS_SMOKER = $observations['IS_SMOKER'];
-		$IS_ALCOHOLIC = $observations['IS_ALCOHOLIC'];
-// CURRENT_REGIMEN
-// REGIMEN_CHANGE_REASON
+		$START_HEIGHT = (isset($observations['START_HEIGHT'])) ? $observations['START_HEIGHT'] : false ;
+		$START_WEIGHT = (isset($observations['START_WEIGHT'])) ? $observations['START_WEIGHT'] : false ;
+		$IS_PREGNANT = (isset($observations['IS_PREGNANT'])) ? $observations['IS_PREGNANT'] : false ;
+		$PRENGANT_EDD = (isset($observations['PRENGANT_EDD'])) ? $observations['PRENGANT_EDD'] : false ;
+		$CURRENT_REGIMEN = (isset($observations['CURRENT_REGIMEN'])) ? $observations['CURRENT_REGIMEN'] : false ;
+		
+		$IS_SMOKER = (isset($observations['IS_SMOKER'])) ? $observations['IS_SMOKER'] : false ;
+		$IS_ALCOHOLIC = (isset($observations['IS_ALCOHOLIC'])) ? $observations['IS_ALCOHOLIC'] : false ;
+		
+		// $REGIMEN_CHANGE_REASON = $observations['REGIMEN_CHANGE_REASON'];
+		$REGIMEN_CHANGE_REASON = (isset($observations['REGIMEN_CHANGE_REASON'])) ? $observations['REGIMEN_CHANGE_REASON'] : false ;
+
+		var_dump($REGIMEN_CHANGE_REASON);die;
+// 
 
 
 		$patient = array('facility_code'=>$SENDING_FACILITY,
@@ -305,6 +319,7 @@ class Api extends MX_Controller {
 		$APPOINTMENT_REASON = $appointment->APPOINTMENT_INFORMATION[0]->APPOINTMENT_REASON;
 		$APPOINTMENT_TYPE = $appointment->APPOINTMENT_INFORMATION[0]->APPOINTMENT_TYPE;
 		$APPOINTMENT_DATE = $appointment->APPOINTMENT_INFORMATION[0]->APPOINTMENT_DATE;
+		$APPOINTMENT_DATE = substr($APPOINTMENT_DATE,0, 4).'-'.substr($APPOINTMENT_DATE,4, 2).'-'.substr($APPOINTMENT_DATE, -2);
 		$APPOINTMENT_PLACING_ENTITY = $appointment->APPOINTMENT_INFORMATION[0]->APPOINTMENT_PLACING_ENTITY;
 		$APPOINTMENT_LOCATION = $appointment->APPOINTMENT_INFORMATION[0]->APPOINTMENT_LOCATION;
 		$ACTION_CODE = $appointment->APPOINTMENT_INFORMATION[0]->ACTION_CODE;
@@ -313,18 +328,19 @@ class Api extends MX_Controller {
 
 		$patient_appointment = array(
 			'patient'=>	$internal_patient_ccc,
-			'appointment'=>	$APPOINTMENT_REASON,
+			// 'appointment'=>	$APPOINTMENT_REASON,
 			'facility' => $SENDING_FACILITY,
 			'appointment_type'=>	$APPOINTMENT_TYPE,
-			'appointment_date'=>	$APPOINTMENT_DATE,
+			'appointment'=>	$APPOINTMENT_DATE,
 			);
+		// var_dump($patient_appointment);die;
 		// check appointment_type and save to respective table
 
-		$this->api_model->saveAppointment($patient_appointment, $APPOINTMENT_TYPE);
+		$res = $this->api_model->saveAppointment($patient_appointment, $APPOINTMENT_TYPE);
 
 
 
-		var_dump($appointment);
+		var_dump($res);
 
 	}
 	function processDrugOrder($order){

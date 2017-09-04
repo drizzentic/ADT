@@ -56,6 +56,7 @@ class Api_model extends CI_Model {
 
         $query_str = "SELECT * FROM api_patient_matching,patient
 			WHERE api_patient_matching.internal_id = patient.id $cond";
+			// echo $query_str;die;
 
 		$query = $CI->db->query($query_str);
 
@@ -88,10 +89,9 @@ class Api_model extends CI_Model {
 
 		$CI = &get_instance();
 		$CI -> load -> database();
-		$CI->db->insert($appointment_tbl, $appointment);
+ 		$CI->db->insert('patient_appointment', $appointment);
 		$insert_id = $CI->db->insert_id();
-		$this->savePatientMatching(array('internal_id'=>$insert_id, 'external_id'=>$external_id));
-		return true;
+		return $insert_id;
 	}
 
 
