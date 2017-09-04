@@ -63,6 +63,8 @@ class Auto_management extends MY_Controller {
 		 		$message .= $this->update_dose_name();
 			//function to run_migrations
 		 		$message .= $this->run_migrations();			
+			//function to do_procs
+		 		$message .= $this->do_procs();			
 			//function to auto_backup
 		 		$message .= $this->auto_backup();			
 
