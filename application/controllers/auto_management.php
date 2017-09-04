@@ -36,152 +36,152 @@ class Auto_management extends MY_Controller {
 		 	echo 'TodayDate:='.date('Y-m-d').',LastUpdateDate:='.date('Y-m-d', $last_update).',Retry:='.$retry.',Status:='.$status.',TimeDiff:='.$time_diff.',RetrySeconds:='.$retry_seconds;die();
 		*/
 
-		if ((date('Y-m-d') != date('Y-m-d', $last_update)) || ($retry && $status == 0) || $manual == TRUE) {
+		 	if ((date('Y-m-d') != date('Y-m-d', $last_update)) || ($retry && $status == 0) || $manual == TRUE) {
 			// Update today's date before starting process
-			$sql="UPDATE migration_log SET last_index='$today', count = 0 WHERE source='auto_update'";
-			$this -> db -> query($sql);
+		 		$sql="UPDATE migration_log SET last_index='$today', count = 0 WHERE source='auto_update'";
+		 		$this -> db -> query($sql);
 
 			//function to update destination column to 1 in drug_stock_movement table for issued transactions that have name 'pharm'
-			$message .= $this->updateIssuedTo();
+		 		$message .= $this->updateIssuedTo();
 			//function to update source_destination column in drug_stock_movement table where it is zero
-			$message .= $this->updateSourceDestination();
+		 		$message .= $this->updateSourceDestination();
 			//function to update ccc_store_sp column in drug_stock_movement table for pharmacy transactions
-			$message .= $this->updateCCC_Store();
+		 		$message .= $this->updateCCC_Store();
 			//function to set negative batches to zero
-			$message .= $this->setBatchBalance();
+		 		$message .= $this->setBatchBalance();
 			//function to update patients without current_regimen with last regimen dispensed
-			$message .= $this->update_current_regimen(); 
+		 		$message .= $this->update_current_regimen(); 
 			//function to update patient data such as active to lost_to_follow_up	
-			$message .= $this->updatePatientData();
+		 		$message .= $this->updatePatientData();
 			//function to update data bugs by applying query fixes
-			$message .= $this->updateFixes();
+		 		$message .= $this->updateFixes();
 			//function to add new facilities list
-			$message .= $this->updateFacilties();
+		 		$message .= $this->updateFacilties();
 			//function to get viral load data
-			$message .= $this->updateViralLoad();
+		 		$message .= $this->updateViralLoad();
 			//function to update patient visit dose from id to name
-			$message .= $this->update_dose_name();
+		 		$message .= $this->update_dose_name();
 			//function to run_migrations
-			$message .= $this->run_migrations();			
+		 		$message .= $this->run_migrations();			
 			//function to auto_backup
-			$message .= $this->auto_backup();			
+		 		$message .= $this->auto_backup();			
 
 	        //finally update the log file for auto_update 
-			if ($this -> session -> userdata("curl_error") == '') {
-				$sql="UPDATE migration_log SET  count = 1 WHERE source='auto_update'";
-				$this -> db -> query($sql);
-				$this -> session -> set_userdata("curl_error", "");
-			} 
-		}
-		if($manual==TRUE){
-			$message="<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>&times;</button>".$message."</div>";
-		}
-		echo $message;
-	}
+		 		if ($this -> session -> userdata("curl_error") == '') {
+		 			$sql="UPDATE migration_log SET  count = 1 WHERE source='auto_update'";
+		 			$this -> db -> query($sql);
+		 			$this -> session -> set_userdata("curl_error", "");
+		 		} 
+		 	}
+		 	if($manual==TRUE){
+		 		$message="<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>&times;</button>".$message."</div>";
+		 	}
+		 	echo $message;
+		 }
 
-	public function updateIssuedTo(){
-		$sql="UPDATE drug_stock_movement
-		SET destination='1'
-		WHERE destination LIKE '%pharm%'";
-		$this->db->query($sql);
-		$count=$this->db->affected_rows();
-		$message="(".$count.") issued to transactions updated!<br/>";
-		$message="";
-		if($count>0){
-			$message="(".$count.") issued to transactions updated!<br/>";
-		}
-		return $message;
-	}
+		 public function updateIssuedTo(){
+		 	$sql="UPDATE drug_stock_movement
+		 	SET destination='1'
+		 	WHERE destination LIKE '%pharm%'";
+		 	$this->db->query($sql);
+		 	$count=$this->db->affected_rows();
+		 	$message="(".$count.") issued to transactions updated!<br/>";
+		 	$message="";
+		 	if($count>0){
+		 		$message="(".$count.") issued to transactions updated!<br/>";
+		 	}
+		 	return $message;
+		 }
 
-	public function updateSourceDestination(){
-		$values=array(
-			'received from'=>'source',
-			'returns from'=>'destination',
-			'issued to'=>'destination',
-			'returns to'=>'source'
-			);
-		$message="";
-		foreach($values as $transaction=>$column){
-			$sql="UPDATE drug_stock_movement dsm
-			LEFT JOIN transaction_type t ON t.id=dsm.transaction_type
-			SET dsm.source_destination=IF(dsm.$column=dsm.facility,'1',dsm.$column)
-			WHERE t.name LIKE '%$transaction%'
-			AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination='0')";
-			$this->db->query($sql);
-			$count=$this->db->affected_rows();
-			$message.=$count." ".$transaction." transactions missing source_destination(".$column.") have been updated!<br/>";
-		}
-		if($count<=0){
-			$message="";
-		}
-		return $message;
-	}
+		 public function updateSourceDestination(){
+		 	$values=array(
+		 		'received from'=>'source',
+		 		'returns from'=>'destination',
+		 		'issued to'=>'destination',
+		 		'returns to'=>'source'
+		 		);
+		 	$message="";
+		 	foreach($values as $transaction=>$column){
+		 		$sql="UPDATE drug_stock_movement dsm
+		 		LEFT JOIN transaction_type t ON t.id=dsm.transaction_type
+		 		SET dsm.source_destination=IF(dsm.$column=dsm.facility,'1',dsm.$column)
+		 		WHERE t.name LIKE '%$transaction%'
+		 		AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination='0')";
+		 		$this->db->query($sql);
+		 		$count=$this->db->affected_rows();
+		 		$message.=$count." ".$transaction." transactions missing source_destination(".$column.") have been updated!<br/>";
+		 	}
+		 	if($count<=0){
+		 		$message="";
+		 	}
+		 	return $message;
+		 }
 
-	public function updateCCC_Store(){
-		$facility_code=$this->session->userdata("facility");
-		$sql="UPDATE drug_stock_movement dsm
-		SET ccc_store_sp='1'
-		WHERE dsm.source !=dsm.destination
-		AND ccc_store_sp='2' 
-		AND (dsm.source='$facility_code' OR dsm.destination='$facility_code')";
-		$this->db->query($sql);
-		$count=$this->db->affected_rows();
-		$message="(".$count.") transactions changed from main pharmacy to main store!<br/>";
-		if($count<=0){
-			$message="";
-		}
-		return $message;
-	}
-	
-	public function setBatchBalance(){
-		$facility_code=$this->session->userdata("facility");
-		$sql="UPDATE drug_stock_balance dsb
-		SET dsb.balance=0
-		WHERE dsb.balance<0 
-		AND dsb.facility_code='$facility_code'";
-		$this->db->query($sql);
-		$count=$this->db->affected_rows();
-		$message="(".$count.") batches with negative balance have been updated!<br/>";
-		if($count<=0){
-			$message="";
-		}
-		return $message;
-	}
+		 public function updateCCC_Store(){
+		 	$facility_code=$this->session->userdata("facility");
+		 	$sql="UPDATE drug_stock_movement dsm
+		 	SET ccc_store_sp='1'
+		 	WHERE dsm.source !=dsm.destination
+		 	AND ccc_store_sp='2' 
+		 	AND (dsm.source='$facility_code' OR dsm.destination='$facility_code')";
+		 	$this->db->query($sql);
+		 	$count=$this->db->affected_rows();
+		 	$message="(".$count.") transactions changed from main pharmacy to main store!<br/>";
+		 	if($count<=0){
+		 		$message="";
+		 	}
+		 	return $message;
+		 }
 
-	public function update_current_regimen() {
-		$count=1;
+		 public function setBatchBalance(){
+		 	$facility_code=$this->session->userdata("facility");
+		 	$sql="UPDATE drug_stock_balance dsb
+		 	SET dsb.balance=0
+		 	WHERE dsb.balance<0 
+		 	AND dsb.facility_code='$facility_code'";
+		 	$this->db->query($sql);
+		 	$count=$this->db->affected_rows();
+		 	$message="(".$count.") batches with negative balance have been updated!<br/>";
+		 	if($count<=0){
+		 		$message="";
+		 	}
+		 	return $message;
+		 }
+
+		 public function update_current_regimen() {
+		 	$count=1;
 		//Get all patients without current regimen and who are not active
-		$sql_get_current_regimen = "SELECT p.id,p.patient_number_ccc, p.current_regimen ,ps.name
-		FROM patient p 
-		INNER JOIN patient_status ps ON ps.id = p.current_status
-		WHERE current_regimen = '' 
-		AND ps.name != 'active'";
-		$query = $this -> db -> query($sql_get_current_regimen);
-		$result_array = $query -> result_array();
-		if($result_array){
-			foreach ($result_array as $value) {
-				$patient_id = $value['id'];
-				$patient_ccc = $value['patient_number_ccc'];
+		 	$sql_get_current_regimen = "SELECT p.id,p.patient_number_ccc, p.current_regimen ,ps.name
+		 	FROM patient p 
+		 	INNER JOIN patient_status ps ON ps.id = p.current_status
+		 	WHERE current_regimen = '' 
+		 	AND ps.name != 'active'";
+		 	$query = $this -> db -> query($sql_get_current_regimen);
+		 	$result_array = $query -> result_array();
+		 	if($result_array){
+		 		foreach ($result_array as $value) {
+		 			$patient_id = $value['id'];
+		 			$patient_ccc = $value['patient_number_ccc'];
 				//Get last regimen
-				$sql_last_regimen = "SELECT pv.last_regimen FROM patient_visit pv WHERE pv.patient_id= ? ORDER BY id DESC LIMIT 1";
-				$query = $this -> db -> query($sql_last_regimen, $patient_ccc);
-				$res = $query -> result_array();
-				if (count($res) > 0) {
-					$last_regimen_id = $res[0]['last_regimen'];
-					$sql = "UPDATE patient p SET p.current_regimen = ?  WHERE p.id = ?";
-					$query = $this -> db -> query($sql, array($last_regimen_id, $patient_id));
-					$count++;
-				}
-			}   
-		}     
-		$message="(".$count.") patients without current_regimen have been updated with last dispensed regimen!<br/>";
-		if($count<=0){
-			$message="";
-		}
-		return $message;
-	}
+		 			$sql_last_regimen = "SELECT pv.last_regimen FROM patient_visit pv WHERE pv.patient_id= ? ORDER BY id DESC LIMIT 1";
+		 			$query = $this -> db -> query($sql_last_regimen, $patient_ccc);
+		 			$res = $query -> result_array();
+		 			if (count($res) > 0) {
+		 				$last_regimen_id = $res[0]['last_regimen'];
+		 				$sql = "UPDATE patient p SET p.current_regimen = ?  WHERE p.id = ?";
+		 				$query = $this -> db -> query($sql, array($last_regimen_id, $patient_id));
+		 				$count++;
+		 			}
+		 		}   
+		 	}     
+		 	$message="(".$count.") patients without current_regimen have been updated with last dispensed regimen!<br/>";
+		 	if($count<=0){
+		 		$message="";
+		 	}
+		 	return $message;
+		 }
 
-	public function updatePatientData() {
+		 public function updatePatientData() {
 		$days_to_lost_followup=$this -> session -> userdata('lost_to_follow_up');//Default lost to follow up
 		$days_to_pep_end = 30;
 		$days_to_prep_inactive = 30; //They should not be late for their appointments
@@ -739,5 +739,46 @@ class Auto_management extends MY_Controller {
 		echo json_encode($result);
 	}
 
-}
-?>
+	public function do_procs($file_path = null){
+		$file_path = (isset($file_path)) ? $file_path : '' ;
+		$file_path  = './assets/migrations/procs/';
+
+
+		$procs = array();
+		$get_migrations_sql = "SELECT migration from migrations";
+		$results = $this->db->query($get_migrations_sql)->result_array();
+		if(!empty($results)){
+			foreach ($results as $result) {
+				$procs[] = $result['migration'];
+			}
+		}
+		$proc_files = scandir($file_path);
+
+		$CI = &get_instance();
+		$CI -> load -> database();
+		$hostname = explode(':', $CI->db->hostname)[0];
+		$port     = (isset($CI->db->port)) ? $CI->db->port : 3306 ;
+		$username = $CI->db->username;
+		$password = $CI->db->password;
+		$database = $CI->db->database;
+
+		$mysql_home = realpath($_SERVER['MYSQL_HOME']) . "\mysql";
+
+		for ($key=2; $key <count($proc_files) ; $key++) { 
+			if (!(in_array($proc_files[$key], $procs))){
+				$mysql_bin = str_replace("\\", "\\\\", $mysql_home);
+				$mysql_con = $mysql_bin . ' -u ' . $username . ' -p' . $password .  ' -P' . $port . ' -h ' . $hostname . ' ' . $database . ' < ' . $file_path.''.$proc_files[$key];
+
+				if(!exec($mysql_con)){
+					$data = array(
+						'migration' => $proc_files[$key]
+						);
+					$this->db->insert('migrations', $data);
+
+				}
+			}}
+
+		}
+
+	}
+	?>
