@@ -1,6 +1,5 @@
 <?php
 class Auto_management extends MY_Controller {
-	var $remote_url = "";
 	var $viral_load_url="";
 	function __construct() {
 		parent::__construct();
@@ -8,8 +7,7 @@ class Auto_management extends MY_Controller {
 		ini_set("memory_limit", '2048M');
 		ini_set("allow_url_fopen", '1');
 
-		$this -> remote_url = "http://commodities.nascop.org";
-		$this -> viralload_url = "http://viralload.nascop.org/";
+		$this -> viralload_url = "https://viralload.nascop.org/";
 	}
 
 	public function index($manual = FALSE){
@@ -497,6 +495,16 @@ class Auto_management extends MY_Controller {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		curl_setopt($cURL, CURLOPT_AUTOREFERER, 1);
+		curl_setopt($cURL, CURLOPT_HTTPGET, 1);
+		curl_setopt($cURL, CURLOPT_VERBOSE, 0);
+		curl_setopt($cURL, CURLOPT_HEADER, 0);
+		curl_setopt($cURL, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($cURL, CURLOPT_SSL_VERIFYPEER, 1);
+		curl_setopt($cURL, CURLOPT_SSL_VERIFYHOST, 1);
+		curl_setopt($cURL, CURLOPT_DNS_USE_GLOBAL_CACHE, 0);
+		curl_setopt($cURL, CURLOPT_DNS_CACHE_TIMEOUT, 2);
 		$json_data = curl_exec($ch); 
 		if (empty($json_data)) {
 			$message = "cURL Error: " . curl_error($ch)."<br/>";
