@@ -56,7 +56,6 @@ class Api_model extends CI_Model {
 
         $query_str = "SELECT * FROM api_patient_matching,patient
 			WHERE api_patient_matching.internal_id = patient.id $cond";
-			// echo $query_str;die;
 
 		$query = $CI->db->query($query_str);
 
@@ -92,6 +91,35 @@ class Api_model extends CI_Model {
  		$CI->db->insert('patient_appointment', $appointment);
 		$insert_id = $CI->db->insert_id();
 		return $insert_id;
+	}
+
+	function saveDrugPrescription($prescription,$prescription_details){
+		$CI = &get_instance();
+		$CI -> load -> database();
+		$CI->db->insert('drug_prescription', $prescription);
+				
+		$insert_id = $CI->db->insert_id();
+		// $prescription_details['drug_prescriptionid'] = $insert_id;
+foreach ($prescription_details as $details) {
+	# code...
+	$pe_details = array(
+
+		'drug_prescriptionid' => $insert_id ,
+		'drug_name' => $details->DRUG_NAME ,
+		'coding_system' => $details->CODING_SYSTEM ,
+		'strength' => $details->STRENGTH ,
+		'dosage' => $details->DOSAGE ,
+		'frequency' => $details->FREQUENCY ,
+		'duration' => $details->DURATION,
+		'quantity_prescribed' => $details->QUANTITY_PRESCRIBED ,
+		'prescription_notes' => $details->PRESCRIPTION_NOTES 
+
+	);
+		$CI->db->insert('drug_prescription_details', $pe_details);
+}
+
+
+
 	}
 
 

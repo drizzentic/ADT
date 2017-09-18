@@ -58,7 +58,7 @@ class Api extends MX_Controller {
 			'API Name'=> 'ADT PIS/EMR Interoperability API ',
 			'API vesion' => 1.0,
 			'API Messages' => $api_messages
-			);
+		);
 		header('Content-Type: application/json');
 		echo json_encode($api_arr) ;
 
@@ -78,7 +78,7 @@ class Api extends MX_Controller {
 // PROCESSING_ID: 'P'
 
 		$EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
-				$internal_patient = $this->api_model->getPatient(null,$EXTERNAL_PATIENT_ID);
+		$internal_patient = $this->api_model->getPatient(null,$EXTERNAL_PATIENT_ID);
 
 		if ($internal_patient){
 			echo "Patient already exists";
@@ -261,8 +261,11 @@ class Api extends MX_Controller {
 		
 		// $REGIMEN_CHANGE_REASON = $observations['REGIMEN_CHANGE_REASON'];
 		$REGIMEN_CHANGE_REASON = (isset($observations['REGIMEN_CHANGE_REASON'])) ? $observations['REGIMEN_CHANGE_REASON'] : false ;
+		if ($REGIMEN_CHANGE_REASON){
 
+// do regimen change/ drug stop
 		var_dump($REGIMEN_CHANGE_REASON);die;
+		}
 // 
 
 
@@ -332,7 +335,7 @@ class Api extends MX_Controller {
 			'facility' => $SENDING_FACILITY,
 			'appointment_type'=>	$APPOINTMENT_TYPE,
 			'appointment'=>	$APPOINTMENT_DATE,
-			);
+		);
 		// var_dump($patient_appointment);die;
 		// check appointment_type and save to respective table
 
@@ -369,10 +372,14 @@ class Api extends MX_Controller {
 		$OP_PREFIX = $order->COMMON_ORDER_DETAILS->ORDERING_PHYSICIAN->PREFIX;
 		$TRANSACTION_DATETIME = $order->COMMON_ORDER_DETAILS->TRANSACTION_DATETIME;
 		$NOTES = $order->COMMON_ORDER_DETAILS->NOTES;
+		$pe = array();
 
 
 // PHARMACY_ENCODED_ORDER
-
+		$internal_patient_ccc = $this->api_model->getPatient(null,$order->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID)->patient_number_ccc;
+if (!$internal_patient_ccc){
+	echo "patient does not exist";die;
+}
 
 		$pe_order = array();
 		foreach ($order->PHARMACY_ENCODED_ORDER as $eo) {
@@ -389,6 +396,17 @@ class Api extends MX_Controller {
 		}
 
 
+$pe = array(
+			'order_number' => $PLACER_ORDER_NUMBER,
+			'order_status' => $ORDER_STATUS,
+			'order_physician' => $OP_FIRST_NAME.' '.$OP_MIDDLE_NAME.' '.$OP_LAST_NAME,
+			'notes' => $NOTES
+);
+
+		// var_dump($pe);
+$this->api_model->saveDrugPrescription($pe,$pe_order);
+
+
 # @todo check if order exists
 # if doesn't exist, create new order .
 # else update 
@@ -396,6 +414,164 @@ class Api extends MX_Controller {
 
 
 
+	}
+
+	public function getPatient(){
+		$pat =   $this->api_model->getPatient(17800);
+		echo "<pre>";
+		var_dump($pat);
+
+		
+		$patient['MESSAGE_HEADER'] = array( 
+			'SENDING_APPLICATION'   =>       "ADT",
+			'SENDING_FACILITY'      =>       $pat->facility_code,
+			'RECEIVING_APPLICATION' =>       "IL",
+			'RECEIVING_FACILITY'    =>       $pat->facility_code,
+			'MESSAGE_DATETIME'      =>       date('Ymdhis'),
+			'SECURITY'              =>       "",
+			'MESSAGE_TYPE'          =>       "ADT^A04",
+			'PROCESSING_ID'         =>       "P"
+		);
+		$patient['PATIENT_IDENTIFICATION'] = array(
+			'EXTERNAL_PATIENT_ID' => array('ID'=>$pat->external_id, 'IDENTIFIER_TYPE' =>"GODS_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
+			'INTERNAL_PATIENT_ID' => array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
+			'INTERNAL_PATIENT_ID' => array('ID'=>$pat->internal_id, 'IDENTIFIER_TYPE' =>"INTERNAL_ID_NUMBER",'ASSIGNING_AUTHORITY' =>"ADT"),
+			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->last_name,'LAST_NAME' =>$pat->other_name),
+			'DATE_OF_BIRTH' => $pat->dob,
+			'SEX' => $pat->gender,
+			'PATIENT_ADDRESS' => array('PHYSICAL_ADDRESS'=>array('VILLAGE' => '','WARD' => '','SUB_COUNTY' => '','COUNTY' => ''),'POSTAL_ADDRESS' =>$pat->pob),
+			'PHONE_NUMBER' => $pat->gender,
+			'MARITAL_STATUS' => $pat->partner_status,
+			'DEATH_DATE' => '',
+			'DEATH_INDICATOR' => ''
+		);
+		$patient['NEXT_OF_KIN'] = array();
+
+
+   // "NEXT_OF_KIN":[  
+   //    {  
+   //       "NOK_NAME":{  
+   //          "FIRST_NAME":"WAIGURU",
+   //          "MIDDLE_NAME":"KIMUTAI",
+   //          "LAST_NAME":"WANJOKI"
+   //       },
+   //       "RELATIONSHIP":"**AS DEFINED IN GREENCARD",
+   //       "ADDRESS":"4678 KIAMBU",
+   //       "PHONE_NUMBER":"25489767899",
+   //       "SEX":"F",
+   //       "DATE_OF_BIRTH":"19871022",
+   //       "CONTACT_ROLE":"T"
+   //    }
+   // ],
+		$patient['OBSERVATION_RESULT'] = array(
+			array(
+				'SET_ID' => 1,
+				'OBSERVATION_IDENTIFIER' => 'START_HEIGHT',
+				'CODING_SYSTEM' => 1,
+				'VALUE_TYPE' => "NM",
+				'OBSERVATION_VALUE' => $pat->start_height,
+				'UNITS' => "CM",
+				'OBSERVATION_RESULT_STATUS' => "F",
+				'OBSERVATION_DATETIME' => '20170713110000',
+				'ABNORMAL_FLAGS' => "N"),
+			array(
+				'SET_ID' => "2",
+				'OBSERVATION_IDENTIFIER' => "START_WEIGHT",
+				'CODING_SYSTEM' => "",
+				'VALUE_TYPE' => "NM",
+				'OBSERVATION_VALUE' => $pat->start_weight,
+				'UNITS' => "KG",
+				'OBSERVATION_RESULT_STATUS' => "F",
+				'OBSERVATION_DATETIME' => "20170713110000",
+				'ABNORMAL_FLAGS' => "N"
+			),
+			array(
+				'SET_ID' =>"3",
+				'OBSERVATION_IDENTIFIER' => $pat->pregnant,
+				'CODING_SYSTEM' =>"",
+				'VALUE_TYPE' =>"CE",
+				'OBSERVATION_VALUE' =>"N",
+				'UNITS' =>"YES/NO",
+				'OBSERVATION_RESULT_STATUS' =>"F",
+				'OBSERVATION_DATETIME' =>"20170713110000",
+				'ABNORMAL_FLAGS' =>"N"
+			),
+			array(
+				'SET_ID' => "4",
+				'OBSERVATION_IDENTIFIER' => "PRENGANT_EDD",
+				'CODING_SYSTEM' => "",
+				'VALUE_TYPE' => "D",
+				'OBSERVATION_VALUE' => "20170713110000",
+				'UNITS' => "DATE",
+				'OBSERVATION_RESULT_STATUS' => "F",
+				'OBSERVATION_DATETIME' => "20170713110000",
+				'ABNORMAL_FLAGS' => "N"
+			),
+			array(
+				'SET_ID' => "5",
+				'OBSERVATION_IDENTIFIER' => "CURRENT_REGIMEN",
+				'CODING_SYSTEM' => "NASCOP_CODES",
+				'VALUE_TYPE' => "CE",
+				'OBSERVATION_VALUE' => $pat->current_regimen,
+				'UNITS' => "",
+				'OBSERVATION_RESULT_STATUS' => "F",
+				'OBSERVATION_DATETIME' => "20170713110000",
+				'ABNORMAL_FLAGS' => "N"
+			),
+			array(
+				'SET_ID' => "6",
+				'OBSERVATION_IDENTIFIER' => "IS_SMOKER",
+				'CODING_SYSTEM' => "",
+				'VALUE_TYPE' => "CE",
+				'OBSERVATION_VALUE' => $pat->smoke,
+				'UNITS' => "YES/NO",
+				'OBSERVATION_RESULT_STATUS' => "F",
+				'OBSERVATION_DATETIME' => "20170713110000",
+				'ABNORMAL_FLAGS' => "N"
+			),
+			array(
+				'SET_ID' =>"6",
+				'OBSERVATION_IDENTIFIER' =>"IS_ALCOHOLIC",
+				'CODING_SYSTEM' =>"",
+				'VALUE_TYPE' =>"CE",
+				'OBSERVATION_VALUE' =>$pat->alcohol,
+				'UNITS' =>"YES/NO",
+				'OBSERVATION_RESULT_STATUS' =>"F",
+				'OBSERVATION_DATETIME' =>"20170713110000",
+				'ABNORMAL_FLAGS' =>"N"
+			)
+
+		);
+
+
+
+		var_dump($patient);
+		// $this->postRequest($patient,$header);
+	}
+
+
+
+	function postRequest($request){
+		$url = ''; // IL url
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+		curl_setopt($ch, CURLOPT_HTTPGET, 1);
+		curl_setopt($ch, CURLOPT_VERBOSE, 0);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_DNS_USE_GLOBAL_CACHE, 0);
+		curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 2);
+		$json_data = curl_exec($ch); 
+		if (empty($json_data)) {
+			$message = "cURL Error: " . curl_error($ch)."<br/>";
+		} else {
+			// message sent successfully
+		}
 	}
 
 
