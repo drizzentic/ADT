@@ -1,6 +1,3 @@
-<?php
-$this->load->view('sections/link');
-?>
 <style type="text/css">
   @media (min-width: 992px)
   .modal-lg {
