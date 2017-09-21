@@ -71,21 +71,40 @@ class Api_model extends CI_Model {
 		return $returnable;
 	}
 
-	function getDispensation($internal_id = null,$external_id = null){
-
+	function getPatientAppointment($appointment_id = null){
 		$CI = &get_instance();
 		$CI -> load -> database();
-		$cond = '';
-		$cond  = ($internal_id !== null) ? $cond." and api_patient_matching.internal_id = $internal_id" : "";
-		$cond  = ($external_id !== null) ? $cond." and api_patient_matching.external_id = '$external_id'" : "";
 
-		$query_str = "SELECT * FROM api_patient_matching,patient
-		WHERE api_patient_matching.internal_id = patient.id $cond";
-
-		$query = $CI->db->query($query_str);
+		$sql = "SELECT DATE_FORMAT(MIN(pa.appointment), '%Y%m%d') appointment, pa.facility facility_code, p.*
+				FROM patient_appointment pa 
+				LEFT JOIN patient p ON p.patient_number_ccc = pa.patient
+				WHERE pa.id = '$appointment_id'";
+		$query = $CI->db->query($sql);
 
 		if (count($query->result()) > 0) {
 			$returnable = $query->result()[0];
+		} else {
+			$returnable = false;
+		}
+		return $returnable;
+	}
+
+	function getDispensing($order_id = null){
+		$CI = &get_instance();
+		$CI -> load -> database();
+
+		$sql = "SELECT *,pv.id visit_id, DATE_FORMAT(timecreated, '%Y%m%d%h%i%s') timecreated, pv.duration disp_duration, TRIM(d.drug) drugcode, pv.quantity disp_quantity, pv.dose disp_dose
+				FROM patient_visit pv 
+				INNER JOIN drug_prescription_details_visit dpdv ON dpdv.visit_id = pv.id
+				INNER JOIN drug_prescription_details dpd ON dpd.id = dpdv.drug_prescription_details_id
+				INNER JOIN drug_prescription dp ON dp.id = dpd.drug_prescriptionid AND pv.patient_id = dp.patient
+				INNER JOIN patient p ON p.patient_number_ccc = pv.patient_id
+				INNER JOIN drugcode d ON d.id = pv.drug_id
+				WHERE dp.order_number = '$order_id '";
+		$query = $CI->db->query($sql);
+
+		if (count($query->result()) > 0) {
+			$returnable = $query->result();
 		} else {
 			$returnable = false;
 		}

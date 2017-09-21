@@ -382,6 +382,47 @@ class Api extends MX_Controller {
 
 	}
 
+	public function getAppointment($appointment_id)
+	{
+		$pat = $this->api_model->getPatientAppointment($appointment_id);
+		$message_type = 'SIU^S12';
+
+		$appoint['MESSAGE_HEADER'] = array( 
+			'SENDING_APPLICATION'   =>       "ADT",
+			'SENDING_FACILITY'      =>       $pat->facility_code,
+			'RECEIVING_APPLICATION' =>       "IL",
+			'RECEIVING_FACILITY'    =>       $pat->facility_code,
+			'MESSAGE_DATETIME'      =>       date('Ymdhis'),
+			'SECURITY'              =>       "",
+			'MESSAGE_TYPE'          =>       $message_type,
+			'PROCESSING_ID'         =>       "P"
+		);
+		$appoint['PATIENT_IDENTIFICATION'] = array(
+			'EXTERNAL_PATIENT_ID' => array('ID'=>$pat->external_id, 'IDENTIFIER_TYPE' =>"GODS_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
+			'INTERNAL_PATIENT_ID' => [
+				array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
+			],
+			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->last_name,'LAST_NAME' =>$pat->other_name)
+		);
+		$appoint['APPOINTMENT_INFORMATION'] = [array(
+			'PLACER_APPOINTMENT_NUMBER' => array('NUMBER' => $appointment_id, 'ENTITY' =>"ADT"),
+			'APPOINTMENT_REASON' => "REGIMEN REFILL",
+			'APPOINTMENT_TYPE' => "PHARMACY APPOINTMENT",
+			'APPOINTMENT_DATE' => $pat->appointment,
+			'APPOINTMENT_PLACING_ENTITY' => "ADT",
+			'APPOINTMENT_LOCATION' => "PHARMACY",
+			'ACTION_CODE' => "A",
+			'APPOINTMENT_NOTE' => "TO COME BACK FOR A REFILL",
+			'APPOINTMENT_HONORED' => "N"
+		)];
+
+		echo "<pre>";
+		echo(json_encode($appoint, JSON_PRETTY_PRINT));
+		echo "</pre>";
+		$this->writeLog('APPOINTMENT SCHEDULE SIU^S12 ',json_encode($appoint));
+		$this->tcpILRequest(null, json_encode($appoint));
+	}
+
 	public function getPatient($patient_id, $msg_type){
 		$pat =   $this->api_model->getPatient($patient_id);
 			// echo "<pre>";
@@ -519,41 +560,68 @@ class Api extends MX_Controller {
 
 	}
 
-	public function getDispensation(){
-		$pat =   $this->api_model->getDispensation(17800);
-		echo "<pre>";
-		var_dump($pat);
+	public function getDispensing($order_id){
+		$pats =   $this->api_model->getDispensing($order_id);
+		$message_type = 'RDS^O13';
 
-
-		$patient['MESSAGE_HEADER'] = array( 
+		$dispense['MESSAGE_HEADER'] = array( 
 			'SENDING_APPLICATION'   =>       "ADT",
-			'SENDING_FACILITY'      =>       $pat->facility_code,
+			'SENDING_FACILITY'      =>       $pats[0]->facility_code,
 			'RECEIVING_APPLICATION' =>       "IL",
-			'RECEIVING_FACILITY'    =>       $pat->facility_code,
+			'RECEIVING_FACILITY'    =>       $pats[0]->facility_code,
 			'MESSAGE_DATETIME'      =>       date('Ymdhis'),
 			'SECURITY'              =>       "",
-			'MESSAGE_TYPE'          =>       "ADT^A04",
+			'MESSAGE_TYPE'          =>       $message_type,
 			'PROCESSING_ID'         =>       "P"
 		);
-		$patient['PATIENT_IDENTIFICATION'] = array(
-			'EXTERNAL_PATIENT_ID' => array('ID'=>$pat->external_id, 'IDENTIFIER_TYPE' =>"GODS_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
-			'INTERNAL_PATIENT_ID' => array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
-			'INTERNAL_PATIENT_ID' => array('ID'=>$pat->id, 'IDENTIFIER_TYPE' =>"INTERNAL_ID_NUMBER",'ASSIGNING_AUTHORITY' =>"ADT"),
-			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->last_name,'LAST_NAME' =>$pat->other_name),
-			'DATE_OF_BIRTH' => $pat->dob,
-			'SEX' => $pat->gender,
-			'PATIENT_ADDRESS' => array('PHYSICAL_ADDRESS'=>array('VILLAGE' => '','WARD' => '','SUB_COUNTY' => '','COUNTY' => ''),'POSTAL_ADDRESS' =>$pat->pob),
-			'PHONE_NUMBER' => $pat->gender,
-			'MARITAL_STATUS' => $pat->partner_status,
-			'DEATH_DATE' => '',
-			'DEATH_INDICATOR' => ''
+		$dispense['PATIENT_IDENTIFICATION'] = array(
+			'EXTERNAL_PATIENT_ID' => array('ID'=>$pats[0]->external_id, 'IDENTIFIER_TYPE' =>"GODS_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
+			'INTERNAL_PATIENT_ID' => [
+				array('ID'=>$pats[0]->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"ADT")
+			],
+			'PATIENT_NAME' => array('FIRST_NAME'=>$pats[0]->first_name, 'MIDDLE_NAME' =>$pats[0]->last_name,'LAST_NAME' =>$pats[0]->other_name)
+		);
+		$dispense['COMMON_ORDER_DETAILS'] = array(
+			'ORDER_CONTROL' => "NW",
+			'PLACER_ORDER_NUMBER' => array('NUMBER'=>$pats[0]->order_number, 'ENTITY' =>"IQCARE"),
+			'FILLER_ORDER_NUMBER' => array('NUMBER'=>$pats[0]->visit_id, 'ENTITY' =>"ADT"),
+			'ORDER_STATUS' => "NW",
+			'ORDERING_PHYSICIAN' => array('FIRST_NAME'=>$pats[0]->order_physician, 'MIDDLE_NAME' =>"", 'LAST_NAME' =>"", 'PREFIX' => "DR"),
+			'TRANSACTION_DATETIME' => $pats[0]->timecreated,
+			'NOTES' => $pats[0]->notes
 		);
 
-			// var_dump($patient);
-		$this->postRequest($patient,$header);
+		/*Loop Drugs*/
+		foreach ($pats as $key => $pat) {
+			$dispense['PHARMACY_ENCODED_ORDER'][$key] = array(
+				'DRUG_NAME' => $pat->drug_name, 
+				'CODING_SYSTEM' => "NASCOP_CODES", 
+				'STRENGTH' => $pat->strength, 
+				'DOSAGE' => $pat->dosage, 
+				'FREQUENCY' => $pat->frequency, 
+				'DURATION' => $pat->duration, 
+				'QUANTITY_PRESCRIBED' => $pat->quantity_prescribed,
+				'PRESCRIPTION_NOTES' => $pat->prescription_notes
+			);
+			$dispense['PHARMACY_DISPENSE'][$key] = array(
+				'DRUG_NAME' => $pat->drug_name, 
+				'CODING_SYSTEM' => "NASCOP_CODES", 
+				'ACTUAL_DRUGS' => $pat->drugcode,
+				'STRENGTH' => "", 
+				'DOSAGE' => $pat->disp_dose,
+				'FREQUENCY' => "",
+				'DURATION' => $pat->disp_duration,
+				'QUANTITY_DISPENSED' => $pat->disp_quantity,
+				'DISPENSING_NOTES' => $pat->comment
+			);
+		}
+
+		echo "<pre>";
+		echo(json_encode($dispense, JSON_PRETTY_PRINT));
+		echo "</pre>";
+		$this->writeLog('PHARMACY DISPENSE RDS^O13 ',json_encode($dispense));
+		$this->tcpILRequest(null, json_encode($dispense));
 	}
-
-
 
 	function postILRequest($request){
 		// echo $request;
@@ -584,7 +652,7 @@ class Api extends MX_Controller {
 		if (!$fp) {
 			echo "$errstr ($errno)<br />\n";
 		} else {
-			fwrite($fp, '~'.$request.'~');
+			fwrite($fp, '|~~'.$request.'~~|');
 			fclose($fp);
 			print date('H:i:s');
 			die;
