@@ -803,7 +803,6 @@ class Patient_management extends MY_Controller {
         file_get_contents(base_url().'tools/api/getPatient/'.$patient.'/EDIT');
         // </  Send update to IL
 
-
         redirect("patient_management/load_view/details/$record_id");
     }
 

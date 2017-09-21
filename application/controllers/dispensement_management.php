@@ -130,25 +130,41 @@ class Dispensement_management extends MY_Controller {
 
 //// Prescriptions if exists
 
-		/*************/
+		// /*************/
+
+		$data = array();
+		$data['prescription'] = array();
+
 		$pid = (isset($_GET['pid'])) ? $_GET['pid'] : null;
 
 		if ($pid){
+
 			$ps_sql="SELECT * from drug_prescription dp,drug_prescription_details dpd where
 			dp.id = dpd.drug_prescriptionid and dp.id = $pid";
-			
 			$query = $this -> db -> query($ps_sql);
 			$ps = $query -> result_array();
-				echo "<pre>";
-				var_dump($ps);
-				die;
-		}
+			$data['prescription'] = $ps;
 
+		
+
+	
+
+			// find if possible regimen from prescription
+			foreach ($ps as $key=>$p) {
+				$drugname = $p['drug_name'];
+				$regimen_sql="SELECT  * FROM regimen where regimen_code like '%$drugname%'";
+				$r_query = $this -> db -> query($regimen_sql);
+				$rs = $r_query -> result_array();
+				if ($rs){
+				$data['prescription_regimen_id'] = $rs[0]['id'];
+				}
+
+			}
+		}
 		//// dispense prescription from EMR
 
 
 
-		$data = array();
 		$data['ccc_store'] = $this -> session -> userdata('ccc_store')[0]['id'];
 		
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
@@ -371,6 +387,7 @@ class Dispensement_management extends MY_Controller {
 	public function save() {
 		$period = date("M-Y");
 		$ccc_id = $this -> input -> post("ccc_store_id");
+		$prescription = $this -> input -> post("prescription");
 		$this -> session -> set_userdata('ccc_store_id',$ccc_id);
 		$record_no = $this -> session -> userdata('record_no');
 		$patient_name= $this -> input -> post("patient_details");
@@ -510,6 +527,8 @@ class Dispensement_management extends MY_Controller {
 
 		for ($i = 0; $i < sizeof($drugs); $i++) {
 			//Get running balance in drug stock movement
+
+
 			$sql_run_balance = $this -> db -> query("SELECT machine_code as balance FROM drug_stock_movement WHERE drug ='$drugs[$i]' AND ccc_store_sp ='$ccc_id' AND expiry_date >=CURDATE() ORDER BY id DESC  LIMIT 1");
 			$run_balance_array = $sql_run_balance ->result_array();
 			if (count($run_balance_array) > 0) {
@@ -528,9 +547,24 @@ class Dispensement_management extends MY_Controller {
 			/*if ($mos != "") {//If transaction has actual pill count, actual pill count will pill count + amount dispensed
 			 $mos[$i] = $quantity[$i] + (int)$mos[$i];
 			}*/
-			
-			
-			$sql .= "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason',$last_regimen ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id');";
+
+			//Add visit
+			$visit_sql = "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason',$last_regimen ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id');";
+			$this->db->query($visit_sql);
+			$visit_id = $this->db->insert_id();
+
+			//Check Regimen Drug Table to figure out which drug is ART/OI
+			$chk_reg_drug_sql = "SELECT 1 FROM regimen_drug WHERE regimen = '$current_regimen' AND drugcode = '$drugs[$i]'";
+			$chk_result = $this->db->query($chk_reg_drug_sql)->row_array();
+			if($chk_result){
+				//Is an ARV
+				$this->db->insert('drug_prescription_details_visit', array('drug_prescription_details_id' => $this->getPrescription($prescription)['arv_prescription'], 'visit_id' => $visit_id));
+
+			}else{
+				//Is an OI
+				$this->db->insert('drug_prescription_details_visit', array('drug_prescription_details_id' => $this->getPrescription($prescription)['oi_prescription'], 'visit_id' => $visit_id));
+			}
+
 			$sql .= "insert into drug_stock_movement (drug, transaction_date, batch_number, transaction_type,source,destination,expiry_date,quantity, quantity_out,balance, facility,`timestamp`,machine_code,ccc_store_sp) VALUES ('$drugs[$i]','$dispensing_date','$batch[$i]','$transaction_type','$source','$destination','$expiry[$i]',0,'$quantity[$i]',$remaining_balance,'$facility','$dispensing_date_timestamp','$act_run_balance','$ccc_id');";
 			$sql .= "update drug_stock_balance SET balance=balance - '$quantity[$i]' WHERE drug_id='$drugs[$i]' AND batch_number='$batch[$i]' AND expiry_date='$expiry[$i]' AND stock_type='$ccc_id' AND facility_code='$facility';";
 			$sql .= "INSERT INTO drug_cons_balance(drug_id,stock_type,period,facility,amount,ccc_store_sp) VALUES('$drugs[$i]','$ccc_id','$period','$facility','$quantity[$i]','$ccc_id') ON DUPLICATE KEY UPDATE amount=amount+'$quantity[$i]';";
@@ -540,11 +574,7 @@ class Dispensement_management extends MY_Controller {
 		$count = count($queries);
 		$c = 0;
 		foreach ($queries as $query) {
-			//$c++;
-			//if (strlen($query) > 0) {
 			$this -> db -> query($query);
-			//}
-
 		}
 
 		$this -> session -> set_userdata('msg_save_transaction', 'success');
@@ -839,6 +869,40 @@ class Dispensement_management extends MY_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($prescription);
 		die;
+
+	}
+	public function getPrescription($pid){
+		$data = array();
+
+			$ps_sql="SELECT dpd.id,drug_prescriptionid,drug_name from drug_prescription dp,drug_prescription_details dpd where
+			dp.id = dpd.drug_prescriptionid and dp.id = $pid";
+			$query = $this -> db -> query($ps_sql);
+			$ps = $query -> result_array();
+			$data = $ps;
+
+			// find if possible regimen from prescription
+			foreach ($ps as $key=>$p) {
+				$drugname = $p['drug_name'];
+				$regimen_sql="SELECT  * FROM regimen where regimen_code like '%$drugname%'";
+				$r_query = $this -> db -> query($regimen_sql);
+				$rs = $r_query -> result_array();
+				if ($rs){
+					$data[$key]['prescription_regimen_id'] = $rs[0]['id'];
+					$arv_prescription = $p['id'];
+					$data['arv_prescription'] = $arv_prescription;
+					//Get oi_prescription(s)
+					$sql="SELECT dpd.id from drug_prescription dp,drug_prescription_details dpd where
+					dp.id = dpd.drug_prescriptionid and dp.id = $pid and dpd.id != '$arv_prescription'";
+					$query = $this -> db -> query($sql);
+					$data['oi_prescription'] = $query -> row_array()['id'];
+				}
+
+			}
+			// echo "<pre>";
+			// var_dump($data);
+		return $data;
+}
+	public function findDrugs(){
 
 	}
 
