@@ -145,9 +145,9 @@ class Dispensement_management extends MY_Controller {
 			$ps = $query -> result_array();
 			$data['prescription'] = $ps;
 
-		
 
-	
+
+
 
 			// find if possible regimen from prescription
 			foreach ($ps as $key=>$p) {
@@ -156,7 +156,7 @@ class Dispensement_management extends MY_Controller {
 				$r_query = $this -> db -> query($regimen_sql);
 				$rs = $r_query -> result_array();
 				if ($rs){
-				$data['prescription_regimen_id'] = $rs[0]['id'];
+					$data['prescription_regimen_id'] = $rs[0]['id'];
 				}
 
 			}
@@ -512,7 +512,9 @@ class Dispensement_management extends MY_Controller {
 				$sql .= "update patient_appointment set appointment='$dispensing_date',machine_code='1' where patient='$patient' and appointment='$last_appointment_date';";
 			}
 		}
-		$sql .= "insert into patient_appointment (patient,appointment,facility,clinical_appointment) values ('$patient','$next_appointment_date','$facility','$clinical_appointment_id');";
+		$pa_sql = "insert into patient_appointment (patient,appointment,facility,clinical_appointment) values ('$patient','$next_appointment_date','$facility','$clinical_appointment_id');";
+		$this->db->query($pa_sql);
+		$appointment_id = $this->db->insert_id();
 
 
 		/*
@@ -552,17 +554,19 @@ class Dispensement_management extends MY_Controller {
 			$visit_sql = "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason',$last_regimen ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id');";
 			$this->db->query($visit_sql);
 			$visit_id = $this->db->insert_id();
-
+			if(isset($prescription)){
 			//Check Regimen Drug Table to figure out which drug is ART/OI
-			$chk_reg_drug_sql = "SELECT 1 FROM regimen_drug WHERE regimen = '$current_regimen' AND drugcode = '$drugs[$i]'";
-			$chk_result = $this->db->query($chk_reg_drug_sql)->row_array();
-			if($chk_result){
+				$chk_reg_drug_sql = "SELECT 1 FROM regimen_drug WHERE regimen = '$current_regimen' AND drugcode = '$drugs[$i]'";
+				$chk_result = $this->db->query($chk_reg_drug_sql)->row_array();
+				if($chk_result){
 				//Is an ARV
-				$this->db->insert('drug_prescription_details_visit', array('drug_prescription_details_id' => $this->getPrescription($prescription)['arv_prescription'], 'visit_id' => $visit_id));
+					$this->db->insert('drug_prescription_details_visit', array('drug_prescription_details_id' => $this->getPrescription($prescription)['arv_prescription'], 'visit_id' => $visit_id));
 
-			}else{
+				}else{
 				//Is an OI
-				$this->db->insert('drug_prescription_details_visit', array('drug_prescription_details_id' => $this->getPrescription($prescription)['oi_prescription'], 'visit_id' => $visit_id));
+					$this->db->insert('drug_prescription_details_visit', array('drug_prescription_details_id' => $this->getPrescription($prescription)['oi_prescription'], 'visit_id' => $visit_id));
+				}
+
 			}
 
 			$sql .= "insert into drug_stock_movement (drug, transaction_date, batch_number, transaction_type,source,destination,expiry_date,quantity, quantity_out,balance, facility,`timestamp`,machine_code,ccc_store_sp) VALUES ('$drugs[$i]','$dispensing_date','$batch[$i]','$transaction_type','$source','$destination','$expiry[$i]',0,'$quantity[$i]',$remaining_balance,'$facility','$dispensing_date_timestamp','$act_run_balance','$ccc_id');";
@@ -575,6 +579,10 @@ class Dispensement_management extends MY_Controller {
 		$c = 0;
 		foreach ($queries as $query) {
 			$this -> db -> query($query);
+		}
+		if(isset($prescription)){
+			file_get_contents(base_url().'tools/api/getDispensing/'.$prescription);
+			file_get_contents(base_url().'tools/api/getAppointment/'.$appointment_id);
 		}
 
 		$this -> session -> set_userdata('msg_save_transaction', 'success');
@@ -874,34 +882,32 @@ class Dispensement_management extends MY_Controller {
 	public function getPrescription($pid){
 		$data = array();
 
-			$ps_sql="SELECT dpd.id,drug_prescriptionid,drug_name from drug_prescription dp,drug_prescription_details dpd where
-			dp.id = dpd.drug_prescriptionid and dp.id = $pid";
-			$query = $this -> db -> query($ps_sql);
-			$ps = $query -> result_array();
-			$data = $ps;
+		$ps_sql="SELECT dpd.id,drug_prescriptionid,drug_name from drug_prescription dp,drug_prescription_details dpd where
+		dp.id = dpd.drug_prescriptionid and dp.id = $pid";
+		$query = $this -> db -> query($ps_sql);
+		$ps = $query -> result_array();
+		$data = $ps;
 
 			// find if possible regimen from prescription
-			foreach ($ps as $key=>$p) {
-				$drugname = $p['drug_name'];
-				$regimen_sql="SELECT  * FROM regimen where regimen_code like '%$drugname%'";
-				$r_query = $this -> db -> query($regimen_sql);
-				$rs = $r_query -> result_array();
-				if ($rs){
-					$data[$key]['prescription_regimen_id'] = $rs[0]['id'];
-					$arv_prescription = $p['id'];
-					$data['arv_prescription'] = $arv_prescription;
+		foreach ($ps as $key=>$p) {
+			$drugname = $p['drug_name'];
+			$regimen_sql="SELECT  * FROM regimen where regimen_code like '%$drugname%'";
+			$r_query = $this -> db -> query($regimen_sql);
+			$rs = $r_query -> result_array();
+			if ($rs){
+				$data[$key]['prescription_regimen_id'] = $rs[0]['id'];
+				$arv_prescription = $p['id'];
+				$data['arv_prescription'] = $arv_prescription;
 					//Get oi_prescription(s)
-					$sql="SELECT dpd.id from drug_prescription dp,drug_prescription_details dpd where
-					dp.id = dpd.drug_prescriptionid and dp.id = $pid and dpd.id != '$arv_prescription'";
-					$query = $this -> db -> query($sql);
-					$data['oi_prescription'] = $query -> row_array()['id'];
-				}
-
+				$sql="SELECT dpd.id from drug_prescription dp,drug_prescription_details dpd where
+				dp.id = dpd.drug_prescriptionid and dp.id = $pid and dpd.id != '$arv_prescription'";
+				$query = $this -> db -> query($sql);
+				$data['oi_prescription'] = $query -> row_array()['id'];
 			}
-			// echo "<pre>";
-			// var_dump($data);
+
+		}
 		return $data;
-}
+	}
 	public function findDrugs(){
 
 	}

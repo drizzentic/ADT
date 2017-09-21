@@ -100,7 +100,7 @@ class Api_model extends CI_Model {
 				INNER JOIN drug_prescription dp ON dp.id = dpd.drug_prescriptionid AND pv.patient_id = dp.patient
 				INNER JOIN patient p ON p.patient_number_ccc = pv.patient_id
 				INNER JOIN drugcode d ON d.id = pv.drug_id
-				WHERE dp.order_number = '$order_id '";
+				WHERE dp.id = '$order_id '";
 		$query = $CI->db->query($sql);
 
 		if (count($query->result()) > 0) {
