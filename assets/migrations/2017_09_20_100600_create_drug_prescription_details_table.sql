@@ -1,4 +1,3 @@
-
 CREATE TABLE drug_prescription_details (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   drug_prescriptionid bigint(20) NOT NULL,

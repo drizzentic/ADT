@@ -3,79 +3,79 @@
 
 <!--art card form-->
 <div class="container full-content" style="background:#9CF">
-    <input type="hidden" id="hidden_data" data-baseurl="<?php echo base_url(); ?>" data-patient="<?php echo $patient_id; ?>" data-status="<?php echo $patient_msg['status']; ?>" data-message="<?php echo $patient_msg['message']; ?>">
+	<input type="hidden" id="hidden_data" data-baseurl="<?php echo base_url(); ?>" data-patient="<?php echo $patient_id; ?>" data-status="<?php echo $patient_msg['status']; ?>" data-message="<?php echo $patient_msg['message']; ?>">
 	<!--breadcrumb & instructions row-->
-    <div class="row-fluid">
-	    <div class="span12">
-		    <ul class="breadcrumb">
-			  <li><a href="<?php echo base_url().'patient_management'; ?>">Patients</a> <span class="divider">/</span></li>
-			  <li class="active">ART Card</li>
+	<div class="row-fluid">
+		<div class="span12">
+			<ul class="breadcrumb">
+				<li><a href="<?php echo base_url().'patient_management'; ?>">Patients</a> <span class="divider">/</span></li>
+				<li class="active">ART Card</li>
 			</ul>
 			<div class="alert alert-info">
-			    <button type="button" class="close" data-dismiss="alert">&times;</button>
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
 				<h4>Mandatory!</h4>
 				(Fields Marked with <b><span class='astericks'>*</span></b> Asterisks are required)
 			</div>
-	    </div>
+		</div>
 	</div>
 	<!--message row-->
-    <div class="row-fluid">
-	    <div class="span12">
-		    <?php 
-		        if($this->session->userdata("msg_save_transaction")){
-					if($this->session->userdata("msg_save_transaction")=="success"){
-					   if($this->session->userdata("user_updated")){
-							?>
-							<p class=""><span class="message success"><?php echo $this->session->userdata("user_updated") ?>'s details were successfully updated !</span></p>
-							<?php
-							$this->session->unset_userdata('user_updated');
-						}
-						else if($this->session->userdata("dispense_updated")){
-							?>
-							<p class=""><span class="message  success">The dispensing details were successfully updated !</span></p>
-							<?php
-							$this->session->unset_userdata('dispense_updated');
-						}
-						else if($this->session->userdata("dispense_deleted")){
-							?>
-							<p class=""><span class="message  error">The dispensing details were successfully deleted !</span></p>
-							<?php
-							$this->session->unset_userdata('dispense_deleted');
-						} 
-					}
-					else{
+	<div class="row-fluid">
+		<div class="span12">
+			<?php 
+			if($this->session->userdata("msg_save_transaction")){
+				if($this->session->userdata("msg_save_transaction")=="success"){
+					if($this->session->userdata("user_updated")){
 						?>
-						<p class=""><span class="message  error">Your data were not saved ! Try again or contact your system administrator.</span></p>
+						<p class=""><span class="message success"><?php echo $this->session->userdata("user_updated") ?>'s details were successfully updated !</span></p>
 						<?php
+						$this->session->unset_userdata('user_updated');
 					}
-					$this->session->unset_userdata('msg_save_transaction');
+					else if($this->session->userdata("dispense_updated")){
+						?>
+						<p class=""><span class="message  success">The dispensing details were successfully updated !</span></p>
+						<?php
+						$this->session->unset_userdata('dispense_updated');
+					}
+					else if($this->session->userdata("dispense_deleted")){
+						?>
+						<p class=""><span class="message  error">The dispensing details were successfully deleted !</span></p>
+						<?php
+						$this->session->unset_userdata('dispense_deleted');
+					} 
 				}
+				else{
+					?>
+					<p class=""><span class="message  error">Your data were not saved ! Try again or contact your system administrator.</span></p>
+					<?php
+				}
+				$this->session->unset_userdata('msg_save_transaction');
+			}
 			?>
-	    </div>
+		</div>
 	</div>
 	<!--demographics row-->
 	<div class="row-fluid" id="details_frm">
 		<!--demographics column-->
-	    <div class="span4">
-		    <fieldset>
+		<div class="span4">
+			<fieldset>
 				<legend>
 					<h3>Patient Information &amp; Demographics</h3>
 				</legend>
 				<div class="row-fluid">
-				    <div class="span6">
-				    	<label>Medical Record No.</label>
+					<div class="span6">
+						<label>Medical Record No.</label>
 						<input class="span8" type="text" name="medical_record_number" id="medical_record_number">
-				    </div>
-				    <div class="span6">
-				    	<label><span class='astericks'>*</span>Patient Number CCC</label>
+					</div>
+					<div class="span6">
+						<label><span class='astericks'>*</span>Patient Number CCC</label>
 						<input type="text" class="span8" name="patient_number_ccc" id="patient_number_ccc" class="validate[required]">
-				    </div>
+					</div>
 				</div>
 				<div class="row-fluid">
-				    <div class="span12">
-				    	<label><span class='astericks'>*</span>Last Name</label>
-					    <input type="text" class="span8" name="last_name" id="last_name" class="validate[required]">
-				    </div>
+					<div class="span12">
+						<label><span class='astericks'>*</span>Last Name</label>
+						<input type="text" class="span8" name="last_name" id="last_name" class="validate[required]">
+					</div>
 				</div>
 				<div class="row-fluid">
 					<div class="span6">
@@ -86,7 +86,7 @@
 						<label>Other Name</label>
 						<input type="text" class="span8" name="other_name" id="other_name">
 					</div>
-			    </div>
+				</div>
 				<div class="row-fluid">
 					<div class="span6">
 						<label><span class='astericks'>*</span>Date of Birth</label>
@@ -100,7 +100,7 @@
 					</div>
 				</div>
 				<div class="row-fluid parent_view">
-					 <div class="span12">
+					<div class="span12">
 						<label>Match to parent/guardian in ccc?</label>
 						<input type="text" class="span8" name="parent" id="parent">
 					</div>
@@ -166,21 +166,21 @@
 						<input type="text" class="span8" name="sa" id="sa">
 					</div>
 				</div>
-			    <div class="row-fluid">
+				<div class="row-fluid">
 					<div class="span6">
-					    <label> Patient's Phone Contact(s)</label>
-					    <input  type="text" class="span8"  name="phone" id="phone">
-				    </div>
+						<label> Patient's Phone Contact(s)</label>
+						<input  type="text" class="span8"  name="phone" id="phone">
+					</div>
 					<div class="span6">
 						<label> Receive SMS Reminders</label>
 						<label class="radio inline">
-						    <input type="radio" name="sms_consent" id="sms_yes" value="1"> Yes
+							<input type="radio" name="sms_consent" id="sms_yes" value="1"> Yes
 						</label>
 						<label class="radio inline">
-						    <input type="radio" name="sms_consent" id="sms_no" value="0"> No
+							<input type="radio" name="sms_consent" id="sms_no" value="0"> No
 						</label>
 					</div>
-		        </div>
+				</div>
 				<div class="row-fluid">
 					<label> Patient's Physical Contact(s)</label>
 					<textarea name="physical" id="physical" class="span8"></textarea>
@@ -196,11 +196,11 @@
 					</label>
 					<textarea class="list_area span8" name="support_group" id="support_group"></textarea>
 				</div>
-	     	</fieldset>
-	    </div>
-	    <!--program history column-->
-	    <div class="span4">
-	    	<fieldset>
+			</fieldset>
+		</div>
+		<!--program history column-->
+		<div class="span4">
+			<fieldset>
 				<legend>
 					<h3>Patient History</h3>
 				</legend>
@@ -216,10 +216,10 @@
 					<div class="span6">
 						<label>Disclosure</label>
 						<label class="radio inline">
-						    <input type="radio" name="disclosure" id="disclosure_yes" value="1"> Yes
+							<input type="radio" name="disclosure" id="disclosure_yes" value="1"> Yes
 						</label>
 						<label class="radio inline">
-						    <input type="radio" name="disclosure" id="disclosure_no" value="0"> No
+							<input type="radio" name="disclosure" id="disclosure_no" value="0"> No
 						</label>
 					</div>
 				</div>
@@ -292,7 +292,7 @@
 							<option value="0" selected="selected">No</option>
 							<option value="1">Yes</option>
 						</select>
-				    </div>
+					</div>
 				</div>
 				<div class="row-fluid tb_category_phase">
 					<div class="span4">
@@ -343,11 +343,11 @@
 						<input  type="text"name="days_to_next_clinical" id="days_to_next_clinical" class="span12 red">
 					</div>								
 				</div>
-	     	</fieldset>
-	    </div>
-	    <!--patient information column-->
-	    <div class="span4">
-	    	<fieldset>
+			</fieldset>
+		</div>
+		<!--patient information column-->
+		<div class="span4">
+			<fieldset>
 				<legend>
 					<h3>Patient Information</h3>
 				</legend>
@@ -389,13 +389,13 @@
 					<label>PEP Reason</label>
 					<select name="pep_reason" id="pep_reason" class="span8">
 					</select>
-			    </div>
-			    <div class="row-fluid prep_reason">
+				</div>
+				<div class="row-fluid prep_reason">
 					<label>PREP Reason</label>
 					<select name="prep_reason" id="prep_reason" class="span8">
 					</select>
-			    </div>
-			    <div class="row-fluid prep_test_question">
+				</div>
+				<div class="row-fluid prep_test_question">
 					<label>Have you been Tested?</label>
 					<select name="prep_test_answer" id="prep_test_answer" class="span8">
 						<option value="0">No</option>
@@ -448,35 +448,37 @@
 						<div class="span4">
 							<label>Isoniazid End Date</label>
 							<input type="text" name="isoniazid_end_date" id="isoniazid_end_date" class="span12 red">
-					    </div>	
+						</div>	
 					</div>							
 				</div>
-	     	</fieldset>
-	    </div>
+			</fieldset>
+		</div>
 	</div>
 	<!--buttons row-->
 	<div class="row-fluid">
-	    <div class="span12">
-	     	<div class="btn-group pull-right">
-	     	    <button class="btn btn-inverse" id="viral_load"><strong>Viral Load Data</strong></button>
-	     	    <button class="btn btn-inverse" id="patient_info"><strong>Patient Info Report</strong></button>
-			    <a class="btn btn-inverse" href="<?php echo base_url().'patient_management/edit/'.$patient_id; ?>"><strong>Edit Patient Record</strong></a>
-			    <a id="dispense_btn" class="btn btn-inverse" href="<?php echo base_url().'dispensement_management/dispense/'.$patient_id; ?>"><strong>Dispense to Patient</strong></a>
+		<div class="span12">
+			<div class="btn-group pull-right">
+				<button class="btn btn-inverse" id="viral_load"><strong>Viral Load Data</strong></button>
+				<button class="btn btn-inverse" id="patient_info"><strong>Patient Info Report</strong></button>
+				<button class="btn btn-inverse" id="view_prescription"><strong>View Prescription</strong></button>
+
+				<a class="btn btn-inverse" href="<?php echo base_url().'patient_management/edit/'.$patient_id; ?>"><strong>Edit Patient Record</strong></a>
+				<a id="dispense_btn" class="btn btn-inverse" href="<?php echo base_url().'dispensement_management/dispense/'.$patient_id; ?>"><strong>Dispense to Patient</strong></a>
 			</div>
-	    </div>
+		</div>
 	</div>
 	<!--history row-->
 	<div class="row-fluid">
-	    <div class="span12">
-	    	<fieldset>
+		<div class="span12">
+			<fieldset>
 				<legend>
 					<h3>Dispensing History</h3>
 				</legend>
 				<!--history table-->
 				<div class="table-responsive">
 					<table  id="dispensing_history" class="table table-bordered table-hover table-condensed">
-					    <thead>
-					     	<tr>
+						<thead>
+							<tr>
 								<th>Date</th>
 								<th>Purpose of Visit</th>
 								<th>Dose</th>
@@ -492,11 +494,11 @@
 								<th>Operator</th>
 								<th>Reasons For Change</th>
 							</tr>
-					    </thead>
-					    <tbody>
-					    </tbody>
-					    <tfoot>
-					     	<tr>
+						</thead>
+						<tbody>
+						</tbody>
+						<tfoot>
+							<tr>
 								<th>Date</th>
 								<th>Purpose of Visit</th>
 								<th>Dose</th>
@@ -512,18 +514,18 @@
 								<th>Operator</th>
 								<th>Reasons For Change</th>
 							</tr>
-					    </tfoot>
+						</tfoot>
 					</table>
 				</div>
 			</fieldset>
-	    </div>
+		</div>
 	</div>
 	<!--patient_info modal row-->
 	<div id="patient_details" title="Patient Summary">
-	    <h3 id="facility_name" style="text-align: center"></h3>
+		<h3 id="facility_name" style="text-align: center"></h3>
 		<h4 style="text-align: center">Patient Information</h4>
 		<table  id="patient_information" class="table table-hover table-bordered table-striped table-condensed">
-		    <thead>
+			<thead>
 				<tr>
 					<th>Art Number</th>
 					<th>First Name</th>
@@ -553,7 +555,7 @@
 		<h4 style="text-align: center">Patient Pill Count History (Last 12 Months)</h4>
 		<table id="patient_pill_count"  class="table table-hover table-bordered table-striped table-condensed" style="zoom:90%;">
 			<thead>
-			   <tr>
+				<tr>
 					<th rowspan='2'>Date of Visit</th>
 					<th rowspan='2'>Drug Name</th>
 					<th rowspan='2'>Qty. Dispensed</th>
@@ -575,12 +577,12 @@
 		<h4 style="text-align: center">Patient Regimen Change History</h4>
 		<table   id="patient_regimen_history" class="table table-hover table-bordered table-striped table-condensed">
 			<thead>
-			<tr>
-				<th>Date of Visit</th>
-				<th>Last Regimen Dispensed</th>
-				<th>Current Regimen</th>
-				<th>Reason for Change</th> 
-			</tr>
+				<tr>
+					<th>Date of Visit</th>
+					<th>Last Regimen Dispensed</th>
+					<th>Current Regimen</th>
+					<th>Reason for Change</th> 
+				</tr>
 			</thead>
 			<tbody class="spinner_loader">
 				
@@ -589,7 +591,7 @@
 		<h4 style="text-align: center">Patient Appointment History</h4>
 		<table id="patient_appointment_history" class="table table-hover table-bordered table-striped table-condensed">
 			<thead>
-			    <tr>
+				<tr>
 					<th>Date of Next Appointment</th>
 					<th>Days To Appointment</th> 
 				</tr>
@@ -600,32 +602,65 @@
 		</table> 
 	</div>
 	<!--viral_load modal row-->
-    <div id="viral_load_details" title="Viral Load Summary">
-        <div class="table-responsive">
-            <table id="viral_load_data" class="table table-hover table-bordered table-striped table-condensed">
-                <thead>
-                    <tr>
-                        <th>Date Tested</th>
-                        <th>Result</th>
-                        <th>Justification</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="2">no data available!</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                     <th>Date Tested</th>
-                        <th>Result</th>
-                        <th>Justification</th>
-                 
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
+	<div id="viral_load_details" title="Viral Load Summary">
+		<div class="table-responsive">
+			<table id="viral_load_data" class="table table-hover table-bordered table-striped table-condensed">
+				<thead>
+					<tr>
+						<th>Date Tested</th>
+						<th>Result</th>
+						<th>Justification</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="2">no data available!</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>Date Tested</th>
+						<th>Result</th>
+						<th>Justification</th>
+
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+	<!-- Prescriptions Modal -->
+	<div id="patient_prescriptions" title="Patient Prescriptions">
+		<div class="table-responsive">
+			<table id="viral_load_data" class="table table-hover table-bordered table-striped table-condensed">
+				<thead>
+					<tr>						
+						<th>Drug Name</th>	
+						<th>Strength</th>	
+						<th>Dosage</th>	
+						<th>Frequency</th>	
+						<th>Duration</th>	
+						<th>Quantity Prescribed</th>	
+						<th>Prescription Notes</th> 
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>Drug Name</th>	
+						<th>Strength</th>	
+						<th>Dosage</th>	
+						<th>Frequency</th>	
+						<th>Duration</th>	
+						<th>Quantity Prescribed</th>	
+						<th>Prescription Notes</th> 
+					</tr>
+				</tfoot>
+			</table>
+			<a id="dispense_prescription_btn" class="btn btn-default" href="" style="display: none;"><strong>Dispense to Patient</strong></a>
+		</div>
+	</div>
+	<!-- / Prescriptions Modal  -->
 </div>
 
 <!-- custom scripts-->
