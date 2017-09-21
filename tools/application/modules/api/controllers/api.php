@@ -4,6 +4,8 @@ if (!defined('BASEPATH'))
 
 class Api extends MX_Controller {
 	var $backup_dir = "./backup_db";
+	var $il_url = 'http://tedb19:9721/api/'; // IL url
+
 	function __construct() {
 		parent::__construct();
 		$this->load->library('ftp');
@@ -68,15 +70,6 @@ class Api extends MX_Controller {
 // internal & external patient ID matching
 		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
 
-// SENDING_APPLICATION: 'IQCARE',
-// SENDING_FACILITY: '10829',
-// RECEIVING_APPLICATION: 'IL',
-// RECEIVING_FACILITY: '10829',
-// MESSAGE_DATETIME: '20170713110000',
-// SECURITY: '',
-// MESSAGE_TYPE: 'ADT^A04',
-// PROCESSING_ID: 'P'
-
 		$EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
 		$internal_patient = $this->api_model->getPatient(null,$EXTERNAL_PATIENT_ID);
 
@@ -123,16 +116,6 @@ class Api extends MX_Controller {
 
  // Observation Result(s) - Array of Objects
 
-// $SET_ID = $patient->OBSERVATION_RESULT[0]->SET_ID;
-// $OBSERVATION_IDENTIFIER = $patient->OBSERVATION_RESULT[0]->OBSERVATION_IDENTIFIER;
-// $CODING_SYSTEM = $patient->OBSERVATION_RESULT[0]->CODING_SYSTEM;
-// $VALUE_TYPE = $patient->OBSERVATION_RESULT[0]->VALUE_TYPE;
-// $OBSERVATION_VALUE = $patient->OBSERVATION_RESULT[0]->OBSERVATION_VALUE;
-// $UNITS = $patient->OBSERVATION_RESULT[0]->UNITS;
-// $OBSERVATION_RESULT_STATUS = $patient->OBSERVATION_RESULT[0]->OBSERVATION_RESULT_STATUS;
-// $OBSERVATION_DATETIME = $patient->OBSERVATION_RESULT[0]->OBSERVATION_DATETIME;
-// $ABNORMAL_FLAGS = $patient->OBSERVATION_RESULT[0]->ABNORMAL_FLAGS;
-
 		$observations = array();
 		foreach ($patient->OBSERVATION_RESULT as $ob) {
 
@@ -144,7 +127,7 @@ class Api extends MX_Controller {
 		// $IS_PREGNANT = $observations['IS_PREGNANT'];
 		$IS_PREGNANT = (isset($observations['IS_PREGNANT'])) ? $observations['IS_PREGNANT'] : false ;
 		$PRENGANT_EDD = (isset($observations['PRENGANT_EDD'])) ? $observations['PRENGANT_EDD'] : false ;
-		$CURRENT_REGIMEN = (isset($observations['CURRENT_REGIMEN'])) ? $observations['CURRENT_REGIMEN'] : false ;
+		$CURRENT_REGIMEN = (isset($observations['CURRENT_REGIMEN'])) ? $this->api_model->getRegimen($observations['CURRENT_REGIMEN'])->id : false ;
 		$IS_SMOKER = (isset($observations['IS_SMOKER'])) ? $observations['IS_SMOKER'] : false ;
 		$IS_ALCOHOLIC = (isset($observations['IS_ALCOHOLIC'])) ? $observations['IS_ALCOHOLIC'] : false ;
 
@@ -171,6 +154,8 @@ class Api extends MX_Controller {
 			'start_height'=>$START_HEIGHT,
 			'start_regimen'=>$CURRENT_REGIMEN,
 			'start_weight'=>$START_WEIGHT,
+			'active' => 1,
+			'current_status' => $this->api_model->getActivePatientStatus()->id,
 			'weight'=>$START_HEIGHT);
 
 		$this->api_model->savePatient($patient,$EXTERNAL_PATIENT_ID);
@@ -186,15 +171,6 @@ class Api extends MX_Controller {
 		$internal_patient_id = $internal_patient->internal_id;
 // internal & external patient ID matching
 		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
-// var_dump($SENDING_FACILITY);
-  //   SENDING_APPLICATION: 'IQCARE',
-// SENDING_FACILITY: '10829',
-// RECEIVING_APPLICATION: 'IL',
-// RECEIVING_FACILITY: '10829',
-// MESSAGE_DATETIME: '20170713110000',
-// SECURITY: '',
-// MESSAGE_TYPE: 'ADT^A04',
-// PROCESSING_ID: 'P'
 
 		$EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
 
@@ -233,16 +209,6 @@ class Api extends MX_Controller {
 
  // Observation Result(s) - Array of Objects
 
-// $SET_ID = $patient->OBSERVATION_RESULT[0]->SET_ID;
-// $OBSERVATION_IDENTIFIER = $patient->OBSERVATION_RESULT[0]->OBSERVATION_IDENTIFIER;
-// $CODING_SYSTEM = $patient->OBSERVATION_RESULT[0]->CODING_SYSTEM;
-// $VALUE_TYPE = $patient->OBSERVATION_RESULT[0]->VALUE_TYPE;
-// $OBSERVATION_VALUE = $patient->OBSERVATION_RESULT[0]->OBSERVATION_VALUE;
-// $UNITS = $patient->OBSERVATION_RESULT[0]->UNITS;
-// $OBSERVATION_RESULT_STATUS = $patient->OBSERVATION_RESULT[0]->OBSERVATION_RESULT_STATUS;
-// $OBSERVATION_DATETIME = $patient->OBSERVATION_RESULT[0]->OBSERVATION_DATETIME;
-// $ABNORMAL_FLAGS = $patient->OBSERVATION_RESULT[0]->ABNORMAL_FLAGS;
-
 		$observations = array();
 		foreach ($patient->OBSERVATION_RESULT as $ob) {
 
@@ -259,12 +225,12 @@ class Api extends MX_Controller {
 		$IS_SMOKER = (isset($observations['IS_SMOKER'])) ? $observations['IS_SMOKER'] : false ;
 		$IS_ALCOHOLIC = (isset($observations['IS_ALCOHOLIC'])) ? $observations['IS_ALCOHOLIC'] : false ;
 		
-		// $REGIMEN_CHANGE_REASON = $observations['REGIMEN_CHANGE_REASON'];
+
 		$REGIMEN_CHANGE_REASON = (isset($observations['REGIMEN_CHANGE_REASON'])) ? $observations['REGIMEN_CHANGE_REASON'] : false ;
 		if ($REGIMEN_CHANGE_REASON){
 
 // do regimen change/ drug stop
-		var_dump($REGIMEN_CHANGE_REASON);die;
+			var_dump($REGIMEN_CHANGE_REASON);die;
 		}
 // 
 
@@ -377,9 +343,9 @@ class Api extends MX_Controller {
 
 // PHARMACY_ENCODED_ORDER
 		$internal_patient_ccc = $this->api_model->getPatient(null,$order->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID)->patient_number_ccc;
-if (!$internal_patient_ccc){
-	echo "patient does not exist";die;
-}
+		if (!$internal_patient_ccc){
+			echo "patient does not exist";die;
+		}
 
 		$pe_order = array();
 		foreach ($order->PHARMACY_ENCODED_ORDER as $eo) {
@@ -396,15 +362,15 @@ if (!$internal_patient_ccc){
 		}
 
 
-$pe = array(
+		$pe = array(
 			'order_number' => $PLACER_ORDER_NUMBER,
 			'order_status' => $ORDER_STATUS,
 			'order_physician' => $OP_FIRST_NAME.' '.$OP_MIDDLE_NAME.' '.$OP_LAST_NAME,
 			'notes' => $NOTES
-);
+		);
 
 		// var_dump($pe);
-$this->api_model->saveDrugPrescription($pe,$pe_order);
+		$this->api_model->saveDrugPrescription($pe,$pe_order);
 
 
 # @todo check if order exists
@@ -416,12 +382,12 @@ $this->api_model->saveDrugPrescription($pe,$pe_order);
 
 	}
 
-	public function getPatient(){
-		$pat =   $this->api_model->getPatient(17800);
-		echo "<pre>";
-		var_dump($pat);
+	public function getPatient($patient_id, $msg_type){
+		$pat =   $this->api_model->getPatient($patient_id);
+			// echo "<pre>";
+		// var_dump($pat);die;
 
-		
+		$message_type = ($msg_type == 'ADD') ? 'ADT^A04' : 'ADT^A08' ;
 		$patient['MESSAGE_HEADER'] = array( 
 			'SENDING_APPLICATION'   =>       "ADT",
 			'SENDING_FACILITY'      =>       $pat->facility_code,
@@ -429,13 +395,15 @@ $this->api_model->saveDrugPrescription($pe,$pe_order);
 			'RECEIVING_FACILITY'    =>       $pat->facility_code,
 			'MESSAGE_DATETIME'      =>       date('Ymdhis'),
 			'SECURITY'              =>       "",
-			'MESSAGE_TYPE'          =>       "ADT^A04",
+			'MESSAGE_TYPE'          =>       $message_type,
 			'PROCESSING_ID'         =>       "P"
 		);
 		$patient['PATIENT_IDENTIFICATION'] = array(
 			'EXTERNAL_PATIENT_ID' => array('ID'=>$pat->external_id, 'IDENTIFIER_TYPE' =>"GODS_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
-			'INTERNAL_PATIENT_ID' => array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
-			'INTERNAL_PATIENT_ID' => array('ID'=>$pat->internal_id, 'IDENTIFIER_TYPE' =>"INTERNAL_ID_NUMBER",'ASSIGNING_AUTHORITY' =>"ADT"),
+			'INTERNAL_PATIENT_ID' => [
+				array('ID'=>$pat->id, 'IDENTIFIER_TYPE' =>"INTERNAL_ID_NUMBER",'ASSIGNING_AUTHORITY' =>"ADT"),
+				array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI")
+			],
 			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->last_name,'LAST_NAME' =>$pat->other_name),
 			'DATE_OF_BIRTH' => $pat->dob,
 			'SEX' => $pat->gender,
@@ -445,7 +413,7 @@ $this->api_model->saveDrugPrescription($pe,$pe_order);
 			'DEATH_DATE' => '',
 			'DEATH_INDICATOR' => ''
 		);
-		$patient['NEXT_OF_KIN'] = array();
+		// $patient['NEXT_OF_KIN'] = array();
 
 
    // "NEXT_OF_KIN":[  
@@ -487,10 +455,10 @@ $this->api_model->saveDrugPrescription($pe,$pe_order);
 			),
 			array(
 				'SET_ID' =>"3",
-				'OBSERVATION_IDENTIFIER' => $pat->pregnant,
+				'OBSERVATION_IDENTIFIER' => 'IS_PREGNANT',
 				'CODING_SYSTEM' =>"",
 				'VALUE_TYPE' =>"CE",
-				'OBSERVATION_VALUE' =>"N",
+				'OBSERVATION_VALUE' =>$pat->pregnant,
 				'UNITS' =>"YES/NO",
 				'OBSERVATION_RESULT_STATUS' =>"F",
 				'OBSERVATION_DATETIME' =>"20170713110000",
@@ -544,34 +512,92 @@ $this->api_model->saveDrugPrescription($pe,$pe_order);
 		);
 
 
+			echo "<pre>";
+			echo(json_encode($patient,JSON_PRETTY_PRINT));
+		$this->writeLog('PATIENT CREATE ADT-A04 ',json_encode($patient));
+		$this->tcpILRequest(null, json_encode($patient));
 
-		var_dump($patient);
-		// $this->postRequest($patient,$header);
+	}
+
+	public function getDispensation(){
+		$pat =   $this->api_model->getDispensation(17800);
+		echo "<pre>";
+		var_dump($pat);
+
+
+		$patient['MESSAGE_HEADER'] = array( 
+			'SENDING_APPLICATION'   =>       "ADT",
+			'SENDING_FACILITY'      =>       $pat->facility_code,
+			'RECEIVING_APPLICATION' =>       "IL",
+			'RECEIVING_FACILITY'    =>       $pat->facility_code,
+			'MESSAGE_DATETIME'      =>       date('Ymdhis'),
+			'SECURITY'              =>       "",
+			'MESSAGE_TYPE'          =>       "ADT^A04",
+			'PROCESSING_ID'         =>       "P"
+		);
+		$patient['PATIENT_IDENTIFICATION'] = array(
+			'EXTERNAL_PATIENT_ID' => array('ID'=>$pat->external_id, 'IDENTIFIER_TYPE' =>"GODS_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
+			'INTERNAL_PATIENT_ID' => array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
+			'INTERNAL_PATIENT_ID' => array('ID'=>$pat->id, 'IDENTIFIER_TYPE' =>"INTERNAL_ID_NUMBER",'ASSIGNING_AUTHORITY' =>"ADT"),
+			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->last_name,'LAST_NAME' =>$pat->other_name),
+			'DATE_OF_BIRTH' => $pat->dob,
+			'SEX' => $pat->gender,
+			'PATIENT_ADDRESS' => array('PHYSICAL_ADDRESS'=>array('VILLAGE' => '','WARD' => '','SUB_COUNTY' => '','COUNTY' => ''),'POSTAL_ADDRESS' =>$pat->pob),
+			'PHONE_NUMBER' => $pat->gender,
+			'MARITAL_STATUS' => $pat->partner_status,
+			'DEATH_DATE' => '',
+			'DEATH_INDICATOR' => ''
+		);
+
+			// var_dump($patient);
+		$this->postRequest($patient,$header);
 	}
 
 
 
-	function postRequest($request){
-		$url = ''; // IL url
+	function postILRequest($request){
+		// echo $request;
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_URL, $this->il_url);
 
-		curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-		curl_setopt($ch, CURLOPT_HTTPGET, 1);
-		curl_setopt($ch, CURLOPT_VERBOSE, 0);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_DNS_USE_GLOBAL_CACHE, 0);
-		curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 2);
+		curl_setopt_array($ch, array(
+    CURLOPT_POST => TRUE,
+    CURLOPT_RETURNTRANSFER => TRUE,
+    CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/json'
+    ),
+    CURLOPT_POSTFIELDS => $request
+));
+
+
 		$json_data = curl_exec($ch); 
 		if (empty($json_data)) {
 			$message = "cURL Error: " . curl_error($ch)."<br/>";
 		} else {
 			// message sent successfully
 		}
+	}
+
+	function tcpILRequest($request_type, $request){
+			// $fp = fsockopen("192.168.43.183", 9720, $errno, $errstr, 30);
+		$fp = fsockopen("tedb19", 9720, $errno, $errstr, 30);
+		if (!$fp) {
+			echo "$errstr ($errno)<br />\n";
+		} else {
+			fwrite($fp, '~'.$request.'~');
+			fclose($fp);
+			print date('H:i:s');
+			die;
+		}
+	}
+	function writeLog($logtype,$msg){
+
+		$fp = fopen('IL-api.log', 'a');
+		fwrite($fp, date('H:i:s'). ' '.$logtype.' : '. $msg."\r\n");
+		// fwrite($fp,'\n');
+
+		fclose($fp);
+
 	}
 
 

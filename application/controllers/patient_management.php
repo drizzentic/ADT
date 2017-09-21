@@ -286,15 +286,15 @@ class Patient_management extends MY_Controller {
         $patient = "";
         $facility = "";
         $sql = "SELECT p.*,
-		               rst.Name as service_name,
-		               dp.child,
-		               s.secondary_spouse 
-		        FROM patient p 
-		        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
-		        LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
-		        LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse 
-		        WHERE p.id='$record_no'
-		        GROUP BY p.id";
+        rst.Name as service_name,
+        dp.child,
+        s.secondary_spouse 
+        FROM patient p 
+        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+        LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
+        LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse 
+        WHERE p.id='$record_no'
+        GROUP BY p.id";
         $query = $this -> db -> query($sql);
         $results = $query -> result_array();
 
@@ -326,35 +326,35 @@ class Patient_management extends MY_Controller {
         }
         //Patient History
         $sql = "SELECT pv.dispensing_date,
-						 v.name AS visit, 
-						 u.Name AS unit, 
-						 pv.dose, 
-						 pv.duration, 
-						 pv.indication, 
-						 pv.patient_visit_id AS record, 
-						 d.drug, 
-						 pv.quantity, 
-						 pv.current_weight, 
-						 pv.current_height, 
-						 r1.regimen_desc as last_regimen, 
-						 r.regimen_desc, 
-						 pv.batch_number, 
-						 pv.pill_count, 
-						 pv.adherence, 
-						 pv.user, 
-						 rcp.name as regimen_change_reason 
-		        FROM v_patient_visits pv 
-			        LEFT JOIN drugcode d ON pv.drug_id = d.id 
-			        LEFT JOIN drug_unit u ON d.unit = u.id 
-			        LEFT JOIN regimen r ON pv.regimen_id = r.id 
-			        LEFT JOIN regimen r1 ON pv.last_regimen = r1.id 
-			        LEFT JOIN visit_purpose v ON pv.visit_purpose_id = v.id 
-			        LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason
-		        WHERE pv.patient_id = '$patient' 
-		        AND pv.facility =  '$facility' 
-		        AND pv.active='1' AND pv.pv_active='1'
-		        GROUP BY d.drug,pv.dispensing_date
-		        ORDER BY  pv.patient_visit_id DESC";
+        v.name AS visit, 
+        u.Name AS unit, 
+        pv.dose, 
+        pv.duration, 
+        pv.indication, 
+        pv.patient_visit_id AS record, 
+        d.drug, 
+        pv.quantity, 
+        pv.current_weight, 
+        pv.current_height, 
+        r1.regimen_desc as last_regimen, 
+        r.regimen_desc, 
+        pv.batch_number, 
+        pv.pill_count, 
+        pv.adherence, 
+        pv.user, 
+        rcp.name as regimen_change_reason 
+        FROM v_patient_visits pv 
+        LEFT JOIN drugcode d ON pv.drug_id = d.id 
+        LEFT JOIN drug_unit u ON d.unit = u.id 
+        LEFT JOIN regimen r ON pv.regimen_id = r.id 
+        LEFT JOIN regimen r1 ON pv.last_regimen = r1.id 
+        LEFT JOIN visit_purpose v ON pv.visit_purpose_id = v.id 
+        LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason
+        WHERE pv.patient_id = '$patient' 
+        AND pv.facility =  '$facility' 
+        AND pv.active='1' AND pv.pv_active='1'
+        GROUP BY d.drug,pv.dispensing_date
+        ORDER BY  pv.patient_visit_id DESC";
         $query = $this -> db -> query($sql);
         $results = $query -> result_array();
         if ($results) {
@@ -392,24 +392,24 @@ class Patient_management extends MY_Controller {
 
     public function edit($record_no) {
         $sql = "SELECT p.*,
-		               rst.Name as service_name,
-		               dp.parent,
-		               s.secondary_spouse,
-                       t.* 
-		               FROM patient p 
-		               LEFT JOIN regimen_service_type rst ON rst.id=p.service 
-		               LEFT JOIN dependants dp ON p.patient_number_ccc=dp.child  
-		        	   LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse
-                       LEFT JOIN (
-                            SELECT 
-                                patient_id, prep_reason_id AS prep_reason, is_tested AS prep_test_answer, test_date AS prep_test_date, test_result AS prep_test_result 
-                            FROM patient_prep_test 
-                            WHERE patient_id = ?
-                            ORDER BY test_date DESC
-                            LIMIT 1
-                        ) t ON t.patient_id = p.id
-		               WHERE p.id = ?
-		               GROUP BY p.id";
+        rst.Name as service_name,
+        dp.parent,
+        s.secondary_spouse,
+        t.* 
+        FROM patient p 
+        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+        LEFT JOIN dependants dp ON p.patient_number_ccc=dp.child  
+        LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse
+        LEFT JOIN (
+        SELECT 
+        patient_id, prep_reason_id AS prep_reason, is_tested AS prep_test_answer, test_date AS prep_test_date, test_result AS prep_test_result 
+        FROM patient_prep_test 
+        WHERE patient_id = ?
+        ORDER BY test_date DESC
+        LIMIT 1
+        ) t ON t.patient_id = p.id
+        WHERE p.id = ?
+        GROUP BY p.id";
         $query = $this -> db -> query($sql, array($record_no, $record_no));
         //echo $this->db->last_query();die();
         $results = $query -> result_array();
@@ -489,9 +489,11 @@ class Patient_management extends MY_Controller {
         }
 
         //Patient Information & Demographics
+        $ccc_number = $this -> input -> post('patient_number', TRUE);
+
         $new_patient = new Patient();
         $new_patient -> Medical_Record_Number = $this -> input -> post('medical_record_number', TRUE);
-        $new_patient -> Patient_Number_CCC = $this -> input -> post('patient_number', TRUE);
+        $new_patient -> Patient_Number_CCC = $ccc_number;
         $new_patient -> First_Name = $this -> input -> post('first_name', TRUE);
         $new_patient -> Last_Name = $this -> input -> post('last_name', TRUE);
         $new_patient -> Other_Name = $this -> input -> post('other_name', TRUE);
@@ -584,6 +586,11 @@ class Patient_management extends MY_Controller {
         $patient = $this -> input -> post('patient_number', TRUE);
         $direction = $this -> input -> post('direction', TRUE);
 
+
+        // post to IL via API
+        file_get_contents(base_url().'tools/api/getPatient/'.$ccc_number.'/ADD');
+        // /> POST TO IL VIA API
+
         if ($direction == 0) {
             $this -> session -> set_userdata('msg_save_transaction', 'success');
             $this -> session -> set_flashdata('dispense_updated', 'Patient: ' . $this -> input -> post('first_name', TRUE) . " " . $this -> input -> post('last_name', TRUE) . ' was Saved');
@@ -595,9 +602,9 @@ class Patient_management extends MY_Controller {
 
     public function getDependentStatus($patient_number_ccc){
         $sql = "SELECT ps.name,p.patient_number_ccc,p.first_name,p.last_name,p.other_name FROM patient p
-				INNER JOIN patient_status ps ON ps.id = p.current_status
-				AND p.patient_number_ccc='$patient_number_ccc'
-				AND ps.name LIKE '%lost%'";
+        INNER JOIN patient_status ps ON ps.id = p.current_status
+        AND p.patient_number_ccc='$patient_number_ccc'
+        AND ps.name LIKE '%lost%'";
         $query = $this -> db -> query($sql);
         $result = $query -> result_array();
         if(count($result)>0){
@@ -631,7 +638,7 @@ class Patient_management extends MY_Controller {
             $sql = "select * from patient_appointment where patient='$patient' and appointment='$prev_appointment' and facility='$facility'";
             $query = $this -> db -> query($sql);
             $results = $query -> result_array();
-           
+
             if ($results) {
                 $record_no = $results[0]['id'];
                 //If exisiting appointment(Update new Record)
@@ -647,7 +654,7 @@ class Patient_management extends MY_Controller {
             $sql = "select * from clinic_appointment where patient='$patient' and appointment='$prev_clinicalappointment' and facility='$facility'";
             $query = $this -> db -> query($sql);
             $results = $query -> result_array();
-           
+
             if ($results) {
                 $record_no = $results[0]['id'];
 
@@ -792,8 +799,15 @@ class Patient_management extends MY_Controller {
         $this -> session -> set_userdata('msg_save_transaction', 'success');
         $this -> session -> set_userdata('user_updated', $this -> input -> post('first_name'));
 
+        // Send update to IL
+        file_get_contents(base_url().'tools/api/getPatient/'.$patient.'/EDIT');
+        // </  Send update to IL
+
+
         redirect("patient_management/load_view/details/$record_id");
     }
+
+
 
     public function updateTestData($test_data = array()){
         $prev_test_data = $this->db->get_where('patient_prep_test', $test_data)->row_array();
@@ -876,244 +890,244 @@ class Patient_management extends MY_Controller {
          //echo $app_date." currently becomes ".$changed_date." which was initially ".date("m/d/Y",$changed_date)."<br>";
          $appointment->Appointment = $changed_date;
          $appointment->save();
-         }*/
-    }
+     }*/
+ }
 
-    public function export() {
-        $facility_code = $this -> session -> userdata('facility');
-        $sql = "SELECT medical_record_number,patient_number_ccc,first_name,last_name,other_name,dob,pob,IF(gender=1,'MALE','FEMALE')as gender,IF(pregnant=1,'YES','NO')as pregnant,weight as Current_Weight,height as Current_height,sa as Current_BSA,p.phone,physical as Physical_Address,alternate as Alternate_Address,other_illnesses,other_drugs,adr as Drug_Allergies,IF(tb=1,'YES','NO')as TB,IF(smoke=1,'YES','NO')as smoke,IF(alcohol=1,'YES','NO')as alcohol,date_enrolled,ps.name as Patient_source,s.Name as supported_by,timestamp,facility_code,rst.name as Service,r1.regimen_desc as Start_Regimen,start_regimen_date,pst.Name as Current_status,migration_id,machine_code,IF(sms_consent=1,'YES','NO') as SMS_Consent,fplan as Family_Planning,tbphase,startphase,endphase,IF(partner_status=1,'Concordant',IF(partner_status=2,'Discordant','')) as partner_status,status_change_date,IF(partner_type=1,'YES','NO') as Disclosure,support_group,r.regimen_desc as Current_Regimen,nextappointment,start_height,start_weight,start_bsa,IF(p.transfer_from !='',f.name,'N/A') as Transfer_From,DATEDIFF(nextappointment,CURDATE()) AS Days_to_NextAppointment,dp.name as prophylaxis
-				FROM patient p
-				left join regimen r on r.id=p.current_regimen
-				left join regimen r1 on r1.id=p.start_regimen
-				left join patient_source ps on ps.id=p.source
-				left join supporter s on s.id=p.supported_by
-				left join regimen_service_type rst on rst.id=p.service
-				left join patient_status pst on pst.id=p.current_status
-				left join facilities f on f.facilitycode=p.transfer_from
-				left join drug_prophylaxis dp on dp.id=p.drug_prophylaxis
-				WHERE facility_code='$facility_code'
-				ORDER BY p.patient_number_ccc ASC";
-        $query = $this -> db -> query($sql);
-        $results = $query -> result_array();
+ public function export() {
+    $facility_code = $this -> session -> userdata('facility');
+    $sql = "SELECT medical_record_number,patient_number_ccc,first_name,last_name,other_name,dob,pob,IF(gender=1,'MALE','FEMALE')as gender,IF(pregnant=1,'YES','NO')as pregnant,weight as Current_Weight,height as Current_height,sa as Current_BSA,p.phone,physical as Physical_Address,alternate as Alternate_Address,other_illnesses,other_drugs,adr as Drug_Allergies,IF(tb=1,'YES','NO')as TB,IF(smoke=1,'YES','NO')as smoke,IF(alcohol=1,'YES','NO')as alcohol,date_enrolled,ps.name as Patient_source,s.Name as supported_by,timestamp,facility_code,rst.name as Service,r1.regimen_desc as Start_Regimen,start_regimen_date,pst.Name as Current_status,migration_id,machine_code,IF(sms_consent=1,'YES','NO') as SMS_Consent,fplan as Family_Planning,tbphase,startphase,endphase,IF(partner_status=1,'Concordant',IF(partner_status=2,'Discordant','')) as partner_status,status_change_date,IF(partner_type=1,'YES','NO') as Disclosure,support_group,r.regimen_desc as Current_Regimen,nextappointment,start_height,start_weight,start_bsa,IF(p.transfer_from !='',f.name,'N/A') as Transfer_From,DATEDIFF(nextappointment,CURDATE()) AS Days_to_NextAppointment,dp.name as prophylaxis
+    FROM patient p
+    left join regimen r on r.id=p.current_regimen
+    left join regimen r1 on r1.id=p.start_regimen
+    left join patient_source ps on ps.id=p.source
+    left join supporter s on s.id=p.supported_by
+    left join regimen_service_type rst on rst.id=p.service
+    left join patient_status pst on pst.id=p.current_status
+    left join facilities f on f.facilitycode=p.transfer_from
+    left join drug_prophylaxis dp on dp.id=p.drug_prophylaxis
+    WHERE facility_code='$facility_code'
+    ORDER BY p.patient_number_ccc ASC";
+    $query = $this -> db -> query($sql);
+    $results = $query -> result_array();
 
-        $objPHPExcel = new PHPExcel();
-        $objPHPExcel -> setActiveSheetIndex(0);
-        $i = 1;
+    $objPHPExcel = new PHPExcel();
+    $objPHPExcel -> setActiveSheetIndex(0);
+    $i = 1;
 
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('A' . $i, "medical_record_number");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('B' . $i, "patient_number_ccc");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('C' . $i, "first_name");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('D' . $i, "last_name");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('E' . $i, "other_name");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('F' . $i, "dob");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('G' . $i, "pob");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('H' . $i, "gender");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('I' . $i, "pregnant");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('J' . $i, "Current_Weight");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('K' . $i, "Current_height");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('L' . $i, "Current_BSA");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('M' . $i, "phone");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('N' . $i, "Physical_Address");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('O' . $i, "Alternate_Address");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('P' . $i, "other_illnesses");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('Q' . $i, "other_drugs");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('R' . $i, "Drug_Allergies");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('S' . $i, "TB");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('T' . $i, "smoke");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('U' . $i, "alcohol");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('V' . $i, "date_enrolled");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('W' . $i, "Patient_source");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('X' . $i, "supported_by");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('Y' . $i, "timestamp");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('Z' . $i, "facility_code");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AA' . $i, "pob");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AB' . $i, "Service");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AC' . $i, "Start_Regimen");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AD' . $i, "start_regimen_date");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AE' . $i, "Current_status");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AF' . $i, "migration_id");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AG' . $i, "machine_code");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AH' . $i, "SMS_Consent");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AI' . $i, "Family_Planning");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AJ' . $i, "tbphase");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AK' . $i, "startphase");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AL' . $i, "endphase");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AM' . $i, "partner_status");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AN' . $i, "status_change_date");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AO' . $i, "Disclosure");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AP' . $i, "support_group");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AQ' . $i, "Current_Regimen");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AR' . $i, "nextappointment");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AS' . $i, "start_height");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AT' . $i, "start_weight");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AU' . $i, "start_bsa");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AV' . $i, "Transfer_From");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AW' . $i, "Days_To_NextAppointment");
-        $objPHPExcel -> getActiveSheet() -> SetCellValue('AY' . $i, "Drug_Prophylaxis");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('A' . $i, "medical_record_number");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('B' . $i, "patient_number_ccc");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('C' . $i, "first_name");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('D' . $i, "last_name");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('E' . $i, "other_name");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('F' . $i, "dob");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('G' . $i, "pob");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('H' . $i, "gender");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('I' . $i, "pregnant");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('J' . $i, "Current_Weight");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('K' . $i, "Current_height");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('L' . $i, "Current_BSA");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('M' . $i, "phone");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('N' . $i, "Physical_Address");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('O' . $i, "Alternate_Address");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('P' . $i, "other_illnesses");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('Q' . $i, "other_drugs");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('R' . $i, "Drug_Allergies");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('S' . $i, "TB");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('T' . $i, "smoke");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('U' . $i, "alcohol");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('V' . $i, "date_enrolled");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('W' . $i, "Patient_source");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('X' . $i, "supported_by");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('Y' . $i, "timestamp");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('Z' . $i, "facility_code");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AA' . $i, "pob");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AB' . $i, "Service");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AC' . $i, "Start_Regimen");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AD' . $i, "start_regimen_date");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AE' . $i, "Current_status");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AF' . $i, "migration_id");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AG' . $i, "machine_code");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AH' . $i, "SMS_Consent");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AI' . $i, "Family_Planning");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AJ' . $i, "tbphase");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AK' . $i, "startphase");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AL' . $i, "endphase");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AM' . $i, "partner_status");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AN' . $i, "status_change_date");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AO' . $i, "Disclosure");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AP' . $i, "support_group");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AQ' . $i, "Current_Regimen");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AR' . $i, "nextappointment");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AS' . $i, "start_height");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AT' . $i, "start_weight");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AU' . $i, "start_bsa");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AV' . $i, "Transfer_From");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AW' . $i, "Days_To_NextAppointment");
+    $objPHPExcel -> getActiveSheet() -> SetCellValue('AY' . $i, "Drug_Prophylaxis");
 
-        foreach ($results as $result) {
-            $i++;
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('A' . $i, $result["medical_record_number"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('B' . $i, $result["patient_number_ccc"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('C' . $i, $result["first_name"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('D' . $i, $result["last_name"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('E' . $i, $result["other_name"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('F' . $i, $result["dob"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('G' . $i, $result["pob"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('H' . $i, $result["gender"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('I' . $i, $result["pregnant"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('J' . $i, $result["Current_Weight"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('K' . $i, $result["Current_height"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('L' . $i, $result["Current_BSA"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('M' . $i, $result["phone"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('N' . $i, $result["Physical_Address"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('O' . $i, $result["Alternate_Address"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('P' . $i, $result["other_illnesses"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('Q' . $i, $result["other_drugs"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('R' . $i, $result["Drug_Allergies"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('S' . $i, $result["TB"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('T' . $i, $result["smoke"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('U' . $i, $result["alcohol"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('V' . $i, $result["date_enrolled"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('W' . $i, $result["Patient_source"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('X' . $i, $result["supported_by"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('Y' . $i, $result["timestamp"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('Z' . $i, $result["facility_code"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AA' . $i, $result["pob"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AB' . $i, $result["Service"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AC' . $i, $result["Start_Regimen"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AD' . $i, $result["start_regimen_date"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AE' . $i, $result["Current_status"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AF' . $i, $result["migration_id"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AG' . $i, $result["machine_code"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AH' . $i, $result["SMS_Consent"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AI' . $i, $result["Family_Planning"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AJ' . $i, $result["tbphase"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AK' . $i, $result["startphase"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AL' . $i, $result["endphase"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AM' . $i, $result["partner_status"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AN' . $i, $result["status_change_date"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AO' . $i, $result["Disclosure"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AP' . $i, $result["support_group"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AQ' . $i, $result["Current_Regimen"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AR' . $i, $result["nextappointment"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AS' . $i, $result["start_height"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AT' . $i, $result["start_weight"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AU' . $i, $result["start_bsa"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AV' . $i, $result["Transfer_From"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AW' . $i, $result["Days_to_NextAppointment"]);
-            $objPHPExcel -> getActiveSheet() -> SetCellValue('AY' . $i, $result["prophylaxis"]);
-
-        }
-
-        if (ob_get_contents())
-            ob_end_clean();
-        $filename = "Patient Master For " . $facility_code . ".csv";
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename=' . $filename);
-
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'CSV');
-
-        $objWriter -> save('php://output');
-
-        $objPHPExcel -> disconnectWorksheets();
-        unset($objPHPExcel);
+    foreach ($results as $result) {
+        $i++;
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('A' . $i, $result["medical_record_number"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('B' . $i, $result["patient_number_ccc"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('C' . $i, $result["first_name"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('D' . $i, $result["last_name"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('E' . $i, $result["other_name"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('F' . $i, $result["dob"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('G' . $i, $result["pob"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('H' . $i, $result["gender"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('I' . $i, $result["pregnant"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('J' . $i, $result["Current_Weight"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('K' . $i, $result["Current_height"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('L' . $i, $result["Current_BSA"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('M' . $i, $result["phone"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('N' . $i, $result["Physical_Address"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('O' . $i, $result["Alternate_Address"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('P' . $i, $result["other_illnesses"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('Q' . $i, $result["other_drugs"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('R' . $i, $result["Drug_Allergies"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('S' . $i, $result["TB"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('T' . $i, $result["smoke"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('U' . $i, $result["alcohol"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('V' . $i, $result["date_enrolled"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('W' . $i, $result["Patient_source"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('X' . $i, $result["supported_by"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('Y' . $i, $result["timestamp"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('Z' . $i, $result["facility_code"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AA' . $i, $result["pob"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AB' . $i, $result["Service"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AC' . $i, $result["Start_Regimen"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AD' . $i, $result["start_regimen_date"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AE' . $i, $result["Current_status"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AF' . $i, $result["migration_id"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AG' . $i, $result["machine_code"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AH' . $i, $result["SMS_Consent"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AI' . $i, $result["Family_Planning"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AJ' . $i, $result["tbphase"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AK' . $i, $result["startphase"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AL' . $i, $result["endphase"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AM' . $i, $result["partner_status"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AN' . $i, $result["status_change_date"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AO' . $i, $result["Disclosure"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AP' . $i, $result["support_group"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AQ' . $i, $result["Current_Regimen"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AR' . $i, $result["nextappointment"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AS' . $i, $result["start_height"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AT' . $i, $result["start_weight"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AU' . $i, $result["start_bsa"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AV' . $i, $result["Transfer_From"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AW' . $i, $result["Days_to_NextAppointment"]);
+        $objPHPExcel -> getActiveSheet() -> SetCellValue('AY' . $i, $result["prophylaxis"]);
 
     }
 
-    public function enable($id) {
-        $sql = "update patient set active='1' where id='$id'";
-        $this -> db -> query($sql);
-        $get_user = "select first_name FROM patient WHERE id='$id' LIMIT 1";
-        $user_sql = $this -> db -> query($get_user);
-        $user_array = $user_sql -> result_array();
-        $first_name = "";
-        foreach ($user_array as $value) {
-            $first_name = $value['first_name'];
-        }
+    if (ob_get_contents())
+        ob_end_clean();
+    $filename = "Patient Master For " . $facility_code . ".csv";
+    header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+    header("Cache-Control: no-store, no-cache, must-revalidate");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename=' . $filename);
+
+    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'CSV');
+
+    $objWriter -> save('php://output');
+
+    $objPHPExcel -> disconnectWorksheets();
+    unset($objPHPExcel);
+
+}
+
+public function enable($id) {
+    $sql = "update patient set active='1' where id='$id'";
+    $this -> db -> query($sql);
+    $get_user = "select first_name FROM patient WHERE id='$id' LIMIT 1";
+    $user_sql = $this -> db -> query($get_user);
+    $user_array = $user_sql -> result_array();
+    $first_name = "";
+    foreach ($user_array as $value) {
+        $first_name = $value['first_name'];
+    }
         //Set session for notications
-        $this -> session -> set_userdata('msg_save_transaction', 'success');
-        $this -> session -> set_userdata('user_enabled', $first_name." was enabled!");
-        redirect("patient_management");
-    }
+    $this -> session -> set_userdata('msg_save_transaction', 'success');
+    $this -> session -> set_userdata('user_enabled', $first_name." was enabled!");
+    redirect("patient_management");
+}
 
-    public function disable($id) {
-        $sql = "update patient set active='0' where id='$id'";
-        $this -> db -> query($sql);
-        $get_user = "select first_name FROM patient WHERE id='$id' LIMIT 1";
-        $user_sql = $this -> db -> query($get_user);
-        $user_array = $user_sql -> result_array();
-        $first_name = "";
-        foreach ($user_array as $value) {
-            $first_name = $value['first_name'];
-        }
+public function disable($id) {
+    $sql = "update patient set active='0' where id='$id'";
+    $this -> db -> query($sql);
+    $get_user = "select first_name FROM patient WHERE id='$id' LIMIT 1";
+    $user_sql = $this -> db -> query($get_user);
+    $user_array = $user_sql -> result_array();
+    $first_name = "";
+    foreach ($user_array as $value) {
+        $first_name = $value['first_name'];
+    }
         //Set session for notications
-        $this -> session -> set_userdata('msg_save_transaction', 'success');
-        $this -> session -> set_userdata('user_disabled', $first_name." was disabled!");
-        redirect("patient_management");
-    }
+    $this -> session -> set_userdata('msg_save_transaction', 'success');
+    $this -> session -> set_userdata('user_disabled', $first_name." was disabled!");
+    redirect("patient_management");
+}
 
-    public function delete($id) {
-        $sql = "DELETE FROM patient where id='$id' and active='0'";
-        $this -> db -> query($sql);
+public function delete($id) {
+    $sql = "DELETE FROM patient where id='$id' and active='0'";
+    $this -> db -> query($sql);
         //Set session for notications
-        $this -> session -> set_userdata('msg_save_transaction', 'success');
-        $this -> session -> set_userdata('user_disabled', "User Deleted");
-        redirect("patient_management");
-    }
+    $this -> session -> set_userdata('msg_save_transaction', 'success');
+    $this -> session -> set_userdata('user_disabled', "User Deleted");
+    redirect("patient_management");
+}
 
-    public function getAppointments($appointment = "") {
-        $results = "";
-        $sql = "select count(distinct(patient)) as total_appointments,weekend_max,weekday_max from patient_appointment pa,facilities f  where pa.appointment = '$appointment' and f.facilitycode=pa.facility";
-        $query = $this -> db -> query($sql);
-        $results = $query -> result_array();
-        echo json_encode($results);
-    }
+public function getAppointments($appointment = "") {
+    $results = "";
+    $sql = "select count(distinct(patient)) as total_appointments,weekend_max,weekday_max from patient_appointment pa,facilities f  where pa.appointment = '$appointment' and f.facilitycode=pa.facility";
+    $query = $this -> db -> query($sql);
+    $results = $query -> result_array();
+    echo json_encode($results);
+}
 
-    public function getSixMonthsDispensing($patient_no) {
-        $dyn_table = "";
-        $facility = $this -> session -> userdata("facility");
+public function getSixMonthsDispensing($patient_no) {
+    $dyn_table = "";
+    $facility = $this -> session -> userdata("facility");
 
-        $sql = "SELECT
-					DATE_FORMAT(pv.dispensing_date,'%d-%b-%Y') as dispensing_date,
-					UPPER(dc.Drug) as drug,
-					pv.quantity,
-					pv.pill_count,
-					pv.missed_pills,
-					round(((pv.quantity-(pv.pill_count-pv.months_of_stock))/pv.quantity)*100,2) as pill_adh,
-					round(((pv.quantity-pv.missed_pills)/pv.quantity)*100,2) as missed_adh,
-					pv.adherence
-				FROM patient_visit pv
-				LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
-				LEFT JOIN drugcode dc ON dc.id=pv.drug_id
-			    WHERE pv.patient_id LIKE '%$patient_no%'
-			    AND pv.facility = '$facility' 
-			    ORDER BY pv.dispensing_date DESC";
-        $query = $this -> db -> query($sql);
-        $results = $query -> result_array();
+    $sql = "SELECT
+    DATE_FORMAT(pv.dispensing_date,'%d-%b-%Y') as dispensing_date,
+    UPPER(dc.Drug) as drug,
+    pv.quantity,
+    pv.pill_count,
+    pv.missed_pills,
+    round(((pv.quantity-(pv.pill_count-pv.months_of_stock))/pv.quantity)*100,2) as pill_adh,
+    round(((pv.quantity-pv.missed_pills)/pv.quantity)*100,2) as missed_adh,
+    pv.adherence
+    FROM patient_visit pv
+    LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+    LEFT JOIN drugcode dc ON dc.id=pv.drug_id
+    WHERE pv.patient_id LIKE '%$patient_no%'
+    AND pv.facility = '$facility' 
+    ORDER BY pv.dispensing_date DESC";
+    $query = $this -> db -> query($sql);
+    $results = $query -> result_array();
 
-        if ($results)
+    if ($results)
+    {
+        foreach ($results as $result)
         {
-            foreach ($results as $result)
-            {
-                $dyn_table .= "<tbody><tr>";
-                $dyn_table .= "<td>" . $result['dispensing_date'] . "</td>";
-                $dyn_table .= "<td>" . $result['drug'] . "</td>";
-                $dyn_table .= "<td>" . $result['quantity'] . "</td>";
-                $dyn_table .= "<td>" . $result['pill_count'] . "</td>";
-                $dyn_table .= "<td>" . $result['missed_pills'] . "</td>";
-                $dyn_table .= "<td>" . $result['pill_adh'] . "%</td>";
-                $dyn_table .= "<td>" . $result['missed_adh'] . "%</td>";
+            $dyn_table .= "<tbody><tr>";
+            $dyn_table .= "<td>" . $result['dispensing_date'] . "</td>";
+            $dyn_table .= "<td>" . $result['drug'] . "</td>";
+            $dyn_table .= "<td>" . $result['quantity'] . "</td>";
+            $dyn_table .= "<td>" . $result['pill_count'] . "</td>";
+            $dyn_table .= "<td>" . $result['missed_pills'] . "</td>";
+            $dyn_table .= "<td>" . $result['pill_adh'] . "%</td>";
+            $dyn_table .= "<td>" . $result['missed_adh'] . "%</td>";
 
-                $adherence = doubleval(str_replace(array("%","<",">","="), "", $result['adherence']));
-                $average_adherence = (( doubleval($result['pill_adh']) + doubleval($result['missed_adh']) + $adherence) / 3);
-                $dyn_table .= "<td>" . $adherence . "%</td>";
-                $dyn_table .= "<td>" . number_format($average_adherence,2) . "%</td>";
-                $dyn_table .= "</tr></tbody>";			}
+            $adherence = doubleval(str_replace(array("%","<",">","="), "", $result['adherence']));
+            $average_adherence = (( doubleval($result['pill_adh']) + doubleval($result['missed_adh']) + $adherence) / 3);
+            $dyn_table .= "<td>" . $adherence . "%</td>";
+            $dyn_table .= "<td>" . number_format($average_adherence,2) . "%</td>";
+            $dyn_table .= "</tr></tbody>";			}
         }
         echo $dyn_table;
     }
@@ -1122,23 +1136,23 @@ class Patient_management extends MY_Controller {
         $facility = $this -> session -> userdata("facility");
         $dyn_table = "";
         $sql ="SELECT pv.pill_count,"
-            . "pv.missed_pills,"
-            . "ds.frequency,"
-            . "ds.value,"
-            . "pv.months_of_stock,"
-            . "pv.adherence,"
-            . "pv.dispensing_date,"
-            . "d.drug,"
-            . "pv.quantity"
-            . " from patient_visit pv"
-            . " left join drugcode d on d.id=pv.drug_id "
-            . "left join dose ds on ds.Name=pv.dose "
-            . "where patient_id = '$patient_no' "
-            . "and datediff(curdate(),dispensing_date)<=360 "
-            . "and datediff(curdate(),dispensing_date)>=0 "
-            . "and pv.facility='$facility'"
-            . "and pv.active='1'"
-            . "order by pv.dispensing_date desc";
+        . "pv.missed_pills,"
+        . "ds.frequency,"
+        . "ds.value,"
+        . "pv.months_of_stock,"
+        . "pv.adherence,"
+        . "pv.dispensing_date,"
+        . "d.drug,"
+        . "pv.quantity"
+        . " from patient_visit pv"
+        . " left join drugcode d on d.id=pv.drug_id "
+        . "left join dose ds on ds.Name=pv.dose "
+        . "where patient_id = '$patient_no' "
+        . "and datediff(curdate(),dispensing_date)<=360 "
+        . "and datediff(curdate(),dispensing_date)>=0 "
+        . "and pv.facility='$facility'"
+        . "and pv.active='1'"
+        . "order by pv.dispensing_date desc";
         $query = $this -> db -> query($sql);
         $results = $query -> result_array();
         if ($results) {
@@ -1203,15 +1217,15 @@ class Patient_management extends MY_Controller {
         $dyn_table = "";
         $facility = $this -> session -> userdata("facility");
         $sql = "select dispensing_date, r1.regimen_desc as current_regimen, r2.regimen_desc as previous_regimen, if(rc.name is null,pv.regimen_change_reason,rc.name) as reason "
-            . "from patient_visit pv "
-            . "left join regimen r1 on pv.regimen = r1.id"
-            . " left join regimen r2 on pv.last_regimen = r2.id"
-            . " left join regimen_change_purpose rc on pv.regimen_change_reason = rc.id "
-            . "where pv.patient_id LIKE '%$patient_no%' "
-            . "and pv.facility = '$facility' "
-            . "and pv.regimen != pv.last_regimen "
-            . "group by dispensing_date,pv.regimen "
-            . "order by pv.dispensing_date desc";
+        . "from patient_visit pv "
+        . "left join regimen r1 on pv.regimen = r1.id"
+        . " left join regimen r2 on pv.last_regimen = r2.id"
+        . " left join regimen_change_purpose rc on pv.regimen_change_reason = rc.id "
+        . "where pv.patient_id LIKE '%$patient_no%' "
+        . "and pv.facility = '$facility' "
+        . "and pv.regimen != pv.last_regimen "
+        . "group by dispensing_date,pv.regimen "
+        . "order by pv.dispensing_date desc";
         $query = $this -> db -> query($sql);
         $results = $query -> result_array();
         if ($results) {
@@ -1242,7 +1256,7 @@ class Patient_management extends MY_Controller {
         $status = "";
         $facility = $this -> session -> userdata("facility");
         $sql = "SELECT pa.appointment,IF(pa.appointment=pv.dispensing_date,'Visited',DATEDIFF(pa.appointment,curdate()))as Days_To 
-				FROM(SELECT patient,appointment FROM patient_appointment pa WHERE patient LIKE '%$patient_no%' AND facility='$facility') as pa,(SELECT patient_id,dispensing_date FROM patient_visit WHERE patient_id LIKE '%$patient_no%' AND facility='$facility') as pv GROUP BY pa.appointment ORDER BY pa.appointment desc";
+        FROM(SELECT patient,appointment FROM patient_appointment pa WHERE patient LIKE '%$patient_no%' AND facility='$facility') as pa,(SELECT patient_id,dispensing_date FROM patient_visit WHERE patient_id LIKE '%$patient_no%' AND facility='$facility') as pv GROUP BY pa.appointment ORDER BY pa.appointment desc";
         $query = $this -> db -> query($sql);
         $results = $query -> result_array();
         if ($results) {
@@ -1275,8 +1289,8 @@ class Patient_management extends MY_Controller {
 
         //Get list of patients who changed regimen
         $sql_patient = "SELECT DISTINCT(p.id) as patient_id FROM patient p
-						LEFT JOIN patient_visit pv ON pv.patient_id=p.id
-						WHERE pv.regimen_change_reason IS NOT NULL";
+        LEFT JOIN patient_visit pv ON pv.patient_id=p.id
+        WHERE pv.regimen_change_reason IS NOT NULL";
         $query_exec = $this -> db -> query($sql_patient);
         $patients = $query_exec -> result_array();
         foreach ($patients as $patient) {
@@ -1321,8 +1335,8 @@ class Patient_management extends MY_Controller {
         $patient_ccc = $this -> input ->post("patient_ccc");
         //Check if patient is on PMTCT and change them to ART
         $sql = "SELECT rst.name FROM patient p
-				LEFT JOIN regimen_service_type rst ON p.service = rst.id
-				WHERE p.patient_number_ccc ='$patient_ccc'";
+        LEFT JOIN regimen_service_type rst ON p.service = rst.id
+        WHERE p.patient_number_ccc ='$patient_ccc'";
         $query = $this ->db ->query($sql);
         $result = $query ->result_array();
         $service = $result[0]['name'];
@@ -1497,15 +1511,15 @@ class Patient_management extends MY_Controller {
             }
             //Transfer appointments to target patient
             $sql="UPDATE patient_appointment pa 
-                            SET pa.merge='".$ccc_no."',
-                                pa.patient='".$target_patient_ccc."'
-                  WHERE pa.patient='".$ccc_no."'";
+            SET pa.merge='".$ccc_no."',
+            pa.patient='".$target_patient_ccc."'
+            WHERE pa.patient='".$ccc_no."'";
             $this->db->query($sql);
             //Transfer visits to target patient
             $sql="UPDATE patient_visit pv 
-                            SET pv.migration_id='".$ccc_no."',
-                                pv.patient_id='".$target_patient_ccc."'
-                  WHERE pv.patient_id='".$ccc_no."'";
+            SET pv.migration_id='".$ccc_no."',
+            pv.patient_id='".$target_patient_ccc."'
+            WHERE pv.patient_id='".$ccc_no."'";
             $this->db->query($sql);
             $patient_no[]=$ccc_no;
         }
@@ -1534,15 +1548,15 @@ class Patient_management extends MY_Controller {
         }
         //Transfer appointments to original patient
         $sql="UPDATE patient_appointment pa 
-                        SET pa.merge='',
-                            pa.patient='".$target_patient_ccc."'
-              WHERE pa.merge='".$target_patient_ccc."'";
+        SET pa.merge='',
+        pa.patient='".$target_patient_ccc."'
+        WHERE pa.merge='".$target_patient_ccc."'";
         $this->db->query($sql);
         //Transfer visits and visits to original patient
         $sql="UPDATE patient_visit pv 
-                        SET pv.migration_id='',
-                            pv.patient_id='".$target_patient_ccc."',
-              WHERE pv.migration_id='".$target_patient_ccc."'";
+        SET pv.migration_id='',
+        pv.patient_id='".$target_patient_ccc."',
+        WHERE pv.migration_id='".$target_patient_ccc."'";
         $this->db->query($sql);
 
         $this -> session -> set_userdata('message_counter', '1');
@@ -1741,11 +1755,11 @@ class Patient_management extends MY_Controller {
         );
 
         $sql = "SELECT 
-                    prep_reason_id AS prep_reason, is_tested AS prep_test_answer, test_date AS prep_test_date, test_result AS prep_test_result 
-                FROM patient_prep_test 
-                WHERE patient_id = ? 
-                ORDER BY test_date DESC
-                LIMIT 1";
+        prep_reason_id AS prep_reason, is_tested AS prep_test_answer, test_date AS prep_test_date, test_result AS prep_test_result 
+        FROM patient_prep_test 
+        WHERE patient_id = ? 
+        ORDER BY test_date DESC
+        LIMIT 1";
         $result = $this->db->query($sql, array($patient_id))->row_array();
         if(!empty($result)){
             $prep_test_data = $result;
@@ -1758,26 +1772,26 @@ class Patient_management extends MY_Controller {
         $facility_code = $this -> session -> userdata("facility");
 
         $sql = "select  v_v.dispensing_date,
-                        v_v.visit_purpose_name AS visit, 
-                        v_v.dose, 
-                        v_v.duration, 
-                        v_v.patient_visit_id AS record_id, 
-                        D.drug, 
-                        v_v.quantity, 
-                        v_v.current_weight, 
-                        R.regimen_desc, 
-                        v_v.batch_number, 
-                        v_v.pill_count, 
-                        v_v.adherence, 
-                        v_v.user, 
-                        v_v.regimen_change_reason AS regimen_change_reason 
-                from v_patient_visits as v_v
-                INNER JOIN regimen as R ON R.id = v_v.current_regimen
-                INNER JOIN drugcode as D ON D.id = v_v.drug_id
-                WHERE v_v.id = $patient_id
-                AND v_v.pv_active = 1
-                GROUP BY v_v.drug_id,v_v.dispensing_date
-                ORDER BY v_v.dispensing_date DESC";
+        v_v.visit_purpose_name AS visit, 
+        v_v.dose, 
+        v_v.duration, 
+        v_v.patient_visit_id AS record_id, 
+        D.drug, 
+        v_v.quantity, 
+        v_v.current_weight, 
+        R.regimen_desc, 
+        v_v.batch_number, 
+        v_v.pill_count, 
+        v_v.adherence, 
+        v_v.user, 
+        v_v.regimen_change_reason AS regimen_change_reason 
+        from v_patient_visits as v_v
+        INNER JOIN regimen as R ON R.id = v_v.current_regimen
+        INNER JOIN drugcode as D ON D.id = v_v.drug_id
+        WHERE v_v.id = $patient_id
+        AND v_v.pv_active = 1
+        GROUP BY v_v.drug_id,v_v.dispensing_date
+        ORDER BY v_v.dispensing_date DESC";
 
         $query = $this->db->query($sql);
         $visits = $query->result_array();
@@ -2010,20 +2024,20 @@ class Patient_management extends MY_Controller {
         $access_level = $this -> session -> userdata('user_indicator');
 
         $sql = "SELECT 
-		            p.patient_number_ccc as ccc_no,
-		            UPPER(CONCAT_WS(' ',CONCAT_WS(' ',p.first_name,p.other_name),p.last_name)) as patient_name,
-		            DATE_FORMAT(p.nextappointment,'%b %D, %Y') as appointment,
-		            IF(p.phone='',p.alternate,p.phone) as phone_number,
-                    CONCAT_WS(' | ',r.regimen_code,r.regimen_desc) as regimen,
-                    ps.name as status,
-                    p.active,
-                    p.id,
-                    p.current_status
-		        FROM patient p  
-		        LEFT JOIN regimen r ON r.id=p.current_regimen
-		        LEFT JOIN patient_status ps ON ps.id=p.current_status
-		        WHERE p.facility_code = '$facility_code'
-		        AND p.patient_number_ccc != '' $filter ";
+        p.patient_number_ccc as ccc_no,
+        UPPER(CONCAT_WS(' ',CONCAT_WS(' ',p.first_name,p.other_name),p.last_name)) as patient_name,
+        DATE_FORMAT(p.nextappointment,'%b %D, %Y') as appointment,
+        IF(p.phone='',p.alternate,p.phone) as phone_number,
+        CONCAT_WS(' | ',r.regimen_code,r.regimen_desc) as regimen,
+        ps.name as status,
+        p.active,
+        p.id,
+        p.current_status
+        FROM patient p  
+        LEFT JOIN regimen r ON r.id=p.current_regimen
+        LEFT JOIN patient_status ps ON ps.id=p.current_status
+        WHERE p.facility_code = '$facility_code'
+        AND p.patient_number_ccc != '' $filter ";
         $query = $this -> db -> query($sql);
         $patients = $query ->result_array();
         $temp = array();
@@ -2090,8 +2104,8 @@ class Patient_management extends MY_Controller {
         $weight = $this ->input ->post('weight');
         $drug_id = $this ->input ->post('drug_id');
         $sql="select do.id,Name,value,frequency from dossing_chart d
-              inner join dose do on do.id=d.dose_id
-              where min_weight <= '$weight' and max_weight >= '$weight' and drug_id='$drug_id' and is_active = '1'";
+        inner join dose do on do.id=d.dose_id
+        where min_weight <= '$weight' and max_weight >= '$weight' and drug_id='$drug_id' and is_active = '1'";
         $query = $this -> db -> query($sql);
         $data = $query -> row();
         echo json_encode($data);
@@ -2108,7 +2122,7 @@ class Patient_management extends MY_Controller {
         $max_days_to_LDL_test=365;
         $max_days_for_greater_1000_test=90;
         $sql="SELECT p.patient_number_ccc,pv.result,pv.test_date,DATEDIFF(NOW(), test_date) AS test_date_diff, DATEDIFF(NOW(), start_regimen_date) AS start_regimen_date_diff FROM patient p left JOIN  patient_viral_load pv ON p.patient_number_ccc = pv.patient_ccc_number  and p.patient_number_ccc = '$patient_ccc' 
-            Where p.patient_number_ccc = '$patient_ccc' group by p.patient_number_ccc order by test_date desc";
+        Where p.patient_number_ccc = '$patient_ccc' group by p.patient_number_ccc order by test_date desc";
         $query = $this -> db -> query($sql);
         $datas = $query -> result_array();        
         foreach ($datas as $data) {
@@ -2136,35 +2150,35 @@ class Patient_management extends MY_Controller {
                 //if LDL
                 if($result=='< LDL copies/ml')
                 {
-                   if($test_date_diff < $max_days_to_LDL_test && (($max_days_to_LDL_test-$test_date_diff)<=$max_days_to_notification ))
-                   {
+                 if($test_date_diff < $max_days_to_LDL_test && (($max_days_to_LDL_test-$test_date_diff)<=$max_days_to_notification ))
+                 {
                     $msg="This patient needs to do viral Load test before ".$max_days_to_LDL_test-$test_date_diff." days from today";
                     
-                   }
-                   else if($test_date_diff > $max_days_to_LDL_test)
-                   {
-                        $msg="This patient needs to do viral Load test urgently as one year has elapsed from the last test";
-                   }
                 }
-                //else viral is more than 1000
-                else if($result > 1000)
+                else if($test_date_diff > $max_days_to_LDL_test)
                 {
-                    if($test_date_diff <$max_days_for_greater_1000_test && (($max_days_for_greater_1000_test-$test_date_diff)<=$max_days_to_notification))
-                    {
-                        $diff=$max_days_for_greater_1000_test-$test_date_diff;
-                        $msg="This patient needs to do viral Load test  ".$diff." days from today";
-                    }
-                    else if($test_date_diff > $max_days_for_greate_100_test)
-                    {
-                       $msg="This patient needs to do viral Load test as 90 days has passed";
-                    }
-
+                    $msg="This patient needs to do viral Load test urgently as one year has elapsed from the last test";
                 }
             }
+                //else viral is more than 1000
+            else if($result > 1000)
+            {
+                if($test_date_diff <$max_days_for_greater_1000_test && (($max_days_for_greater_1000_test-$test_date_diff)<=$max_days_to_notification))
+                {
+                    $diff=$max_days_for_greater_1000_test-$test_date_diff;
+                    $msg="This patient needs to do viral Load test  ".$diff." days from today";
+                }
+                else if($test_date_diff > $max_days_for_greate_100_test)
+                {
+                 $msg="This patient needs to do viral Load test as 90 days has passed";
+             }
 
-        }
-    echo json_encode($msg);
-    }
+         }
+     }
+
+ }
+ echo json_encode($msg);
+}
 
 }
 ob_get_clean();
