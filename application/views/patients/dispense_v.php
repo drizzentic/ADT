@@ -362,7 +362,7 @@
             $(document).ready(function(){
 
                 $('#ccc_store_id').val(<?= $ccc_store;?>);
-                $('#ccc_store_id').attr('disabled','true');
+                $('#ccc_store_id').attr('readonly','true');
                 var loopcounter = 0;
                 var patient_id="<?php echo $patient_id; ?>";
                 var service = "<?php echo $service_name; ?>"
@@ -1562,7 +1562,7 @@ request.fail(function(jqXHR, textStatus) {
                     var request = $.ajax({
                         url: link,
                         type: 'post',
-                        data: {"patient_ccc": patient_ccc},
+                        data: {"patient_ccc": patient_ccc, "ccc_store": $("#ccc_store_id").val()},
                         dataType: "json"
                     });
                     
