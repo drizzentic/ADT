@@ -20,8 +20,12 @@ class Api extends MX_Controller {
 	// API workflow 
 
 			$input = file_get_contents('php://input');
+			$input = str_replace("|~~", "", $input);
+			$input = str_replace("~~|", "", $input);
 			$message = json_decode($input);
 			$message_type = $message->MESSAGE_HEADER->MESSAGE_TYPE;
+			$this->writeLog('Incoming Message ',json_encode($input));
+
 			switch ($message_type) {
 				case 'ADT^A04':
 				$this->processPatientRegistration($message);
