@@ -1215,7 +1215,7 @@ request.fail(function(jqXHR, textStatus) {
         var soh = row.closest("tr").find(".soh").val();
 
         if (qty_disp>soh){
-            alert('You cannot more than ' +soh);
+            alert('You cannot dispense more than ' +soh);
             row.closest("tr").find(".qty_disp").val(soh);
 
         }
