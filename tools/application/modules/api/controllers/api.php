@@ -34,6 +34,9 @@ class Api extends MX_Controller {
 				$this->processPatientUpdate($message);
 				break;
 
+				case 'ORU^R01':
+				$this->processObservation($message);
+
 				case 'SIU^S12':
 				$this->processAppointment($message);
 				break;
@@ -59,7 +62,7 @@ class Api extends MX_Controller {
 
 			die;
 		}
-		$api_messages = ['ADT^Â08','ADT^Â04','SIU^S12','RDE^001'];
+		$api_messages = ['ADT^Â08','ADT^Â04','SIU^S12','ORU^R01','RDE^001'];
 		$api_arr = array(
 			'API Name'=> 'ADT PIS/EMR Interoperability API ',
 			'API vesion' => 1.0,
@@ -126,14 +129,14 @@ class Api extends MX_Controller {
 			$observations[$ob->OBSERVATION_IDENTIFIER] = $ob->OBSERVATION_VALUE;
 
 		}
-		$START_HEIGHT = (isset($observations['START_HEIGHT'])) ? $observations['START_HEIGHT'] : false ;
-		$START_WEIGHT = (isset($observations['START_WEIGHT'])) ? $observations['START_WEIGHT'] : false ;
-		// $IS_PREGNANT = $observations['IS_PREGNANT'];
-		$IS_PREGNANT = (isset($observations['IS_PREGNANT'])) ? $observations['IS_PREGNANT'] : false ;
-		$PRENGANT_EDD = (isset($observations['PRENGANT_EDD'])) ? $observations['PRENGANT_EDD'] : false ;
-		$CURRENT_REGIMEN = (isset($observations['CURRENT_REGIMEN'])) ? $this->api_model->getRegimen($observations['CURRENT_REGIMEN'])->id : false ;
-		$IS_SMOKER = (isset($observations['IS_SMOKER'])) ? $observations['IS_SMOKER'] : false ;
-		$IS_ALCOHOLIC = (isset($observations['IS_ALCOHOLIC'])) ? $observations['IS_ALCOHOLIC'] : false ;
+		// $START_HEIGHT = (isset($observations['START_HEIGHT'])) ? $observations['START_HEIGHT'] : false ;
+		// $START_WEIGHT = (isset($observations['START_WEIGHT'])) ? $observations['START_WEIGHT'] : false ;
+		// // $IS_PREGNANT = $observations['IS_PREGNANT'];
+		// $IS_PREGNANT = (isset($observations['IS_PREGNANT'])) ? $observations['IS_PREGNANT'] : false ;
+		// $PRENGANT_EDD = (isset($observations['PRENGANT_EDD'])) ? $observations['PRENGANT_EDD'] : false ;
+		// $CURRENT_REGIMEN = (isset($observations['CURRENT_REGIMEN'])) ? $this->api_model->getRegimen($observations['CURRENT_REGIMEN'])->id : false ;
+		// $IS_SMOKER = (isset($observations['IS_SMOKER'])) ? $observations['IS_SMOKER'] : false ;
+		// $IS_ALCOHOLIC = (isset($observations['IS_ALCOHOLIC'])) ? $observations['IS_ALCOHOLIC'] : false ;
 
 
 		$patient = array(
@@ -266,6 +269,67 @@ class Api extends MX_Controller {
 		var_dump($result);
 
 	}
+
+	function processObservation($observations){
+
+		$internal_patient = $this->api_model->getPatient(null,$patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID);
+		if (!$internal_patient){
+			$this->processPatientRegistration($patient);
+// registration successful
+			die;
+		}
+		$internal_patient_id = $internal_patient->internal_id;
+// internal & external patient ID matching
+		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
+
+		$EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
+
+// internal identification is an array of objects
+		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+
+ // Observation Result(s) - Array of Objects
+
+		$observations = array();
+		foreach ($patient->OBSERVATION_RESULT as $ob) {
+
+			$observations[$ob->OBSERVATION_IDENTIFIER] = $ob->OBSERVATION_VALUE;
+
+		}
+// var_dump($observations);die;
+		$START_HEIGHT = (isset($observations['START_HEIGHT'])) ? $observations['START_HEIGHT'] : false ;
+		$START_WEIGHT = (isset($observations['START_WEIGHT'])) ? $observations['START_WEIGHT'] : false ;
+		$IS_PREGNANT = (isset($observations['IS_PREGNANT'])) ? $observations['IS_PREGNANT'] : false ;
+		$PRENGANT_EDD = (isset($observations['PRENGANT_EDD'])) ? $observations['PRENGANT_EDD'] : false ;
+		$CURRENT_REGIMEN = (isset($observations['CURRENT_REGIMEN'])) ? $observations['CURRENT_REGIMEN'] : false ;
+		
+		$IS_SMOKER = (isset($observations['IS_SMOKER'])) ? $observations['IS_SMOKER'] : false ;
+		$IS_ALCOHOLIC = (isset($observations['IS_ALCOHOLIC'])) ? $observations['IS_ALCOHOLIC'] : false ;
+		
+
+		$REGIMEN_CHANGE_REASON = (isset($observations['REGIMEN_CHANGE_REASON'])) ? $observations['REGIMEN_CHANGE_REASON'] : false ;
+		if ($REGIMEN_CHANGE_REASON){
+
+// do regimen change/ drug stop
+			var_dump($REGIMEN_CHANGE_REASON);die;
+		}
+// 
+
+
+		$patient = array('facility_code'=>$SENDING_FACILITY,
+			'patient_number_ccc'=>$ccc_no,
+			'pregnant'=>$IS_PREGNANT,
+			'smoke'=>$IS_SMOKER,
+			'start_height'=>$START_HEIGHT,
+			'start_regimen'=>$CURRENT_REGIMEN,
+			'start_weight'=>$START_WEIGHT,
+			'weight'=>$START_HEIGHT);
+
+		$result = $this->api_model->updatePatient($patient,$internal_patient_id);
+		// var_dump($result);
+
+	
+	}
+
 	function processAppointment($appointment){
 		$internal_patient_ccc = $this->api_model->getPatient(null,$appointment->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID)->patient_number_ccc;
 		// var_dump($internal_patient_ccc);die;
@@ -559,7 +623,7 @@ class Api extends MX_Controller {
 
 			echo "<pre>";
 			echo(json_encode($patient,JSON_PRETTY_PRINT));
-		$this->writeLog('PATIENT CREATE ADT-A04 ',json_encode($patient));
+		$this->writeLog('PATIENT '.$msg_type.' ' .$message_type ,json_encode($patient));
 		$this->tcpILRequest(null, json_encode($patient));
 
 	}
