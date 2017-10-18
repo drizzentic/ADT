@@ -1,12 +1,12 @@
 <style type="text/css">
-  @media (min-width: 992px)
-  .modal-lg {
-    width: 900px;
-  }
+/*@media (min-width: 992px)*/
+/*.modal-lg {*/
+  /*width: 900px;*/
+  /*}*/
 
 </style>
 <!-- ADR Modal -->
-<div class="modal fade bs-example-modal-lg" id="ADRmodal" tabindex="-1" role="dialog" aria-labelledby="ADRModal">
+<!-- <div class="modal fade bs-example-modal-lg" id="ADRmodal" tabindex="-1" role="dialog" aria-labelledby="ADRModal">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -22,16 +22,16 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 
+<div class="container" style="background-color: #fffacc;border: solid thick #0000ff;padding: 30px; margin-top: 130px; margin-bottom: 130px;">
 
-<div class="no-container" style="background-color: #fffacc;border: solid thick #0000ff;padding: 30px;">
   <form name="adr_form" id="adr_form">
     <div class="container">
       <div class="row">
         <div class="text-center">
-         <img src="<?php base_url(); ?>../assets/images/top_logo.png">
+         <img src="../../assets/images/top_logo.png">
          <h4>
           MINISTRY OF HEALTH <br />
           THE PHARMACY AND POISONS BOARD<br />
@@ -158,6 +158,11 @@
   </div>
 
 
+  <?php
+// var_dump($ccc_stores);
+  ?>
+
+
 
 
   <table class="table table-bordered table-hover" id="tab_logic">
@@ -176,36 +181,38 @@
       </tr>
     </thead>
     <tbody>
-      <tr id='addr0'>
+      <tr id='addr1' rowid="1">
         <td>
           1
         </td>
         <td>
-          <select name="drug1" id="drug1">
+          <select name="drug1" id="drug1" class="drugs">
             <option>-- Select Drug --</option>         
+            <?php       foreach ($patient_appointment as $key => $app) {?>
+            <option><?= $app['drug'];?></option>         
+            <?php } ?>
           </select>
         </td>
         <td>
-          <input  name="dose0" list="dose0" id="doselist0" class="input-small next_pill dose icondose"> 
+          <input  name="dose1" list="dose1" id="doselist1" class="input-small next_pill dose icondose"> 
 
         </td>
         <td>
-          <input type="text" name='routefreq' id="routefreq0" placeholder='routefreq' class="form-control"/>
+          <input type="text" name='routefreq' id="routefreq1" placeholder='routefreq' class="form-control"/>
         </td>
         <td>
-          <input type="text" name='datestarted' id="datestarted0" placeholder='date started' class="form-control adrdate"/>
+          <input type="text" name='datestarted' id="datestarted1" placeholder='date started' class="form-control adrdate"/>
         </td>
         <td>
-          <input type="text" name='datestopped' id="datestopped0" placeholder='date Stopped' class="form-control adrdate"/>
+          <input type="text" name='datestopped' id="datestopped1" placeholder='date Stopped' class="form-control adrdate"/>
         </td>
         <td>
-          <input type="text" name='indication' id="indication0" placeholder='Indication' class="form-control"/>
+          <input type="text" name='indication' id="indication1" placeholder='Indication' class="form-control"/>
         </td>
         <td>
-          <input type="checkbox" name='drugsuspected0' id="drugsuspected0" class="form-control"/>
+          <input type="checkbox" name='drugsuspected1' id="drugsuspected1" class="form-control"/>
         </td>
       </tr>
-      <tr id='addr1'></tr>
     </tbody>
   </table>
 
@@ -300,7 +307,7 @@
     </div>
 
 
-<div class="mid-row">
+    <div class="mid-row">
       <label><span class='astericks'>*</span>Email ADDRESS </label>
       <input type="text" name="officeremail" id="officeremail" class="validate[required]">
     </div>
@@ -317,6 +324,11 @@
       <input type="text" name="officersignature" id="officersignature" class="validate[required]">
     </div>
 
+    <div class="mid-row">
+      <button type="submit" form="adr_form" value="Submit">Submit</button>
+      <button>cancel</button>
+    </div>
+
   </div>
 
 
@@ -328,12 +340,54 @@
  $(document).ready(function(){
   var i=1;
   $("#add_row").click(function(){
-    $('#addr'+i).html("<td>"+i+"</td><td><select name='drug1' id='drug1'><option>-- Select Drug --</option>         </select></td><td><input  name='dose"+i+"' list='dose"+i+"' id='doselist"+i+"' class='input-small next_pill dose icondose'></td><td><input type='text' name='routefreq"+i+"' id='routefreq"+i+"' placeholder='routefreq' class='form-control'/></td><td><input type='text' name='datestarted"+i+"' id='datestarted"+i+"' placeholder='date started' class='form-control adrdate'/></td><td><input type='text' name='datestopped"+i+"' id='datestopped"+i+"' placeholder='date Stopped' class='form-control adrdate'/></td><td><input type='text' name='indication"+i+"' id='indication"+i+"' placeholder='Indication' class='form-control'/></td><td><input type='checkbox' name='drugsuspected"+i+"' class='form-control'/></td>");
-    $(".adrdate").datepicker();
+    var drugsoptions = $('#drug1').html();
+    var td = "<td>"+i+"</td><td><select name='drug"+i+"' id='drug"+i+"'>"+drugsoptions+" </select></td><td><input  name='dose"+i+"' list='dose"+i+"' id='doselist"+i+"' class='input-small next_pill dose icondose'></td><td><input type='text' name='routefreq"+i+"' id='routefreq"+i+"' placeholder='routefreq' class='form-control'/></td><td><input type='text' name='datestarted"+i+"' id='datestarted"+i+"' placeholder='date started' class='form-control adrdate'/></td><td><input type='text' name='datestopped"+i+"' id='datestopped"+i+"' placeholder='date Stopped' class='form-control adrdate'/></td><td><input type='text' name='indication"+i+"' id='indication"+i+"' placeholder='Indication' class='form-control'/></td><td><input type='checkbox' name='drugsuspected"+i+"' class='form-control'/></td>";
 
-    $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
-    i++; 
-  });
+
+    // $('#doselist'+i);
+
+
+
+
+
+    var url_dose = "<?php echo base_url() . 'dispensement_management/getDoses'; ?>";
+                            //Get doses
+                            var request_dose = $.ajax({
+                              url: url_dose,
+                              type: 'post',
+                              dataType: "json"
+                            });
+                            request_dose.done(function(data) {
+                              var url_drug_dose = "<?php echo base_url() . 'dispensement_management/getDrugDose/'; ?>";
+                              var new_url_dose = url_drug_dose+selected_drug;
+                              
+                              var request_one_dose = $.ajax({
+                                url: new_url_dose,
+                                data: {"weight": weight,"drug_id":drug_id,"age":age},
+                                type: 'post',
+                                dataType: "json"
+                              });
+                              request_one_dose.done(function(data_single_dose) {
+                                var current_dose = data_single_dose[0].dose;
+                                row.closest("tr").find(".dose option").remove();
+                                $.each(data, function(key, value) {
+                                  row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
+                                });
+                                row.closest("tr").find(".dose").val(current_dose)
+
+                              });
+                            });
+
+
+
+
+
+
+                            $(".adrdate").datepicker();
+
+                            $('#tab_logic').append('<tr id="addr'+(i)+' rowid="'+(i)+'">'+td+'</tr>');
+                            i++; 
+                          });
   $("#delete_row").click(function(){
    if(i>1){
      $("#addr"+(i-1)).html('');
@@ -359,14 +413,22 @@
 
   $('#adr_form').submit(function(e){
     console.log('form submitted');
+    console.log($('form').serializeArray());
     e.preventDefault();
   });
 
 
   $(".adrdate").datepicker();
 
+  $('.drugs').change(function(e){
+    var row_id = $(this).parent().parent().attr('rowid');
+    console.log(row_id);
+  });
 
 
+// getDoses for all drugs
+// getDrugDose(drugid)
+// getIndications(drugid) // fetch on selecting a drug
 });
 
 </script>

@@ -34,7 +34,7 @@
         text-align:right;
     }
 </style>
-<?php include 'dispense_adr_v.php' ?>
+<?php// require 'dispense_adr_v.php' ?>
 <div class="container-fluid content">
     <div class="row-fluid">
         <a href="<?php echo base_url() . 'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a id="patient_names" href="<?php echo base_url() . 'patient_management/load_view/details/' . @$patient_id ?>"><?php echo strtoupper(@$result['name']); ?></a> <i class=" icon-chevron-right"></i><strong>Dispensing details</strong>
