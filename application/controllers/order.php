@@ -1351,8 +1351,7 @@ class Order extends MY_Controller {
 		if ($regimen_code != "") {
 			$sql = "SELECT r.id as map
 				    FROM sync_regimen r
-				    WHERE(r.code='$regimen_code'
-				    OR r.name='$regimen_desc')";
+				    WHERE r.code='$regimen_code'";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if ($results) {
@@ -1873,7 +1872,7 @@ class Order extends MY_Controller {
 
 		//get the data and convert it to an array that corresponds to the regimens
 
-		$oi_patients[] = array('OI1A'=>$a,'OI1C'=>$b,'OI2A'=>$c,'OI2C'=>$d,'OI4A'=>$e,'OI4C'=>$f);
+		$oi_patients[] = array('OI1A'=>$a,'OI1C'=>$b,'OI2A'=>$c,'OI2C'=>$d,'OI4AN'=>$e,'OI4CN'=>$f);
 		echo json_encode($oi_patients);		
 	}
 	public function getPeriodRegimenPatients($from, $to) {

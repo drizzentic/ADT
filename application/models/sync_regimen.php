@@ -7,6 +7,7 @@ class Sync_regimen extends Doctrine_Record {
 		$this -> hasColumn('old_code', 'varchar', 45);
 		$this -> hasColumn('description', 'text');
 		$this -> hasColumn('category_id', 'int', 11);
+		$this -> hasColumn('Active', 'varchar', 2);
 	}
 
 	public function setUp() {

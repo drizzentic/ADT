@@ -29,9 +29,16 @@ class Patient_management extends MY_Controller {
         $this -> load ->view("patient_merging_v",$data);
     }
 
-    public function get_Last_vl_result($ccc_number){
-        $sql = "SELECT * FROM patient_viral_load WHERE patient_ccc_number = '$ccc_number' ORDER BY test_date DESC LIMIT 1";
-        $results = $this->db->query($sql)->result_array();
+    public function get_Last_vl_result($patient_no){
+        //Validate patient_no when use of / to separate mflcode and ccc_no
+        $mflcode = $this->uri->segment(3);
+        $ccc_no = $this->uri->segment(4);
+        if($ccc_no){
+            $patient_no = $mflcode.'/'.$ccc_no;
+        }
+
+        $sql = "SELECT * FROM patient_viral_load WHERE patient_ccc_number = ? ORDER BY test_date DESC LIMIT 1";
+        $results = $this->db->query($sql, array($patient_no))->result_array();
         echo json_encode($results);
     }
 
@@ -1082,6 +1089,13 @@ class Patient_management extends MY_Controller {
     }
 
     public function getSixMonthsDispensing($patient_no) {
+        //Validate patient_no when use of / to separate mflcode and ccc_no
+        $mflcode = $this->uri->segment(3);
+        $ccc_no = $this->uri->segment(4);
+        if($ccc_no){
+            $patient_no = $mflcode.'/'.$ccc_no;
+        }
+
         $dyn_table = "";
         $facility = $this -> session -> userdata("facility");
 
@@ -1097,10 +1111,10 @@ class Patient_management extends MY_Controller {
 				FROM patient_visit pv
 				LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
 				LEFT JOIN drugcode dc ON dc.id=pv.drug_id
-			    WHERE pv.patient_id LIKE '%$patient_no%'
-			    AND pv.facility = '$facility' 
+			    WHERE pv.patient_id = ?
+			    AND pv.facility = ?
 			    ORDER BY pv.dispensing_date DESC";
-        $query = $this -> db -> query($sql);
+        $query = $this -> db -> query($sql, array($patient_no, $facility));
         $results = $query -> result_array();
 
         if ($results)
@@ -1207,6 +1221,13 @@ class Patient_management extends MY_Controller {
     }
 
     public function getRegimenChange($patient_no) {
+        //Validate patient_no when use of / to separate mflcode and ccc_no
+        $mflcode = $this->uri->segment(3);
+        $ccc_no = $this->uri->segment(4);
+        if($ccc_no){
+            $patient_no = $mflcode.'/'.$ccc_no;
+        }
+
         $dyn_table = "";
         $facility = $this -> session -> userdata("facility");
         $sql = "select dispensing_date, r1.regimen_desc as current_regimen, r2.regimen_desc as previous_regimen, if(rc.name is null,pv.regimen_change_reason,rc.name) as reason "
@@ -1214,12 +1235,12 @@ class Patient_management extends MY_Controller {
             . "left join regimen r1 on pv.regimen = r1.id"
             . " left join regimen r2 on pv.last_regimen = r2.id"
             . " left join regimen_change_purpose rc on pv.regimen_change_reason = rc.id "
-            . "where pv.patient_id LIKE '%$patient_no%' "
-            . "and pv.facility = '$facility' "
+            . "where pv.patient_id = ? "
+            . "and pv.facility = ? "
             . "and pv.regimen != pv.last_regimen "
             . "group by dispensing_date,pv.regimen "
             . "order by pv.dispensing_date desc";
-        $query = $this -> db -> query($sql);
+        $query = $this -> db -> query($sql, array($patient_no, $facility));
         $results = $query -> result_array();
         if ($results) {
             foreach ($results as $result) {
@@ -1245,12 +1266,19 @@ class Patient_management extends MY_Controller {
     }
 
     public function getAppointmentHistory($patient_no) {
+        //Validate patient_no when use of / to separate mflcode and ccc_no
+        $mflcode = $this->uri->segment(3);
+        $ccc_no = $this->uri->segment(4);
+        if($ccc_no){
+            $patient_no = $mflcode.'/'.$ccc_no;
+        }
+
         $dyn_table = "";
         $status = "";
         $facility = $this -> session -> userdata("facility");
         $sql = "SELECT pa.appointment,IF(pa.appointment=pv.dispensing_date,'Visited',DATEDIFF(pa.appointment,curdate()))as Days_To 
-				FROM(SELECT patient,appointment FROM patient_appointment pa WHERE patient LIKE '%$patient_no%' AND facility='$facility') as pa,(SELECT patient_id,dispensing_date FROM patient_visit WHERE patient_id LIKE '%$patient_no%' AND facility='$facility') as pv GROUP BY pa.appointment ORDER BY pa.appointment desc";
-        $query = $this -> db -> query($sql);
+				FROM(SELECT patient,appointment FROM patient_appointment pa WHERE patient = ? AND facility = ?) as pa,(SELECT patient_id,dispensing_date FROM patient_visit WHERE patient_id = ? AND facility = ?) as pv GROUP BY pa.appointment ORDER BY pa.appointment desc";
+        $query = $this -> db -> query($sql, array($patient_no, $facility, $patient_no, $facility));
         $results = $query -> result_array();
         if ($results) {
             foreach ($results as $result) {
