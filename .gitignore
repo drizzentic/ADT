@@ -38,7 +38,10 @@ application/views/sections/link.php
 # exclude everything
 assets/cache/*
 assets/download/*
+tools/backup_db/*
 
 # exception to the rule
 !assets/cache/.gitkeep 
 !assets/download/.gitkeep 
+!tools/backup_db/.gitkeep 
+!tools/backup_db/testadt_blank.sql.zip

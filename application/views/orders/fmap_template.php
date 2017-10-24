@@ -285,10 +285,10 @@ if ($facility_object -> service_pep == "1") {
 							$cat = str_replace(' ', '_',$category -> Name);
 						?><tr class="accordion"><th colspan="3" class="reg_cat_name" id="<?php echo $cat; ?>" ><?php echo $category -> Name;?></th></tr><?php
 							foreach($regimens as $regimen){
-
+								if($regimen['Active'] == '1'){
 								//Checking if the regimens are OI and assigning them the corresponding classes (that is the class that the input field is in, to enable easier calling from js - GT)
 								$regimen_io_code = $regimen['code'];								
-								if($regimen_io_code=='OI1A'||$regimen_io_code=='OI1C'||$regimen_io_code=='OI2A'||$regimen_io_code=='OI2C'||$regimen_io_code=='OI4A'||$regimen_io_code=='OI4C'){?>
+								if($regimen_io_code=='OI1A'||$regimen_io_code=='OI1C'||$regimen_io_code=='OI2A'||$regimen_io_code=='OI2C'||$regimen_io_code=='OI4AN'||$regimen_io_code=='OI4CN'){?>
 						   		<tr>
 								<td style="border-right:2px solid #DDD;"><?php echo $regimen -> code;?>
 									<!--<input type="hidden" name="item_id[]" class="item_id" id="item_id_<?php echo $regimen -> id;?>" value=""/>-->
@@ -319,6 +319,7 @@ if ($facility_object -> service_pep == "1") {
 							</tr>
 						<?php
 						   }
+						}
 					   }
 						?>
 					</tbody>
@@ -530,14 +531,14 @@ if ($facility_object -> service_pep == "1") {
 				var b = data[0]['OI1C'];
 				var c = data[0]['OI2A'];
 				var d = data[0]['OI2C'];
-				var e = data[0]['OI4A'];
-				var f = data[0]['OI4C'];
+				var e = data[0]['OI4AN'];
+				var f = data[0]['OI4CN'];
 				$('.OI1A').val(a);
 				$('.OI1C').val(b);
 				$('.OI2A').val(c);
 				$('.OI2C').val(d);
-				$('.OI4A').val(e);
-				$('.OI4C').val(f);								
+				$('.OI4AN').val(e);
+				$('.OI4CN').val(f);								
 			}
 		});
 		
