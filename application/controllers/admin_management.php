@@ -311,12 +311,17 @@ class Admin_management extends MY_Controller {
 			$this -> session -> set_userdata('msg_success', 'County: ' . $county_name . ' was Added');
 			$this -> session -> set_userdata('default_link', 'addCounty');
 		} else if ($table == "facilities") {
-			$satellite_code = $this -> input -> post("facility");
-			if ($satellite_code) {
+			$satellite_codes = explode(',', $this -> input -> post("satellite_holder"));
+			if (!empty($satellite_codes))
+			{	
+				$message = '';
 				$central_code = $this -> session -> userdata("facility");
-				$sql = "update facilities set parent='$central_code' where facilitycode='$satellite_code'";
-				$this -> db -> query($sql);
-				$this -> session -> set_userdata('msg_success', 'Facility No: ' . $satellite_code . ' was Added as a Satellite');
+				foreach ($satellite_codes as $satellite_code) {
+					$sql = "update facilities set parent = '$central_code' where facilitycode = '$satellite_code'";
+					$this -> db -> query($sql);
+					$message .= 'Facility No: ' . $satellite_code . ' was Added as a Satellite<br/>';
+				}
+				$this -> session -> set_userdata('msg_success', $message);
 			}
 			$this -> session -> set_userdata('default_link', 'addSatellite');
 		} else if ($table == "district") {

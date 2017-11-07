@@ -1,3 +1,17 @@
+<style type="text/css">
+	.ui-multiselect-menu {
+	    display: none;
+	    margin-left: 15px;
+	    position: static; 
+	    text-align: left;
+	   	zoom: 0.8;
+	}
+
+    .ui-multiselect-header{
+		zoom:0.9;
+	}
+
+</style>
 <?php 
 if($table){
 ?>
@@ -62,7 +76,7 @@ if($table){
 <!--Dialog for Satellites-->
 <div id="dialog_facilities" title="Add Satellite" class="modal hide fade cyan" tabindex="-1" role="dialog" aria-labelledby="AddCounty" aria-hidden="true">
     <?php
-		$attributes = array('class' => 'input_form');
+		$attributes = array('class' => 'input_form', 'id' => 'satellite_frm');
 		echo form_open('admin_management/save/'.$table, $attributes);
 		echo validation_errors('<p class="error">', '</p>');
 	?>
@@ -73,17 +87,18 @@ if($table){
 		<h3 id="NewDrug">Add Satellite</h3>
 	</div>
 	<div class="modal-body">
+		<div id="satellite_error"></div>
 		<div class="max-row">
-				<label>Facility Name</label>
-				<select name="facility" id="satellite" class="input-xlarge">
-				</select>
+			<label>Facility Name</label>
+			<input type="hidden" id="satellite_holder" name="satellite_holder" />
+			<select name="facility" id="satellite" multiple="multiple" style="width:100%;" required="required"></select>
 		</div>
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">
 			Cancel
 		</button>
-		<input type="submit" value="Save" class="btn btn-primary " />
+		<input type="submit" value="Save" class="btn btn-primary" id="btn_save_satellite_frm" />
 	</div>
 	<?php echo form_close(); ?>
 </div>
@@ -540,21 +555,20 @@ if($table){
 		//Adding Facilities
 		$("#facilities").live('click',function(){
 		    var link=base_url+"facility_management/getFacilityList";
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    dataType: "json",
-				    async:false,
-				    success: function(data) {	
-				    	$("#satellite").empty();
-				    	$("#satellite").append($("<option></option>").attr("value",'').text('--Select One--'));
-				    	$.each(data, function(i, jsondata){
-				    		//$("#satellite").append($("<option></option>").attr("value",jsondata.facilitycode).text(jsondata.facilitycode));
-				    		$("#satellite").append($("<option></option>").attr("value",jsondata.facilitycode).text(jsondata.name));
-				    	});
-				    	
-				    }
-				});
+			$.ajax({
+			    url: link,
+			    type: 'POST',
+			    dataType: "json",
+			    async:false,
+			    success: function(data) {	
+			    	$("#satellite").empty();
+			    	$.each(data, function(i, jsondata){
+			    		$("#satellite").append($("<option></option>").attr("value",jsondata.facilitycode).text(jsondata.name));
+			    	});
+			    }
+			});
+			//Make multiselect and multifilter
+			$("#satellite").multiselect().multiselectfilter();
 		});
 		
 		//Adding Users
@@ -611,6 +625,7 @@ if($table){
 				});	
 		});
 		
+		//Edit functionality
 		$(".edit").live('click',function(){
 			var table=$(this).attr("table");
 			if(table=='counties'){
@@ -674,6 +689,24 @@ if($table){
 				});
 			}else if(table=="nascop"){
 				$("#nascop_url").val($(this).attr("nascop_url"));
+			}
+		});
+
+		//Submit satellites
+		$("#btn_save_satellite_frm").live('click',function(event){
+			event.preventDefault();
+			//Order sites
+			var satellites = $("select#satellite").multiselect("getChecked").map(function() {
+					return this.value;
+			}).get();
+			$("#satellite_holder").val(satellites);
+
+			if ($.trim(satellites) ==""){
+				//Display error message
+				$("#satellite_error").html("<div class='alert alert-error'><button type='button' class='close' data-dismiss='alert'>&times;</button><strong>Required!</strong> Select Satellite!</div>");
+			}else{
+				//Submit
+				$("#satellite_frm").submit();
 			}
 		});
 	});
