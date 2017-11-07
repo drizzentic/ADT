@@ -234,9 +234,7 @@ if($table){
 				<tr><td><strong class="label">Usertype</strong> </td>
 					<td>
 						<span class="add-on"><i class=" icon-chevron-down icon-black"></i></span>
-						<select class="input-xlarge" id="access_level" name="access_level">
-							<option selected="selected" value="3">Facility Administrator</option>
-						</select>
+						<select class="input-xlarge" id="access_level" name="access_level"></select>
 					</td>
 					<td></td>
 				</tr>
@@ -345,10 +343,10 @@ if($table){
 		<h3 id="NewDrug">Edit Frequently Asked Questions</h3>
 	</div>
 	<div class="modal-body">
-            <div class="max-row">
-				<label>Module</label>
-                                <input type="hidden" class="input-large" name="faq_id"  id="faq_id" required="required"/>
-				<input type="text" class="input-large" name="faq_module" id="edit_faq_module" required="required"/>
+		<div class="max-row">
+			<label>Module</label>
+			<input type="hidden" class="input-large" name="faq_id"  id="faq_id" required="required"/>
+			<input type="text" class="input-large" name="faq_module" id="edit_faq_module" required="required"/>
 		</div>
 		<div class="max-row">
 				<label>Question</label>
@@ -368,6 +366,77 @@ if($table){
 	<?php echo form_close(); ?>
 </div>
 
+<!--Dialog for Access_Levels-->
+<div id="dialog_access_level" title="Add Access Level" class="modal hide fade cyan" tabindex="-1" role="dialog" aria-labelledby="AddAccessLevel" aria-hidden="true">
+	   <?php
+		$attributes = array('class' => 'input_form');
+		echo form_open('admin_management/save/'.$table, $attributes);
+		echo validation_errors('<p class="error">', '</p>');
+		?>
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			×
+		</button>
+		<h3 id="NewDrug">Add Access Level</h3>
+	</div>
+	<div class="modal-body">
+       	<div class="max-row">
+			<label>Name</label>
+			<input type="text" class="input-large" name="level_name" required="required"/>
+		</div>
+		<div class="max-row">
+			<label>Indicator</label>
+			<input type="text" class="input-large" name="indicator" required="required"/>
+		</div>
+		<div class="max-row">
+			<label>Description</label>
+			<textarea cols="40" rows="6" name="description" id="description"></textarea>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">
+			Cancel
+		</button>
+		<input type="submit" value="Save" class="btn btn-primary " />
+	</div>
+	<?php echo form_close(); ?>
+</div>
+
+<div id="edit_access_level" title="Edit Access Level" class="modal hide fade cyan" tabindex="-1" role="dialog" aria-labelledby="AddAccessLevel" aria-hidden="true">
+	   <?php
+		$attributes = array('class' => 'input_form');
+		echo form_open('admin_management/update/'.$table, $attributes);
+		echo validation_errors('<p class="error">', '</p>');
+		?>
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			×
+		</button>
+		<h3 id="NewDrug">Edit Access Level</h3>
+	</div>
+	<div class="modal-body">
+		<div class="max-row">
+			<label>Name</label>
+			<input type="hidden" class="input-large" name="level_id"  id="level_id" required="required"/>
+			<input type="text" class="input-large" name="level_name" id="edit_level_name" required="required"/>
+		</div>
+		<div class="max-row">
+			<label>Question</label>
+			<input type="text" class="input-large" name="indicator" id="edit_inidicator" required="required"/>
+		</div>
+       <div class="max-row">
+			<label>Description</label>
+			<textarea cols="40" rows="6" name="description" id="edit_description"></textarea>
+		</div>          
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">
+			Cancel
+		</button>
+		<input type="submit" value="Save" class="btn btn-primary " />
+	</div>
+	<?php echo form_close(); ?>
+</div>
 
 <!--Dialog For User Rights-->
 <div id="dialog_user_right" title="Add User Right" class="modal hide fade cyan" tabindex="-1" role="dialog" aria-labelledby="AddCounty" aria-hidden="true">
@@ -419,17 +488,13 @@ if($table){
 	</div>
 	<div class="modal-body">
 		<div class="max-row">
-				<label>Access Level</label>
-				<input type="hidden" class="input-large" name="right_id"  id="edit_right_id" required="required"/>
-				<select class="input-large" name="access_level" id="edit_access_levels">
-
-				</select>
+			<label>Access Level</label>
+			<input type="hidden" class="input-large" name="right_id"  id="edit_right_id" required="required"/>
+			<select class="input-large" name="access_level" id="edit_access_levels"></select>
 		</div>
 		<div class="max-row">
-				<label>Menu List</label>
-				<select class="input-large" name="menus" id="edit_menus">
-
-				</select>
+			<label>Menu List</label>
+			<select class="input-large" name="menus" id="edit_menus"></select>
 		</div>
 	</div>
 	<div class="modal-footer">
@@ -494,23 +559,31 @@ if($table){
 		
 		//Adding Users
 		$("#users").live('click',function(){
+			//Get current facility
 		    var link=base_url+"facility_management/getCurrent";
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    dataType: "json",
-				    success: function(data) {
-				    	$("#facility").empty();	
-				    	$.each(data, function(i, jsondata){
-				    		$("#facility").append($("<option selected='selected'></option>").attr("value",jsondata.facilitycode).text(jsondata.name));
-				    	});
-				    }
-				});
+			$.ajax({
+			    url: link,
+			    type: 'POST',
+			    dataType: "json",
+			    success: function(data) {
+			    	$("#facility").empty();	
+			    	$.each(data, function(i, jsondata){
+			    		$("#facility").append($("<option selected='selected'></option>").attr("value",jsondata.facilitycode).text(jsondata.name));
+			    	});
+			    }
+			});
+			//Get lower access_levels
+			var accessURL = base_url + "settings_management/getActiveAccessLevels";
+			$.getJSON(accessURL, function(levels){
+				$.each(levels, function(i, level){
+		    		$("#access_level").append($("<option></option>").attr("value",level.id).text(level.level_name));
+		    	});
+			});
 		});
 		
 		//Adding User Rights
 	    $("#user_right").live('click',function(){
-		    var link1=base_url+"settings_management/getAccessLevels";
+		    var link1=base_url+"settings_management/getActiveAccessLevels";
 				$.ajax({
 				    url: link1,
 				    type: 'POST',
@@ -518,7 +591,7 @@ if($table){
 				    success: function(data) {
 				    	$("#access_levels").empty();	
 				    	$.each(data, function(i, jsondata){
-				    		$("#access_levels").append($("<option></option>").attr("value",jsondata.Id).text(jsondata.Access));
+				    		$("#access_levels").append($("<option></option>").attr("value",jsondata.id).text(jsondata.level_name));
 				    	});
 				    }
 				});
@@ -552,52 +625,57 @@ if($table){
 				$("#edit_menu_url").val($(this).attr("menu_url"));
 				$("#edit_menu_description").val($(this).attr("menu_desc"));
 			}else if(table=='faq'){
-                                $("#faq_id").val($(this).attr("faq_id"));
-                                 $("#edit_faq_module").val($(this).attr("faq_module"));
+				$("#faq_id").val($(this).attr("faq_id"));
+				$("#edit_faq_module").val($(this).attr("faq_module"));
 				$("#edit_faq_question").val($(this).attr("faq-question"));
 				$("#edit_faq_answer").val($(this).attr("faq_answer"));
-                        }else if(table=='user_right'){
-				        $("#edit_right_id").val($(this).attr("right_id"))
-						var access_id = $(this).attr("access_id");
-						var menu_id = $(this).attr("edit_menu_id");
-						var link1 = base_url + "settings_management/getAccessLevels";
-						$.ajax({
-							url : link1,
-							type : 'POST',
-							dataType : "json",
-							success : function(data) {
-								$("#edit_access_levels").empty();
-								$.each(data, function(i, jsondata) {
-									if(access_id == jsondata.Id) {
-										$("#edit_access_levels").append($("<option selected='selected'></option>").attr("value", jsondata.Id).text(jsondata.Access));
-									} else {
-										$("#edit_access_levels").append($("<option></option>").attr("value", jsondata.Id).text(jsondata.Access));
-									}
-								});
+			}else if(table=='access_level'){
+				$("#level_id").val($(this).attr("access_level_id"));
+				$("#edit_level_name").val($(this).attr("access_level_name"));
+				$("#edit_inidicator").val($(this).attr("access_level_indicator"));
+				$("#edit_description").val($(this).attr("access_level_description"));
+			}else if(table=='user_right'){
+				$("#edit_right_id").val($(this).attr("right_id"))
+				var access_id = $(this).attr("access_id");
+				var menu_id = $(this).attr("edit_menu_id");
+				var link1 = base_url + "settings_management/getActiveAccessLevels";
+				$.ajax({
+					url : link1,
+					type : 'POST',
+					dataType : "json",
+					success : function(data) {
+						$("#edit_access_levels").empty();
+						$.each(data, function(i, jsondata) {
+							if(access_id == jsondata.id) {
+								$("#edit_access_levels").append($("<option selected='selected'></option>").attr("value", jsondata.id).text(jsondata.level_name));
+							} else {
+								$("#edit_access_levels").append($("<option></option>").attr("value", jsondata.id).text(jsondata.level_name));
 							}
 						});
-
-						var link2 = base_url + "settings_management/getMenus";
-						$.ajax({
-							url : link2,
-							type : 'POST',
-							dataType : "json",
-							success : function(data) {
-								$("#edit_menus").empty();
-								$("#edit_menus").append($("<option></option>").attr("value", '').text('--Select One--'));
-								$.each(data, function(i, jsondata) {
-									if(menu_id == jsondata.id) {
-										$("#edit_menus").append($("<option selected='selected'></option>").attr("value", jsondata.id).text(jsondata.Menu_Text));
-									} else {
-										$("#edit_menus").append($("<option></option>").attr("value", jsondata.id).text(jsondata.Menu_Text));
-									}
-								});
-							}
-						});
-					}else if(table=="nascop"){
-						$("#nascop_url").val($(this).attr("nascop_url"));
 					}
-			   });
-		  });
+				});
+
+				var link2 = base_url + "settings_management/getMenus";
+				$.ajax({
+					url : link2,
+					type : 'POST',
+					dataType : "json",
+					success : function(data) {
+						$("#edit_menus").empty();
+						$("#edit_menus").append($("<option></option>").attr("value", '').text('--Select One--'));
+						$.each(data, function(i, jsondata) {
+							if(menu_id == jsondata.id) {
+								$("#edit_menus").append($("<option selected='selected'></option>").attr("value", jsondata.id).text(jsondata.Menu_Text));
+							} else {
+								$("#edit_menus").append($("<option></option>").attr("value", jsondata.id).text(jsondata.Menu_Text));
+							}
+						});
+					}
+				});
+			}else if(table=="nascop"){
+				$("#nascop_url").val($(this).attr("nascop_url"));
+			}
+		});
+	});
 </script>
 

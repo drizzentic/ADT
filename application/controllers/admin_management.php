@@ -90,8 +90,9 @@ class Admin_management extends MY_Controller {
 		$data['dyn_table'] = $dyn_table;
 		$this -> base_params($data);
 	}
-        public function addFAQ() {
-                $results = Faq::getAll();
+    
+    public function addFAQ(){
+        $results = Faq::getAll();
 		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Module</th><th>Question</th><th>Answer</th><th>Options</th></tr></thead><tbody>";
 		$option = "";
@@ -111,7 +112,31 @@ class Admin_management extends MY_Controller {
 		$data['actual_page'] = 'View FAQ';
 		$data['dyn_table'] = $dyn_table;
 		$this -> base_params($data); 
-        }
+    }
+
+    public function addAccessLevel(){
+    	$results = $this->db->get('access_level')->result_array();
+		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table .= "<thead><tr><th>Name</th><th>Indicator</th><th>Description</th><th> Options</th></tr></thead><tbody>";
+		$option = "";
+		if ($results) {
+			foreach ($results as $result) {
+				if ($result['active'] == "1") {
+					$option = "<a href='#edit_access_level' data-toggle='modal' role='button' class='edit' table='access_level' access_level_name='".$result['level_name']."' access_level_description='" . $result['description'] . "' access_level_indicator='" . $result['indicator'] . "' access_level_id='" . $result['id'] . "'>Edit</a> | <a href='" . base_url() . "admin_management/disable/access_level/" . $result['id'] . "' class='red'>Disable</a>";
+				} else {
+					$option = "<a href='#edit_access_level' data-toggle='modal' role='button' class='edit' table='access_level' access_level_name='".$result['level_name']."' access_level_description='" . $result['description'] . "' access_level_indicator='" . $result['indicator'] . "' access_level_id='" . $result['id'] . "'>Edit</a> | <a href='" . base_url() . "admin_management/enable/access_level/" . $result['id'] . "' class='green'>Enable</a>";
+				}
+				$dyn_table .= "<tr><td>".$result['level_name']."</td><td>" . $result['indicator'] . "</td><td>" . $result['description'] . "</td><td>" . $option . "</td></tr>";
+			}
+		}
+		$dyn_table .= "</tbody></table>";
+		$data['label'] = 'Access Level';
+		$data['table'] = 'access_level';
+		$data['actual_page'] = 'View Access Level';
+		$data['dyn_table'] = $dyn_table;
+		$this -> base_params($data); 
+
+    }
 
 	public function addUsers() {
 		$results = Users::getThem();
@@ -312,39 +337,56 @@ class Admin_management extends MY_Controller {
 			$new_menu -> save();
 			$this -> session -> set_userdata('msg_success', 'Menu: ' . $menu_name . ' was Added');
 			$this -> session -> set_userdata('default_link', 'addMenu');
-		}else if ($table == "faq") {
-                        $faq_module=  $this-> input -> post("faq_module");
+		} else if ($table == "faq") {
+            $faq_module=  $this-> input -> post("faq_module");
 			$faq_question = $this -> input -> post("faq_question");
 			$faq_answer = $this -> input -> post("faq_answer");
 			$new_faq = new Faq();
-                        $new_faq -> modules = $faq_module;
+            $new_faq -> modules = $faq_module;
 			$new_faq -> questions = $faq_question;
 			$new_faq -> answers = $faq_answer;
 			$new_faq -> save();
 			$this -> session -> set_userdata('msg_success', 'FAQ was Added');
 			$this -> session -> set_userdata('default_link', 'addFAQ');
+		} else if ($table == "access_level") {
+            $level_name=  $this-> input -> post("level_name");
+			$indicator = $this -> input -> post("indicator");
+			$description = $this -> input -> post("description");
+			$new_access_level = new Access_Level();
+            $new_access_level -> Level_Name = $level_name;
+			$new_access_level -> Indicator = $indicator;
+			$new_access_level -> Description = $description;
+			$new_access_level -> save();
+			$this -> session -> set_userdata('msg_success', 'Access Level was Added');
+			$this -> session -> set_userdata('default_link', 'addAccessLevel');
 		} else if ($table == "users") {
+			$access_level_id = $this -> input -> post('access_level',TRUE);
 			//default password
 			$default_password='123456';
 
-			$user_data=array(
-						'Name' => $this -> input -> post('fullname',TRUE),
-						'Username' => $this -> input -> post('username',TRUE),
-						'Password' => md5($this -> encrypt -> get_key(). $default_password),
-						'Access_Level' => $this -> input -> post('access_level',TRUE),
-						'Facility_Code' => $this -> input -> post('facility',TRUE),
-						'Created_By' => $this -> session -> userdata('user_id'),
-						'Time_Created' => date('Y-m-d,h:i:s A'),
-						'Phone_Number' => $this -> input -> post('phone',TRUE),
-						'Email_Address' => $this -> input -> post('email',TRUE),
-						'Active' => 1,
-						'Signature' => 1
-						);
+			$user_data = array(
+				'Name' => $this -> input -> post('fullname',TRUE),
+				'Username' => $this -> input -> post('username',TRUE),
+				'Password' => md5($this -> encrypt -> get_key(). $default_password),
+				'Access_Level' => $access_level_id,
+				'Facility_Code' => $this -> input -> post('facility',TRUE),
+				'Created_By' => $this -> session -> userdata('user_id'),
+				'Time_Created' => date('Y-m-d,h:i:s A'),
+				'Phone_Number' => $this -> input -> post('phone',TRUE),
+				'Email_Address' => $this -> input -> post('email',TRUE),
+				'Active' => 1,
+				'Signature' => 1
+			);
 
-			$this->db->insert("users",$user_data);
+			if($this->session->userdata('access_level') != $access_level_id){
+				$this->db->insert("users",$user_data);
+				$this -> session -> set_userdata('msg_success', 'User: ' . $this -> input -> post('fullname',TRUE) . ' was Added');
+				$this -> session -> set_userdata('default_link', 'addUsers');
+			}else{
+				$this -> session -> set_userdata('msg_error', 'You do not have rights to add a user at this level');
+				$this -> session -> set_userdata('default_link', 'addUsers');
+			}
 
-			$this -> session -> set_userdata('msg_success', 'User: ' . $this -> input -> post('fullname',TRUE) . ' was Added');
-			$this -> session -> set_userdata('default_link', 'addUsers');
 		} else if ($table == "user_right") {
 			$access_level = $this -> input -> post("access_level");
 			$menu = $this -> input -> post("menus");
@@ -495,16 +537,24 @@ class Admin_management extends MY_Controller {
 			$this -> session -> set_userdata('msg_success', 'Menu: ' . $menu_name . ' was Updated');
 			$this -> session -> set_userdata('default_link', 'addMenu');
 		} elseif ($table=="faq") {
-                        $faq_id = $this -> input -> post("faq_id");
-                        $faq_module = $this -> input -> post("faq_module");
+			$faq_id = $this -> input -> post("faq_id");
+			$faq_module = $this -> input -> post("faq_module");
 			$faq_question = $this -> input -> post("faq_question");
 			$faq_answer = $this -> input -> post("faq_answer");
 			$this -> db -> where('id', $faq_id);
 			$this -> db -> update($table, array('modules' => $faq_module,'questions' => $faq_question, 'answers' => $faq_answer));
 			$this -> session -> set_userdata('msg_success', 'FAQ was Updated');
 			$this -> session -> set_userdata('default_link', 'addFAQ');
-                
-                }else if ($table == "user_right") {
+		}elseif ($table=="access_level") {
+			$level_id = $this -> input -> post("level_id");
+			$level_name = $this -> input -> post("level_name");
+			$indicator = $this -> input -> post("indicator");
+			$description = $this -> input -> post("description");
+			$this -> db -> where('id', $level_id);
+			$this -> db -> update($table, array('level_name' => $level_name,'indicator' => $indicator, 'description' => $description));
+			$this -> session -> set_userdata('msg_success', 'Access Level was Updated');
+			$this -> session -> set_userdata('default_link', 'addAccessLevel');
+		}else if ($table == "user_right") {
 			$right_id = $this -> input -> post("right_id");
 			$access_id = $this -> input -> post("access_level");
 			$menu_id = $this -> input -> post("menus");
@@ -525,10 +575,12 @@ class Admin_management extends MY_Controller {
 			$this -> session -> set_userdata('default_link', 'addDistrict');
 		} else if ($table == "menu") {
 			$this -> session -> set_userdata('default_link', 'addMenu');
-		}else if ($table=="faq") {
-                        $this -> session -> set_userdata('default_link', 'addFAQ');
-                } else if ($table == "user_right") {
+		} else if ($table=="faq") {
+            $this -> session -> set_userdata('default_link', 'addFAQ');
+        } else if ($table == "user_right") {
 			$this -> session -> set_userdata('default_link', 'assignRights');
+		} else if ($table == "access_level") {
+			$this -> session -> set_userdata('default_link', 'addAccessLevel');
 		} 
 	}
 
