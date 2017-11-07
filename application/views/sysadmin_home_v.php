@@ -100,6 +100,7 @@
 		
 		if(default_link){
 			default_link = base_url + "admin_management/" + default_link;	
+			$.blockUI({ message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Working...</h3>' }); 
 			$("#display_content").load(default_link,function(){
 				$('.dataTables').dataTable({
 					"bJQueryUI" : true,
@@ -115,6 +116,7 @@
 					"bDestroy" : true,
 					"fnInitComplete": function() {
 				        this.css("visibility", "visible");
+				        $.unblockUI();
 				    }
 	            });
 	       });			
@@ -128,9 +130,10 @@
 		
 		$(".admin_link").click(function(){
 			$("#display_content").empty();
+			$.blockUI({ message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Working...</h3>' }); 
 			var link = $(this).attr("id");		
 			var link = base_url + "admin_management/" + link;			
-			$("#display_content").load(link,function(){
+			$("#display_content").load(link, function(){
 				$('.dataTables').dataTable({
 					"bJQueryUI" : true,
 		            "sPaginationType" : "full_numbers",
@@ -145,6 +148,7 @@
 					"bDestroy" : true,
 					"fnInitComplete": function() {
 				        this.css("visibility", "visible");
+				        $.unblockUI();
 				    }
 	            });
 	       });			

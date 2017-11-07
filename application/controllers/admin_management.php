@@ -8,7 +8,7 @@ class Admin_management extends MY_Controller {
 
 	public function addCounty() {
 		$results = Counties::getAll();
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='county_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>County Name</th><th> Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -30,7 +30,7 @@ class Admin_management extends MY_Controller {
 
 	public function addSatellite() {
 		$results = Facilities::getSatellites($this -> session -> userdata("facility"));
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='satellite_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Facility Code</th><th>Facility Name</th><th>Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -40,15 +40,37 @@ class Admin_management extends MY_Controller {
 		}
 		$dyn_table .= "</tbody></table>";
 		$data['label'] = 'Satellite';
-		$data['table'] = 'facilities';
+		$data['table'] = 'satellites';
 		$data['actual_page'] = 'View Satellites';
+		$data['dyn_table'] = $dyn_table;
+		$this -> base_params($data);
+	}
+
+	public function addFacility() {
+		$results = Facilities::getAll();
+		$dyn_table = "<table border='1' id='facility_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table .= "<thead><tr><th>Facility Code</th><th>Facility Name</th><th>Options</th></tr></thead><tbody>";
+		if ($results) {
+			foreach ($results as $result) {
+				if ($result['flag'] == '1') {
+					$option = "<a href='#edit_facilities' data-toggle='modal' role='button' class='edit' table='facilities' facility_name='" . $result['name'] . "' facility_code='" . $result['facilitycode'] . "' facility_id='" . $result['id'] . "'>Edit</a> | <a href='" . base_url() . "admin_management/disable/facilities/" . $result['id'] . "' class='red'>Disable</a>";
+				} else {
+					$option = "<a href='#edit_facilities' data-toggle='modal' role='button' class='edit' table='facilities' facility_name ='" . $result['name'] . "' facility_code='" . $result['facilitycode'] . "' facility_id='" . $result['id'] . "'>Edit</a> | <a href='" . base_url() . "admin_management/enable/facilities/" . $result['id'] . "' class='green'>Enable</a>";
+				}
+				$dyn_table .= "<tr><td>" . $result['facilitycode'] . "</td><td>" . $result['name'] . "</td><td>" . $option . "</td></tr>";
+			}
+		}
+		$dyn_table .= "</tbody></table>";
+		$data['label'] = 'Facility';
+		$data['table'] = 'facilities';
+		$data['actual_page'] = 'View Facilities';
 		$data['dyn_table'] = $dyn_table;
 		$this -> base_params($data);
 	}
 
 	public function addDistrict() {
 		$results = District::getAll();
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='district_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>District Name</th><th> Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -70,7 +92,7 @@ class Admin_management extends MY_Controller {
 
 	public function addMenu() {
 		$results = Menu::getAll();
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='menu_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Menu Name</th><th>Menu URL</th><th>Menu Description</th><th> Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -93,7 +115,7 @@ class Admin_management extends MY_Controller {
     
     public function addFAQ(){
         $results = Faq::getAll();
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='faq_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Module</th><th>Question</th><th>Answer</th><th>Options</th></tr></thead><tbody>";
 		$option = "";
 		if ($results) {
@@ -116,7 +138,7 @@ class Admin_management extends MY_Controller {
 
     public function addAccessLevel(){
     	$results = $this->db->get('access_level')->result_array();
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='access_level_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Name</th><th>Indicator</th><th>Description</th><th> Options</th></tr></thead><tbody>";
 		$option = "";
 		if ($results) {
@@ -140,7 +162,7 @@ class Admin_management extends MY_Controller {
 
 	public function addUsers() {
 		$results = Users::getThem();
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='user_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Full Name</th><th>UserName</th><th>Access Level</th><th>Email Address</th><th>Phone Number</th><th>Account Creator</th><th> Options</th></tr></thead><tbody>";
 		$option = "";
 		if ($results) {
@@ -167,7 +189,7 @@ class Admin_management extends MY_Controller {
 	public function inactive() {
 		$facility_code = $this -> session -> userdata("facility");
 		$results = Users::getInactive($facility_code);
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='inactive_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Full Name</th><th>UserName</th><th>Access Level</th><th>Email Address</th><th>Phone Number</th><th>Account Creator</th><th> Options</th></tr></thead><tbody>";
 		$option = "";
 		if ($results) {
@@ -200,7 +222,7 @@ class Admin_management extends MY_Controller {
 				$user_id = $result['user_id'];
 				$activity=$this->dateDiff($result['time_log'],date('Y-m-d H:i:s'));
 				$results = Users::getSpecific($user_id);
-				$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+				$dyn_table = "<table border='1' id='online_listing'  cellpadding='5' class='dataTables'>";
 				$dyn_table .= "<thead><tr><th>Full Name</th><th>UserName</th><th>Access Level</th><th>Email Address</th><th>Activity Duration</th></tr></thead><tbody>";
 				$option = "";
 				if ($results) {
@@ -210,7 +232,7 @@ class Admin_management extends MY_Controller {
 				}
 			}
 		} else {
-			$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+			$dyn_table = "<table border='1' id='online_listing'  cellpadding='5' class='dataTables'>";
 			$dyn_table .= "<thead><tr><th>Full Name</th><th>UserName</th><th>Access Level</th><th>Email Address</th><th>Activity Duration</th></tr></thead><tbody>";
 		}
 		$dyn_table .= "</tbody></table>";
@@ -226,7 +248,7 @@ class Admin_management extends MY_Controller {
 		$sql = "select ur.id,al.level_name,m.menu_text,ur.active,ur.access_level as access_id,ur.menu as menu_id from user_right ur,menu m, access_level al where m.id=ur.menu and al.id=ur.access_level";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='assign_rights_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Access Level</th><th>Menu</th><th> Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -251,7 +273,7 @@ class Admin_management extends MY_Controller {
 		$sql = "select * from access_log al left join users u on u.id=al.user_id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='access_log_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>User</th><th>Start Time</th><th>End Time</th><th>Session Duration</th><th>Status</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -286,7 +308,7 @@ class Admin_management extends MY_Controller {
 		$sql = "select * from denied_log al left join users u on u.id=al.user_id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' id='denied_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>User</th><th>Timestamp</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -310,7 +332,7 @@ class Admin_management extends MY_Controller {
 			$new_county -> save();
 			$this -> session -> set_userdata('msg_success', 'County: ' . $county_name . ' was Added');
 			$this -> session -> set_userdata('default_link', 'addCounty');
-		} else if ($table == "facilities") {
+		} else if ($table == "satellites") {
 			$satellite_codes = explode(',', $this -> input -> post("satellite_holder"));
 			if (!empty($satellite_codes))
 			{	
@@ -324,6 +346,12 @@ class Admin_management extends MY_Controller {
 				$this -> session -> set_userdata('msg_success', $message);
 			}
 			$this -> session -> set_userdata('default_link', 'addSatellite');
+		} else if ($table == "facilities") {
+			$facility_code = $this -> input -> post("facility_code");
+			$facility_name = $this -> input -> post("facility_name");
+			$this->db->insert('facilities', array('facilitycode' => $facility_code, 'name' => $facility_name));
+			$this -> session -> set_userdata('msg_success', 'Facility: ' . $facility_name . ' was Added');
+			$this -> session -> set_userdata('default_link', 'addFacility');
 		} else if ($table == "district") {
 			$disrict_name = $this -> input -> post("name");
 			$new_district = new District();
@@ -488,6 +516,8 @@ class Admin_management extends MY_Controller {
 	public function disable($table = "", $id = "") {
 		if ($table == "users") {
 			$sql = "update $table set Active='0' where id='$id'";
+		}else if ($table == "facilities") {
+			$sql = "update $table set flag='0' where id='$id'";
 		} else {
 			$sql = "update $table set active='0' where id='$id'";
 		}
@@ -500,6 +530,8 @@ class Admin_management extends MY_Controller {
 	public function enable($table = "", $id = "") {
 		if ($table == "users") {
 			$sql = "update $table set Active='1' where id='$id'";
+		}else if ($table == "facilities") {
+			$sql = "update $table set flag='1' where id='$id'";
 		} else {
 			$sql = "update $table set active='1' where id='$id'";
 		}
@@ -525,6 +557,14 @@ class Admin_management extends MY_Controller {
 			$this -> db -> update($table, array('county' => $county_name));
 			$this -> session -> set_userdata('msg_success', 'County: ' . $county_name . ' was Updated');
 			$this -> session -> set_userdata('default_link', 'addCounty');
+		} else if ($table == "facilities") {
+			$facility_id = $this -> input -> post("facility_id");
+			$facility_code = $this -> input -> post("facility_code");
+			$facility_name = $this -> input -> post("facility_name");
+			$this -> db -> where('id', $facility_id);
+			$this -> db -> update($table, array('facilitycode' => $facility_code, 'name' => $facility_name));
+			$this -> session -> set_userdata('msg_success', 'Facility: ' . $facility_name . ' was Updated');
+			$this -> session -> set_userdata('default_link', 'addFacility');
 		} else if ($table == "district") {
 			$district_id = $this -> input -> post("district_id");
 			$district_name = $this -> input -> post("district_name");
@@ -586,7 +626,9 @@ class Admin_management extends MY_Controller {
 			$this -> session -> set_userdata('default_link', 'assignRights');
 		} else if ($table == "access_level") {
 			$this -> session -> set_userdata('default_link', 'addAccessLevel');
-		} 
+		} else if ($table == "facilities") {
+			$this -> session -> set_userdata('default_link', 'addFacility');
+		}
 	}
 
 	public function getSystemUsage($period = '') {
@@ -612,7 +654,10 @@ class Admin_management extends MY_Controller {
 		}
 		$total_series[] = $series;
 
-		$columns = array("System Admin", "Facility User", "Facility Admin");
+		$access_levels = $this->db->select('level_name')->where('active', 1)->get('access_level')->result_array();
+		foreach ($access_levels as $access_level) {
+			$columns[] = $access_level['level_name'];
+		}
 		$resultArray = json_encode($total_series);
 		$categories = json_encode($columns);
 		$resultArraySize = 0;

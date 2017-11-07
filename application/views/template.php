@@ -380,6 +380,9 @@ if (isset($styles)) {
 						<a  id="addSatellite" class="admin_link"><i class="icon-eye-open icon-black"></i>View Satellites</a>
 					</li>
 					<li>
+						<a  id="addFacility" class="admin_link"><i class="icon-eye-open icon-black"></i>View Facilities</a>
+					</li>
+					<li>
 						<a  id="addDistrict" class="admin_link"><i class="icon-eye-open icon-black"></i>View Districts</a>
 					</li>
 					<li>
