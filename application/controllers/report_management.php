@@ -7227,118 +7227,89 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 			$facility_code = $this -> session -> userdata('facility');
 			$consumption_totals = array();
 			$row_string = "";
-			$drug_total = 0;
-			$total = 0;
-			$overall_pharmacy_drug_qty = 0;
-			$overall_store_drug_qty = 0;
-			$pharmacy_drug_qty_percentage = "";
-			$store_drug_qty_percentage = "";
-			$drug_total_percentage = "";
-			$total_drug_qty = 0;
+			//Datasource query
+			$sql = "SELECT 
+						tmp.transaction_date, 
+						tmp.drug_name, 
+						tmp.drug_unit, 
+						tmp.pack_size, 
+						SUM(tmp.qty_total) AS qty_total,
+						SUM(tmp.qty_pharmacy) AS qty_pharmacy, 
+						ROUND(SUM(tmp.qty_pharmacy)/SUM(tmp.qty_total),2)*100 AS qty_pharmacy_percent, 
+						SUM(tmp.qty_store) AS qty_store,
+						ROUND(SUM(tmp.qty_store)/SUM(tmp.qty_total),2)*100 AS qty_store_percent
+					FROM
+						(SELECT 
+							dsm.transaction_date,
+							d.drug AS drug_name,
+							du.Name AS drug_unit,
+							d.pack_size,
+							SUM(dsm.quantity_out) AS qty_total,
+						    CASE WHEN sp.name LIKE '%pharmacy%' THEN SUM(dsm.quantity_out) ELSE 0 END AS qty_pharmacy,
+						    CASE WHEN sp.name LIKE '%store%' THEN SUM(dsm.quantity_out) ELSE 0 END AS qty_store
+						FROM drug_stock_movement dsm 
+						LEFT JOIN drugcode d ON dsm.drug = d.id 
+						LEFT JOIN drug_unit du ON d.unit = du.id 
+						INNER JOIN ccc_store_service_point sp ON sp.id = dsm.ccc_store_sp
+						WHERE dsm.transaction_date >= ?
+						AND dsm.transaction_date <= ? 
+						AND dsm.facility = ? 
+						GROUP BY dsm.transaction_date, drug_name, drug_unit, dsm.ccc_store_sp
+						HAVING SUM(dsm.quantity_out) > 0
+						ORDER BY dsm.transaction_date) AS tmp
+					GROUP BY tmp.transaction_date, tmp.drug_name, tmp.drug_unit, tmp.pack_size";
+			$results = $this->db->query($sql, array($start_date, $end_date, $facility_code))-> result_array();
 
-		//Select total consumption at facility
-			$sql = "select sum(dsm.quantity_out) as total from drug_stock_movement dsm  where dsm.transaction_date between '$start_date' and '$end_date' and dsm.facility='$facility_code'";
-			$query = $this -> db -> query($sql);
-			$results = $query -> result_array();
-			if ($results) {
-				$total = $results[0]['total'];
-			}
+			//Totals
+			$overall_total = array_sum(array_column($results, 'qty_total'));
+			$overall_pharmacy_drug_qty = array_sum(array_column($results, 'qty_pharmacy'));
+			$overall_store_drug_qty = array_sum(array_column($results, 'qty_store'));
+			$pharmacy_drug_qty_percentage = array_sum(array_column($results, 'qty_pharmacy_percent'));
+			$store_drug_qty_percentage = array_sum(array_column($results, 'qty_store_percent'));
 
-		//Select total consumption at facility per drug per day
-			$sql = "select dsm.transaction_date,dsm.drug,d.drug as Name,d.pack_size,du.Name as unit,sum(dsm.quantity_out) as qty from drug_stock_movement dsm left join drugcode d on dsm.drug=d.id left join drug_unit du on d.unit=du.id where dsm.transaction_date between '$start_date' and '$end_date' and dsm.facility='$facility_code' GROUP BY dsm.transaction_date, dsm.drug ORDER BY dsm.transaction_date";
-			$query = $this -> db -> query($sql);
-			$results = $query -> result_array();
+			//Table header string
 			$row_string .= "<table border='1' class='dataTables' cellpadding='5'>
-			<thead>
-				<tr>
-					<th >Date</th>
-					<th >Drug</th>
-					<th >Unit</th>
-					<th >PackSize</th>
-					<th >Total(units)</th>
-					<th >%</th>
-					<th >Pharmacy(units)</th>
-					<th >%</th>
-					<th > Store(units)</th>
-					<th >%</th>
-				</tr>
-			</thead>
-			<tbody>";
-				if ($results) {
-					foreach ($results as $result) {
-						$consumption_totals[$result['drug']] = $result['qty'];
-						$trans_date = $result['transaction_date'];
-						$current_date = date('d-M-Y', strtotime($result['transaction_date']));
-						$current_drug = $result['drug'];
-						$current_drugname = $result['Name'];
-						$unit = $result['unit'];
-						$drug_total = 0;
-						$pack_size = $result['pack_size'];
-						$drug_total = $result['qty'];
-						$drug_total_percentage = number_format(($drug_total / $total) * 100, 1);
-						$row_string .= "<tr><td>$current_date</td><td><b>$current_drugname</b></td><td><b>$unit</b></td><td><b>$pack_size</b></td><td>" . number_format($drug_total) . "</td><td>$drug_total_percentage</td>";
-				//Select consumption at pharmacy
-						$sql = "select transaction_date,drug,sum(quantity_out) as qty from drug_stock_movement where transaction_date= '$trans_date'  and facility='$facility_code' and source='$facility_code' and source=destination and drug='$current_drug' GROUP BY drug ORDER BY transaction_date";
-						$query = $this -> db -> query($sql);
-						$results = $query -> result_array();
-						if ($results) {
-							foreach ($results as $result) {
-								$total_pharmacy_drug_qty = $result['qty'];
-								$overall_pharmacy_drug_qty += $total_pharmacy_drug_qty;
-								if ($drug_total > 0) {
-									$pharmacy_drug_qty_percentage = number_format(($total_pharmacy_drug_qty / $drug_total) * 100, 1);
-								} else {
-									$pharmacy_drug_qty_percentage = "-";
-								}
-								if ($result['drug'] != null) {
-									$row_string .= "<td>" . number_format($total_pharmacy_drug_qty) . "</td><td>$pharmacy_drug_qty_percentage</td>";
-								}
-							}
-						} else {
-							$row_string .= "<td>-</td><td>-</td>";
-						}
-				//Select Consumption at store
-						$sql = "select transaction_date,drug,sum(quantity_out) as qty from drug_stock_movement where transaction_date= '$trans_date' and facility='$facility_code' and destination='' and source='$facility_code' and drug='$current_drug' GROUP BY drug ORDER BY transaction_date";
-						$query = $this -> db -> query($sql);
-						$results = $query -> result_array();
-						if ($results) {
-							foreach ($results as $result) {
-								$total_store_drug_qty = $result['qty'];
-								$overall_store_drug_qty += $total_store_drug_qty;
-								if ($drug_total > 0) {
-									$store_drug_qty_percentage = number_format(($total_store_drug_qty / $drug_total) * 100, 1);
-								} else {
-									$store_drug_qty_percentage = "-";
-								}
-								if ($result['drug'] != null) {
-									$row_string .= "<td>" . number_format($total_store_drug_qty) . "</td><td>$store_drug_qty_percentage</td>";
-								}
-							}
-						} else {
-							$row_string .= "<td>-</td><td>-</td>";
-						}
-						$row_string .= "</tr>";
-					}
-					$my_total = $overall_pharmacy_drug_qty + $overall_store_drug_qty;
-					$row_string .= "</tbody><tfoot><tr><td><b>Totals(units):</b></td><td></td><td></td><td></td><td><b>" . number_format($total) . "</b></td><td><b>100</b></td><td><b>" . number_format($overall_pharmacy_drug_qty) . "</b></td><td><b>" . number_format(($overall_pharmacy_drug_qty / $total) * 100, 1) . "</b></td><td><b>" . number_format($overall_store_drug_qty) . "</b></td><td><b>" . number_format(($overall_store_drug_qty / $total) * 100, 1) . "</b></td></tr>";
-
-				} else {
-			//$row_string .= "<tr><td colspan='11'>No Data Available</td></tr>";
+								<thead>
+									<tr>
+										<th >Date</th>
+										<th >Drug</th>
+										<th >Unit</th>
+										<th >PackSize</th>
+										<th >Total(units)</th>
+										<th >%</th>
+										<th >Pharmacy(units)</th>
+										<th >%</th>
+										<th > Store(units)</th>
+										<th >%</th>
+									</tr>
+								</thead>
+								<tbody>";
+			if ($results) {
+				foreach ($results as $result) {
+					$qty_total = $result['qty_total'];
+					$row_string .= "<tr><td>".$result['transaction_date']."</td><td><b>".$result['drug_name']."</b></td><td><b>".$result['drug_unit']."</b></td><td><b>".$result['pack_size']."</b></td><td>" . number_format($qty_total) . "</td><td>".number_format(( $qty_total/ $overall_total) * 100)."</td><td>" . number_format($result['qty_pharmacy']) . "</td><td>" . number_format($result['qty_pharmacy_percent']) . "</td><td>" . number_format($result['qty_store']) . "</td><td>" . number_format($result['qty_store_percent']) . "</td></tr>";
 				}
-				$row_string .= "</tfoot></table>";
-				$data['dyn_table'] = $row_string;
-				$data['title'] = "webADT | Reports";
-				$data['hide_side_menu'] = 1;
-				$data['banner_text'] = "Facility Reports";
-				$data['selected_report_type_link'] = "drug_inventory_report_row";
-				$data['selected_report_type'] = "Stock Consumption";
-				$data['report_title'] = "Stock Consumption";
-				$data['facility_name'] = $this -> session -> userdata('facility_name');
-				$data['content_view'] = 'reports/daily_consumption_v';
-				$this -> load -> view('template', $data);
 			}
 
-			public function getBMI($start_date = "") {
+			//Table footer string
+			$row_string .= "</tbody><tfoot><tr><td><b>Totals(units):</b></td><td></td><td></td><td></td><td><b>" . number_format($overall_total) . "</b></td><td><b>100</b></td><td><b>" . number_format($overall_pharmacy_drug_qty) . "</b></td><td><b>" . number_format(($overall_pharmacy_drug_qty / $overall_total) * 100, 1) . "</b></td><td><b>" . number_format($overall_store_drug_qty) . "</b></td><td><b>" . number_format(($overall_store_drug_qty / $overall_total) * 100, 1) . "</b></td></tr>";
+			$row_string .= "</tfoot></table>";
+
+			//Configuration values for view
+			$data['dyn_table'] = $row_string;
+			$data['title'] = "webADT | Reports";
+			$data['hide_side_menu'] = 1;
+			$data['banner_text'] = "Facility Reports";
+			$data['selected_report_type_link'] = "drug_inventory_report_row";
+			$data['selected_report_type'] = "Stock Consumption";
+			$data['report_title'] = "Stock Consumption";
+			$data['facility_name'] = $this -> session -> userdata('facility_name');
+			$data['content_view'] = 'reports/daily_consumption_v';
+			$this -> load -> view('template', $data);
+		}
+
+
+		public function getBMI($start_date = "") {
 		/*
 		 Formula BMI= weight(kg)/(height(m)*height(m))
 
