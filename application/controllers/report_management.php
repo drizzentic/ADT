@@ -1695,8 +1695,6 @@ class Report_management extends MY_Controller {
 			/*
 			 * Outer Loop through all active drugs
 			 */
-			$first_value = "AND ccc_store_sp = $stock_type";
-			$second_value = "AND dst.ccc_store_sp = $stock_type";
 			// Select Data
 			$this -> db -> select('SQL_CALC_FOUND_ROWS ' . str_replace(' , ', ' ', implode(', ', $aColumns)), false);
 			$this -> db -> select("dc.id,dc.pack_size,u.name");
@@ -1729,7 +1727,19 @@ class Report_management extends MY_Controller {
 				$row[] = $aRow['drug'];
 
 				//Start of Beginning Balance
-				$sql = "SELECT SUM( dst.balance ) AS total FROM drug_stock_movement dst, (SELECT drug, batch_number, MAX( transaction_date ) AS trans_date FROM  `drug_stock_movement` WHERE transaction_date BETWEEN  '$prev_start' AND  '$prev_end' AND drug ='$drug_id' $first_value GROUP BY batch_number) AS temp WHERE dst.drug = temp.drug AND dst.batch_number = temp.batch_number AND dst.transaction_date = temp.trans_date $second_value";
+				$sql = "SELECT SUM(dst.balance) AS total 
+						FROM drug_stock_movement dst
+						INNER JOIN 
+						(
+							SELECT drug, batch_number, MAX(transaction_date) AS trans_date 
+							FROM  drug_stock_movement 
+							WHERE transaction_date >= '$prev_start' 
+							AND transaction_date <= '$prev_end' 
+							AND drug = '$drug_id' 
+							AND ccc_store_sp = '$stock_type'
+							GROUP BY batch_number
+						) AS temp ON dst.drug = temp.drug AND dst.batch_number = temp.batch_number AND dst.transaction_date = temp.trans_date
+						WHERE dst.ccc_store_sp = '$stock_type'";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -1746,16 +1756,32 @@ class Report_management extends MY_Controller {
 				//Start of Other Transactions
 				$start_date = date('Y-m-d', strtotime($start_date));
 				$end_date = date('Y-m-d', strtotime($end_date));
-				$sql = "SELECT trans.name, trans.id, trans.effect, dsm.in_total, dsm.out_total FROM 
-				(SELECT id, name, effect FROM transaction_type 
-				WHERE name LIKE  '%received%' OR name LIKE  '%adjustment%' 
-				OR name LIKE  '%return%' OR name LIKE  '%dispense%' OR name LIKE  '%issue%' 
-				OR name LIKE  '%loss%' OR name LIKE  '%ajustment%' 
-				OR name LIKE  '%physical%count%' OR name LIKE  '%starting%stock%') AS trans 
-				LEFT JOIN (SELECT transaction_type, SUM( quantity ) AS in_total, SUM( quantity_out ) AS out_total 
-				FROM drug_stock_movement WHERE transaction_date 
-				BETWEEN  '$start_date' AND  '$end_date' AND drug =  '$drug_id' $first_value 
-				GROUP BY transaction_type) AS dsm ON trans.id = dsm.transaction_type GROUP BY trans.name";
+				$sql = "SELECT trans.name, trans.id, trans.effect, dsm.in_total, dsm.out_total 
+						FROM 
+							(
+								SELECT id, name, effect 
+								FROM transaction_type 
+								WHERE active = '1' 
+								AND (name LIKE '%received%' 
+								OR name LIKE '%adjustment%' 
+								OR name LIKE '%return%' OR name LIKE '%dispense%' 
+								OR name LIKE '%issue%' OR name LIKE '%loss%' 
+								OR name LIKE '%ajustment%' OR name LIKE '%physical%count%' 
+								OR name LIKE '%starting%stock%')  
+								GROUP BY name, effect 
+								ORDER BY id ASC
+							) AS trans 
+						LEFT JOIN 
+							(
+								SELECT transaction_type, SUM(quantity) AS in_total, SUM(quantity_out) AS out_total 
+								FROM drug_stock_movement 
+								WHERE transaction_date >= '$start_date' 
+								AND transaction_date <= '$end_date' 
+								AND drug = '$drug_id' 
+								AND ccc_store_sp = '$stock_type'
+								GROUP BY transaction_type
+							) AS dsm ON trans.id = dsm.transaction_type 
+						GROUP BY trans.id";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -4761,13 +4787,18 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 				$data['stock_type_n'] = 'Pharmacy';
 			}
 			//Get transaction names
-			$get_transaction_names = $this -> db -> query("SELECT id,name,effect FROM transaction_type 
-				WHERE name LIKE '%received%' 
-				OR name LIKE '%adjustment%' 
-				OR name LIKE '%return%' OR name LIKE '%dispense%' 
-				OR name LIKE '%issue%' OR name LIKE '%loss%' 
-				OR name LIKE '%ajustment%' OR name LIKE '%physical%count%' 
-				OR name LIKE '%starting%stock%' ");
+			$sql = "SELECT id,name,effect 
+					FROM transaction_type 
+					WHERE active = '1' 
+					AND (name LIKE '%received%' 
+					OR name LIKE '%adjustment%' 
+					OR name LIKE '%return%' OR name LIKE '%dispense%' 
+					OR name LIKE '%issue%' OR name LIKE '%loss%' 
+					OR name LIKE '%ajustment%' OR name LIKE '%physical%count%' 
+					OR name LIKE '%starting%stock%')  
+					GROUP BY name, effect 
+					ORDER BY id ASC";
+			$get_transaction_names = $this -> db -> query($sql);
 			$get_transaction_array = $get_transaction_names -> result_array();
 			$data['trans_names'] = $get_transaction_array;
 			$data['start_date'] = date('d-M-Y', strtotime($this -> uri -> segment(5)));
