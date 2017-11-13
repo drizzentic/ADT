@@ -588,7 +588,7 @@ class Patient_management extends MY_Controller {
 
 
         // post to IL via API
-        file_get_contents(base_url().'tools/api/getPatient/'.$ccc_number.'/ADD');
+        file_get_contents(base_url().'tools/api/getPatient/'.$auto_id.'/ADD');
         // /> POST TO IL VIA API
 
         if ($direction == 0) {
@@ -800,7 +800,7 @@ class Patient_management extends MY_Controller {
         $this -> session -> set_userdata('user_updated', $this -> input -> post('first_name'));
 
         // Send update to IL
-        file_get_contents(base_url().'tools/api/getPatient/'.$patient.'/EDIT');
+        file_get_contents(base_url().'tools/api/getPatient/'.$record_id.'/EDIT');
         // </  Send update to IL
 
         redirect("patient_management/load_view/details/$record_id");

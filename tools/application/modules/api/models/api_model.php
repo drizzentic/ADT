@@ -21,10 +21,10 @@ class Api_model extends CI_Model {
 
 		$CI = &get_instance();
 		$CI -> load -> database();
-		$CI->db->insert('patient', $patient);
+		var_dump($CI->db->insert('patient', $patient));
 		$insert_id = $CI->db->insert_id();
-		$this->savePatientMatching(array('internal_id'=>$insert_id, 'external_id'=>$external_id));
-		return true;
+		// $this->savePatientMatching(array('internal_id'=>$insert_id, 'external_id'=>$external_id));
+		return $insert_id;
 	}
 
 
@@ -46,17 +46,17 @@ class Api_model extends CI_Model {
 
 	}
 
-	function getPatient($internal_id = null,$external_id = null){
+	function getPatient($internal_id = null){
 
 		$CI = &get_instance();
 		$CI -> load -> database();
 		$cond = '';
-		// $cond  = ($internal_id !== null) ? $cond." and api_patient_matching.internal_id = $internal_id" : "";
-		// $cond  = ($external_id !== null) ? $cond." and api_patient_matching.external_id = '$external_id'" : "";
+		$query_str = "SELECT p.*,ps.name as patient_status,pso.name as patient_source ,g.name as patient_gender FROM patient p
+		left join patient_status ps on p.current_status = ps.id 
+		left join patient_source pso on p.source = pso.id
+		left join gender g on g.id = p.gender
 
-//		$query_str = "SELECT * FROM api_patient_matching,patient 
-// WHERE api_patient_matching.internal_id = patient.id $cond";
-		$query_str = "SELECT * FROM patient WHERE patient_number_ccc   = '$internal_id'";
+		WHERE p.id   = '$internal_id' ";
 
 		// do left join in the case of patient created on adt and not already on IL
 
@@ -67,6 +67,40 @@ class Api_model extends CI_Model {
 			$returnable = $query->result()[0];
 		} else {
 			$returnable = false;
+		}
+		return $returnable;
+	}
+
+	function getPatientExternalID($internal_id = null,$assigning_authority = null){
+
+		$CI = &get_instance();
+		$CI -> load -> database();
+		$cond = (isset($assigning_authority)) ?  "and assigning_authority = '$assigning_authority' " : null ;
+		$query_str = "SELECT external_id as ID, identifier_type as IDENTIFIER_TYPE, assigning_authority as ASSIGNING_AUTHORITY FROM api_patient_matching WHERE internal_id   = '$internal_id' and external_id IS NOT NULL".$cond;
+		$query = $CI->db->query($query_str);
+
+		if (count($query->result()) > 0) {
+			$returnable = $query->result()[0];
+		} else {
+			$returnable = false;
+			$returnable =  array('ID' => '','IDENTIFIER_TYPE' => '','ASSIGNING_AUTHORITY' => '');
+		}
+		return $returnable;
+	}
+
+	function getPatientInternalID($external_id = null,$assigning_authority = null){
+
+		$CI = &get_instance();
+		$CI -> load -> database();
+		$cond = (isset($assigning_authority)) ?  "and assigning_authority = '$assigning_authority' " : null ;
+		$query_str = "SELECT id FROM api_patient_matching WHERE internal_id   = '$internal_id' and external_id IS NOT NULL".$cond;
+		$query = $CI->db->query($query_str);
+
+		if (count($query->result()) > 0) {
+			$returnable = $query->result()[0];
+		} else {
+			$returnable = false;
+			$returnable =  array('ID' => '','IDENTIFIER_TYPE' => '','ASSIGNING_AUTHORITY' => '');
 		}
 		return $returnable;
 	}

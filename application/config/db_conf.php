@@ -1,4 +1,3 @@
-
 <?php 
 $db['default']['hostname'] = 'localhost';
 $db['default']['username'] = 'root';
