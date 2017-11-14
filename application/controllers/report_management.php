@@ -852,17 +852,16 @@ class Report_management extends MY_Controller {
 		 * 4.On CTX - 15 years & Older and are on ctx drug prophylaxis only ART,PMTCT-adult only
 		 */
 
-		$sql = "SELECT COUNT(*) as total
-		FROM patient p
-		LEFT JOIN gender g ON g.id=p.gender
-		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		LEFT JOIN drug_prophylaxis dp ON dp.id=p.drug_prophylaxis
-		LEFT JOIN patient_status ps ON ps.id=p.current_status
-		WHERE rst.name LIKE '%pmtct%'
-		AND dp.name LIKE '%cotri%'
-		AND DATEDIFF('$period_end',p.dob) <=60
-		AND p.active='1'
-		AND ps.Name LIkE '%active%'";
+		$sql = "SELECT 
+					COUNT(*) as total
+				FROM patient p
+				LEFT JOIN gender g ON g.id=p.gender
+				LEFT JOIN regimen_service_type rst ON rst.id=p.service
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE rst.name LIKE '%pmtct%'
+				AND DATEDIFF('$period_end',p.dob) <=60
+				AND p.active='1'
+				AND ps.Name LIKE '%active%'";
 
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
@@ -872,17 +871,18 @@ class Report_management extends MY_Controller {
 			}
 		}
 
-		$sql = "SELECT COUNT(*) as total
-		FROM patient p
-		LEFT JOIN gender g ON g.id=p.gender
-		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		LEFT JOIN drug_prophylaxis dp ON dp.id=p.drug_prophylaxis
-		LEFT JOIN patient_status ps ON ps.id=p.current_status
-		WHERE rst.name LIKE '%pmtct%'
-		AND dp.name NOT LIKE '%cotri%'
-		AND DATEDIFF('$period_end',p.dob) <=60
-		AND p.active='1'
-		AND ps.Name LIkE '%active%'";
+		$sql = "SELECT 
+					COUNT(*) as total
+				FROM patient p
+				LEFT JOIN gender g ON g.id=p.gender
+				LEFT JOIN regimen_service_type rst ON rst.id=p.service
+				LEFT JOIN drug_prophylaxis dp ON dp.id=p.drug_prophylaxis
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE rst.name LIKE '%pmtct%'
+				AND dp.name NOT LIKE '%cotri%'
+				AND DATEDIFF('$period_end',p.dob) <=60
+				AND p.active='1'
+				AND ps.Name LIKE '%active%'";
 
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
@@ -892,19 +892,20 @@ class Report_management extends MY_Controller {
 			}
 		}
 
-		$sql = "SELECT g.name as gender,COUNT(*) as total
-		FROM patient p
-		LEFT JOIN gender g ON g.id=p.gender
-		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		LEFT JOIN drug_prophylaxis dp ON dp.id=p.drug_prophylaxis
-		LEFT JOIN patient_status ps ON ps.id=p.current_status
-		WHERE(rst.name LIKE '%art%' OR rst.name LIKE '%oi%')
-		AND dp.name LIKE '%cotri%'
-		AND DATEDIFF('$period_end',p.dob) >=365
-		AND DATEDIFF('$period_end',p.dob) <(365*15)
-		AND p.active='1'
-		AND ps.Name LIkE '%active%'
-		GROUP BY g.name";
+		$sql = "SELECT 
+					g.name as gender,COUNT(*) as total
+				FROM patient p
+				LEFT JOIN gender g ON g.id=p.gender
+				LEFT JOIN regimen_service_type rst ON rst.id=p.service
+				LEFT JOIN drug_prophylaxis dp ON dp.id=p.drug_prophylaxis
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE(rst.name LIKE '%art%' OR rst.name LIKE '%oi%')
+				AND dp.name LIKE '%cotri%'
+				AND DATEDIFF('$period_end',p.dob) >=365
+				AND DATEDIFF('$period_end',p.dob) <(365*15)
+				AND p.active='1'
+				AND ps.Name LIKE '%active%'
+				GROUP BY g.name";
 
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
@@ -918,18 +919,19 @@ class Report_management extends MY_Controller {
 			}
 		}
 
-		$sql = "SELECT g.name as gender,COUNT(*) as total
-		FROM patient p
-		LEFT JOIN gender g ON g.id=p.gender
-		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		LEFT JOIN drug_prophylaxis dp ON dp.id=p.drug_prophylaxis
-		LEFT JOIN patient_status ps ON ps.id=p.current_status
-		WHERE(rst.name LIKE '%art%' OR rst.name LIKE '%pmtct%' OR rst.name LIKE '%oi%')
-		AND dp.name LIKE '%cotri%'
-		AND DATEDIFF('$period_end',p.dob) >=(365*15)
-		AND p.active='1'
-		AND ps.Name LIkE '%active%'
-		GROUP BY g.name";
+		$sql = "SELECT 
+					g.name as gender,COUNT(*) as total
+				FROM patient p
+				LEFT JOIN gender g ON g.id=p.gender
+				LEFT JOIN regimen_service_type rst ON rst.id=p.service
+				LEFT JOIN drug_prophylaxis dp ON dp.id=p.drug_prophylaxis
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE(rst.name LIKE '%art%' OR rst.name LIKE '%pmtct%' OR rst.name LIKE '%oi%')
+				AND dp.name LIKE '%cotri%'
+				AND DATEDIFF('$period_end',p.dob) >=(365*15)
+				AND p.active='1'
+				AND ps.Name LIKE '%active%'
+				GROUP BY g.name";
 
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
@@ -967,11 +969,15 @@ class Report_management extends MY_Controller {
 
 		//Get patients enrolled in care below 1 year
 		$sql = "SELECT COUNT(*) AS total 
-		FROM patient 
-		WHERE MONTH(date_enrolled)='$month' 
-		AND YEAR(date_enrolled)='$year' 
-		AND DATEDIFF('$today',dob)<365 
-		AND active='1'";
+				FROM patient p
+				LEFT JOIN regimen_service_type rst ON rst.id = p.service
+				WHERE MONTH(p.date_enrolled) = '$month' 
+				AND YEAR(p.date_enrolled) = '$year' 
+				AND DATEDIFF('$today', p.dob) < 365 
+				AND p.active = '1'
+				AND (rst.name LIKE '%art%'
+				OR rst.name LIKE '%oi%'
+				OR rst.name LIKE '%pmtct%')";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 
@@ -980,13 +986,18 @@ class Report_management extends MY_Controller {
 		}
 
 		//Get Patients enrolled in care below 15 years
-		$sql = "SELECT COUNT(*) AS total,gender 
-		FROM patient 
-		WHERE MONTH(date_enrolled)='$month' 
-		AND YEAR(date_enrolled)='$year' 
-		AND DATEDIFF('$today',dob)>=365 
-		AND DATEDIFF('$today',dob)<(365*15) 
-		AND active='1' group by gender";
+		$sql = "SELECT COUNT(*) AS total, p.gender 
+				FROM patient p
+				LEFT JOIN regimen_service_type rst ON rst.id = p.service
+				WHERE MONTH(p.date_enrolled) = '$month' 
+				AND YEAR(p.date_enrolled) = '$year' 
+				AND DATEDIFF('$today', p.dob) >= 365 
+				AND DATEDIFF('$today', p.dob) < (365 * 15) 
+				AND p.active = '1'
+				AND (rst.name LIKE '%art%'
+				OR rst.name LIKE '%oi%'
+				OR rst.name LIKE '%pmtct%') 
+				GROUP BY p.gender";
 		$query = $this -> db-> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1000,13 +1011,17 @@ class Report_management extends MY_Controller {
 		}
 
 		//Get Patients enrolled in care above 15 years
-		$sql = "SELECT COUNT(*) AS total,gender 
-		FROM patient 
-		WHERE MONTH(date_enrolled)='$month' 
-		AND YEAR(date_enrolled)='$year' 
-		AND DATEDIFF('$today',dob)>=(365*15) 
-		AND active='1'  
-		GROUP BY gender";
+		$sql = "SELECT COUNT(*) AS total, p.gender 
+				FROM patient p
+				LEFT JOIN regimen_service_type rst ON rst.id = p.service
+				WHERE MONTH(p.date_enrolled) = '$month' 
+				AND YEAR(p.date_enrolled) = '$year' 
+				AND DATEDIFF('$today', p.dob) >= (365*15) 
+				AND p.active = '1' 
+				AND (rst.name LIKE '%art%'
+				OR rst.name LIKE '%oi%'
+				OR rst.name LIKE '%pmtct%')  
+				GROUP BY p.gender";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1169,18 +1184,19 @@ class Report_management extends MY_Controller {
 		}
 
 		//Get Patients starting on ART and are pregnant
-		$sql = "SELECT COUNT(*) AS total,pregnant 
-		FROM patient 
-		WHERE start_regimen_date 
+		$sql = "SELECT COUNT(*) AS total,p.pregnant 
+		FROM patient p
+		LEFT JOIN regimen_service_type rst ON rst.id=p.service
+		WHERE p.start_regimen_date 
 		BETWEEN '$from' 
 		AND '$to' 
-		AND gender='2' 
-		AND active='1'
-		GROUP BY pregnant";
+		AND p.gender = '2' 
+		AND rst.name LIKE '%art%' 
+		AND p.active='1'
+		GROUP BY p.pregnant";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
-
 			foreach ($results as $result) {
 				if ($result['pregnant'] == 1) {
 					$female_pregnant = $result['total'];
@@ -1189,13 +1205,15 @@ class Report_management extends MY_Controller {
 		}
 
 		//Get Patients starting on ART and have TB
-		$sql = "SELECT COUNT(*) AS total,tb 
-		FROM patient 
-		WHERE start_regimen_date 
+		$sql = "SELECT COUNT(*) AS total,p.tb 
+		FROM patient p
+		LEFT JOIN regimen_service_type rst ON rst.id=p.service
+		WHERE p.start_regimen_date 
 		BETWEEN '$from' 
-		AND '$to' 
-		AND active='1'
-		GROUP BY tb";
+		AND '$to'
+		AND rst.name LIKE '%art%'  
+		AND p.active='1'
+		GROUP BY p.tb";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1286,11 +1304,11 @@ class Report_management extends MY_Controller {
 		$male_above_fifteen_years = 0;
 		$female_above_fifteen_years = 0;
 
-		$sql = "SELECT DATEDIFF('$to',p.dob) as age,g.name as gender
+		$sql = "SELECT DATEDIFF('$to', p.dob) as age,g.name as gender
 		FROM patient p 
-		LEFT JOIN gender g ON g.id=p.gender
+		LEFT JOIN gender g ON g.id = p.gender
 		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		WHERE p.date_enrolled <='$to'
+		WHERE p.date_enrolled <= '$to'
 		AND rst.name LIKE '%art%'
 		AND p.active='1'
 		GROUP BY p.id";
@@ -1329,18 +1347,21 @@ class Report_management extends MY_Controller {
 
 		//art net cohort
 		$sql = "SELECT COUNT(DISTINCT(p.id)) as total
-		FROM patient p 
-		INNER JOIN
-		(SELECT p.id
-		FROM patient p 
-		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		WHERE p.start_regimen_date
-		BETWEEN '$from'
-		AND '$to'
-		AND p.active='1'
-		AND rst.name LIKE '%art%') as past ON past.id=p.id
-		LEFT JOIN patient_status ps ON ps.id=p.current_status
-		WHERE ps.name NOT LIKE '%transfer out%'";
+				FROM patient p 
+				INNER JOIN
+				(
+					SELECT 
+						p.id
+					FROM patient p 
+					LEFT JOIN regimen_service_type rst ON rst.id=p.service
+					WHERE p.start_regimen_date
+					BETWEEN '$from'
+					AND '$to'
+					AND p.active='1'
+					AND rst.name LIKE '%art%'
+				) as past ON past.id=p.id
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE ps.name NOT LIKE '%transfer out%'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1349,40 +1370,45 @@ class Report_management extends MY_Controller {
 
 		//original 1st line
 		$sql = "SELECT COUNT(DISTINCT(p.id)) as total
-		FROM patient p 
-		INNER JOIN
-		(SELECT p.id,p.start_regimen
-		FROM patient p 
-		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		WHERE p.start_regimen_date
-		BETWEEN '$from'
-		AND '$to'
-		AND p.active='1'
-		AND rst.name LIKE '%art%') as past ON past.id=p.id
-		LEFT JOIN patient_status ps ON ps.id=p.current_status
-		WHERE ps.Name NOT LIKE '%transfer out%'
-		AND past.start_regimen=p.current_regimen";
+				FROM patient p 
+				INNER JOIN
+				(
+					SELECT p.id,p.start_regimen
+					FROM patient p 
+					LEFT JOIN regimen_service_type rst ON rst.id=p.service
+					WHERE p.start_regimen_date
+					BETWEEN '$from'
+					AND '$to'
+					AND p.active='1'
+					AND rst.name LIKE '%art%'
+				) as past ON past.id=p.id
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE ps.Name NOT LIKE '%transfer out%'
+				AND past.start_regimen=p.current_regimen";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
 			$original_first_line = $results[0]['total'];
 		}
+
 		//alternate first line
 		$sql = "SELECT COUNT(DISTINCT(p.id)) as total
-		FROM patient p 
-		INNER JOIN
-		(SELECT p.id,p.start_regimen
-		FROM patient p 
-		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		WHERE p.start_regimen_date
-		BETWEEN '$from'
-		AND '$to'
-		AND p.active='1'
-		AND rst.name LIKE '%art%') as past ON past.id=p.id
-		LEFT JOIN patient_status ps ON ps.id=p.current_status
-		WHERE ps.Name NOT LIKE '%transfer out%'
-		AND past.start_regimen !=p.current_regimen
-		AND p.current_regimen IN(SELECT id FROM regimen WHERE line='1')";
+				FROM patient p 
+				INNER JOIN
+				(
+					SELECT p.id,p.start_regimen
+					FROM patient p 
+					LEFT JOIN regimen_service_type rst ON rst.id=p.service
+					WHERE p.start_regimen_date
+					BETWEEN '$from'
+					AND '$to'
+					AND p.active='1'
+					AND rst.name LIKE '%art%'
+				) as past ON past.id=p.id
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE ps.Name NOT LIKE '%transfer out%'
+				AND past.start_regimen !=p.current_regimen
+				AND p.current_regimen IN(SELECT id FROM regimen WHERE line='1')";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1391,20 +1417,22 @@ class Report_management extends MY_Controller {
 
 		//second line
 		$sql = "SELECT COUNT(DISTINCT(p.id)) as total
-		FROM patient p 
-		INNER JOIN
-		(SELECT p.id,p.start_regimen
-		FROM patient p 
-		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		WHERE p.start_regimen_date
-		BETWEEN '$from'
-		AND '$to'
-		AND p.active='1'
-		AND rst.name LIKE '%art%') as past ON past.id=p.id
-		LEFT JOIN patient_status ps ON ps.id=p.current_status
-		WHERE ps.Name NOT LIKE '%transfer out%'
-		AND past.start_regimen !=p.current_regimen
-		AND p.current_regimen IN(SELECT id FROM regimen WHERE line >='2')";
+				FROM patient p 
+				INNER JOIN
+				(
+					SELECT p.id,p.start_regimen
+					FROM patient p 
+					LEFT JOIN regimen_service_type rst ON rst.id=p.service
+					WHERE p.start_regimen_date
+					BETWEEN '$from'
+					AND '$to'
+					AND p.active='1'
+					AND rst.name LIKE '%art%'
+				) as past ON past.id=p.id
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE ps.Name NOT LIKE '%transfer out%'
+				AND past.start_regimen !=p.current_regimen
+				AND p.current_regimen IN(SELECT id FROM regimen WHERE line >='2')";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1432,12 +1460,12 @@ class Report_management extends MY_Controller {
 		$female_above_fifteen_years = 0;
 
 		$sql = "SELECT DATEDIFF('$to',p.dob) as age,g.name as gender
-		FROM patient p 
-		LEFT JOIN gender g ON g.id=p.gender
-		WHERE p.date_enrolled <='$to'
-		AND p.tb_test='1'
-		AND p.active='1'
-		GROUP BY p.id";
+				FROM patient p 
+				LEFT JOIN gender g ON g.id=p.gender
+				WHERE p.date_enrolled <='$to'
+				AND p.tb_test='1'
+				AND p.active='1'
+				GROUP BY p.id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1469,13 +1497,14 @@ class Report_management extends MY_Controller {
 
 		//Get patients using modern contraceptives
 		$sql = "SELECT COUNT(DISTINCT(p.id)) as total 
-		FROM patient p
-		WHERE p.date_enrolled <='$to'
-		AND p.fplan IN 
-		(SELECT indicator 
-		FROM family_planning 
-		WHERE name NOT LIKE '%condom%'
-		)";
+				FROM patient p
+				WHERE p.date_enrolled <='$to'
+				AND p.fplan IN 
+				(
+					SELECT indicator 
+					FROM family_planning 
+					WHERE name NOT LIKE '%condom%'
+				)";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1484,13 +1513,14 @@ class Report_management extends MY_Controller {
 
 		//Get patients using condoms
 		$sql = "SELECT COUNT(DISTINCT(p.id)) as total 
-		FROM patient p
-		WHERE p.date_enrolled <='$to'
-		AND p.fplan IN 
-		(SELECT indicator 
-		FROM family_planning 
-		WHERE name LIKE '%condom%'
-		)";
+				FROM patient p
+				WHERE p.date_enrolled <='$to'
+				AND p.fplan IN 
+				(
+					SELECT indicator 
+					FROM family_planning 
+					WHERE name LIKE '%condom%'
+				)";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1512,11 +1542,11 @@ class Report_management extends MY_Controller {
 		$unscheduled_visits = 0;
 
 		$sql = "SELECT patient_number_ccc,gender_desc as gender,dispensing_date,appointment, regimen_service_type AS service
-		FROM v_patient_visits
-		WHERE dispensing_date
-		BETWEEN '$from'
-		AND '$to'
-		GROUP BY patient_number_ccc";
+				FROM v_patient_visits
+				WHERE dispensing_date
+				BETWEEN '$from'
+				AND '$to'
+				GROUP BY patient_number_ccc";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1554,13 +1584,13 @@ class Report_management extends MY_Controller {
 		$other_reason_female = 0;
 
 		$sql = "SELECT pr.name,g.name as gender
-		FROM patient p
-		LEFT JOIN gender g ON g.id=p.gender
-		LEFT JOIN pep_reason pr ON pr.id=p.pep_reason
-		WHERE p.date_enrolled 
-		BETWEEN '$from'
-		AND '$to'
-		GROUP BY p.id";
+				FROM patient p
+				LEFT JOIN gender g ON g.id=p.gender
+				LEFT JOIN pep_reason pr ON pr.id=p.pep_reason
+				WHERE p.date_enrolled 
+				BETWEEN '$from'
+				AND '$to'
+				GROUP BY p.id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1604,16 +1634,17 @@ class Report_management extends MY_Controller {
 		$sexual_assualt_female = 0;
 		$other_reason_female = 0;
 
-		$sql = "SELECT pr.name,g.name as gender
-		FROM patient p
-		LEFT JOIN gender g ON g.id=p.gender
-		LEFT JOIN pep_reason pr ON pr.id=p.pep_reason
-		LEFT JOIN regimen_service_type rst ON rst.id=p.service
-		WHERE p.date_enrolled 
-		BETWEEN '$from'
-		AND '$to'
-		AND rst.name LIKE '%pep%'
-		GROUP BY p.id";
+		$sql = "SELECT 
+					pr.name,g.name as gender
+				FROM patient p
+				LEFT JOIN gender g ON g.id=p.gender
+				LEFT JOIN pep_reason pr ON pr.id=p.pep_reason
+				LEFT JOIN regimen_service_type rst ON rst.id=p.service
+				WHERE p.date_enrolled 
+				BETWEEN '$from'
+				AND '$to'
+				AND rst.name LIKE '%pep%'
+				GROUP BY p.id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1695,8 +1726,6 @@ class Report_management extends MY_Controller {
 			/*
 			 * Outer Loop through all active drugs
 			 */
-			$first_value = "AND ccc_store_sp = $stock_type";
-			$second_value = "AND dst.ccc_store_sp = $stock_type";
 			// Select Data
 			$this -> db -> select('SQL_CALC_FOUND_ROWS ' . str_replace(' , ', ' ', implode(', ', $aColumns)), false);
 			$this -> db -> select("dc.id,dc.pack_size,u.name");
@@ -1729,7 +1758,19 @@ class Report_management extends MY_Controller {
 				$row[] = $aRow['drug'];
 
 				//Start of Beginning Balance
-				$sql = "SELECT SUM( dst.balance ) AS total FROM drug_stock_movement dst, (SELECT drug, batch_number, MAX( transaction_date ) AS trans_date FROM  `drug_stock_movement` WHERE transaction_date BETWEEN  '$prev_start' AND  '$prev_end' AND drug ='$drug_id' $first_value GROUP BY batch_number) AS temp WHERE dst.drug = temp.drug AND dst.batch_number = temp.batch_number AND dst.transaction_date = temp.trans_date $second_value";
+				$sql = "SELECT SUM(dst.balance) AS total 
+						FROM drug_stock_movement dst
+						INNER JOIN 
+						(
+							SELECT drug, batch_number, MAX(transaction_date) AS trans_date 
+							FROM  drug_stock_movement 
+							WHERE transaction_date >= '$prev_start' 
+							AND transaction_date <= '$prev_end' 
+							AND drug = '$drug_id' 
+							AND ccc_store_sp = '$stock_type'
+							GROUP BY batch_number
+						) AS temp ON dst.drug = temp.drug AND dst.batch_number = temp.batch_number AND dst.transaction_date = temp.trans_date
+						WHERE dst.ccc_store_sp = '$stock_type'";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -1746,16 +1787,32 @@ class Report_management extends MY_Controller {
 				//Start of Other Transactions
 				$start_date = date('Y-m-d', strtotime($start_date));
 				$end_date = date('Y-m-d', strtotime($end_date));
-				$sql = "SELECT trans.name, trans.id, trans.effect, dsm.in_total, dsm.out_total FROM 
-				(SELECT id, name, effect FROM transaction_type 
-				WHERE name LIKE  '%received%' OR name LIKE  '%adjustment%' 
-				OR name LIKE  '%return%' OR name LIKE  '%dispense%' OR name LIKE  '%issue%' 
-				OR name LIKE  '%loss%' OR name LIKE  '%ajustment%' 
-				OR name LIKE  '%physical%count%' OR name LIKE  '%starting%stock%') AS trans 
-				LEFT JOIN (SELECT transaction_type, SUM( quantity ) AS in_total, SUM( quantity_out ) AS out_total 
-				FROM drug_stock_movement WHERE transaction_date 
-				BETWEEN  '$start_date' AND  '$end_date' AND drug =  '$drug_id' $first_value 
-				GROUP BY transaction_type) AS dsm ON trans.id = dsm.transaction_type GROUP BY trans.name";
+				$sql = "SELECT trans.name, trans.id, trans.effect, dsm.in_total, dsm.out_total 
+						FROM 
+							(
+								SELECT id, name, effect 
+								FROM transaction_type 
+								WHERE active = '1' 
+								AND (name LIKE '%received%' 
+								OR name LIKE '%adjustment%' 
+								OR name LIKE '%return%' OR name LIKE '%dispense%' 
+								OR name LIKE '%issue%' OR name LIKE '%loss%' 
+								OR name LIKE '%ajustment%' OR name LIKE '%physical%count%' 
+								OR name LIKE '%starting%stock%')  
+								GROUP BY name, effect 
+								ORDER BY id ASC
+							) AS trans 
+						LEFT JOIN 
+							(
+								SELECT transaction_type, SUM(quantity) AS in_total, SUM(quantity_out) AS out_total 
+								FROM drug_stock_movement 
+								WHERE transaction_date >= '$start_date' 
+								AND transaction_date <= '$end_date' 
+								AND drug = '$drug_id' 
+								AND ccc_store_sp = '$stock_type'
+								GROUP BY transaction_type
+							) AS dsm ON trans.id = dsm.transaction_type 
+						GROUP BY trans.id";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -2959,7 +3016,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 			}
 
 			public function getPatientMissingAppointments($from = "", $to = "") {
-		//Variables
+				//Variables
 				$today = date('Y-m-d');
 				$row_string = "";
 				$overall_total = 0;
@@ -2967,80 +3024,83 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 				$from = date('Y-m-d', strtotime($from));
 				$to = date('Y-m-d', strtotime($to));
 
-        //sql to get all appoitnments in period
-				$sql = "SELECT pa.patient,
-				pa.appointment 
-				FROM patient_appointment pa
-				WHERE pa.appointment 
-				BETWEEN '$from' 
-				AND '$to'
-				AND facility='$facility_code' 
-				GROUP BY patient,appointment";
+				//sql to get all appoitnments in period
+				$sql = "SELECT 
+							pa.patient,
+							pa.appointment 
+						FROM patient_appointment pa
+						WHERE pa.appointment >= '$from' 
+						AND pa.appointment <= '$to'
+						AND facility = '$facility_code' 
+						GROUP BY patient, appointment";
 				$query = $this -> db -> query($sql);
 
 				$results = $query -> result_array();
 				$row_string .= "<table border='1' class='dataTables'>
-				<thead>
-					<tr>
-						<th> ART ID </th>
-						<th> Patient Name</th>
-						<th> Type of Service</th>
-						<th> Sex </th>
-						<th> Age </th>
-						<th> Contacts/Address </th>
-						<th> Appointment Date </th>
-						<th> Late by (days)</th>
-						<th> Source</th>
-					</tr>
-				</thead>";
+								<thead>
+									<tr>
+										<th> ART ID </th>
+										<th> Patient Name</th>
+										<th> Type of Service</th>
+										<th> Sex </th>
+										<th> Age </th>
+										<th> Phone Number</th>
+										<th> Appointment Date </th>
+										<th> Late by (days)</th>
+										<th> Source</th>
+									</tr>
+								</thead>";
 				if ($results) {
 					foreach ($results as $result) {
 						$patient = $result['patient'];
 						$appointment = $result['appointment'];
-				//Check if Patient visited on set appointment
+
+						//Check if Patient visited on set appointment
 						$sql = "SELECT * 
-						FROM patient_visit 
-						WHERE patient_id='$patient' 
-						AND dispensing_date='$appointment' 
-						AND facility='$facility_code'";
-						$query = $this -> db -> query($sql);
+								FROM patient_visit 
+								WHERE patient_id = ? 
+								AND dispensing_date = ? 
+								AND facility = ?";
+						$query = $this -> db -> query($sql, array($patient, $appointment, $facility_code));
 						$results = $query -> result_array();
-						if (!$results) {
-							$sql = "SELECT patient_number_ccc as art_no,
-							UPPER(first_name)as first_name,
-							UPPER(other_name)as other_name,
-							UPPER(last_name)as last_name,
-							pss.name as source,
-							FLOOR(DATEDIFF('$today',dob)/365) as age,
-							IF(gender=1,'Male','Female')as gender,
-							UPPER(physical) as physical,
-							DATEDIFF('$today',nextappointment) as days_late, 
-							rst.name AS service_type
-							FROM patient 
-							LEFT JOIN patient_source pss on pss.id=patient.source
-							LEFT JOIN regimen_service_type rst 
-							ON rst.id=patient.service
-							WHERE patient_number_ccc='$patient' 
-							AND facility_code='$facility_code'
-							AND DATEDIFF('$today',nextappointment)>0";
-							$query = $this -> db -> query($sql);
+						if (empty($results)){
+							$sql = "SELECT 
+										patient_number_ccc as art_no,
+										UPPER(first_name)as first_name,
+										UPPER(other_name)as other_name,
+										UPPER(last_name)as last_name,
+										pss.name as source,
+										FLOOR(DATEDIFF('$today', dob)/365) as age,
+										IF(gender = 1, 'Male', 'Female')as gender,
+										phone,
+										DATEDIFF('$today', nextappointment) as days_late, 
+										rst.name AS service_type
+									FROM patient 
+									LEFT JOIN patient_source pss on pss.id=patient.source
+									LEFT JOIN regimen_service_type rst 
+									ON rst.id = patient.service
+									WHERE patient_number_ccc = ? 
+									AND facility_code = ?
+									AND DATEDIFF( ?, nextappointment) > 0";
+							$query = $this -> db -> query($sql, array($patient, $facility_code, $today));
 							$results = $query -> result_array();
 							if ($results){
-						//select patient info
+							    //select patient info
 								foreach ($results as $result) {
 									$patient_no = $result['art_no'];
 									$patient_name = $result['first_name'] . " " . $result['other_name'] . " " . $result['last_name'];
 									$service_type=$result['service_type'];
 									$age=$result['age'];
 									$gender = $result['gender'];
-									$address = $result['physical'];
+									$phone = $result['phone'];
 									$appointment = date('d-M-Y', strtotime($appointment));
 									$days_late_by = $result['days_late'];
 									$source=$result['source'];
-									$row_string .= "<tr><td>$patient_no</td><td>$patient_name</td><td>$service_type</td><td>$gender</td><td>$age</td><td>$address</td><td>$appointment</td><td>$days_late_by</td><td>$source</td></tr>";
+									$row_string .= "<tr><td>$patient_no</td><td>$patient_name</td><td>$service_type</td><td>$gender</td><td>$age</td><td>$phone</td><td>$appointment</td><td>$days_late_by</td><td>$source</td></tr>";
+									$overall_total++;
 								}
 							}
-							$overall_total++;
+							
 						}
 					}
 				} else {
@@ -3048,7 +3108,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 				}
 				$row_string .= "</tbody></table>";
 
-		//Overall Total
+				//Overall Total
 				$data['overall_total'] = $overall_total;
 				$data['from'] = date('d-M-Y', strtotime($from));
 				$data['to'] = date('d-M-Y', strtotime($to));
@@ -3062,7 +3122,6 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 				$data['facility_name'] = $this -> session -> userdata('facility_name');
 				$data['content_view'] = 'reports/patients_missing_appointments_v';
 				$this -> load -> view('template', $data);
-
 			}
 
 			public function getPatientsStartedonDate($from = "", $to = "") {
@@ -4761,13 +4820,18 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 				$data['stock_type_n'] = 'Pharmacy';
 			}
 			//Get transaction names
-			$get_transaction_names = $this -> db -> query("SELECT id,name,effect FROM transaction_type 
-				WHERE name LIKE '%received%' 
-				OR name LIKE '%adjustment%' 
-				OR name LIKE '%return%' OR name LIKE '%dispense%' 
-				OR name LIKE '%issue%' OR name LIKE '%loss%' 
-				OR name LIKE '%ajustment%' OR name LIKE '%physical%count%' 
-				OR name LIKE '%starting%stock%' ");
+			$sql = "SELECT id,name,effect 
+					FROM transaction_type 
+					WHERE active = '1' 
+					AND (name LIKE '%received%' 
+					OR name LIKE '%adjustment%' 
+					OR name LIKE '%return%' OR name LIKE '%dispense%' 
+					OR name LIKE '%issue%' OR name LIKE '%loss%' 
+					OR name LIKE '%ajustment%' OR name LIKE '%physical%count%' 
+					OR name LIKE '%starting%stock%')  
+					GROUP BY name, effect 
+					ORDER BY id ASC";
+			$get_transaction_names = $this -> db -> query($sql);
 			$get_transaction_array = $get_transaction_names -> result_array();
 			$data['trans_names'] = $get_transaction_array;
 			$data['start_date'] = date('d-M-Y', strtotime($this -> uri -> segment(5)));
@@ -7227,118 +7291,89 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 			$facility_code = $this -> session -> userdata('facility');
 			$consumption_totals = array();
 			$row_string = "";
-			$drug_total = 0;
-			$total = 0;
-			$overall_pharmacy_drug_qty = 0;
-			$overall_store_drug_qty = 0;
-			$pharmacy_drug_qty_percentage = "";
-			$store_drug_qty_percentage = "";
-			$drug_total_percentage = "";
-			$total_drug_qty = 0;
+			//Datasource query
+			$sql = "SELECT 
+						tmp.transaction_date, 
+						tmp.drug_name, 
+						tmp.drug_unit, 
+						tmp.pack_size, 
+						SUM(tmp.qty_total) AS qty_total,
+						SUM(tmp.qty_pharmacy) AS qty_pharmacy, 
+						ROUND(SUM(tmp.qty_pharmacy)/SUM(tmp.qty_total),2)*100 AS qty_pharmacy_percent, 
+						SUM(tmp.qty_store) AS qty_store,
+						ROUND(SUM(tmp.qty_store)/SUM(tmp.qty_total),2)*100 AS qty_store_percent
+					FROM
+						(SELECT 
+							dsm.transaction_date,
+							d.drug AS drug_name,
+							du.Name AS drug_unit,
+							d.pack_size,
+							SUM(dsm.quantity_out) AS qty_total,
+						    CASE WHEN sp.name LIKE '%pharmacy%' THEN SUM(dsm.quantity_out) ELSE 0 END AS qty_pharmacy,
+						    CASE WHEN sp.name LIKE '%store%' THEN SUM(dsm.quantity_out) ELSE 0 END AS qty_store
+						FROM drug_stock_movement dsm 
+						LEFT JOIN drugcode d ON dsm.drug = d.id 
+						LEFT JOIN drug_unit du ON d.unit = du.id 
+						INNER JOIN ccc_store_service_point sp ON sp.id = dsm.ccc_store_sp
+						WHERE dsm.transaction_date >= ?
+						AND dsm.transaction_date <= ? 
+						AND dsm.facility = ? 
+						GROUP BY dsm.transaction_date, drug_name, drug_unit, dsm.ccc_store_sp
+						HAVING SUM(dsm.quantity_out) > 0
+						ORDER BY dsm.transaction_date) AS tmp
+					GROUP BY tmp.transaction_date, tmp.drug_name, tmp.drug_unit, tmp.pack_size";
+			$results = $this->db->query($sql, array($start_date, $end_date, $facility_code))-> result_array();
 
-		//Select total consumption at facility
-			$sql = "select sum(dsm.quantity_out) as total from drug_stock_movement dsm  where dsm.transaction_date between '$start_date' and '$end_date' and dsm.facility='$facility_code'";
-			$query = $this -> db -> query($sql);
-			$results = $query -> result_array();
-			if ($results) {
-				$total = $results[0]['total'];
-			}
+			//Totals
+			$overall_total = array_sum(array_column($results, 'qty_total'));
+			$overall_pharmacy_drug_qty = array_sum(array_column($results, 'qty_pharmacy'));
+			$overall_store_drug_qty = array_sum(array_column($results, 'qty_store'));
+			$pharmacy_drug_qty_percentage = array_sum(array_column($results, 'qty_pharmacy_percent'));
+			$store_drug_qty_percentage = array_sum(array_column($results, 'qty_store_percent'));
 
-		//Select total consumption at facility per drug per day
-			$sql = "select dsm.transaction_date,dsm.drug,d.drug as Name,d.pack_size,du.Name as unit,sum(dsm.quantity_out) as qty from drug_stock_movement dsm left join drugcode d on dsm.drug=d.id left join drug_unit du on d.unit=du.id where dsm.transaction_date between '$start_date' and '$end_date' and dsm.facility='$facility_code' GROUP BY dsm.transaction_date, dsm.drug ORDER BY dsm.transaction_date";
-			$query = $this -> db -> query($sql);
-			$results = $query -> result_array();
+			//Table header string
 			$row_string .= "<table border='1' class='dataTables' cellpadding='5'>
-			<thead>
-				<tr>
-					<th >Date</th>
-					<th >Drug</th>
-					<th >Unit</th>
-					<th >PackSize</th>
-					<th >Total(units)</th>
-					<th >%</th>
-					<th >Pharmacy(units)</th>
-					<th >%</th>
-					<th > Store(units)</th>
-					<th >%</th>
-				</tr>
-			</thead>
-			<tbody>";
-				if ($results) {
-					foreach ($results as $result) {
-						$consumption_totals[$result['drug']] = $result['qty'];
-						$trans_date = $result['transaction_date'];
-						$current_date = date('d-M-Y', strtotime($result['transaction_date']));
-						$current_drug = $result['drug'];
-						$current_drugname = $result['Name'];
-						$unit = $result['unit'];
-						$drug_total = 0;
-						$pack_size = $result['pack_size'];
-						$drug_total = $result['qty'];
-						$drug_total_percentage = number_format(($drug_total / $total) * 100, 1);
-						$row_string .= "<tr><td>$current_date</td><td><b>$current_drugname</b></td><td><b>$unit</b></td><td><b>$pack_size</b></td><td>" . number_format($drug_total) . "</td><td>$drug_total_percentage</td>";
-				//Select consumption at pharmacy
-						$sql = "select transaction_date,drug,sum(quantity_out) as qty from drug_stock_movement where transaction_date= '$trans_date'  and facility='$facility_code' and source='$facility_code' and source=destination and drug='$current_drug' GROUP BY drug ORDER BY transaction_date";
-						$query = $this -> db -> query($sql);
-						$results = $query -> result_array();
-						if ($results) {
-							foreach ($results as $result) {
-								$total_pharmacy_drug_qty = $result['qty'];
-								$overall_pharmacy_drug_qty += $total_pharmacy_drug_qty;
-								if ($drug_total > 0) {
-									$pharmacy_drug_qty_percentage = number_format(($total_pharmacy_drug_qty / $drug_total) * 100, 1);
-								} else {
-									$pharmacy_drug_qty_percentage = "-";
-								}
-								if ($result['drug'] != null) {
-									$row_string .= "<td>" . number_format($total_pharmacy_drug_qty) . "</td><td>$pharmacy_drug_qty_percentage</td>";
-								}
-							}
-						} else {
-							$row_string .= "<td>-</td><td>-</td>";
-						}
-				//Select Consumption at store
-						$sql = "select transaction_date,drug,sum(quantity_out) as qty from drug_stock_movement where transaction_date= '$trans_date' and facility='$facility_code' and destination='' and source='$facility_code' and drug='$current_drug' GROUP BY drug ORDER BY transaction_date";
-						$query = $this -> db -> query($sql);
-						$results = $query -> result_array();
-						if ($results) {
-							foreach ($results as $result) {
-								$total_store_drug_qty = $result['qty'];
-								$overall_store_drug_qty += $total_store_drug_qty;
-								if ($drug_total > 0) {
-									$store_drug_qty_percentage = number_format(($total_store_drug_qty / $drug_total) * 100, 1);
-								} else {
-									$store_drug_qty_percentage = "-";
-								}
-								if ($result['drug'] != null) {
-									$row_string .= "<td>" . number_format($total_store_drug_qty) . "</td><td>$store_drug_qty_percentage</td>";
-								}
-							}
-						} else {
-							$row_string .= "<td>-</td><td>-</td>";
-						}
-						$row_string .= "</tr>";
-					}
-					$my_total = $overall_pharmacy_drug_qty + $overall_store_drug_qty;
-					$row_string .= "</tbody><tfoot><tr><td><b>Totals(units):</b></td><td></td><td></td><td></td><td><b>" . number_format($total) . "</b></td><td><b>100</b></td><td><b>" . number_format($overall_pharmacy_drug_qty) . "</b></td><td><b>" . number_format(($overall_pharmacy_drug_qty / $total) * 100, 1) . "</b></td><td><b>" . number_format($overall_store_drug_qty) . "</b></td><td><b>" . number_format(($overall_store_drug_qty / $total) * 100, 1) . "</b></td></tr>";
-
-				} else {
-			//$row_string .= "<tr><td colspan='11'>No Data Available</td></tr>";
+								<thead>
+									<tr>
+										<th >Date</th>
+										<th >Drug</th>
+										<th >Unit</th>
+										<th >PackSize</th>
+										<th >Total(units)</th>
+										<th >%</th>
+										<th >Pharmacy(units)</th>
+										<th >%</th>
+										<th > Store(units)</th>
+										<th >%</th>
+									</tr>
+								</thead>
+								<tbody>";
+			if ($results) {
+				foreach ($results as $result) {
+					$qty_total = $result['qty_total'];
+					$row_string .= "<tr><td>".$result['transaction_date']."</td><td><b>".$result['drug_name']."</b></td><td><b>".$result['drug_unit']."</b></td><td><b>".$result['pack_size']."</b></td><td>" . number_format($qty_total) . "</td><td>".number_format(( $qty_total/ $overall_total) * 100)."</td><td>" . number_format($result['qty_pharmacy']) . "</td><td>" . number_format($result['qty_pharmacy_percent']) . "</td><td>" . number_format($result['qty_store']) . "</td><td>" . number_format($result['qty_store_percent']) . "</td></tr>";
 				}
-				$row_string .= "</tfoot></table>";
-				$data['dyn_table'] = $row_string;
-				$data['title'] = "webADT | Reports";
-				$data['hide_side_menu'] = 1;
-				$data['banner_text'] = "Facility Reports";
-				$data['selected_report_type_link'] = "drug_inventory_report_row";
-				$data['selected_report_type'] = "Stock Consumption";
-				$data['report_title'] = "Stock Consumption";
-				$data['facility_name'] = $this -> session -> userdata('facility_name');
-				$data['content_view'] = 'reports/daily_consumption_v';
-				$this -> load -> view('template', $data);
 			}
 
-			public function getBMI($start_date = "") {
+			//Table footer string
+			$row_string .= "</tbody><tfoot><tr><td><b>Totals(units):</b></td><td></td><td></td><td></td><td><b>" . number_format($overall_total) . "</b></td><td><b>100</b></td><td><b>" . number_format($overall_pharmacy_drug_qty) . "</b></td><td><b>" . number_format(($overall_pharmacy_drug_qty / $overall_total) * 100, 1) . "</b></td><td><b>" . number_format($overall_store_drug_qty) . "</b></td><td><b>" . number_format(($overall_store_drug_qty / $overall_total) * 100, 1) . "</b></td></tr>";
+			$row_string .= "</tfoot></table>";
+
+			//Configuration values for view
+			$data['dyn_table'] = $row_string;
+			$data['title'] = "webADT | Reports";
+			$data['hide_side_menu'] = 1;
+			$data['banner_text'] = "Facility Reports";
+			$data['selected_report_type_link'] = "drug_inventory_report_row";
+			$data['selected_report_type'] = "Stock Consumption";
+			$data['report_title'] = "Stock Consumption";
+			$data['facility_name'] = $this -> session -> userdata('facility_name');
+			$data['content_view'] = 'reports/daily_consumption_v';
+			$this -> load -> view('template', $data);
+		}
+
+
+		public function getBMI($start_date = "") {
 		/*
 		 Formula BMI= weight(kg)/(height(m)*height(m))
 

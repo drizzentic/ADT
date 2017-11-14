@@ -46,17 +46,17 @@ class User_management extends MY_Controller {
 		$facilities = "";
 		//If user is a super admin, allow him to add only facilty admin and nascop pharmacist
 		if ($access_level == "system_administrator") {
-			$user_type = "indicator='nascop_pharmacist' or indicator='facility_administrator'";
+			$user_type = "indicator not in ('system_administrator')";
 			$facilities = Facilities::getAll();
 			$users = Users::getAll();
 
 		}
 		//If user is a facility admin, allow him to add only facilty users
-		else if ($access_level == "facility_administrator") {
+		else {
 			$facility_code = $this -> session -> userdata('facility');
-			$user_type = "indicator='pharmacist'";
+			$user_type = "indicator not in ('system_administrator', 'facility_administrator') and indicator != '".$access_level."'";
 			$facilities = Facilities::getCurrentFacility($facility_code);
-			$q = "u.Facility_Code='" . $facility_code . "' and Access_Level !='1' and Access_Level !='4'";
+			$q = "u.Facility_Code='" . $facility_code . "' and Access_Level > '1'";
 			$users = Users::getUsersFacility($q);
 
 		}
@@ -65,39 +65,14 @@ class User_management extends MY_Controller {
 		$tmpl = array('table_open' => '<table class=" table table-bordered table-striped setting_table ">');
 		$this -> table -> set_template($tmpl);
 		$this -> table -> set_heading('id', 'Name', 'Email Address', 'Phone Number', 'Access Level', 'Registered By', 'Options');
-
 		foreach ($users as $user) {
 			$links = "";
 			$array_param = array('id' => $user['id'], 'role' => 'button', 'class' => 'edit_user', 'data-toggle' => 'modal');
-			//Is user is a system admin, allow him to edit only system  admin and nascop users
-			if ($access_level == "system_administrator") {
-				if ($user['Access'] == "System Administrator" or $user['Access'] == "NASCOP Pharmacist" or $user['Access'] == "Facility Administrator") {
-					//$links = anchor('user_management/edit/' . $user['id'], 'Edit', array('class' => 'edit_user', 'id' => $user['id']));
-					//$links = anchor('#edit_user', 'Edit', $array_param);
-					//$links .= " | ";
-				} else {
-					$links = "";
-				}
-			} else {
-				//$links = anchor('user_management/edit/' . $user['id'], 'Edit', array('class' => 'edit_user', 'id' => $user['id']));
-				//Only show edit link for pharmacists
-				if ($user['Access'] == "Pharmacist" || $user['Access'] == "User") {
-					//$links = anchor('#edit_user', 'Edit', $array_param);
-				}
-
-			}
-
 			if ($user['Active'] == 1) {
-				if ($access_level == "system_administrator") {
-					//$links .= " | ";
+				if ($access_level == "system_administrator" || ($access_level == "facility_administrator" and $user['Indicator'] != "facility_administrator")) {
 					$links .= anchor('user_management/disable/' . $user['id'], 'Disable', array('class' => 'disable_user'));
-				} else if ($access_level == "facility_administrator" and $user['Access'] == "Pharmacist") {
-					//$links .= " | ";
-					$links .= anchor('user_management/disable/' . $user['id'], 'Disable', array('class' => 'disable_user'));
-				}
-
+				} 
 			} else {
-				//$links .= " | ";
 				$links .= anchor('user_management/enable/' . $user['id'], 'Enable', array('class' => 'enable_user'));
 			}
 			if ($user['Access'] == "Pharmacist") {
@@ -114,7 +89,6 @@ class User_management extends MY_Controller {
 		$data['facilities'] = $facilities;
 		$data['order_sites'] = Sync_Facility::get_active();
 		$data['title'] = "System Users";
-		//$data['content_view'] = "users_v";
 		$data['banner_text'] = "System Users";
 		$data['link'] = "users";
 		$actions = array(0 => array('Edit', 'edit'), 1 => array('Disable', 'disable'));

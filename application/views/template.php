@@ -69,13 +69,9 @@ if ($access_level == "system_administrator") {
 	$user_is_administrator = true;
 } else if ($access_level == "facility_administrator") {
 	$user_is_facility_administrator = true;
-} else if ($access_level == "pharmacist") {
+} else {
 	$user_is_pharmacist = true;
-
-} else if ($access_level == "nascop_staff") {
-	$user_is_nascop = true;
-}
-
+} 
 ?>
 
 
@@ -197,7 +193,7 @@ if (isset($styles)) {
 		<style type="text/css" title="currentStyle">
 			@import "<?php echo base_url() . 'assets/styles/datatable/demo_page.css';?>";
 			@import "<?php echo base_url() . 'assets/styles/datatable/demo_table.css';?>";
-			@import "<?php echo base_url().'assets/styles/datatable/TableTools.css' ?>
+			@import "<?php echo base_url().'assets/styles/datatable/TableTools.css' ?>";
 				";
 		</style>
 		<script type="text/javascript" charset="utf-8" src="<?php echo base_url().'assets/Scripts/datatable/ZeroClipboard.js' ?>"></script>
@@ -384,14 +380,20 @@ if (isset($styles)) {
 						<a  id="addSatellite" class="admin_link"><i class="icon-eye-open icon-black"></i>View Satellites</a>
 					</li>
 					<li>
+						<a  id="addFacility" class="admin_link"><i class="icon-eye-open icon-black"></i>View Facilities</a>
+					</li>
+					<li>
 						<a  id="addDistrict" class="admin_link"><i class="icon-eye-open icon-black"></i>View Districts</a>
 					</li>
 					<li>
 						<a  id="addMenu" class="admin_link"><i class="icon-eye-open icon-black"></i>View Menus</a>
 					</li>
-                                        <li>
-                                            <a id="addFAQ" class="admin_link"><i class="icon-eye-open icon-black"></i>View FAQ</a>
-                                        </li>
+                    <li>
+                        <a id="addFAQ" class="admin_link"><i class="icon-eye-open icon-black"></i>View FAQ</a>
+                    </li>
+                    <li>
+						<a  id="addAccessLevel" class="admin_link"><i class="icon-eye-open icon-black"></i>View Access Levels</a>
+					</li> 
 					<li>
 						<a  id="addUsers" class="admin_link"><i class="icon-user"></i>View Users</a>
 					</li> 

@@ -44,6 +44,11 @@ class Settings_management extends MY_Controller {
 		echo json_encode($access);
 	}
 
+	public function getActiveAccessLevels(){
+		$access=$this->db->where('active', 1)->get('access_level')->result_array();
+		echo json_encode($access);
+	}
+
 
 }
 ob_get_clean();
