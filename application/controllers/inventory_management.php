@@ -457,6 +457,32 @@ class Inventory_management extends MY_Controller {
 		
 		
 	}
+	public function pqmp($record_no){
+
+
+
+		$facility_code = $this -> session -> userdata('facility');
+
+		$dispensing_date = "";
+		$data['last_regimens'] = "";
+		$data['visits'] = "";
+		$data['appointments'] = "";
+		$dispensing_date = date('Y-m-d');
+
+		
+		$data = array();
+		
+		
+		$data['dated'] = $dated;
+		$data['patient_id'] = $record_no; 
+		$data['service_name'] = $service_name;
+		$data['hide_side_menu'] = 1;
+		$data['content_view'] = "pqmp_v";
+		// var_dump($data);
+		$this -> base_params($data);
+		
+	}
+
 
 	public function getStockDrugs() {
 		$stock_type = $this -> input -> post("stock_type");
@@ -1083,35 +1109,21 @@ class Inventory_management extends MY_Controller {
 	//Print Issue transactions
 	public function print_issues(){
 		$facility = $this -> session -> userdata('facility_name');
-		// var_dump($this -> session -> all_userdata());die;
-	   $source		= $this ->input ->post("source");
-	   $destination	= $this ->input ->post("destination");
-	   $drug 		= $this ->input ->post("drug");
-	   $unit		= $this ->input ->post("unit");
-	   $batch		= $this ->input ->post("batch");
-	   $pack_size	= $this ->input ->post("pack_size");
-	   $expiry		= date('Y-m-d',strtotime($this ->input ->post("expiry")));
-	   $pack		= $this ->input ->post("pack");
-	   $quantity	= $this ->input ->post("quantity");
-	   $counter 	= $this ->input ->post("counter");	
-	   $total		= $this ->input ->post("total");	
-
-		// $source		= 'MAIN STORE';
-		// $destination= 'MAIN PHARMACY';
-		// $drug 		= "Abacavir (ABC) 300mg Tablets (60's)";
-		// $unit		= "";
-		// $batch		= "ABC554";
-		// $pack_size	= 40;
-		// $expiry		= '2020-11-20';
-		// $pack		= 9;
-		// $quantity	= 540;
-		// $counter 	= "0";
-		// $total		= "1";
-
+		$source		= $this ->input ->post("source");
+		$destination	= $this ->input ->post("destination");
+		$drug 		= $this ->input ->post("drug");
+		$unit		= $this ->input ->post("unit");
+		$batch		= $this ->input ->post("batch");
+		$pack_size	= $this ->input ->post("pack_size");
+		$expiry		= date('Y-m-d',strtotime($this ->input ->post("expiry")));
+		$pack		= $this ->input ->post("pack");
+		$quantity	= $this ->input ->post("quantity");
+		$counter 	= $this ->input ->post("counter");	
+		$total		= $this ->input ->post("total");	
 
 	   //Build table
-		$string = "<style>table{font-size: 17px;border-collapse: collapse;color: #3a3434;} table>td{color: #3a3434;padding: 9px 8px 0;}</style>
-		<table border='0'>
+		$string = "<style>table{border-collapse: collapse;color: #3a3434;} table>td{color: #3a3434;padding: 9px 8px 0;}</style>
+		<table border='0' style='width:100%;'>
 		<tr>
 		<td>#".date('U')." </td>
 		<td align='right'> COUNTER REQUISITION AND ISSUE VOUCHER</td>
@@ -1191,9 +1203,7 @@ class Inventory_management extends MY_Controller {
 
 	   	<br />
 	   	'.date('D j M Y');
-	   	// echo $string;die;
 			//write to page
-			//echo $string;die();
 	   	$this -> load -> library('mpdf');
 	   	$this -> mpdf = new mPDF('c','B4');
 	   	$this -> mpdf ->ignore_invalid_utf8 = true;
