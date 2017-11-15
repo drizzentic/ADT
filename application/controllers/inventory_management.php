@@ -95,20 +95,20 @@ class Inventory_management extends MY_Controller {
 
 		// Select Data
 		$sql = "SELECT dc.id,UPPER( dc.drug ) AS drug, du.Name AS drug_unit,d.Name as dose, s.name AS supported_by, dc.pack_size, UPPER( g.Name ) AS generic_name, IF( SUM( balance ) >0, SUM( balance ) ,  '0' ) AS stock_level
-				FROM drugcode dc
-				LEFT OUTER JOIN generic_name g ON g.id = dc.generic_name
-				LEFT OUTER JOIN suppliers s ON s.id = dc.supported_by
-				LEFT OUTER JOIN dose d ON d.Name = dc.dose
-				LEFT OUTER JOIN drug_unit du ON du.id = dc.unit
-				LEFT OUTER JOIN (
-				SELECT * 
-				FROM drug_stock_balance
-				WHERE facility_code =  '$facility_code'
-				AND expiry_date > CURDATE()
-				AND stock_type =  '$stock_type'
-				) AS dsb ON dsb.drug_id = dc.id
-				WHERE dc.enabled =  '1' " . $sFilter . "
-				GROUP BY dc.id " . $sOrder . " " . $sLimit;
+		FROM drugcode dc
+		LEFT OUTER JOIN generic_name g ON g.id = dc.generic_name
+		LEFT OUTER JOIN suppliers s ON s.id = dc.supported_by
+		LEFT OUTER JOIN dose d ON d.Name = dc.dose
+		LEFT OUTER JOIN drug_unit du ON du.id = dc.unit
+		LEFT OUTER JOIN (
+		SELECT * 
+		FROM drug_stock_balance
+		WHERE facility_code =  '$facility_code'
+		AND expiry_date > CURDATE()
+		AND stock_type =  '$stock_type'
+		) AS dsb ON dsb.drug_id = dc.id
+		WHERE dc.enabled =  '1' " . $sFilter . "
+		GROUP BY dc.id " . $sOrder . " " . $sLimit;
 		$q = $this -> db -> query($sql);
 		$rResult = $q;
 		//echo $iDisplayLength;die();
@@ -154,253 +154,253 @@ class Inventory_management extends MY_Controller {
 
 		$pack_size = 0;
 		//get drug information
-        $drug=Drugcode::getDrug($drug_id,$ccc_id);
+		$drug=Drugcode::getDrug($drug_id,$ccc_id);
 		$data['commodity'] = '';
 		$data['unit'] = '';
 		$drug_map = '';
-        if($drug){
-        	$data['commodity']=$drug['drug'];
+		if($drug){
+			$data['commodity']=$drug['drug'];
 			$drug_map = $drug['map'];
-        	$data['unit']=$drug['drugunit'];
+			$data['unit']=$drug['drugunit'];
 			$pack_size = $drug['pack_size'];
-        }
-        $total_stock=0;
+		}
+		$total_stock=0;
         //get batch information
-        $drug_batches=array();
+		$drug_batches=array();
 		$today = date('Y-m-d');
 		$facility_code = $this -> session -> userdata('facility');
-        $batches=Drugcode::getDrugBatches($drug_id,$ccc_id,$facility_code,$today);
+		$batches=Drugcode::getDrugBatches($drug_id,$ccc_id,$facility_code,$today);
         if($batches){//Check if batches exist
         	foreach($batches as $counter=>$batch){
-                $drug_batches[$counter]['drug']=$batches[$counter]['drugname'];
-                $drug_batches[$counter]['packsize']=$batches[$counter]['pack_size'];
-                $drug_batches[$counter]['batchno']=$batches[$counter]['batch_number'];
-                $drug_batches[$counter]['balance']=$batches[$counter]['balance'];
-                $drug_batches[$counter]['expiry_date']=$batches[$counter]['expiry_date'];
-                $total_stock=$total_stock+$batches[$counter]['balance'];
+        		$drug_batches[$counter]['drug']=$batches[$counter]['drugname'];
+        		$drug_batches[$counter]['packsize']=$batches[$counter]['pack_size'];
+        		$drug_batches[$counter]['batchno']=$batches[$counter]['batch_number'];
+        		$drug_batches[$counter]['balance']=$batches[$counter]['balance'];
+        		$drug_batches[$counter]['expiry_date']=$batches[$counter]['expiry_date'];
+        		$total_stock=$total_stock+$batches[$counter]['balance'];
         	}
         }
-		
-		//Consumption
-		$three_months_consumption = 0;
-		$transaction_type='';
-		if (stripos($ccc_name, "pharmacy")) {
-			$transaction_type = Transaction_Type::getTransactionType('dispense',0);
-			$transaction_type = $transaction_type['id'];
-		} else if (stripos($ccc_name, "store")) {
-			$transaction_type = Transaction_Type::getTransactionType('issue',0);
-			$transaction_type = $transaction_type['id'];
-		}
 
-		$consumption = Drug_Stock_Movement::getDrugConsumption($drug_id, $facility_code,$ccc_id,$transaction_type);
-		foreach ($consumption as $value) {
-			$three_months_consumption += $value['total_out'];
-		}
+		//Consumption
+        $three_months_consumption = 0;
+        $transaction_type='';
+        if (stripos($ccc_name, "pharmacy")) {
+        	$transaction_type = Transaction_Type::getTransactionType('dispense',0);
+        	$transaction_type = $transaction_type['id'];
+        } else if (stripos($ccc_name, "store")) {
+        	$transaction_type = Transaction_Type::getTransactionType('issue',0);
+        	$transaction_type = $transaction_type['id'];
+        }
+
+        $consumption = Drug_Stock_Movement::getDrugConsumption($drug_id, $facility_code,$ccc_id,$transaction_type);
+        foreach ($consumption as $value) {
+        	$three_months_consumption += $value['total_out'];
+        }
 
 		// echo "<pre>";print_r($data);die;
 		//3 Months consumption using facility orders
-		$data['maximum_consumption'] = number_format($three_months_consumption);
-		$data['avg_consumption'] = number_format(($three_months_consumption) / 3);
-		$monthly_consumption = number_format(($three_months_consumption) / 3);
-		$min_consumption = $three_months_consumption * (0.5);
-		$data['minimum_consumption'] = number_format($min_consumption);
-		$data['stock_val'] = $ccc_id;
-		$data['hide_sidemenu']='';
+        $data['maximum_consumption'] = number_format($three_months_consumption);
+        $data['avg_consumption'] = number_format(($three_months_consumption) / 3);
+        $monthly_consumption = number_format(($three_months_consumption) / 3);
+        $min_consumption = $three_months_consumption * (0.5);
+        $data['minimum_consumption'] = number_format($min_consumption);
+        $data['stock_val'] = $ccc_id;
+        $data['hide_sidemenu']='';
         $data['total_stock']=$total_stock;
         $data['batches']=$drug_batches;
-		$data['hide_side_menu'] = '1';
-		$data['store'] = $ccc_name;
-		$data['drug_id'] = $drug_id;
-		$data['content_view']='bin_card_v';
+        $data['hide_side_menu'] = '1';
+        $data['store'] = $ccc_name;
+        $data['drug_id'] = $drug_id;
+        $data['content_view']='bin_card_v';
 
-		$this->base_params($data);
-	}
+        $this->base_params($data);
+    }
 
-	public function getDrugTransactions($drug_id='4',$ccc_id='2'){
-		/*Added Limit as there are issues*/
-		ini_set("memory_limit", -1);
-		$iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
-		$iDisplayLength = $this -> input -> get_post('iDisplayLength', true);
-		$iSortCol_0 = $this -> input -> get_post('iSortCol_0', false);
-		$iSortingCols = $this -> input -> get_post('iSortingCols', true);
-		$sSearch = $this -> input -> get_post('sSearch', true);
-		$sEcho = $this -> input -> get_post('sEcho', true);
-		$where="";
+    public function getDrugTransactions($drug_id='4',$ccc_id='2'){
+    	/*Added Limit as there are issues*/
+    	ini_set("memory_limit", -1);
+    	$iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
+    	$iDisplayLength = $this -> input -> get_post('iDisplayLength', true);
+    	$iSortCol_0 = $this -> input -> get_post('iSortCol_0', false);
+    	$iSortingCols = $this -> input -> get_post('iSortingCols', true);
+    	$sSearch = $this -> input -> get_post('sSearch', true);
+    	$sEcho = $this -> input -> get_post('sEcho', true);
+    	$where="";
 
         //columns
-        $aColumns = array('Order_Number', 
-        	              'Transaction_Date', 
-        	              't.name as Transaction_Type', 
-        	              't.effect',
-        	              'Batch_Number', 
-        	              'd.name as destination_name', 
-        	              's.name as source_name', 
-        	              'source_destination',
-        	              'Expiry_Date', 
-        	              'Pack_Size', 
-        	              'Packs', 
-        	              'ds.Quantity', 
-        	              'ds.Quantity_Out', 
-        	              'Machine_Code', 
-        	              'Unit_Cost', 
-        	              'Amount');
+    	$aColumns = array('Order_Number', 
+    		'Transaction_Date', 
+    		't.name as Transaction_Type', 
+    		't.effect',
+    		'Batch_Number', 
+    		'd.name as destination_name', 
+    		's.name as source_name', 
+    		'source_destination',
+    		'Expiry_Date', 
+    		'Pack_Size', 
+    		'Packs', 
+    		'ds.Quantity', 
+    		'ds.Quantity_Out', 
+    		'Machine_Code', 
+    		'Unit_Cost', 
+    		'Amount');
 
-        $count = 0;
+    	$count = 0;
 
 		// Paging
-		if (isset($iDisplayStart) && $iDisplayLength != '-1') {
-			$this -> db -> limit($this -> db -> escape_str($iDisplayLength), $this -> db -> escape_str($iDisplayStart));
-		}
+    	if (isset($iDisplayStart) && $iDisplayLength != '-1') {
+    		$this -> db -> limit($this -> db -> escape_str($iDisplayLength), $this -> db -> escape_str($iDisplayStart));
+    	}
 
 		// Ordering
-		if (isset($iSortCol_0)) {
-			for ($i = 0; $i < intval($iSortingCols); $i++) {
-				$iSortCol = $this -> input -> get_post('iSortCol_' . $i, true);
-				$bSortable = $this -> input -> get_post('bSortable_' . intval($iSortCol), true);
-				$sSortDir = $this -> input -> get_post('sSortDir_' . $i, true);
+    	if (isset($iSortCol_0)) {
+    		for ($i = 0; $i < intval($iSortingCols); $i++) {
+    			$iSortCol = $this -> input -> get_post('iSortCol_' . $i, true);
+    			$bSortable = $this -> input -> get_post('bSortable_' . intval($iSortCol), true);
+    			$sSortDir = $this -> input -> get_post('sSortDir_' . $i, true);
 
-				if ($bSortable == 'true') {
-					$this -> db -> order_by($aColumns[intval($this -> db -> escape_str($iSortCol))], $this -> db -> escape_str($sSortDir));
-				}
-			}
-		}
+    			if ($bSortable == 'true') {
+    				$this -> db -> order_by($aColumns[intval($this -> db -> escape_str($iSortCol))], $this -> db -> escape_str($sSortDir));
+    			}
+    		}
+    	}
 		//Filtering
-		if (isset($sSearch) && !empty($sSearch)) {
-			$column_count=0;
+    	if (isset($sSearch) && !empty($sSearch)) {
+    		$column_count=0;
 			//new columns
-	        $newColumns = array('Order_Number', 
-				              'Transaction_Date', 
-				              't.name', 
-				              't.effect',
-				              'Batch_Number', 
-				              'd.name', 
-				              's.name', 
-				              'source_destination',
-				              'Expiry_Date', 
-				              'Pack_Size', 
-				              'Packs', 
-				              'ds.Quantity', 
-				              'ds.Quantity_Out', 
-				              'Machine_Code', 
-				              'Unit_Cost', 
-				              'Amount');
-			for ($i = 0; $i < count($newColumns); $i++) {
-				$bSearchable = $this -> input -> get_post('bSearchable_' . $i, true);
+    		$newColumns = array('Order_Number', 
+    			'Transaction_Date', 
+    			't.name', 
+    			't.effect',
+    			'Batch_Number', 
+    			'd.name', 
+    			's.name', 
+    			'source_destination',
+    			'Expiry_Date', 
+    			'Pack_Size', 
+    			'Packs', 
+    			'ds.Quantity', 
+    			'ds.Quantity_Out', 
+    			'Machine_Code', 
+    			'Unit_Cost', 
+    			'Amount');
+    		for ($i = 0; $i < count($newColumns); $i++) {
+    			$bSearchable = $this -> input -> get_post('bSearchable_' . $i, true);
 
 				// Individual column filtering
-				if (isset($bSearchable) && $bSearchable == 'true') {
-					if($column_count==0){
-						$where.="(";                   
-					}else{
-                        $where.=" OR ";       
-					}
-					$where.=$newColumns[$i]." LIKE '%".$this -> db -> escape_like_str($sSearch)."%'";
-					$column_count++;
-				}
-			}
-		}
+    			if (isset($bSearchable) && $bSearchable == 'true') {
+    				if($column_count==0){
+    					$where.="(";                   
+    				}else{
+    					$where.=" OR ";       
+    				}
+    				$where.=$newColumns[$i]." LIKE '%".$this -> db -> escape_like_str($sSearch)."%'";
+    				$column_count++;
+    			}
+    		}
+    	}
 
 		//data
-		$this -> db -> select('SQL_CALC_FOUND_ROWS ' . str_replace(' , ', ' ', implode(', ', $aColumns)), false);
-	    $this -> db -> select('t.effect');
-	    $this -> db -> from("drug_stock_movement ds");
-		$this -> db -> join("drugcode dc", "dc.id=ds.drug", "left");
-		$this -> db -> join("transaction_type t", "t.id=ds.transaction_type","left");
-		$this -> db -> join("drug_source s", "s.id=ds.source_destination", "left");
-		$this -> db -> join("drug_destination d", "d.id=ds.source_destination","left");
-		$this -> db -> where("ds.drug", $drug_id);
-		$this -> db -> where("ds.ccc_store_sp", $ccc_id);
+    	$this -> db -> select('SQL_CALC_FOUND_ROWS ' . str_replace(' , ', ' ', implode(', ', $aColumns)), false);
+    	$this -> db -> select('t.effect');
+    	$this -> db -> from("drug_stock_movement ds");
+    	$this -> db -> join("drugcode dc", "dc.id=ds.drug", "left");
+    	$this -> db -> join("transaction_type t", "t.id=ds.transaction_type","left");
+    	$this -> db -> join("drug_source s", "s.id=ds.source_destination", "left");
+    	$this -> db -> join("drug_destination d", "d.id=ds.source_destination","left");
+    	$this -> db -> where("ds.drug", $drug_id);
+    	$this -> db -> where("ds.ccc_store_sp", $ccc_id);
 		//search sql clause
-		if($where !=""){
-		    $where.=")";
-			$this ->db -> where($where);
-		}
-		$this -> db -> order_by('ds.id', 'desc');
-		$rResult = $this -> db -> get();
+    	if($where !=""){
+    		$where.=")";
+    		$this ->db -> where($where);
+    	}
+    	$this -> db -> order_by('ds.id', 'desc');
+    	$rResult = $this -> db -> get();
 
 		// Data set length after filtering
-		$this -> db -> select('FOUND_ROWS() AS found_rows');
-		$iFilteredTotal = $this -> db -> get() -> row() -> found_rows;
+    	$this -> db -> select('FOUND_ROWS() AS found_rows');
+    	$iFilteredTotal = $this -> db -> get() -> row() -> found_rows;
 
 		// Total data set length
-		$this -> db -> select("ds.*");
-	    $this -> db -> from("drug_stock_movement ds");
-		$this -> db -> join("drugcode dc", "dc.id=ds.drug", "left");
-		$this -> db -> join("transaction_type t", "t.id=ds.transaction_type","left");
-		$this -> db -> join("drug_source s", "s.id=ds.source_destination", "left");
-		$this -> db -> join("drug_destination d", "d.id=ds.source_destination","left");
-		$this -> db -> where("ds.drug", $drug_id);
-		$this -> db -> where("ds.ccc_store_sp", $ccc_id);
-		$total = $this -> db -> get();
-		$iTotal = count($total -> result_array());
+    	$this -> db -> select("ds.*");
+    	$this -> db -> from("drug_stock_movement ds");
+    	$this -> db -> join("drugcode dc", "dc.id=ds.drug", "left");
+    	$this -> db -> join("transaction_type t", "t.id=ds.transaction_type","left");
+    	$this -> db -> join("drug_source s", "s.id=ds.source_destination", "left");
+    	$this -> db -> join("drug_destination d", "d.id=ds.source_destination","left");
+    	$this -> db -> where("ds.drug", $drug_id);
+    	$this -> db -> where("ds.ccc_store_sp", $ccc_id);
+    	$total = $this -> db -> get();
+    	$iTotal = count($total -> result_array());
 		// Output
-		$output = array('sEcho' => intval($sEcho), 
-			            'iTotalRecords' => $iTotal, 
-			            'iTotalDisplayRecords' => $iFilteredTotal, 
-			            'aaData' => array());
+    	$output = array('sEcho' => intval($sEcho), 
+    		'iTotalRecords' => $iTotal, 
+    		'iTotalDisplayRecords' => $iFilteredTotal, 
+    		'aaData' => array());
 
 		//loop through data to change transaction type
-		foreach ($rResult->result() as $drug_transaction) {
-			$row = array();
-            if($drug_transaction->effect==1){
+    	foreach ($rResult->result() as $drug_transaction) {
+    		$row = array();
+    		if($drug_transaction->effect==1){
             	//quantity_out & source (means adds stock to system)
-            	$transaction_type=$drug_transaction->Transaction_Type;
-            	$qty=$drug_transaction->Quantity;
-            	if($drug_transaction->source_name!="" || $drug_transaction->source_name !=0 ){
-            		$transaction_type=$drug_transaction->Transaction_Type." (".$drug_transaction->source_name.")";
-            	}else if(!is_numeric($drug_transaction->source_destination)){
-            		$transaction_type=$drug_transaction->Transaction_Type." (".$drug_transaction->source_destination.")";
-            	}
-            }else{
+    			$transaction_type=$drug_transaction->Transaction_Type;
+    			$qty=$drug_transaction->Quantity;
+    			if($drug_transaction->source_name!="" || $drug_transaction->source_name !=0 ){
+    				$transaction_type=$drug_transaction->Transaction_Type." (".$drug_transaction->source_name.")";
+    			}else if(!is_numeric($drug_transaction->source_destination)){
+    				$transaction_type=$drug_transaction->Transaction_Type." (".$drug_transaction->source_destination.")";
+    			}
+    		}else{
             	//quantity & destination (means removes stock from system)
-            	$transaction_type=$drug_transaction->Transaction_Type;
-            	$qty=$drug_transaction->Quantity_Out;
-            	if($drug_transaction->destination_name!="" || $drug_transaction->destination_name !=0){
-            		$transaction_type=$drug_transaction->Transaction_Type." (".$drug_transaction->destination_name.")";
-            	}else if(!is_numeric($drug_transaction->source_destination)){
-            		$transaction_type=$drug_transaction->Transaction_Type." (".$drug_transaction->source_destination.")";
-            	}
-            }
-      
-			$row[] = $drug_transaction -> Order_Number;
-			$row[] = date('d-M-Y', strtotime($drug_transaction -> Transaction_Date));
-			$row[] = $transaction_type;
-			$row[] = $drug_transaction -> Batch_Number;
-			$row[] = date('d-M-Y', strtotime($drug_transaction -> Expiry_Date));
-			$row[] = $drug_transaction -> Pack_Size;
-			$row[] = $drug_transaction -> Packs;
-			$row[] = $qty;
-			if(!empty($drug_transaction -> Machine_Code)){
-				$row[] = number_format($drug_transaction -> Machine_Code);
-			}else{
-				$row[] = "";
-			}
-			$row[] = $drug_transaction -> Unit_Cost;
-			$row[] = $drug_transaction -> Amount;
-			$output['aaData'][] = $row;
-		}
-		echo json_encode($output,JSON_PRETTY_PRINT);
-	}
-	
-	
+    			$transaction_type=$drug_transaction->Transaction_Type;
+    			$qty=$drug_transaction->Quantity_Out;
+    			if($drug_transaction->destination_name!="" || $drug_transaction->destination_name !=0){
+    				$transaction_type=$drug_transaction->Transaction_Type." (".$drug_transaction->destination_name.")";
+    			}else if(!is_numeric($drug_transaction->source_destination)){
+    				$transaction_type=$drug_transaction->Transaction_Type." (".$drug_transaction->source_destination.")";
+    			}
+    		}
 
-	public function stock_transaction($stock_type = 1) {
-		$data['hide_side_menu'] = 1;
-		$facility_code = $this -> session -> userdata('facility');
-		$user_id = $this -> session -> userdata('user_id');
-		$access_level=$this -> session -> userdata('user_indicator');
-		if($access_level=="facility_administrator"){
-		  $transaction_type = Transaction_Type::getAll();
-		}else{
-		  $transaction_type = Transaction_Type::getAllNonAdjustments();
-		}
-		$drug_source = Drug_Source::getAll();
-		$facility_detail = facilities::getSupplier($facility_code);
-		$drug_destination = Drug_Destination::getAll();
+    		$row[] = $drug_transaction -> Order_Number;
+    		$row[] = date('d-M-Y', strtotime($drug_transaction -> Transaction_Date));
+    		$row[] = $transaction_type;
+    		$row[] = $drug_transaction -> Batch_Number;
+    		$row[] = date('d-M-Y', strtotime($drug_transaction -> Expiry_Date));
+    		$row[] = $drug_transaction -> Pack_Size;
+    		$row[] = $drug_transaction -> Packs;
+    		$row[] = $qty;
+    		if(!empty($drug_transaction -> Machine_Code)){
+    			$row[] = number_format($drug_transaction -> Machine_Code);
+    		}else{
+    			$row[] = "";
+    		}
+    		$row[] = $drug_transaction -> Unit_Cost;
+    		$row[] = $drug_transaction -> Amount;
+    		$output['aaData'][] = $row;
+    	}
+    	echo json_encode($output,JSON_PRETTY_PRINT);
+    }
+
+
+
+    public function stock_transaction($stock_type = 1) {
+    	$data['hide_side_menu'] = 1;
+    	$facility_code = $this -> session -> userdata('facility');
+    	$user_id = $this -> session -> userdata('user_id');
+    	$access_level=$this -> session -> userdata('user_indicator');
+    	if($access_level=="facility_administrator"){
+    		$transaction_type = Transaction_Type::getAll();
+    	}else{
+    		$transaction_type = Transaction_Type::getAllNonAdjustments();
+    	}
+    	$drug_source = Drug_Source::getAll();
+    	$facility_detail = facilities::getSupplier($facility_code);
+    	$drug_destination = Drug_Destination::getAll();
 		//Check facility type(satelitte, standalone or central)
-		$facility_type = Facilities::getType($facility_code);
-		$get_list = array();
-		$data['list_facility'] = "";
+    	$facility_type = Facilities::getType($facility_code);
+    	$get_list = array();
+    	$data['list_facility'] = "";
 		if ($facility_type == 0) {//Satellite
 			$central_code = facilities::getCentralCode($facility_code);
 			$get_list = facilities::getCentralName($central_code);
@@ -431,8 +431,8 @@ class Inventory_management extends MY_Controller {
 		$this -> base_params($data);
 
 	}
-    public function sendemail($email){
-    	
+	public function sendemail($email){
+
 		$config['mailtype']="html";
 		$config['protocol']="smtp";
 		$config['smtp_host']="ssl://smtp.googlemail.com";
@@ -456,7 +456,33 @@ class Inventory_management extends MY_Controller {
 		}
 		
 		
-    }
+	}
+	public function pqmp($record_no){
+
+
+
+		$facility_code = $this -> session -> userdata('facility');
+
+		$dispensing_date = "";
+		$data['last_regimens'] = "";
+		$data['visits'] = "";
+		$data['appointments'] = "";
+		$dispensing_date = date('Y-m-d');
+
+		
+		$data = array();
+		
+		
+		$data['dated'] = $dated;
+		$data['patient_id'] = $record_no; 
+		$data['service_name'] = $service_name;
+		$data['hide_side_menu'] = 1;
+		$data['content_view'] = "pqmp_v";
+		// var_dump($data);
+		$this -> base_params($data);
+		
+	}
+
 
 	public function getStockDrugs() {
 		$stock_type = $this -> input -> post("stock_type");
@@ -481,26 +507,26 @@ class Inventory_management extends MY_Controller {
 		$stock_type = $this -> input -> post("stock_type");
 		$selected_drug = $this -> input -> post("selected_drug");
 		$sql = "SELECT  
-		            DISTINCT d.pack_size,
-		            d.comment,
-		            d.duration,
-		            d.quantity,
-		            u.Name,
-		            dsb.batch_number,
-		            dsb.expiry_date,
-		            d.dose as dose,
-		            do.Name as dose_id 
-				FROM drugcode d 
-				LEFT JOIN drug_stock_balance dsb ON d.id=dsb.drug_id 
-				LEFT JOIN drug_unit u ON u.id=d.unit 
-				LEFT JOIN dose do ON d.dose=do.id  
-				WHERE d.enabled=1 
-				AND dsb.facility_code='$facility_code' 
-				AND dsb.stock_type='$stock_type' 
-				AND dsb.drug_id='$selected_drug' 
-				AND dsb.balance > 0 
-				AND dsb.expiry_date > CURDATE() 
-				ORDER BY dsb.expiry_date ASC";
+		DISTINCT d.pack_size,
+		d.comment,
+		d.duration,
+		d.quantity,
+		u.Name,
+		dsb.batch_number,
+		dsb.expiry_date,
+		d.dose as dose,
+		do.Name as dose_id 
+		FROM drugcode d 
+		LEFT JOIN drug_stock_balance dsb ON d.id=dsb.drug_id 
+		LEFT JOIN drug_unit u ON u.id=d.unit 
+		LEFT JOIN dose do ON d.dose=do.id  
+		WHERE d.enabled=1 
+		AND dsb.facility_code='$facility_code' 
+		AND dsb.stock_type='$stock_type' 
+		AND dsb.drug_id='$selected_drug' 
+		AND dsb.balance > 0 
+		AND dsb.expiry_date > CURDATE() 
+		ORDER BY dsb.expiry_date ASC";
 		$batch_sql = $this -> db -> query($sql);
 		$batches_array = $batch_sql -> result_array();
 		echo json_encode($batches_array);
@@ -512,17 +538,17 @@ class Inventory_management extends MY_Controller {
 		$selected_drug = $this -> input -> post("selected_drug");
 		$batch_selected = $this -> input -> post("batch_selected");
 		$sql = "SELECT 
-		            dsb.balance, 
-		            dsb.expiry_date 
-		        FROM drug_stock_balance dsb  
-		        WHERE dsb.facility_code = '$facility_code' 
-		        AND dsb.stock_type = '$stock_type' 
-		        AND dsb.drug_id = '$selected_drug' 
-		        AND dsb.batch_number = '$batch_selected' 
-		        AND dsb.balance > 0 
-		        AND dsb.expiry_date > CURDATE() 
-		        ORDER BY dsb.expiry_date ASC
-		        LIMIT 1";
+		dsb.balance, 
+		dsb.expiry_date 
+		FROM drug_stock_balance dsb  
+		WHERE dsb.facility_code = '$facility_code' 
+		AND dsb.stock_type = '$stock_type' 
+		AND dsb.drug_id = '$selected_drug' 
+		AND dsb.batch_number = '$batch_selected' 
+		AND dsb.balance > 0 
+		AND dsb.expiry_date > CURDATE() 
+		ORDER BY dsb.expiry_date ASC
+		LIMIT 1";
 		$batch_sql = $this -> db -> query($sql);
 		$batches_array = $batch_sql -> result_array();
 		echo json_encode($batches_array);
@@ -534,15 +560,15 @@ class Inventory_management extends MY_Controller {
 		$selected_drug = $this -> input -> post("selected_drug");
 		$batch_selected = $this -> input -> post("batch_selected");
 		$sql = "SELECT 
-		            dsb.balance, 
-		            dsb.expiry_date 
-		        FROM drug_stock_balance dsb  
-		        WHERE dsb.facility_code='$facility_code' 
-		        AND dsb.stock_type='$stock_type' 
-		        AND dsb.drug_id='$selected_drug' 
-		        AND dsb.batch_number='$batch_selected'  
-		        ORDER BY last_update DESC,dsb.expiry_date ASC 
-		        LIMIT 1";
+		dsb.balance, 
+		dsb.expiry_date 
+		FROM drug_stock_balance dsb  
+		WHERE dsb.facility_code='$facility_code' 
+		AND dsb.stock_type='$stock_type' 
+		AND dsb.drug_id='$selected_drug' 
+		AND dsb.batch_number='$batch_selected'  
+		ORDER BY last_update DESC,dsb.expiry_date ASC 
+		LIMIT 1";
 		$batch_sql = $this -> db -> query($sql);
 		$batches_array = $batch_sql -> result_array();
 		echo json_encode($batches_array);
@@ -556,18 +582,18 @@ class Inventory_management extends MY_Controller {
 		$batch_selected = $this -> input -> post("batch_selected");
 		$expiry_date = $this -> input -> post("expiry_date");
 		$sql = "SELECT 
-		            dsb.balance, 
-		            dsb.expiry_date 
-		        FROM drug_stock_balance dsb  
-		        WHERE dsb.facility_code = '$facility_code' 
-		        AND dsb.stock_type = '$stock_type' 
-		        AND dsb.drug_id = '$selected_drug' 
-		        AND dsb.batch_number = '$batch_selected' 
-		        AND dsb.balance > 0 
-		        AND dsb.expiry_date > CURDATE() 
-		        AND dsb.expiry_date='$expiry_date' 
-		        ORDER BY last_update DESC,dsb.expiry_date ASC 
-		        LIMIT 1";
+		dsb.balance, 
+		dsb.expiry_date 
+		FROM drug_stock_balance dsb  
+		WHERE dsb.facility_code = '$facility_code' 
+		AND dsb.stock_type = '$stock_type' 
+		AND dsb.drug_id = '$selected_drug' 
+		AND dsb.batch_number = '$batch_selected' 
+		AND dsb.balance > 0 
+		AND dsb.expiry_date > CURDATE() 
+		AND dsb.expiry_date='$expiry_date' 
+		ORDER BY last_update DESC,dsb.expiry_date ASC 
+		LIMIT 1";
 		$batch_sql = $this -> db -> query($sql);
 		$batches_array = $batch_sql -> result_array();
 		echo json_encode($batches_array);
@@ -576,12 +602,12 @@ class Inventory_management extends MY_Controller {
 	public function getDrugDetails() {
 		$selected_drug = $this -> input -> post("selected_drug");
 		$sql = "SELECT 
-		            d.pack_size,
-		            u.Name 
-		        FROM drugcode d 
-		        LEFT JOIN drug_unit u ON u.id=d.unit 
-		        WHERE d.enabled=1 
-		        AND d.id='$selected_drug'";
+		d.pack_size,
+		u.Name 
+		FROM drugcode d 
+		LEFT JOIN drug_unit u ON u.id=d.unit 
+		WHERE d.enabled=1 
+		AND d.id='$selected_drug'";
 		$drug_details_sql = $this -> db -> query($sql);
 		$drug_details_array = $drug_details_sql -> result_array();
 		echo json_encode($drug_details_array);
@@ -691,8 +717,8 @@ class Inventory_management extends MY_Controller {
 				
 				//Get remaining balance for the drug
 				$get_balance_sql = $this -> db -> query("SELECT dsb.balance FROM drug_stock_balance dsb  
-				WHERE dsb.facility_code='$facility' AND dsb.stock_type='".$source_dest_type."' AND dsb.drug_id='$get_drug_id' AND dsb.batch_number='$get_batch' 
-				AND dsb.balance>0 AND dsb.expiry_date>=CURDATE() AND dsb.expiry_date='$get_expiry' LIMIT 1");
+					WHERE dsb.facility_code='$facility' AND dsb.stock_type='".$source_dest_type."' AND dsb.drug_id='$get_drug_id' AND dsb.batch_number='$get_batch' 
+					AND dsb.balance>0 AND dsb.expiry_date>=CURDATE() AND dsb.expiry_date='$get_expiry' LIMIT 1");
 				$balance_array = $get_balance_sql -> result_array();
 				//Check if drug exists in the drug_stock_balance table
 				if (count($balance_array) >0) {
@@ -731,8 +757,8 @@ class Inventory_management extends MY_Controller {
 				
 				//Get remaining balance for the drug
 				$get_balance_sql = $this -> db -> query("SELECT dsb.balance FROM drug_stock_balance dsb  
-				WHERE dsb.facility_code='$facility' AND dsb.stock_type='".$source_dest_type."' AND dsb.drug_id='$get_drug_id' AND dsb.batch_number='$get_batch' 
-				AND dsb.balance>0 AND dsb.expiry_date>=CURDATE() AND dsb.expiry_date='$get_expiry' LIMIT 1");
+					WHERE dsb.facility_code='$facility' AND dsb.stock_type='".$source_dest_type."' AND dsb.drug_id='$get_drug_id' AND dsb.batch_number='$get_batch' 
+					AND dsb.balance>0 AND dsb.expiry_date>=CURDATE() AND dsb.expiry_date='$get_expiry' LIMIT 1");
 				$balance_array = $get_balance_sql -> result_array();
 				//Check if drug exists in the drug_stock_balance table
 				if (count($balance_array) >0) {
@@ -823,7 +849,7 @@ class Inventory_management extends MY_Controller {
 					$error[] = 'An error occured while saving your data ! No transaction effect found! ('.$time.')';
 				}
 			}
-				
+
 		}
 		else {
 			if(stripos($stock_type_name, "pharmacy")){//If pharmacy transaction, source and destinations is facility code
@@ -839,7 +865,7 @@ class Inventory_management extends MY_Controller {
 					
 				}else if($transaction_effect==0){//If transaction is going out, current store is sources
 					$source_destination = $get_destination;
-						$s_d = 'd';
+					$s_d = 'd';
 					if(stripos($transaction_type_name, "returns") === 0 && $transaction_effect == 0){//If transaction is returns from(-), destination is current store
 						$source_destination = $get_source;
 						$s_d = 's';
@@ -899,30 +925,30 @@ class Inventory_management extends MY_Controller {
 		//echo json_encode($source_destination);die();
 		// STEP 3, INSERT TRANSACTION IN DRUG STOCK MOVEMENT FOR CURRENT STORES
 		$drug_stock_mvt_transact = array(
-						'drug' =>$get_drug_id,
-						'transaction_date'=>$get_transaction_date,
-						'batch_number'=>$get_batch,
-						'transaction_type'=>$get_transaction_type,
-						'source'=>$source,
-						'destination'=>$destination,
-						'expiry_date'=>$get_expiry,
-						'packs'=>$get_packs,
-						$get_qty_choice=>$get_qty,
-						$get_qty_out_choice=>'0',
-						'balance'=>$balance,
-						'unit_cost'=>$get_unit_cost,
-						'amount'=>$get_amount,
-						'remarks'=>$get_comment,
-						'operator'=>$get_user,
-						'order_number'=>$get_ref_number,
-						'facility'=>$facility,
-						'Source_Destination'=>$source_destination,
-						'timestamp'=>$time_stamp,
-						'machine_code' =>$running_balance,
-						'ccc_store_sp'=>$get_stock_type
-					);
+			'drug' =>$get_drug_id,
+			'transaction_date'=>$get_transaction_date,
+			'batch_number'=>$get_batch,
+			'transaction_type'=>$get_transaction_type,
+			'source'=>$source,
+			'destination'=>$destination,
+			'expiry_date'=>$get_expiry,
+			'packs'=>$get_packs,
+			$get_qty_choice=>$get_qty,
+			$get_qty_out_choice=>'0',
+			'balance'=>$balance,
+			'unit_cost'=>$get_unit_cost,
+			'amount'=>$get_amount,
+			'remarks'=>$get_comment,
+			'operator'=>$get_user,
+			'order_number'=>$get_ref_number,
+			'facility'=>$facility,
+			'Source_Destination'=>$source_destination,
+			'timestamp'=>$time_stamp,
+			'machine_code' =>$running_balance,
+			'ccc_store_sp'=>$get_stock_type
+		);
 		
-					
+
 		$this->db->insert('drug_stock_movement', $drug_stock_mvt_transact);
 		
 		//check if query inserted
@@ -996,30 +1022,30 @@ class Inventory_management extends MY_Controller {
 			$source_destination = str_ireplace('(pharmacy)', '', $source_destination);
 			
 			$drug_stock_mvt_other_trans = array(
-						'drug' =>$get_drug_id,
-						'transaction_date'=>$get_transaction_date,
-						'batch_number'=>$get_batch,
-						'transaction_type'=>$transaction_type,
-						'source'=>$source,
-						'destination'=>$destination,
-						'expiry_date'=>$get_expiry,
-						'packs'=>$get_packs,
-						$get_qty_choice=>'0',
-						$get_qty_out_choice=>$get_qty,
-						'balance'=>$pharma_balance,
-						'unit_cost'=>$get_unit_cost,
-						'amount'=>$get_amount,
-						'remarks'=>$get_comment,
-						'operator'=>$get_user,
-						'order_number'=>$get_ref_number,
-						'facility'=>$facility,
-						'Source_Destination'=>$source_destination,
-						'timestamp'=>$time_stamp,
-						'machine_code' =>$other_running_balance,
-						'ccc_store_sp'=>$source_dest_type
-					);
+				'drug' =>$get_drug_id,
+				'transaction_date'=>$get_transaction_date,
+				'batch_number'=>$get_batch,
+				'transaction_type'=>$transaction_type,
+				'source'=>$source,
+				'destination'=>$destination,
+				'expiry_date'=>$get_expiry,
+				'packs'=>$get_packs,
+				$get_qty_choice=>'0',
+				$get_qty_out_choice=>$get_qty,
+				'balance'=>$pharma_balance,
+				'unit_cost'=>$get_unit_cost,
+				'amount'=>$get_amount,
+				'remarks'=>$get_comment,
+				'operator'=>$get_user,
+				'order_number'=>$get_ref_number,
+				'facility'=>$facility,
+				'Source_Destination'=>$source_destination,
+				'timestamp'=>$time_stamp,
+				'machine_code' =>$other_running_balance,
+				'ccc_store_sp'=>$source_dest_type
+			);
 			
-					
+
 			$this->db->insert('drug_stock_movement', $drug_stock_mvt_other_trans);
 			//echo json_encode($source_destination);die();
 			//check if query inserted
@@ -1082,56 +1108,128 @@ class Inventory_management extends MY_Controller {
 	
 	//Print Issue transactions
 	public function print_issues(){
-	   $source		= $this ->input ->post("source");
-	   $destination	= $this ->input ->post("destination");
-	   $drug 		= $this ->input ->post("drug");
-	   $unit		= $this ->input ->post("unit");
-	   $batch		= $this ->input ->post("batch");
-	   $pack_size	= $this ->input ->post("pack_size");
-	   $expiry		= date('Y-m-d',strtotime($this ->input ->post("expiry")));
-	   $pack		= $this ->input ->post("pack");
-	   $quantity	= $this ->input ->post("quantity");
-	   $counter 	= $this ->input ->post("counter");	
-	   $total		= $this ->input ->post("total");	
+		$facility = $this -> session -> userdata('facility_name');
+		$source		= $this ->input ->post("source");
+		$destination	= $this ->input ->post("destination");
+		$drug 		= $this ->input ->post("drug");
+		$unit		= $this ->input ->post("unit");
+		$batch		= $this ->input ->post("batch");
+		$pack_size	= $this ->input ->post("pack_size");
+		$expiry		= date('Y-m-d',strtotime($this ->input ->post("expiry")));
+		$pack		= $this ->input ->post("pack");
+		$quantity	= $this ->input ->post("quantity");
+		$counter 	= $this ->input ->post("counter");	
+		$total		= $this ->input ->post("total");	
+
 	   //Build table
-	   
-	   if($counter==0){
-   		
+		$string = "<style>table{border-collapse: collapse;color: #3a3434;} table>td{color: #3a3434;padding: 9px 8px 0;}</style>
+		<table border='0' style='width:100%;'>
+		<tr>
+		<td>#".date('U')." </td>
+		<td align='right'> COUNTER REQUISITION AND ISSUE VOUCHER</td>
+		</tr>
+		<tr>
+		<td>Name of facility ".$facility."</td>
+		</tr>
+		<tr>
+		<td>Requested by (Unit Requesting) <u>".strtoupper($destination)."</u> </td>
+		<td align='right'>Issued by (Unit issuing)<u>".strtoupper($source)."</u></td>
+		</tr>
+		</table>
+		<br />
+		";
+
+		if($counter==0){
+
 	   	//$this -> mpdf -> addPage();
-	   	$string = '<table border="1" align="center" width="100%" style="border-collapse:collapse">
-	   				 <caption>Issues to '.strtoupper($destination).'</caption>
-	   				<thead>
-	   				<tr ><td colspan="7" style="text-align:center;">Drugs Issued from <strong>'.$source.'</strong> to <strong>'.strtoupper($destination).'</strong> on '.date('D j M Y').'</td></tr>
-	   				<tr><th>Commodity</th><th>Unit</th><th>PackSize</th><th>BatchNo</th><th>ExpiryDate</th><th>Packs</th><th>Qty</th></tr></thead>
-	   				<tbody>
-	   				';	
-		$this ->session ->set_userdata('string',$string);
-				
-	   }
-	   if($counter==($total-1)){//If las row
-   			
-   			$string = $this ->session ->userdata('string').'<tr><td>'.$drug.'</td><td>'.$unit.'</td><td>'.$pack_size.'</td><td>'.$batch.'</td><td>'.$expiry.'</td><td>'.$pack.'</td><td>'.$quantity.'</td></tr>
-   					</tbody>
-   				</table>';
-			//write to page
-			//echo $string;die();
-			$this -> load -> library('mpdf');
-			$this -> mpdf = new mPDF('c','B4');
-			$this -> mpdf ->ignore_invalid_utf8 = true;
-			$this -> mpdf ->simpleTables = true;
-		   	$this -> mpdf ->WriteHTML($string);
-			$this->mpdf->SetFooter("{DATE D j M Y }|{PAGENO}/{nb}| Issues_".date('U')."  , source Web ADT");
-		   	
-			$file_name='assets/download/Issues_'.date('U').'.pdf';
-			@$this -> mpdf -> Output($file_name, 'F');
-			echo (base_url().$file_name);
-			die();
-   		}else{
-   			$string = $this ->session ->userdata('string').'<tr><td>'.$drug.'</td><td>'.$unit.'</td><td>'.$pack_size.'</td><td>'.$batch.'</td><td>'.$expiry.'</td><td>'.$pack.'</td><td>'.$quantity.'</td></tr>';
-   			$this ->session ->set_userdata('string',$string);
+			$string .= '<table border="1" align="center" width="100%" style="border-collapse:collapse">
+			<thead>
+			<tr>
+			<th>Item Description</th>
+			<th>Unit of issue</th>
+			<th>Quantity Requested</th>
+			<th>Quantity Issued</th>
+			<th>Expiry Date</th>
+			<th>Batch Number</th>
+			<th>Quantity Received</th>
+			<th>Remarks</th>
+			</tr>
+			</thead>
+			<tbody>
+			';	
+			$this ->session ->set_userdata('string',$string);
+
 		}
-		echo json_encode($counter.'-'.$total);
-		die();
+	   if($counter==($total-1)){//If las row
+
+	   	$string = $this ->session ->userdata('string').'
+	   	<tr>
+	   	<td>'.$drug.'</td>
+	   	<td>'.$unit.'</td>
+	   	<td> </td>
+	   	<td>'.$quantity.'</td>
+	   	<td>'.$expiry.'</td>
+	   	<td>'.$batch.'</td>
+	   	<td> </td>
+	   	<td> </td>
+	   	</tr>
+
+	   	</tbody>
+	   	</table>
+
+	   	<br />
+	   	<table border="0" width="100%">
+	   	<tr>
+	   	<td>Requisitioning Officer:……………………………………………………</td>
+	   	<td>Designation: …………………………………………… </td>
+	   	<td>Date: …………………………………………………… </td>
+	   	<td>Sign: ……………………………………………………</td>
+	   	</tr>
+
+	   	<tr>
+	   	<td> Issued by: ……………………………………………………</td>
+	   	<td>Designation: …………………………………………… </td>
+	   	<td>Date: …………………………………………………… </td>
+	   	<td>Sign: ……………………………………………………</td>
+	   	</tr>
+
+	   	<tr>
+	   	<td>Received by: ……………………………………………………</td>
+	   	<td>Designation: …………………………………………… </td>
+	   	<td>Date: …………………………………………………… </td>
+	   	<td>Sign ……………………………………………………</td>
+	   	</tr>
+	   	</table>
+
+	   	<br />
+	   	'.date('D j M Y');
+			//write to page
+	   	$this -> load -> library('mpdf');
+	   	$this -> mpdf = new mPDF('c','B4');
+	   	$this -> mpdf ->ignore_invalid_utf8 = true;
+	   	$this -> mpdf ->simpleTables = true;
+	   	$this -> mpdf ->WriteHTML($string);
+	   	$this->mpdf->SetFooter("{DATE D j M Y }|{PAGENO}/{nb}| Issues_".date('U')."  , source Web ADT");
+
+	   	$file_name='assets/download/Issues_'.date('U').'.pdf';
+	   	@$this -> mpdf -> Output($file_name, 'F');
+	   	echo (base_url().$file_name);
+	   	die();
+	   }else{
+	   	$string = $this ->session ->userdata('string').'<<tr>
+	   	<td>'.$drug.'</td>
+	   	<td>'.$unit.'</td>
+	   	<td> </td>
+	   	<td>'.$quantity.'</td>
+	   	<td>'.$expiry.'</td>
+	   	<td>'.$batch.'</td>
+	   	<td> </td>
+	   	<td> </td>
+	   	</tr>';
+	   	$this ->session ->set_userdata('string',$string);
+	   }
+	   echo json_encode($counter.'-'.$total);
+	   die();
 
 	   
 	}

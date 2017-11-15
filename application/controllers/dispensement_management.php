@@ -132,9 +132,9 @@ class Dispensement_management extends MY_Controller {
 		$username = ($this -> session -> userdata('username'));
 		$sql = "select ccc_store_sp from users where Username = '$username'";
 		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
-		if ($results) {
-			$data['ccc_store'] = $results[0]['ccc_store_sp'];
+		$store_results = $query -> result_array();
+		if ($store_results) {
+			$data['ccc_store'] = $store_results[0]['ccc_store_sp'];
 		// $data['ccc_store'] = $this -> session -> userdata('ccc_store')[0]['id'];
 		}
 		
@@ -148,6 +148,69 @@ class Dispensement_management extends MY_Controller {
 		$data['patient_appointment'] = $results;
 		$data['hide_side_menu'] = 1;
 		$data['content_view'] = "patients/dispense_v";
+		$this -> base_params($data);
+		
+	}
+
+
+	public function adr($record_no) {
+
+
+		$facility_code = $this -> session -> userdata('facility');
+
+		$dispensing_date = "";
+		$data['last_regimens'] = "";
+		$data['visits'] = "";
+		$data['appointments'] = "";
+		$dispensing_date = date('Y-m-d');
+
+		$sql = "select ps.name as patient_source,p.patient_number_ccc,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, LOWER(rst.name) as service_name , p.clinicalappointment from patient p 
+		LEFT JOIN patient_source ps ON ps.id = p.source
+		LEFT JOIN regimen_service_type rst ON rst.id = p.service
+		where p.id='$record_no' and facility_code='$facility_code'
+		";
+		$query = $this -> db -> query($sql);
+		$results = $query -> result_array();
+		
+		if ($results) {
+			$patient_no = $results[0]['patient_number_ccc'];
+			$age=@$results[0]['age'];
+			$service_name = $results[0]['service_name'];
+			$data['results'] = $results;
+		}
+
+
+		$sql = "SELECT *
+		FROM patient_visit pv
+		left join dose d on pv.dose = d.name
+		left join drugcode dc on pv.drug_id = dc.id
+		WHERE patient_id = '$patient_no'
+		ORDER BY dispensing_date DESC";	
+
+		$query = $this -> db -> query($sql);
+		$results = $query -> result_array();
+		$data = array();
+		
+		$username = ($this -> session -> userdata('username'));
+		$sql = "select ccc_store_sp from users where Username = '$username'";
+		$query = $this -> db -> query($sql);
+		$store_results = $query -> result_array();
+		if ($store_results) {
+			$data['ccc_store'] = $store_results[0]['ccc_store_sp'];
+		// $data['ccc_store'] = $this -> session -> userdata('ccc_store')[0]['id'];
+		}
+		
+		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
+		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
+		$data['purposes'] = Visit_Purpose::getAll();
+		$data['dated'] = $dated;
+		$data['patient_id'] = $record_no; 
+		$data['service_name'] = $service_name;
+		$data['purposes'] = Visit_Purpose::getAll();
+		$data['patient_appointment'] = $results;
+		$data['hide_side_menu'] = 1;
+		$data['content_view'] = "patients/dispense_adr_v";
+		// var_dump($data);
 		$this -> base_params($data);
 		
 	}
@@ -169,7 +232,7 @@ class Dispensement_management extends MY_Controller {
 			'is_tested' => $is_tested,
 			'test_date' => $test_date,
 			'test_result' => $test_result
-			);
+		);
 		$prev_test_data = $this->db->get_where('patient_prep_test', $test_data)->row_array();
 		if(empty($prev_test_data)){
 			$this->db->insert('patient_prep_test', $test_data);

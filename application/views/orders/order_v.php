@@ -85,16 +85,16 @@
 						<h4>CDRR Templates  <i><img class="img-rounded" style="height:30px;" src="<?php echo base_url().'assets/images/excel.jpg';?>"/> </i></h4>
 						<hr/>
 						<ul>
-							<li><a href="<?php echo base_url().'assets/templates/orders/v2/cdrr_satellite.xlsx';?>" download="F-CDRR for Satellite Sites.xlsx"> <i class="icon-download-alt"></i>F-CDRR for Satellite Sites.xlsx</a></li>
-							<li><a href="<?php echo base_url().'assets/templates/orders/v2/cdrr_standalone.xlsx';?>" download="F-CDRR for Standalone Sites.xlsx"> <i class="icon-download-alt"></i>F-CDRR for Standalone Sites.xlsx</a></li>
-							<li><a href="<?php echo base_url().'assets/templates/orders/v2/cdrr_aggregate.xlsx';?>" download="D-CDRR for Central Sites.xlsx"> <i class="icon-download-alt"></i>D-CDRR for Central Sites.xlsx</a></li>
+							<li><a href="<?php echo base_url().'assets/templates/orders/v2/cdrr_satellite.xls';?>" download="F-CDRR for Satellite Sites.xls"> <i class="icon-download-alt"></i>F-CDRR for Satellite Sites.xls</a></li>
+							<li><a href="<?php echo base_url().'assets/templates/orders/v2/cdrr_standalone.xls';?>" download="F-CDRR for Standalone Sites.xls"> <i class="icon-download-alt"></i>F-CDRR for Standalone Sites.xls</a></li>
+							<li><a href="<?php echo base_url().'assets/templates/orders/v2/cdrr_aggregate.xls';?>" download="D-CDRR for Central Sites.xls"> <i class="icon-download-alt"></i>D-CDRR for Central Sites.xls</a></li>
 						</ul>
 						<h4>MAPS Templates <i><img class="img-rounded" style="height:30px;" src="<?php echo base_url() . 'assets/images/excel.jpg';?>"/> </i></h4>
 						<hr/>
 						<ul>
-							<li><a href="<?php echo base_url().'assets/templates/orders/v2/maps_satellite.xlsx';?>" download="F-MAPS for Satellite Sites.xlsx"> <i class="icon-download-alt"></i>F-MAPS for Satellite Sites.xlsx</a></li>
-							<li><a href="<?php echo base_url().'assets/templates/orders/v2/maps_standalone.xlsx';?>" download="F-MAPS for Standalone Sites.xlsx"> <i class="icon-download-alt"></i>F-MAPS for Standalone Sites.xlsx</a></li>
-							<li><a href="<?php echo base_url().'assets/templates/orders/v2/maps_aggregate.xlsx';?>" download="D-MAPS for Central Sites.xlsx"> <i class="icon-download-alt"></i>D-MAPS for Central Sites.xlsx</a></li>
+							<li><a href="<?php echo base_url().'assets/templates/orders/v2/maps_satellite.xls';?>" download="F-MAPS for Satellite Sites.xls"> <i class="icon-download-alt"></i>F-MAPS for Satellite Sites.xls</a></li>
+							<li><a href="<?php echo base_url().'assets/templates/orders/v2/maps_standalone.xls';?>" download="F-MAPS for Standalone Sites.xls"> <i class="icon-download-alt"></i>F-MAPS for Standalone Sites.xls</a></li>
+							<li><a href="<?php echo base_url().'assets/templates/orders/v2/maps_aggregate.xls';?>" download="D-MAPS for Central Sites.xls"> <i class="icon-download-alt"></i>D-MAPS for Central Sites.xls</a></li>
 						</ul>
 					</div>
 				</span>	
