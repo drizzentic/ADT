@@ -4,26 +4,14 @@
   /*width: 900px;*/
   /*}*/
 
-</style>
-<!-- ADR Modal -->
-<!-- <div class="modal fade bs-example-modal-lg" id="ADRmodal" tabindex="-1" role="dialog" aria-labelledby="ADRModal">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="ADRModal">SUSPECTED ADVERSE DRUG REACTION REPORTING FORM</h4>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div> -->
+  .f-input{
+    width: 100% !important;
 
+  }
+  textarea{
+    width: 100% !important;
+  }
+</style>
 
 <div class="container" style="background-color: #fffacc;border: solid thick #0000ff;padding: 30px; margin-top: 130px; margin-bottom: 130px;">
 
@@ -47,353 +35,288 @@
   <div class="max-row">
     <div class="mid-row">
       <label><span class='astericks'>*</span>NAME OF INSTITUTION: </label>
-      <input type="text" name="institution" id="institution" class="validate[required]">
+      <input type="text" name="institution" id="institution" value="<?= $facility_details['name'];?>" class="validate[required] f-input">
     </div>
     <div class="mid-row">
       <label ><span class='astericks'>*</span>INSTITUTION CODE:</label>
-      <input  type="text" name="height" id="institutioncode" class="validate[required]">
+      <input  type="text" name="institutioncode" id="institutioncode" value="<?= $facility_details['facilitycode'];?>" class="validate[required] f-input">
     </div>
   </div>
 
   <div class="max-row">
     <div class="mid-row">
       <label><span class='astericks'>*</span>ADDRESS </label>
-      <input type="text" name="weight" id="address" class="validate[required]">
+      <input type="text" name="address" id="address" value="<?= $facility_details['facilitycode'];?>" class="validate[required] f-input">
     </div>
     <div class="mid-row">
       <label ><span class='astericks'>*</span>CONTACT</label>
-      <input  type="text" name="contact" id="contact" class="validate[required]">
+      <input  type="text" name="contact" id="contact" value="<?= $facility_details['phone'];?>" class="validate[required] f-input">
     </div>
   </div>
 
   <div class="max-row">
     <div class="mid-row">
-      <label><span class='astericks'>*</span>PATIENT’S NAME/ INITIAL </label>
-      <input type="text" name="patientname" id="patientname" class="validate[required]">
     </div>
     <div class="mid-row">
-      <label ><span class='astericks'>*</span>IP/OP. NO</label>
-      <input  type="text" name="ip_no" id="ip_no" class="validate[required]">
     </div>
 
     <div class="mid-row">
-      <label ><span class='astericks'>*</span>D.O.B</label>
-      <input  type="text" name="dob" id="dob" class="validate[required]">
     </div>
 
   </div>
 
   <div class="max-row">
-    <div class="mid-row">
-      <label><span class='astericks'>*</span>PATIENT’S ADDRESS </label>
-      <input type="text" name="patientaddress" id="patientaddress" class="validate[required]">
-    </div>
-    <div class="mid-row">
-      <label ><span class='astericks'>*</span>WARD/CLINIC</label>
-      <input  type="text" name="clinic" id="clinic" class="validate[required]">
-    </div>
 
-    <div class="mid-row">
-      <label id="dcs" >GENDER</label>
-      <input  type="radio"  name="male" value="1">
-      male
-      <input  type="radio"  name="male" value="0">
-      female
-    </div>
-
-  </div>
-
-
-  <div class="max-row">
-
-    <div class="mid-row">
-      <label id="dcs" >ANY KNOWN  ALLERGY</label>
-      <input  type="radio"  name="allergy" id="allergy" value="0">
-      no
-      <input  type="radio"  name="allergy" id="allergy" value="1">
-      yes
-    </div>
-    if yes, specify
-    <input  type="text" name="allergydesc" id="allergydesc" class="validate[required]" style="display: none;">
-
-
-
-    <div class="mid-row">
-      <label id="dcs" >PREGNANCY STATUS</label>
-      <input  type="radio"  name="pregnancystatus" value="Not Pregnant">
-      Not Pregnant
-      <input  type="radio"  name="pregnancystatus" value="1st Trimester">
-      1st Trimester
-      <input  type="radio"  name="pregnancystatus" value="2nd Trimester">
-      2nd Trimester
-      <input  type="radio"  name="pregnancystatus" value="3rd Trimester">
-      3rd Trimester
-    </div>
-
-
-    <div class="mid-row">
-      <label><span class='astericks'>*</span>WEIGHT (kg): </label>
-      <input type="text" name="patientweight" id="patientweight" class="validate[required]">
-    </div>
-    <div class="mid-row">
-      <label ><span class='astericks'>*</span>HEIGHT (cm):</label>
-      <input  type="text" name="patientheight" id="patientheight" class="validate[required]">
-    </div>
-  </div>
-
-  <div class="max-row">
-    <div class="mid-row">
-      <label><span class='astericks'>*</span>DIAGNOSIS: (What was the patient treated for): </label>
-      <textarea name="diagnosis" id="diagnosis" class="">
-
-      </textarea>
-
-    </div>
-    <div class="mid-row">
-      <label ><span class='astericks'>*</span>BRIEF DESCRIPTION OF REACTION:</label>
-      <textarea name="reaction" id="reaction" class="">
-
-      </textarea>
-    </div>
-  </div>
-
-
-  <?php
-// var_dump($ccc_stores);
-  ?>
-
-
-
-
-  <table class="table table-bordered table-hover" id="tab_logic">
-    <thead>
-      <tr >
-        <th class="text-center">
-          #
-        </th>
-        <th>LIST OF  ALL DRUGS </th>
-        <th>Dose</th> 
-        <th>ROUTE  AND FREQUENCY</th>
-        <th>DATE STARTED </th>
-        <th>DATE STOPPED </th>
-        <th>INDICATION </th>
-        <th>TICK SUSPECTED DRUG </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr id='addr1' rowid="1">
-        <td>
-          1
+    <table border="0" style="width: 100%;">
+      <tr>
+        <td> <label><span class='astericks'>*</span>PATIENT’S NAME/ INITIAL </label>
+          <input type="text" name="patientname" id="patientname" value="<?= $patient_details['first_name'].' '.$patient_details['last_name'];?>" class="validate[required] f-input">
         </td>
-        <td>
-          <select name="drug1" id="drug1" class="drugs">
-            <option>-- Select Drug --</option>         
-            <?php       foreach ($patient_appointment as $key => $app) {?>
-            <option><?= $app['drug'];?></option>         
-            <?php } ?>
-          </select>
+        <td> <label ><span class='astericks'>*</span>IP/OP. NO</label>
+          <input  type="text" name="ip_no" id="ip_no" value="<?= $patient_details['ccc_number']?>" class="validate[required] f-input">
         </td>
-        <td>
-          <input  name="dose1" list="dose1" id="doselist1" class="input-small next_pill dose icondose"> 
-
-        </td>
-        <td>
-          <input type="text" name='routefreq' id="routefreq1" placeholder='routefreq' class="form-control"/>
-        </td>
-        <td>
-          <input type="text" name='datestarted' id="datestarted1" placeholder='date started' class="form-control adrdate"/>
-        </td>
-        <td>
-          <input type="text" name='datestopped' id="datestopped1" placeholder='date Stopped' class="form-control adrdate"/>
-        </td>
-        <td>
-          <input type="text" name='indication' id="indication1" placeholder='Indication' class="form-control"/>
-        </td>
-        <td>
-          <input type="checkbox" name='drugsuspected1' id="drugsuspected1" class="form-control"/>
+        <td> <label ><span class='astericks'>*</span>D.O.B</label>
+          <input  type="text" name="dob" id="dob" value="<?= $patient_details['date_of_birth']?>" class="validate[required] f-input">
         </td>
       </tr>
-    </tbody>
-  </table>
+      <tr>
+        <td>  <label><span class='astericks'>*</span>PATIENT’S ADDRESS </label>
+          <input type="text" name="patientaddress" id="patientaddress"  value="<?= $patient_details['physical_address']?>" class="validate[required] f-input"></td>
+          <td> <label ><span class='astericks'>*</span>WARD/CLINIC</label>
+            <input  type="text" name="clinic" id="clinic"  value="" class="validate[required] f-input">
+          </td>
+          <td>
+            <label id="dcs" >GENDER</label>
+            <input  type="radio"  name="gender" id="gender" value="MALE">
+            male 
+            <input  type="radio"  name="gender" id="gender" value="FEMALE">
+            female
 
-  <a id="add_row" class="btn btn-default pull-left">Add Row</a><a id='delete_row' class="pull-right btn btn-default">Delete Row</a>
-  <br />
-  <br />
-  <br />
+          </td> 
+        </tr>
+        <tr>
+          <td rowspan="2">
+            <label id="dcs" >ANY KNOWN  ALLERGY</label>
+            <input  type="radio"  name="allergy" id="allergy" value="0">
+            no<br />
+            <input  type="radio"  name="allergy" id="allergy" value="1">
+            yes<br />
+            if yes, specify
+            <input  type="text" name="allergydesc" id="allergydesc" class="validate[required] f-input" style="display: none;">
+          </td>
+          <td rowspan="2">
+            <label id="dcs" >PREGNANCY STATUS</label>
+            <input  type="radio"  name="pregnancystatus" value="NotPregnant">
+            Not Pregnant<br />
+            <input  type="radio"  name="pregnancystatus" value="1stTrimester">
+            1st Trimester<br />
+            <input  type="radio"  name="pregnancystatus" value="2ndTrimester">
+            2nd Trimester<br />
+            <input  type="radio"  name="pregnancystatus" value="3rdTrimester">
+            3rd Trimester 
+          </td>
+          <td>
+            <label><span class='astericks'>*</span>WEIGHT (kg): </label>
+            <input type="text" name="patientweight" id="patientweight" value="<?= $patient_details['current_weight']?>" class="validate[required] f-input">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label ><span class='astericks'>*</span>HEIGHT (cm):</label>
+            <input  type="text" name="patientheight" id="patientheight" value="<?= $patient_details['current_height']?>" class="validate[required] f-input">
+          </td>
+          
+        </tr>
+        <tr>
+          <td colspan="3">
+            <label><span class='astericks'>*</span>DIAGNOSIS: (What was the patient treated for): </label>
+            <textarea name="diagnosis" id="diagnosis" class="" ><?= $patient_details['current_regimen']?></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <label ><span class='astericks'>*</span>BRIEF DESCRIPTION OF REACTION:</label>
+            <textarea name="reaction" id="reaction" class=""></textarea>         
+          </td>
+        </tr>
+      </table>
+    </div>
 
-  <div class="max-row">
+    <table class="table table-bordered table-hover" id="tab_logic">
+      <thead>
+        <tr >
+          <th class="text-center">
+            #
+          </th>
+          <th>LIST OF  ALL DRUGS </th>
+          <th>Dose</th> 
+          <th>ROUTE  AND FREQUENCY</th>
+          <th>DATE STARTED </th>
+          <th>DATE STOPPED </th>
+          <th>INDICATION </th>
+          <th>TICK SUSPECTED DRUG </th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach($patient_visits as $key => $pv) {?>
+        <tr>
+          <td> <?= $key; ?></td>
+          <?php 
+          ;
 
-    <div class="mid-row">
-      <label id="dcs" for="severity" >Severity of reaction (refer to scale overleaf)</label>
-      <input  type="checkbox" id="severity"  name="severity" value="Mild">
-      Mild
-      <input  type="checkbox" id="severity"  name="severity" value="Moderate">
-      Moderate
-      <input  type="checkbox" id="severity"  name="severity" value="Severe">
-      Severe
-      <input  type="checkbox" id="severity"  name="severity" value="Fatal">
-      Fatal
-      <input  type="checkbox" id="severity"  name="severity" value="Unknown">
-      Unknown
+// $ds =strtotime($pv['dispensing_date'])+($pv['duration']*60*60*24);
+          $ds = date('Y-m-d',strtotime($pv['dispensing_date'])+($pv['duration']*60*60*24));
+// end date
+          ?>
+          <td><input type="text" name="drug[]" value="<?= $pv['drug']?>" class="form-control f-input"></td>
+          <td><input type="text" name="dose[]" value="<?= $pv['dose']?>" class="form-control f-input"></td>
+          <td><input type="text" name="frequency[]" value="<?= $pv['frequency']?>" class="form-control f-input"></td>
+          <td><input type="text" name="dispensing_date[]" value="<?= $pv['dispensing_date']?>" class="form-control f-input"></td>
+          <td><input type="text" name="date_stopped[]" value="<?= $ds;?>" class="form-control f-input adrdate"></td>
+          <td><input type="text" name="indication[]" value="<?= $pv['indication']?>" class="form-control f-input"></td>
+          <td><input type="checkbox" name="suspecteddrug[]" value=""></td>
+        </tr>
+        <?php      } ?>
+
+      </tbody>
+    </table>
+
+    <div class="max-row">
+
+      <div class="mid-row">
+        <label id="dcs" for="severity" ><b>Severity of reaction (refer to scale overleaf)</b></label>
+        <input  type="radio" id="severity"  name="severity" value="Mild">
+        Mild <br /> 
+        <input  type="radio" id="severity"  name="severity" value="Moderate">
+        Moderate <br /> 
+        <input  type="radio" id="severity"  name="severity" value="Severe">
+        Severe <br /> 
+        <input  type="radio" id="severity"  name="severity" value="Fatal">
+        Fatal <br /> 
+        <input  type="radio" id="severity"  name="severity" value="Unknown">
+        Unknown
+      </div>
+
+
+      <div class="mid-row">
+        <label id="" for="action" ><b>ACTION TAKEN</b></label>
+        <input  type="radio"  name="action" id="action" value="Drug withdrawn">
+        Drug withdrawn<br />
+        <input  type="radio"  name="action" id="action" value="Dose increased">
+        Dose increased<br />
+        <input  type="radio"  name="action" id="action" value="Dose reduced">
+        Dose reduced<br />
+        <input  type="radio"  name="action" id="action" value="Dose not changed">
+        Dose not changed<br />
+        <input  type="radio"  name="action" id="action" value="Unknown">
+        Unknown
+      </div>
+
+
+      <div class="mid-row">
+        <label id="dcs" for="outcome" ><b>OUTCOME</b></label>
+        <input  type="radio"  name="outcome" id="outcome" value="Recovering / resolving">
+        Recovering / resolving<br />
+        <input  type="radio"  name="outcome" id="outcome" value="Recovered / resolved">
+        Recovered / resolved<br />
+        <input  type="radio"  name="outcome" id="outcome" value="Requires or prolongs hospitalization">
+        Requires or prolongs hospitalization<br />
+        <input  type="radio"  name="outcome" id="outcome" value="Causes a congenital anomaly">
+        Causes a congenital anomaly<br />
+        <input  type="radio"  name="outcome" id="outcome" value="Requires intervention to prevent permanent damage">
+        Requires intervention to prevent per<br />manent damage
+        <input  type="radio"  name="outcome" id="outcome" value="Unknown">
+        Unknown
+      </div>
+
+
+      <div class="mid-row">
+        <label id="dcs" for="casuality" ><b>CAUSALITY OF REACTION (refer to scale overleaf)</b></label>
+        <input  type="radio"  name="casuality" id="casuality" value="Certain">
+        Certain <br />
+        <input  type="radio"  name="casuality" id="casuality" value="Probable / Likely">
+        Probable / Likely <br />
+        <input  type="radio"  name="casuality" id="casuality" value="Possible">
+        Possible <br />
+        <input  type="radio"  name="casuality" id="casuality" value="Unlikely">
+        Unlikely <br />
+        <input  type="radio"  name="casuality" id="casuality" value="Conditional / Unclassified">
+        Conditional / Unclassified <br />
+        <input  type="radio"  name="casuality" id="casuality" value="Unassessable / Unclassifiable">
+        Unassessable / Unclassifiable
+      </div>
+
+    </div>
+    <div class="max-row">
+      <div class="mid-row">
+        <label class="blue" for="othercomment">ANY OTHER COMMENT : </label>
+        <textarea name="othercomment" class="" id="othercomment"></textarea>
+
+      </div>
     </div>
 
 
-    <div class="mid-row">
-      <label id="" for="action" >ACTION TAKEN</label>
-      <input  type="checkbox"  name="action" id="action" value="Drug withdrawn">
-      Drug withdrawn
-      <input  type="checkbox"  name="action" id="action" value="Dose increased">
-      Dose increased
-      <input  type="checkbox"  name="action" id="action" value="Dose reduced">
-      Dose reduced
-      <input  type="checkbox"  name="action" id="action" value="Dose not changed">
-      Dose not changed
-      <input  type="checkbox"  name="action" id="action" value="Unknown">
-      Unknown
-    </div>
+    <div class="max-row">
+      <div class="mid-row">
+        <label><span class='astericks'>*</span>NAME OF PERSON REPORTING </label>
+        <input type="text" name="officername" id="officername" class="validate[required] f-input">
+      </div>
+      <div class="mid-row">
+        <label ><span class='astericks'>*</span>DATE:</label>
+        <input  type="text" name="reportingdate" id="reportingdate" class="validate[required] f-input adrdate">
+      </div>
 
 
-    <div class="mid-row">
-      <label id="dcs" for="outcome" >OUTCOME</label>
-      <input  type="checkbox"  name="outcome" id="outcome" value="Recovering / resolving">
-      Recovering / resolving
-      <input  type="checkbox"  name="outcome" id="outcome" value="Recovered / resolved">
-      Recovered / resolved
-      <input  type="checkbox"  name="outcome" id="outcome" value="Requires or prolongs hospitalization">
-      Requires or prolongs hospitalization
-      <input  type="checkbox"  name="outcome" id="outcome" value="Causes a congenital anomaly">
-      Causes a congenital anomaly
-      <input  type="checkbox"  name="outcome" id="outcome" value="Requires intervention to prevent permanent damage">
-      Requires intervention to prevent permanent damage
-      <input  type="checkbox"  name="outcome" id="outcome" value="Unknown">
-      Unknown
-    </div>
+      <div class="mid-row">
+        <label><span class='astericks'>*</span>Email ADDRESS </label>
+        <input type="text" name="officeremail" id="officeremail" class="validate[required] f-input">
+      </div>
+      <div class="mid-row">
+        <label><span class='astericks'>*</span>Office Phone </label>
+        <input type="text" name="officerphone" id="officerphone" class="validate[required] f-input">
+      </div>
+      <div class="mid-row">
+        <label><span class='astericks'>*</span>Designation</label>
+        <input type="text" name="officerdesignation" id="officerdesignation" class="validate[required] f-input">
+      </div>
+      <div class="mid-row">
+        <label><span class='astericks'>*</span>Signature </label>
+        <input type="text" name="officersignature" id="officersignature" class="validate[required] f-input">
+      </div>
 
-
-    <div class="mid-row">
-      <label id="dcs" for="casuality" >CAUSALITY OF REACTION (refer to scale overleaf)</label>
-      <input  type="checkbox"  name="casuality" id="casuality" value="Certain">
-      Certain
-      <input  type="checkbox"  name="casuality" id="casuality" value="Probable / Likely">
-      Probable / Likely
-      <input  type="checkbox"  name="casuality" id="casuality" value="Possible">
-      Possible
-      <input  type="checkbox"  name="casuality" id="casuality" value="Unlikely">
-      Unlikely
-      <input  type="checkbox"  name="casuality" id="casuality" value="Conditional / Unclassified">
-      Conditional / Unclassified
-      <input  type="checkbox"  name="casuality" id="casuality" value="Unassessable / Unclassifiable">
-      Unassessable / Unclassifiable
-    </div>
-
-  </div>
-  <div class="max-row">
-    <div class="mid-row">
-      <label class="blue" for="othercomment">ANY OTHER COMMENT : </label>
-      <textarea name="othercomment" class="" id="othercomment"></textarea>
+      <div class="mid-row">
+        <button type="submit" form="adr_form" value="Submit">Submit</button>
+        <button>cancel</button>
+      </div>
 
     </div>
-  </div>
 
 
-  <div class="max-row">
-    <div class="mid-row">
-      <label><span class='astericks'>*</span>NAME OF PERSON REPORTING </label>
-      <input type="text" name="officername" id="officername" class="validate[required]">
-    </div>
-    <div class="mid-row">
-      <label ><span class='astericks'>*</span>DATE:</label>
-      <input  type="text" name="reportingdate" id="reportingdate" class="validate[required] adrdate">
-    </div>
-
-
-    <div class="mid-row">
-      <label><span class='astericks'>*</span>Email ADDRESS </label>
-      <input type="text" name="officeremail" id="officeremail" class="validate[required]">
-    </div>
-    <div class="mid-row">
-      <label><span class='astericks'>*</span>Office Phone </label>
-      <input type="text" name="officerphone" id="officerphone" class="validate[required]">
-    </div>
-    <div class="mid-row">
-      <label><span class='astericks'>*</span>Designation</label>
-      <input type="text" name="officerdesignation" id="officerdesignation" class="validate[required]">
-    </div>
-    <div class="mid-row">
-      <label><span class='astericks'>*</span>Signature </label>
-      <input type="text" name="officersignature" id="officersignature" class="validate[required]">
-    </div>
-
-    <div class="mid-row">
-      <button type="submit" form="adr_form" value="Submit">Submit</button>
-      <button>cancel</button>
-    </div>
-
-  </div>
-
-
-</form>
+  </form>
 </div>
 
 <script type="text/javascript">
 
  $(document).ready(function(){
-  var i=1;
-  $("#add_row").click(function(){
-    var drugsoptions = $('#drug1').html();
-    var td = "<td>"+i+"</td><td><select name='drug"+i+"' id='drug"+i+"'>"+drugsoptions+" </select></td><td><input  name='dose"+i+"' list='dose"+i+"' id='doselist"+i+"' class='input-small next_pill dose icondose'></td><td><input type='text' name='routefreq"+i+"' id='routefreq"+i+"' placeholder='routefreq' class='form-control'/></td><td><input type='text' name='datestarted"+i+"' id='datestarted"+i+"' placeholder='date started' class='form-control adrdate'/></td><td><input type='text' name='datestopped"+i+"' id='datestopped"+i+"' placeholder='date Stopped' class='form-control adrdate'/></td><td><input type='text' name='indication"+i+"' id='indication"+i+"' placeholder='Indication' class='form-control'/></td><td><input type='checkbox' name='drugsuspected"+i+"' class='form-control'/></td>";
 
+  $("input[name=gender][value=<?= $patient_details['gender'] ?>]").attr('checked', 'checked');
+  var pregnant= '<?= $patient_details['pregnant'] ?>';
+  var allergies= '<?= $patient_details['drug_allergies'] ?>';
 
-    // $('#doselist'+i);
+  if (pregnant ==='NO'){
+    $("input[name=pregnancystatus][value=NotPregnant]").attr('checked', 'checked');
+  }else{
+    $("input[name=pregnancystatus][value=1stTrimester]").attr('checked', 'checked');  
+  }
 
+  if (allergies ===','){
+    $("input[name=allergy][value=0]").attr('checked', 'checked');
+  } else{
+    $("input[name=allergy][value=1]").attr('checked', 'checked');
+    $('#allergydesc').val(allergies);
+    $('#allergydesc').show()
 
-
-
-
-    var url_dose = "<?php echo base_url() . 'dispensement_management/getDoses'; ?>";
-                            //Get doses
-                            var request_dose = $.ajax({
-                              url: url_dose,
-                              type: 'post',
-                              dataType: "json"
-                            });
-                            request_dose.done(function(data) {
-                              var url_drug_dose = "<?php echo base_url() . 'dispensement_management/getDrugDose/'; ?>";
-                              var new_url_dose = url_drug_dose+selected_drug;
-                              
-                              var request_one_dose = $.ajax({
-                                url: new_url_dose,
-                                data: {"weight": weight,"drug_id":drug_id,"age":age},
-                                type: 'post',
-                                dataType: "json"
-                              });
-                              request_one_dose.done(function(data_single_dose) {
-                                var current_dose = data_single_dose[0].dose;
-                                row.closest("tr").find(".dose option").remove();
-                                $.each(data, function(key, value) {
-                                  row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
-                                });
-                                row.closest("tr").find(".dose").val(current_dose)
-
-                              });
-                            });
-
-
-
-
-
-
-                            $(".adrdate").datepicker();
-
-                            $('#tab_logic').append('<tr id="addr'+(i)+' rowid="'+(i)+'">'+td+'</tr>');
-                            i++; 
-                          });
-  $("#delete_row").click(function(){
-   if(i>1){
-     $("#addr"+(i-1)).html('');
-     i--;
-   }
- });
+  }
 
   $('#allergy').change(function(){
   // $('#allergydesc').toggle()
@@ -412,8 +335,21 @@
 });
 
   $('#adr_form').submit(function(e){
-    console.log('form submitted');
-    console.log($('form').serializeArray());
+    // console.log('form submitted');
+    // console.log($('form').serializeArray());
+    var data = $('#adr_form').serializeArray();
+    $.ajax({
+      type: "POST",
+      url: "",
+      data: data,
+      success: (function(data){
+        alert(data);
+        window.close();
+
+      })
+    });
+
+
     e.preventDefault();
   });
 

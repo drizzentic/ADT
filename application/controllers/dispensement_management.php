@@ -154,14 +154,123 @@ class Dispensement_management extends MY_Controller {
 
 
 	public function adr($record_no) {
+		if($_POST){
+			// var_dump($_POST);die;
+			$adr = array(
+				'institution_name' => $_POST['institution'],
+				'institution_code' => $_POST['institutioncode'],
+				'address' => $_POST['address'],    
+				'contact' =>  $_POST['contact'],
+				'patient_name' =>  $_POST['patientname'],
+				'ip_no' =>  $_POST['ip_no'],
+				'dob' =>  $_POST['dob'],
+				'patient_address' =>  $_POST['patientaddress'],
+				'ward_clinic' =>  $_POST['clinic'],
+				'gender' =>  $_POST['gender'],
+				'is_alergy' =>  $_POST['allergy'],
+				'alergy_desc' =>  $_POST['allergydesc'],
+				'is_pregnant' =>  $_POST['pregnancystatus'],
+				'weight' =>  $_POST['patientweight'],
+				'height' =>  $_POST['patientheight'],
+				'diagnosis' =>  $_POST['diagnosis'],
+				'reaction_description' =>  $_POST['reaction'],
+				'severity' =>   (isset($_POST['severity'])) ? $_POST['severity'] : false,
+				'action_taken' =>   (isset($_POST['action'])) ? $_POST['action'] : false,
+				'outcome' =>   (isset($_POST['outcome'])) ? $_POST['outcome'] : false,
+				'reaction_casualty' =>   (isset($_POST['casuality'])) ? $_POST['casuality'] : false,
+				'other_comment' =>  $_POST['othercomment'],
+				'reporting_officer' =>  $_POST['officername'],
+				'reporting_officer' =>  $_POST['reportingdate'],
+				'email_address' =>  $_POST['officeremail'],
+				'office_phone' =>  $_POST['officerphone'],
+				'designation' =>  $_POST['officerdesignation'],
+				'signature' =>  $_POST['officersignature']
+			);
+
+			$this->db->insert('adr_form', $adr);
+			$adr_id = $this->db->insert_id();
+			if(count($_POST['drug'])>0){
+
+				foreach ($_POST['drug'] as $key => $drug) {
+					$adr_details = array(
+						'adr_id' => $adr_id,
+						'drug' => $_POST['drug'][$key],
+						'dose' => $_POST['dose'][$key],
+						'route_freq' => $_POST['frequency'][$key],
+						'date_started' => $_POST['dispensing_date'][$key],
+						'date_stopped' => $_POST['date_stopped'][$key],
+						'indication' => $_POST['indication'][$key]);
+				// var_dump($adr_details);
+					$this->db->insert('adr_form_details', $adr_details);
+				}
+				echo "adr form saved successfully";
+				die;
+			}else{ 
+				echo "No drugs selected";
+			// no drugs selected
+		// Form saved successfully
+				die;
+			}
+
+			die;
+		}
 
 
 		$facility_code = $this -> session -> userdata('facility');
 
+		$data = array();
 		$dispensing_date = "";
 		$data['last_regimens'] = "";
 		$data['visits'] = "";
 		$data['appointments'] = "";
+
+		// Facility Details
+		$sql = "select * from facilities WHERE facilitycode = $facility_code";
+		$query = $this -> db -> query($sql);
+		if ($query -> result_array()) {
+			$data['facility_details'] = $query -> result_array()[0];
+		}
+
+		$sql = "select * from vw_patient_list WHERE patient_id = $record_no";
+		$query = $this -> db -> query($sql);
+		if ($query -> result_array()) {
+			$data['patient_details'] = $query -> result_array()[0];
+		}
+
+ //Patient History
+
+		$sql = "select  v_v.dispensing_date,
+		v_v.visit_purpose_name AS visit, 
+		v_v.dose, 
+		v_v.duration, 
+		v_v.patient_visit_id AS record_id, 
+		D.drug, 
+		v_v.quantity, 
+		v_v.current_weight, 
+		R.regimen_desc, 
+		v_v.batch_number, 
+		v_v.pill_count, 
+		v_v.adherence, 
+		v_v.indication, 
+		v_v.frequency, 
+		v_v.user, 
+		v_v.regimen_change_reason AS regimen_change_reason 
+		from v_patient_visits as v_v
+		INNER JOIN regimen as R ON R.id = v_v.current_regimen
+		INNER JOIN drugcode as D ON D.id = v_v.drug_id
+		WHERE v_v.id = $record_no
+		AND v_v.pv_active = 1
+		GROUP BY v_v.drug_id,v_v.dispensing_date
+		ORDER BY v_v.dispensing_date DESC";
+
+		$query = $this -> db -> query($sql);
+		$results = $query -> result_array();
+		if ($results) {
+			$data['patient_visits'] = $results;
+		} else {
+			$data['patient_visits'] = "";
+		}
+
 		$dispensing_date = date('Y-m-d');
 
 		$sql = "select ps.name as patient_source,p.patient_number_ccc,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, LOWER(rst.name) as service_name , p.clinicalappointment from patient p 
@@ -189,7 +298,6 @@ class Dispensement_management extends MY_Controller {
 
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-		$data = array();
 		
 		$username = ($this -> session -> userdata('username'));
 		$sql = "select ccc_store_sp from users where Username = '$username'";
@@ -210,7 +318,7 @@ class Dispensement_management extends MY_Controller {
 		$data['patient_appointment'] = $results;
 		$data['hide_side_menu'] = 1;
 		$data['content_view'] = "patients/dispense_adr_v";
-		// var_dump($data);
+		// echo "<pre>";				var_dump($data);die;
 		$this -> base_params($data);
 		
 	}
