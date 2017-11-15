@@ -405,7 +405,7 @@ class Migration_management extends MY_Controller {
 			 		'otherdeaseconditions',
 			 		'adrorsideeffects',
 			 		'otherdrugs',
-			 		'rst.id',
+			 		'ps.typeofservice',
 			 		'STR_TO_DATE(dateofnextappointment, "%Y-%m-%d")',
 			 		'cs.currentstatus',
 			 		'currentregimen',
@@ -421,7 +421,7 @@ class Migration_management extends MY_Controller {
 			 		'STR_TO_DATE(datestartedonart, "%Y-%m-%d")',
 			 		'STR_TO_DATE(datechangedstatus, "%Y-%m-%d")',
 			 		'lastname',
-			 		'IF( dateofbirth IS NULL, IF( age IS NULL , DATE_SUB( datetherapystarted, INTERVAL ncurrentage YEAR ) , DATE_SUB( datetherapystarted, INTERVAL age YEAR ) ) ,STR_TO_DATE( dateofbirth, "%Y-%m-%d"))',
+			 		'IF(dateofbirth IS NULL, IF( age IS NULL , DATE_SUB( datetherapystarted, INTERVAL ncurrentage YEAR ) , DATE_SUB( datetherapystarted, INTERVAL age YEAR ) ) ,STR_TO_DATE( dateofbirth, "%Y-%m-%d"))',
 			 		'placeofbirth', 
 			 		'patientcellphone',
 			 		'alternatecontact',
@@ -429,7 +429,9 @@ class Migration_management extends MY_Controller {
 			 		'IF(patientdrinkalcohol=0,"0","1")',
 			 		'transferfrom',
 			 		$facility_code,
-			 		'1',
+			 		'IF(datestartipt!="NULL",IF(cotrimoxazole=0,"3","1,3"),IF(cotrimoxazole=0,"0","1"))',
+			 		'IF(datestartipt!="NULL",DATE_FORMAT(datestartipt, "%Y-%m-%d"),"NULL")',
+			 		'IF(datestartipt!="NULL",DATE_FORMAT(DATE_ADD(DATE_FORMAT(datestartipt, "%Y-%m-%d"), INTERVAL 168 DAY), "%Y-%m-%d"),"NULL")',
  	            	$ccc_pharmacy),
 			 	'destination'=>'patient',
 			 	'destination_columns'=>array(
@@ -469,10 +471,11 @@ class Migration_management extends MY_Controller {
 			 		'transfer_from',
 			 		'facility_code',
 			 		'drug_prophylaxis',
+					'isoniazid_start_date',
+					'isoniazid_end_date',
  	            	'ccc_store_sp'),
 			 	'conditions'=>'p 
 			 	LEFT JOIN '.$source_database.'.tbltypeofservice ps ON ps.typeofserviceid=p.typeofservice 
-			 	LEFT JOIN  regimen_service_type rst ON ps.typeofservice=rst.name AND rst.ccc_store_sp='.$ccc_pharmacy.'
 			 	LEFT JOIN '.$source_database.'.tblcurrentstatus cs ON cs.currentstatusid=p.currentstatus 
 			 	LEFT JOIN '.$source_database.'.tblsourceofclient s ON s.sourceid=p.sourceofclient',
 			 	'before'=>array(),
@@ -502,7 +505,12 @@ class Migration_management extends MY_Controller {
  	             	      SET p.source=s.id
  	             	      WHERE p.source=s.name
  	             	      AND p.ccc_store_sp='.$ccc_pharmacy.'
-	         	          AND s.ccc_store_sp='.$ccc_pharmacy)
+	         	          AND s.ccc_store_sp='.$ccc_pharmacy,
+	         	    '6'=>'UPDATE patient p,regimen_service_type rst
+ 	             	      SET p.service=rst.id
+ 	             	      WHERE p.service=rst.name
+ 	             	      AND p.ccc_store_sp='.$ccc_pharmacy.'
+	         	          AND rst.ccc_store_sp='.$ccc_pharmacy)
 			 	), 
 			 'Patient Appointment' => array(
 			 	'source'=>'tblARTPatientMasterInformation',
