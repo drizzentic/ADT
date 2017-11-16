@@ -293,11 +293,11 @@
                             <input type="text" name="expiry[]" name="expiry" class="expiry input-small" id="expiry_date" readonly="" size="15"/>
                         </td>
                         <td class="dose_col">
-                         <!-- <select name="dose[]" class="next_pill input-small dose  span2"></select></td>-->
-                         <input  name="dose[]" list="dose" id="doselist" class="input-small next_pill dose icondose"> 
-                         <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist> 
-                     </td>
-                     <td>
+                           <!-- <select name="dose[]" class="next_pill input-small dose  span2"></select></td>-->
+                           <input  name="dose[]" list="dose" id="doselist" class="input-small next_pill dose icondose"> 
+                           <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist> 
+                       </td>
+                       <td>
                         <input type="text" name="pill_count[]" class="pill_count input-small" readonly="readonly" />
                     </td>
                     <td>
@@ -457,8 +457,8 @@
                 appointment_date.datepicker("setDate", new Date(appointment_timestamp));
                 retrieveAppointedPatients();
             }else{
-             bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
-         }
+               bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
+           }
             //Loop through Table to calculate pill counts for all rows
             $.each($(".drug"), function(i, v) {
                 var row = $(this);
@@ -482,9 +482,9 @@
                 clinical_appointment_date.datepicker("setDate", new Date(appointment_timestamp));
                 // retrieveAppointedPatients();
             }else{
-             bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
-         }
-     });
+               bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
+           }
+       });
         // -------------------------- Dispensing date, date picker settings and checks end--------------------------
         
         
@@ -749,22 +749,22 @@
             $("#next_clinical_appointment").val(data.clinicalappointment);
             if(data.clinicalappointment.length > 1){
 
-               var base_date = new Date();
-               var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
-               var today_timestamp = today.getTime();
-               var one_day = 1000 * 60 * 60 * 24;
+             var base_date = new Date();
+             var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
+             var today_timestamp = today.getTime();
+             var one_day = 1000 * 60 * 60 * 24;
 
-               var clinical_appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
-               var difference = clinical_appointment_timestamp - today_timestamp;
-               var days_difference = difference / one_day;
-               $("#days_to_next_clinical").attr("value", days_difference);
-           }
+             var clinical_appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
+             var difference = clinical_appointment_timestamp - today_timestamp;
+             var days_difference = difference / one_day;
+             $("#days_to_next_clinical").attr("value", days_difference);
+         }
 
 
-           is_pregnant = data.Pregnant;
-           has_tb      = data.Tb;
-           var age = data.age;
-           patient_ccc = data.Patient_Number_CCC;
+         is_pregnant = data.Pregnant;
+         has_tb      = data.Tb;
+         var age = data.age;
+         patient_ccc = data.Patient_Number_CCC;
                 //CHeck if patient is pregnant
                 checkIfPregnant(is_pregnant,patient_ccc);
                 //Check if still has tb
@@ -912,36 +912,13 @@
             if ($("#last_regimen_disp").val().toLowerCase().indexOf("oi") == -1) {
                 //contains oi
                 if (regimen != last_regimen) {
+
+
                     $("#regimen_change_reason_container").show();
                     $("#regimen_change_reason").addClass("validate[required]");
-                } else {
-                    $("#regimen_change_reason").removeClass("validate[required]");
-                    $("#regimen_change_reason_container").hide();
-                    $("#regimen_change_reason").val("");
-                    if(purpose_visit == 'routine refill'){
-                        routine_check=1;
-                        //append visits
-                        if(typeof previous_dispensed_data !=="undefined"){
-                            total_visits = (previous_dispensed_data.length) -1;
-                            var count = 0;
-                            getRoutineDrugs(previous_dispensed_data,total_visits,count); 
-                        }
-                        
-                    }
-                }
-            }
-        } else {
-            $("#regimen_change_reason_container").hide();
-            $("#regimen_change_reason").val("");
-        }
 
-    });
-
-    $("#regimen_change_reason").change(function(){
-        console.log($("#regimen_change_reason option:selected").text());
-        var adr = $("#regimen_change_reason option:selected").text().toLowerCase();
-        if (adr.indexOf('adr') > 0){
-            // show modal
+                    var adr = $("#regimen_change_reason option:selected").text().toLowerCase();
+            // show ADR POPUP
             bootbox.confirm({
                 message: "<h4>ADR?</h4>\n\<hr/><center>Did patient experience adverse drug reaction(s)?</center>",
                 buttons: {
@@ -966,6 +943,26 @@
                 }
             });
 
+
+        } else {
+            $("#regimen_change_reason").removeClass("validate[required]");
+            $("#regimen_change_reason_container").hide();
+            $("#regimen_change_reason").val("");
+            if(purpose_visit == 'routine refill'){
+                routine_check=1;
+                        //append visits
+                        if(typeof previous_dispensed_data !=="undefined"){
+                            total_visits = (previous_dispensed_data.length) -1;
+                            var count = 0;
+                            getRoutineDrugs(previous_dispensed_data,total_visits,count); 
+                        }
+                        
+                    }
+                }
+            }
+        } else {
+            $("#regimen_change_reason_container").hide();
+            $("#regimen_change_reason").val("");
         }
 
     });
@@ -1265,11 +1262,11 @@ request.fail(function(jqXHR, textStatus) {
         var dose_freq = row.closest("tr").find(".dose option:selected").attr("dose_freq");
     });
     $(".duration").on('keyup', function() {
-       duration_quantity($(this));
-   });
+     duration_quantity($(this));
+ });
     $(".dose").on('input', function() {
-       duration_quantity($(this));
-   });
+     duration_quantity($(this));
+ });
 
     //function to change quantity based on the duration 
     function duration_quantity(row){
@@ -1408,9 +1405,9 @@ request.fail(function(jqXHR, textStatus) {
                 }
             });                                            
         }else{
-         bootbox.alert("<h4>Remove Alert!</h4>\n\<hr/><center>Error!Cannot Delete Last Row Try Reset!</center>");
-     }
- });
+           bootbox.alert("<h4>Remove Alert!</h4>\n\<hr/><center>Error!Cannot Delete Last Row Try Reset!</center>");
+       }
+   });
     $("#reset").click(function (e){
         e.preventDefault();
         
@@ -1516,13 +1513,13 @@ request.fail(function(jqXHR, textStatus) {
         });
         //Show Bootbox
         if(msg !=''){
-         bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
-         return;
-     }
+           bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
+           return;
+       }
 
-     var rowCount = $('#drugs_table>tbody tr').length;
-     return true;
- }
+       var rowCount = $('#drugs_table>tbody tr').length;
+       return true;
+   }
 
     //------------------------------ END DATA PROCESSING ---------------------------------
     
@@ -1676,8 +1673,8 @@ request.fail(function(jqXHR, textStatus) {
                                                 callback: function (test_result) {
                                                     var test_result_url = "<?php echo base_url(); ?>"+'dispensement_management/update_prep_test/'+patient_id+'/'+prep_reason+'/'+is_tested+'/'+test_date+'/'+test_result
                                                     $.get(test_result_url, function(msg){
-                                                       bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
-                                                   });
+                                                     bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
+                                                 });
                                                 }
                                             });
                                         }
@@ -1799,8 +1796,8 @@ request.fail(function(jqXHR, textStatus) {
     function getRoutineDrugs(visits,total_visits,count){
       //loop and add rows 
       for(var count=0;count<(visits.length-1);count++){
-       var row = $('#tbl-dispensing-drugs tr:last');
-       var cloned_row = row.clone(true);
+         var row = $('#tbl-dispensing-drugs tr:last');
+         var cloned_row = row.clone(true);
          //show remove link for cloned row
          cloned_row.find(".remove").show();
          //insert after cloned row
@@ -1880,12 +1877,12 @@ request.fail(function(jqXHR, textStatus) {
     function checkAppointment(){
         if($("#days_to_next").val()!= " ")
         {
-           var days = $("#days_to_next").val();
-           $("#days_to_next").val();
+         var days = $("#days_to_next").val();
+         $("#days_to_next").val();
 
-       }
+     }
 
-   }
+ }
     //function to calculate adherence rate(%)
     function getAdherenceRate(){
         $("#adherence").attr("value", " ");
