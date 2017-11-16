@@ -456,7 +456,9 @@ class Inventory_management extends MY_Controller {
 		
 		
 	}
-	public function pqmp($record_no){
+
+	public function pqmp($record_no = null,$action = null){
+
 		
 		if($this -> input -> post("facility_name")){
 			$pqmp_data = array(
@@ -509,16 +511,26 @@ class Inventory_management extends MY_Controller {
 				'reporter_title' => $this->input->post('reporter_title'),
 				'reporter_signature' => $this->input->post('reporter_signature')
 			);
-			$this->db->insert('pqmp',$pqmp_data);
-		$this -> session -> set_flashdata('pqmp_saved', 'Pharmacovigilance form was saved successfully!');
+			$this->db->where('id',$record_no);
+			$this->db->update('pqmp',$pqmp_data);
+			$this -> session -> set_flashdata('pqmp_saved', 'Pharmacovigilance form was saved successfully!');
 
-        redirect("inventory_management");
-
-
+			redirect("inventory_management/pqmp/".$record_no);
 			die;
 		}
 
 		$data = array();
+		$content_view = 'pqmp_list_v' ;
+		if ($record_no + 0 > 0 ){
+		$this->db->where('id', $record_no);
+		$content_view = 'pqmp_v' ;
+		}
+
+		$pqmp_data = $this->db->get('pqmp');
+
+		$data['pqmp_data'] = $pqmp_data->result_array();
+		// echo "<pre>";		var_dump(	$data['pqmp_data']);die;
+	
 		$data['facility_code'] = $this -> session -> userdata('facility');
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
 		$data['facility_phone'] = $this -> session -> userdata('facility_phone');
@@ -536,7 +548,97 @@ class Inventory_management extends MY_Controller {
 		$data['patient_id'] = $record_no; 
 		$data['service_name'] = $service_name;
 		$data['hide_side_menu'] = 1;
-		$data['content_view'] = "pqmp_v";
+		$data['content_view'] = $content_view;
+		// var_dump($data);
+		$this -> base_params($data);
+		
+	}
+	// pqmp view list, view one, edit one
+	public function new_pqmp($record_no){
+		if($this -> input -> post("facility_name")){
+			$pqmp_data = array(
+				'facility_name' => $this->input->post('facility_name'),
+				'district_name' => $this->input->post('district_name'),
+				'province_name' => $this->input->post('province_name'),
+				'facility_address' => $this->input->post('facility_address'),
+				'facility_phone' => $this->input->post('facility_phone'),
+				'brand_name' => $this->input->post('brand_name'),
+				'generic_name' => $this->input->post('generic_name'),
+				'batch_no' => $this->input->post('batch_no'),
+				'manufacture_date' => date('Y-m-d',strtotime($this->input->post('manufacture_date'))),
+				'expiry_date' => date('Y-m-d',strtotime($this->input->post('expiry_date'))),
+				'receipt_date' => date('Y-m-d',strtotime($this->input->post('receipt_date'))),
+				'manufacturer_name' => $this->input->post('manufacturer_name'),
+				'origin_county' => $this->input->post('origin_county'),
+				'supplier_name' => $this->input->post('supplier_name'),
+				'supplier_address' => $this->input->post('supplier_address'),
+				'formulation_oral' => $this->input->post('formulation_oral'),
+				'formulation_injection' => $this->input->post('formulation_injection'),
+				'formulation_diluent' => $this->input->post('formulation_diluent'),
+				'formulation_powdersuspension' => $this->input->post('formulation_powdersuspension'),
+				'formulation_powderinjection' => $this->input->post('formulation_powderinjection'),
+				'formulation_eyedrops' => $this->input->post('formulation_eyedrops'),
+				'formulation_eardrops' => $this->input->post('formulation_eardrops'),
+				'formulation_nebuliser' => $this->input->post('formulation_nebuliser'),
+				'formulation_cream' => $this->input->post('formulation_cream'),
+				'other_formulation' => $this->input->post('other_formulation'),
+				'formulation_other' => $this->input->post('formulation_other'),
+				'complaint_colour' => $this->input->post('complaint_colour'),
+				'complaint_separating' => $this->input->post('complaint_separating'),
+				'complaint_powdering' => $this->input->post('complaint_powdering'),
+				'complaint_caking' => $this->input->post('complaint_caking'),
+				'complaint_moulding' => $this->input->post('complaint_moulding'),
+				'complaint_change' => $this->input->post('complaint_change'),
+				'complaint_mislabeilng' => $this->input->post('complaint_mislabeilng'),
+				'complaint_incomplete' => $this->input->post('complaint_incomplete'),
+				'other_complaint' => $this->input->post('other_complaint'),
+				'complaint_other' => $this->input->post('complaint_other'),
+				'description' => $this->input->post('description'),
+				'comments' => $this->input->post('comments'),
+				'product_refrigiration' => $this->input->post('product_refrigiration'),
+				'product_availability' => $this->input->post('product_availability'),
+				'product_returned' => $this->input->post('product_returned'),
+				'product_returned' => $this->input->post('product_returned'),
+				'product_storage' => $this->input->post('product_storage'),
+				'product_storage' => $this->input->post('product_storage'),
+				'reporter_name' => $this->input->post('reporter_name'),
+				'reporter_phone' => $this->input->post('reporter_phone'),
+				'reporter_title' => $this->input->post('reporter_title'),
+				'reporter_signature' => $this->input->post('reporter_signature')
+			);
+			$this->db->insert('pqmp',$pqmp_data);
+			$this -> session -> set_flashdata('pqmp_saved', 'Pharmacovigilance form was saved successfully!');
+
+			redirect("inventory_management");
+
+
+			die;
+		}
+
+		$data = array();
+		$data['facility_code'] = $this -> session -> userdata('facility');
+		$data['facility_name'] = $this -> session -> userdata('facility_name');
+		$data['facility_phone'] = $this -> session -> userdata('facility_phone');
+
+
+		$data['user_full_name'] = $this->session->userdata('full_name');
+		$data['user_email'] = $this->session->userdata('Email_Address');
+		$data['user_phone'] = $this->session->userdata('Phone_Number');
+
+
+		$dispensing_date = "";
+		$data['last_regimens'] = "";
+		$data['visits'] = "";
+		$data['appointments'] = "";
+		$dispensing_date = date('Y-m-d');
+
+		
+		
+		
+
+		$data['patient_id'] = $record_no; 
+		$data['hide_side_menu'] = 1;
+		$data['content_view'] = "pqmp_form_v";
 		// var_dump($data);
 		$this -> base_params($data);
 		
