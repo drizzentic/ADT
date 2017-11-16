@@ -998,11 +998,11 @@ class Order extends MY_Controller {
 			//Load download template
 			$template = "";
 			if ($report_type == "D-CDRR") {
-				$template = "cdrr_aggregate.xlsx";
+				$template = "cdrr_aggregate.xls";
 			} else if($report_type == "F-CDRR_units"){
-				$template = "cdrr_satellite.xlsx";
+				$template = "cdrr_satellite.xls";
 			}else{
-				$template = "cdrr_standalone.xlsx";
+				$template = "cdrr_standalone.xls";
 			}
 			$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/templates/orders/v2/' . $template;
 			$inputFileType = PHPExcel_IOFactory::identify($inputFileName);
@@ -1117,7 +1117,7 @@ class Order extends MY_Controller {
 			//Generate file
 			ob_start();
 			$facility_name=str_replace(array("/","'")," ", $cdrr_array[0]['facility_name']);
-			$original_filename = $cdrr_array[0]['cdrr_label'] . " " . $facility_name . " " . $cdrr_array[0]['period_begin'] . " to " . $cdrr_array[0]['period_end'] . ".xlsx";
+			$original_filename = $cdrr_array[0]['cdrr_label'] . " " . $facility_name . " " . $cdrr_array[0]['period_begin'] . " to " . $cdrr_array[0]['period_end'] . ".xls";
 			$filename = $dir . "/" . urldecode($original_filename);
 			$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
 			$objWriter -> save($filename);
@@ -1151,9 +1151,9 @@ class Order extends MY_Controller {
 			//Load download template
 			$template = "";
 			if ($report_type == "D-MAPS") {
-				$template = "maps_aggregate.xlsx";
+				$template = "maps_aggregate.xls";
 			}else{
-				$template = "maps_standalone.xlsx";
+				$template = "maps_standalone.xls";
 			}
 			$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/templates/orders/v2/' . $template;
 			$inputFileType = PHPExcel_IOFactory::identify($inputFileName);
@@ -1252,7 +1252,7 @@ class Order extends MY_Controller {
 			//Generate file
 			ob_start();
 			$facility_name=str_replace(array("/","'")," ", $fmaps_array[0]['facility_name']);
-			$original_filename = $fmaps_array[0]['maps_id'] . " " . $facility_name . " " . $fmaps_array[0]['period_begin'] . " to " . $fmaps_array[0]['period_end'] . ".xlsx";
+			$original_filename = $fmaps_array[0]['maps_id'] . " " . $facility_name . " " . $fmaps_array[0]['period_begin'] . " to " . $fmaps_array[0]['period_end'] . ".xls";
 			$original_filename = str_replace('/','-', $original_filename);
 			$filename = $dir . "/" . urldecode($original_filename);
 			$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
