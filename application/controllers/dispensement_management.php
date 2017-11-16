@@ -224,6 +224,11 @@ class Dispensement_management extends MY_Controller {
 		$data['visits'] = "";
 		$data['appointments'] = "";
 
+		$data['user_full_name'] = $this->session->userdata('full_name');
+		$data['user_email'] = $this->session->userdata('Email_Address');
+		$data['user_phone'] = $this->session->userdata('Phone_Number');
+
+
 		// Facility Details
 		$sql = "select * from facilities WHERE facilitycode = $facility_code";
 		$query = $this -> db -> query($sql);

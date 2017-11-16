@@ -259,21 +259,19 @@
     <div class="max-row">
       <div class="mid-row">
         <label><span class='astericks'>*</span>NAME OF PERSON REPORTING </label>
-        <input type="text" name="officername" id="officername" class="validate[required] f-input">
+        <input type="text" name="officername" id="officername" value="<?= $user_full_name;?>" class="validate[required] f-input">
       </div>
       <div class="mid-row">
         <label ><span class='astericks'>*</span>DATE:</label>
         <input  type="text" name="reportingdate" id="reportingdate" class="validate[required] f-input adrdate">
       </div>
-
-
       <div class="mid-row">
         <label><span class='astericks'>*</span>Email ADDRESS </label>
-        <input type="text" name="officeremail" id="officeremail" class="validate[required] f-input">
+        <input type="text" name="officeremail" id="officeremail" value="<?= $user_email;?>" class="validate[required] f-input">
       </div>
       <div class="mid-row">
         <label><span class='astericks'>*</span>Office Phone </label>
-        <input type="text" name="officerphone" id="officerphone" class="validate[required] f-input">
+        <input type="text" name="officerphone" id="officerphone" value="<?= $user_phone;?>" class="validate[required] f-input">
       </div>
       <div class="mid-row">
         <label><span class='astericks'>*</span>Designation</label>
