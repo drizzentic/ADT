@@ -35,7 +35,7 @@
          <?php echo $option_links; ?>
         </ul>
 		<label><h2><b><?php echo $cdrr_array[0]['cdrr_label']." ".$cdrr_array[0]['status_name'];?></b></h2></label><br/>
-		<a href='<?php echo site_url("order/download_order/cdrr/".$cdrr_id);?>'><?php echo $cdrr_array[0]['cdrr_label']." ".$cdrr_array[0]['facility_name']." ".$cdrr_array[0]['period_begin']." to ".$cdrr_array[0]['period_end'].".xlsx";?></a>
+		<a href='<?php echo site_url("order/download_order/cdrr/".$cdrr_id);?>'><?php echo $cdrr_array[0]['cdrr_label']." ".$cdrr_array[0]['facility_name']." ".$cdrr_array[0]['period_begin']." to ".$cdrr_array[0]['period_end'].".xls";?></a>
 		<p></p>
 		<input type="hidden"  id="status" name="status" value="<?php echo strtolower($cdrr_array[0]['status_name']);?>"/>
 		<input type="hidden"  id="created" name="created" value="<?php echo $cdrr_array[0]['created'];?>"/>

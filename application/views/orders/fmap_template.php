@@ -132,7 +132,7 @@ if ($facility_object -> service_pep == "1") {
 					<?php
 				if($options=='view'){
 						echo "<h4>".@$maps_id.' '.@ucfirst($status)."</h4>";
-						echo "<a href='".site_url("order/download_order/maps/".$map_id)."'>".$maps_id." ".$fmaps_array[0]['facility_name']." ".$fmaps_array[0]['period_begin']." to ".$fmaps_array[0]['period_end'].".xlsx</a><p>";
+						echo "<a href='".site_url("order/download_order/maps/".$map_id)."'>".$maps_id." ".$fmaps_array[0]['facility_name']." ".$fmaps_array[0]['period_begin']." to ".$fmaps_array[0]['period_end'].".xls</a><p>";
 						$access_level = $this -> session -> userdata("user_indicator");
 				      	if($access_level=="facility_administrator"){
 					      	if($status=="prepared"){
