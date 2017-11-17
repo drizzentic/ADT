@@ -227,7 +227,12 @@ class Dispensement_management extends MY_Controller {
 		$data['user_full_name'] = $this->session->userdata('full_name');
 		$data['user_email'] = $this->session->userdata('Email_Address');
 		$data['user_phone'] = $this->session->userdata('Phone_Number');
-
+// last visit id by patient
+		$sql = "select dispensing_date from vw_patient_list vpv,patient_visit pv WHERE pv.patient_id = vpv.ccc_number and vpv.patient_id = $record_no order by dispensing_date desc  limit 1";
+		$query = $this -> db -> query($sql);
+		if ($query -> result_array()) {
+			$dispense_date = $query -> result_array()[0]['dispensing_date'];
+		}
 
 		// Facility Details
 		$sql = "select * from facilities WHERE facilitycode = $facility_code";
@@ -265,6 +270,7 @@ class Dispensement_management extends MY_Controller {
 		INNER JOIN drugcode as D ON D.id = v_v.drug_id
 		WHERE v_v.id = $record_no
 		AND v_v.pv_active = 1
+		AND dispensing_date = '$dispense_date'
 		GROUP BY v_v.drug_id,v_v.dispensing_date
 		ORDER BY v_v.dispensing_date DESC";
 
