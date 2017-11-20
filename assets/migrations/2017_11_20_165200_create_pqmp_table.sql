@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS pqmp;
+DROP TABLE IF EXISTS pqmp//
 CREATE TABLE pqmp (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   facility_name text,
