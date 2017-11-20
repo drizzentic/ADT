@@ -174,9 +174,10 @@
           <td><input type="text" name="dispensing_date[]" value="<?= $pv['dispensing_date']?>" class="form-control f-input"></td>
           <td><input type="text" name="date_stopped[]" value="<?= $ds;?>" class="form-control f-input adrdate"></td>
           <td><input type="text" name="indication[]" value="<?= $pv['indication']?>" class="form-control f-input"></td>
+          <td><input type="hidden" name="visitid[]" value="<?= $pv['record_id']?>" class="form-control f-input"></td>
           <td><input type="checkbox" name="suspecteddrug[]" value=""></td>
         </tr>
-        <?php      } ?>
+        <?php   } ?>
 
       </tbody>
     </table>

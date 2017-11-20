@@ -155,7 +155,6 @@ class Dispensement_management extends MY_Controller {
 
 	public function adr($record_no) {
 		if($_POST){
-			// var_dump($_POST);die;
 			$adr = array(
 				'institution_name' => $_POST['institution'],
 				'institution_code' => $_POST['institutioncode'],
@@ -199,8 +198,11 @@ class Dispensement_management extends MY_Controller {
 						'route_freq' => $_POST['frequency'][$key],
 						'date_started' => $_POST['dispensing_date'][$key],
 						'date_stopped' => $_POST['date_stopped'][$key],
-						'indication' => $_POST['indication'][$key]);
-				// var_dump($adr_details);
+						'indication' => $_POST['indication'][$key],
+						'suspecteddrug' =>  (isset($_POST['suspecteddrug'][$key])) ? $_POST['suspecteddrug'][$key] : false,
+						'visitid' => $_POST['visitid'][$key]
+
+					);
 					$this->db->insert('adr_form_details', $adr_details);
 				}
 				echo "adr form saved successfully";
@@ -329,7 +331,6 @@ class Dispensement_management extends MY_Controller {
 		$data['patient_appointment'] = $results;
 		$data['hide_side_menu'] = 1;
 		$data['content_view'] = "patients/dispense_adr_v";
-		// echo "<pre>";				var_dump($data);die;
 		$this -> base_params($data);
 		
 	}
