@@ -524,6 +524,7 @@ class Inventory_management extends MY_Controller {
 		if ($record_no + 0 > 0 ){
 		$this->db->where('id', $record_no);
 		$content_view = 'pqmp_v' ;
+		$data['hide_side_menu'] = 0;
 		}
 
 		$pqmp_data = $this->db->get('pqmp');
@@ -546,7 +547,6 @@ class Inventory_management extends MY_Controller {
 		$data['dated'] = $dated;
 		$data['patient_id'] = $record_no; 
 		$data['service_name'] = $service_name;
-		// $data['hide_side_menu'] = 0;
 		$data['content_view'] = $content_view;
 		$this -> base_params($data);
 		
