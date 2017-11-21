@@ -833,6 +833,7 @@ class Report_management extends MY_Controller {
 		$moh_731[] = $this -> type_of_exposure($period);
 		$moh_731[] = $this -> provided_with_prophylaxis($period);
 
+
 		return $moh_731;
 	}
 

@@ -1572,7 +1572,7 @@
 								foreach ($drug_destinations as $drug_destination) {
 									$drug_d=trim(strtolower($drug_destination['Name']));
 									$drug_d=str_replace("ccc_store_","",strtolower($drug_d));
-									$findme1="main pharmacy";
+									$findme1="pharmacy";
 									$pos1 = stripos($drug_d, $findme1);
 									//Not picking outpatient pharmacy if stock type is pharmacy
 									if($stock_type==2 && $pos1===10){
