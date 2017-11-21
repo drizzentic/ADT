@@ -3,17 +3,16 @@
 /*.modal-lg {*/
   /*width: 900px;*/
   /*}*/
-  .main-content {
-    margin-top: 127px;
+  table{
+    width:100%;
   }
+ 
 </style>
-<div class="main-content">
-  <div class="container">
     <div class="row">
 
       <div class="span12">
         <a href="<?= base_url();?>inventory_management/new_pqmp" class="btn btn-default" > New PQMQ </a>
-        <table border="1" class="table table-stripped">
+        <table border="1" class="table" >
           <thead>
             <th>Reporter Name</th>
             <th>Brand Name</th>
@@ -41,8 +40,6 @@
         </table>
       </div>
     </div>
-  </div>
-</div>
 <script type="text/javascript">
 
  $(document).ready(function(){

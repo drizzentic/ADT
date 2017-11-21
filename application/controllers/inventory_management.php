@@ -529,8 +529,7 @@ class Inventory_management extends MY_Controller {
 		$pqmp_data = $this->db->get('pqmp');
 
 		$data['pqmp_data'] = $pqmp_data->result_array();
-		// echo "<pre>";		var_dump(	$data['pqmp_data']);die;
-	
+
 		$data['facility_code'] = $this -> session -> userdata('facility');
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
 		$data['facility_phone'] = $this -> session -> userdata('facility_phone');
@@ -547,9 +546,8 @@ class Inventory_management extends MY_Controller {
 		$data['dated'] = $dated;
 		$data['patient_id'] = $record_no; 
 		$data['service_name'] = $service_name;
-		$data['hide_side_menu'] = 1;
+		// $data['hide_side_menu'] = 0;
 		$data['content_view'] = $content_view;
-		// var_dump($data);
 		$this -> base_params($data);
 		
 	}
@@ -609,7 +607,7 @@ class Inventory_management extends MY_Controller {
 			$this->db->insert('pqmp',$pqmp_data);
 			$this -> session -> set_flashdata('pqmp_saved', 'Pharmacovigilance form was saved successfully!');
 
-			redirect("inventory_management");
+			redirect("inventory_management/pqmp");
 
 
 			die;
