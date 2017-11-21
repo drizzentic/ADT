@@ -1,5 +1,5 @@
 
-DROP TABLE IF EXISTS adr_form_details;
+DROP TABLE IF EXISTS adr_form_details//
 CREATE TABLE adr_form_details (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   adr_id bigint(20) NOT NULL,

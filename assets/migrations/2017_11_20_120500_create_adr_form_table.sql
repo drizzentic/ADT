@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS adr_form;
+DROP TABLE IF EXISTS adr_form//
 CREATE TABLE adr_form (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   institution_name varchar(50) DEFAULT NULL,
