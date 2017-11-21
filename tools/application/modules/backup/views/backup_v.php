@@ -78,7 +78,7 @@ $("#backup_frm").on('submit',function(e){
           error:(function(resp){
               // $("#backup_btn").attr("disabled",false);
               // $('.modal form').hide();
-              alert("Error: Cannot conect to database for backup.");
+              alert("Error: Failed to perform backup.");
               window.location.href = "";
             })
 
