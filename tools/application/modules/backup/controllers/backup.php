@@ -331,6 +331,11 @@ class Backup extends MX_Controller {
 		$file_name = (isset($file_name)) ? $file_name : $_POST['file_name'] ;
 		$file_path =  FCPATH.'backup_db/'.$file_name;
 
+		if ($this->encrypt_backup($file_path)){ 
+			$enc_file_name = str_replace('.sql.', '_e.sql.', $file_name);
+			$enc_file_path = FCPATH.'backup_db/'.$enc_file_name;
+		}
+
 		$this->connect_ftp();
 
 		$CI = &get_instance();
@@ -352,11 +357,11 @@ class Backup extends MX_Controller {
 			// $this->ftp->upload($file_path,$this->ftp_root.$facility_code.'/'.$file_name, 'ascii', 0775);
 
 			$ch = curl_init();
-			$fp = fopen($file_path, 'r');
+			$fp = fopen($enc_file_path, 'r');
 			curl_setopt($ch, CURLOPT_URL, 'ftp://ftpuser:ftpuser@commodities.nascop.org/'. $this->ftp_root.$facility_code.'/'.$file_name);
 			curl_setopt($ch, CURLOPT_UPLOAD, 1);
 			curl_setopt($ch, CURLOPT_INFILE, $fp);
-			curl_setopt($ch, CURLOPT_INFILESIZE, filesize($file_path));
+			curl_setopt($ch, CURLOPT_INFILESIZE, filesize($enc_file_path));
 			curl_exec ($ch);
 			$error_no = curl_errno($ch);
 			curl_close ($ch);
@@ -373,34 +378,41 @@ class Backup extends MX_Controller {
 		}
 		$this->disconnect_ftp();
 	}
-	public function encrypt_backup($filename){
-		echo "encrypting file ".$filename;
+	public function encrypt_backup($file){
+		$destination = str_replace('.sql.', '_e.sql.', $file);
+		$passphrase = 'WebADTencryption';
 
-		$handle = fopen($filename, "r");
-		$content = fread($handle, filesize($filename));
-		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-		$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->key, $content, MCRYPT_MODE_ECB, $iv);
-		// $newfile = "e_".$filename;
-		$newfile = $filename;
+        // Open the file and returns a file pointer resource. 
+		$handle = fopen($file, "rb") or die("Could not openfile."); 
+        // Returns the read string.
+		$contents = fread($handle, filesize($file));
+        // Close the opened file pointer.
+		fclose($handle); 
+		echo $destination;
 
-		$nfile = fopen($newfile, 'w');
-		fwrite($nfile, $crypttext);
-		fclose($nfile);
+		$iv = substr(md5("\x1B\x3C\x58".$passphrase, true), 0, 8);
+		$key = substr(md5("\x2D\xFC\xD8".$passphrase, true) . md5("\x2D\xFC\xD9".$passphrase, true), 0, 24);
+		$opts = array('iv'=>$iv, 'key'=>$key);
+		$fp = fopen($destination, 'wb') or die("Could not open file for writing.");
+        // Add the Mcrypt stream filter with Triple DES
+		stream_filter_append($fp, 'mcrypt.tripledes', STREAM_FILTER_WRITE, $opts); 
+        // Write content in the destination file.
+		fwrite($fp, $contents) or die("Could not write to file."); 
+       // Close the opened file pointer.
+		fclose($fp); 
 		return true;
 	}
-	public function decrypt_backup($filename){	
-		echo "decrypting file ".$filename;
-		$handle = fopen($filename, "r");
-		$content = fread($handle, filesize($filename));
+	public function decrypt_backup($file){	
+		$destination = str_replace('_e.sql.', '_d.sql.', $file);
+		$passphrase = 'WebADTencryption';
 
-		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-		$decrypttext = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $this->key, $content, MCRYPT_MODE_ECB, $iv);
-		$newfile = 'd_'.substr($filename, 2);
-		$nfile = fopen($newfile, 'w');
-		fwrite($nfile, $decrypttext);
-		fclose($nfile);
+		$iv = substr(md5("\x1B\x3C\x58".$passphrase, true), 0, 8);
+		$key = substr(md5("\x2D\xFC\xD8".$passphrase, true) .
+			md5("\x2D\xFC\xD9".$passphrase, true), 0, 24);
+		$opts = array('iv'=>$iv, 'key'=>$key);
+		$fp = fopen($file, 'rb');
+		stream_filter_append($fp, 'mdecrypt.tripledes', STREAM_FILTER_READ, $opts);
+		file_put_contents($destination, $fp);
 		return true;
 
 	}
@@ -463,18 +475,11 @@ class Backup extends MX_Controller {
 		function create_zip($files = array(),$destination = '',$overwrite = false) {
 	//if the zip file already exists and overwrite is false, return false
 			if(file_exists($destination) && !$overwrite) { return false; }
-	//vars
 			$valid_files = array();
-	//if files were passed in...
-	// if(is_array($files)) {
-		//cycle through each file
-		// foreach($files as $file) {
-			//make sure the file exists
+
 			if(file_exists($file)) {
 				$valid_files[] = $file;
-			// }
 			}	
-	// }
 	//if we have good files...
 			if(count($valid_files)) {
 		//create the archive
@@ -486,9 +491,6 @@ class Backup extends MX_Controller {
 				foreach($valid_files as $file) {
 					$zip->addFile($file,$file);
 				}
-		//debug
-		//echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status;
-
 		//close the zip -- done!
 				$zip->close();
 
@@ -502,12 +504,7 @@ class Backup extends MX_Controller {
 		}
 
 
-		function test(){
-			$file_path =  FCPATH.'backup_db';
-			echo $file_path;
-			$this->encrypt_backup($file_path.'/13122_20171120071044_v3.2.3.sql.zip');
-			die;
-		}
+	
 		public function template($data) {
 			$data['show_menu'] = 0;
 			$data['show_sidemenu'] = 0;
