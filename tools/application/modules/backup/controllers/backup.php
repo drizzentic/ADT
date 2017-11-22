@@ -28,6 +28,7 @@ class Backup extends MX_Controller {
 		$dir = $this -> backup_dir;
 		$data['ftp_status'] = '';
 		$files = scandir($dir, 1);
+		$downloaded_backups = scandir($dir.'/downloads', 1);
 		$data['remote_files'] = ($this->connect_ftp()) ? $this->list_remote_files() : false ;
 		$CI = &get_instance();
 		$CI -> load -> database();
@@ -36,8 +37,15 @@ class Backup extends MX_Controller {
 		$result = $CI->db->query($sql);
 		$facility_code = $result->result_array()[0]['Facility_Code'];
 		$remote_dir = $this->ftp_root."$facility_code/";
+		// decrypt_backups
+		if(count($downloaded_backups)>2){
 
-
+		foreach ($downloaded_backups as $key => $db) {
+			if(strlen($db)<3){continue;}
+			$this->decrypt_backup($dir.'/downloads/'.$db);
+			$this->delete_file($dir.'/downloads/'.$db);}
+			redirect('backup');
+		}
 
 		$table = '<table id="dyn_table" class="table table-striped table-condensed table-bordered" cellspacing="0" width="100%">';
 		$table .= '<thead><th>backup</th>		<th>action</th>		<th>local</th>		<th>remote</th>		</thead>';
@@ -307,13 +315,8 @@ class Backup extends MX_Controller {
 		$file_path =  FCPATH.'backup_db/downloads/'.explode('/', $remote_path)[3];
 
 		if($this->connect_ftp()){
-			$this->ftp->download($remote_path, $file_path, 'ascii');
+			$this->ftp->download($remote_path, $file_path, 'FTP_BINARY');
 			$this->ftp->close();
-
-			// decrypt file..
-
-			$this->decrypt_backup($file_path);
-
 			echo "Backup download successful";
 		}
 		else{
@@ -452,7 +455,6 @@ class Backup extends MX_Controller {
 		}
 		public function delete_file($file_path) {
 			if(unlink($file_path)) {
-				$this->zip->clear_data();
 				return true;
 			}
 			else {
