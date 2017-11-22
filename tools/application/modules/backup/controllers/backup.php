@@ -46,13 +46,11 @@ class Backup extends MX_Controller {
 		if (!is_array($data['remote_files'])){$data['ftp_status'] = "$('.alert').addClass('alert-danger');$('.alert').text('Cannot connect to remote server');$('.alert').show();$('.upload').attr('disabled',true);";}
 		// foreach ($files as $key => $file) {
 		for ($key=0; $key <count($files)-2 ; $key++) { 
-			// echo $file .' <br />';
-
-			if (in_array($remote_dir.$files[$key], $data['remote_files'])){
+			if ($files[$key] == 'downloads'){continue;}
+			if (in_array($remote_dir.$files[$key], $data['remote_files']) ){
 				// echo $file.' file exists both remotely and locally';
 				// echo $file .' key '.$key;
-
-				$table .='<td>'.$files[$key].'</td>';
+				$table .='<tr><td>'.$files[$key].'</td>';
 				$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button></td>';
 
 				$table .='</td><td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
@@ -60,7 +58,7 @@ class Backup extends MX_Controller {
 			}	
 			else{
 
-				$table .='<td>'.$files[$key].'</td>';
+				$table .='<tr><td>'.$files[$key].'</td>';
 				$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button>
 				<button class="btn btn-info btn-sm upload" >Upload</button> </td>';
 				$table .='<td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"><img src="./public/assets/img/x-mark.png" height="20px"></td></tr>';
@@ -306,11 +304,16 @@ class Backup extends MX_Controller {
 
 	public function download_remote_file($remote_path = null){
 		$remote_path =$_POST['remote_path'];
-		$file_path =  FCPATH.'backup_db/'.explode('/', $remote_path)[3];
+		$file_path =  FCPATH.'backup_db/downloads/'.explode('/', $remote_path)[3];
 
 		if($this->connect_ftp()){
 			$this->ftp->download($remote_path, $file_path, 'ascii');
 			$this->ftp->close();
+
+			// decrypt file..
+
+			$this->decrypt_backup($file_path);
+
 			echo "Backup download successful";
 		}
 		else{
@@ -366,6 +369,8 @@ class Backup extends MX_Controller {
 			$error_no = curl_errno($ch);
 			curl_close ($ch);
 			if ($error_no == 0) {
+				$this->delete_file(str_replace('"', "", $enc_file_name));
+
 				$error = 'File uploaded succesfully.';
 				exit;
 			} else {
@@ -403,7 +408,8 @@ class Backup extends MX_Controller {
 		return true;
 	}
 	public function decrypt_backup($file){	
-		$destination = str_replace('_e.sql.', '_d.sql.', $file);
+		// $destination = $file;
+		$destination = str_replace('downloads/', '', $file);
 		$passphrase = 'WebADTencryption';
 
 		$iv = substr(md5("\x1B\x3C\x58".$passphrase, true), 0, 8);
@@ -503,7 +509,10 @@ class Backup extends MX_Controller {
 			}
 		}
 
-
+function test(){
+		$file_path =  FCPATH.'backup_db/downloads/13122_20171122094034_v3.2.3.sql.zip';
+	$this->decrypt_backup($file_path);
+}
 	
 		public function template($data) {
 			$data['show_menu'] = 0;
