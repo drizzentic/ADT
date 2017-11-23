@@ -1429,7 +1429,9 @@
 										}	
 									}
 									//If transaction is a pharmacy transaction,
-									if($stock_type==2){
+									if(strpos(strtolower($store), 'pharmacy') > 0){
+
+
 										//Hide issued to when transaction is from pharmacy
 										$trans_name=str_replace(" ","",strtolower($transaction_type['Name']));
 										$findme="issued";
@@ -1444,7 +1446,7 @@
 									
 									
 									else{
-										////If transaction is a store transaction,hide dispensed to
+										////If transaction is a store transaction,hide dispensed to patient
 										$trans_name=str_replace(" ","",strtolower($transaction_type['Name']));
 										$findme="dispense";
 										$pos = strpos($trans_name, $findme);
