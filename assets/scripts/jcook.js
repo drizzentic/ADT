@@ -233,6 +233,8 @@ function applyCookies(){
     $.getCookie("isoniazid_end_date_view") ===  false ? void 0  : $('#isoniazid_end_date_view').val($.getCookie("isoniazid_end_date_view")) ;
     $.getCookie("iso_end_date") ===  false ? void 0  : $('#iso_end_date').val($.getCookie("iso_end_date")) ;
     $.getCookie("direction") ===  false ? void 0  : $('#direction').val($.getCookie("direction")) ;
+
+    $('#dob').trigger('change');
 }
 function unsetCookies(){
 

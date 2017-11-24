@@ -737,9 +737,10 @@
 								Patient History
 							</legend>
 							<div class="max-row status_hidden">
-								<label  id="tstatus"> Partner Status</label>
-								<select name="partner_status" id="partner_status">
-									<option value="0" selected="selected">No Partner</option>
+								<label  id="tstatus"><span class='astericks'>*</span> Partner Status</label>
+								<select name="partner_status" id="partner_status" class="validate[required]">
+									<option value="">--Select--</option>
+									<option value="0" >No Partner</option>
 									<option value="1" > Concordant</option>
 									<option value="2" > Discordant</option>
 									<option value="3" > Unknown</option>
