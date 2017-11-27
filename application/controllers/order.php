@@ -2350,21 +2350,22 @@ class Order extends MY_Controller {
 		}
 		// Changes made on DCDRR
 		if ($code == "D-CDRR") 
-		{
+		{	
 			foreach ($row as $i => $v) {
 				$exempted_columns = array('expiry_month','beginning_balance','reported_consumed','reported_physical_stock');
 				if (!in_array($i,$exempted_columns)) {
 					$row[$i] = round(@$v / @$pack_size);
 				}
 			}
+
 			//Get Physical Count
-			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
+			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'] - $row['adjustments_neg'];
 		    //Get Resupply
 		    $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
 		}
 		else
 		{
-			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
+			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'] - $row['adjustments_neg'];
         	$row['resupply'] = ($row['dispensed_to_patients'] * 3) - $row['physical_stock'];
         }
 
@@ -2380,6 +2381,14 @@ class Order extends MY_Controller {
 			}
 		}
 
+		//Fix for physical count
+		if($row['physical_stock'] < 0){
+			$row['physical_stock'] = 0;
+		}
+		//Fix for resupply
+		if($row['resupply'] < 0){
+			$row['resupply'] = 0;
+		}
 		echo json_encode($row);
 	}
 
@@ -2400,7 +2409,12 @@ class Order extends MY_Controller {
 			$query = $this -> db -> query($sql);
 			$balance= $query -> result_array()[0]['count'];
 		}
-			return $balance;
+		
+		if($balance < 0){
+			$balance = 0;
+		}
+
+		return $balance;
 
 	}
 
