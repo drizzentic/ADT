@@ -1736,7 +1736,6 @@ class Order extends MY_Controller {
 		$data['maps_items_array'] = $maps_items_array;
 		
 		echo json_encode($data);
-		//die();
 		
 	}
 
@@ -2180,7 +2179,6 @@ class Order extends MY_Controller {
 		$notification .= "<thead><tr><th>Name</th><th>Code</th><th>Status</th></tr></thead><tbody>";
 		if ($satellites) {
 			foreach ($satellites as $satellite) {
-			//echo "<pre>";print_r($satellite);die;
 				if ($satellite['status'] == "reported") {
 					$satellite['status'] = "<div class='alert-success'>" . $satellite['status'] . "</div>";
 				} else {
@@ -2385,21 +2383,25 @@ class Order extends MY_Controller {
 		echo json_encode($row);
 	}
 
+	// public function getBeginningBalance($param=null,$month=0){
 	public function getBeginningBalance($param=array(),$month=0){
-		$balance=0;
-		//we are checking for the physical count of theis drug month before reporting period
-		$param['period_begin']=date('Y-m-d',strtotime($param['period_begin']."-1 month"));
+		// $param = array('period_begin'=>'2017-05-01','drug_id'=>7,'facility_id'=>2408);
+		//we are checking for the physical count of this drug month before reporting period
+		$param['period_begin']=date('Y-m-d',strtotime($param['period_begin']."-$month month"));
 		$balance=Cdrr_Item::getLastPhysicalStock($param['period_begin'], $param['drug_id'], $param['facility_id']);
-		if(!$balance && $month<3){
-			$month++;
-			$param['period_begin']=date('Y-m-d',strtotime($param['period_begin']."-1 month"));
-			$balance=$this->getBeginningBalance($param,$month);
-		}
 
-		if($balance==null){
-			$balance=0;
+		if(!$balance && $month<3){
+
+			$date = date('Y-m-d',strtotime($param['period_begin']."-3 month"));
+			$sql  = " ( SELECT  count FROM cdrr_item ci, cdrr c WHERE drug_id = ".$param['drug_id']." and ci.cdrr_id = c.id 
+			 and c.facility_id = ".$param['facility_id']." and period_begin >= '$date' and c.status != 'deleted' 
+			 and c.status != 'prepared' ORDER BY `cdrr_id` desc limit 1) union (select 0 count) limit 1;";
+
+			$query = $this -> db -> query($sql);
+			$balance= $query -> result_array()[0]['count'];
 		}
-		return $balance;
+			return $balance;
+
 	}
 
 	public function getOtherTransactions($param=array(),$row=array()){
