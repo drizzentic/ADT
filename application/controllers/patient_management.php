@@ -2191,7 +2191,7 @@ class Patient_management extends MY_Controller {
                         $diff=$max_days_for_greater_1000_test-$test_date_diff;
                         $msg="This patient needs to do viral Load test  ".$diff." days from today";
                     }
-                    else if($test_date_diff > $max_days_for_greate_100_test)
+                    else if($test_date_diff > $max_days_for_greate_1000_test)
                     {
                        $msg="This patient needs to do viral Load test as 90 days has passed";
                     }
