@@ -88,7 +88,7 @@ class Recover extends MX_Controller {
 		if (is_dir($dir)) {
 			$files = scandir($dir, 1);
 			foreach ($files as $object) {
-				if ($object != "." && $object != "..") {
+				if ($object != "." && $object != ".." && $object !=".gitkeep"  && $object !="downloads") {
 					$backup_files[] = $object;
 				}
 			}
@@ -108,7 +108,7 @@ class Recover extends MX_Controller {
 		if (is_dir($dir)) {
 			$files = scandir($dir, 1);
 			foreach ($files as $object) {
-				if ($object != "." && $object != "..") {
+				if ($object != "." && $object != ".." && $object !=".gitkeep"  && $object !="downloads") {
 					$backup_files[] = $object;
 				}
 			}

@@ -46,6 +46,8 @@ class Backup extends MX_Controller {
 
 			foreach ($downloaded_backups as $key => $db) {
 				if(strlen($db)<3){continue;}
+				if ($db == '.gitkeep'){continue;}
+
 				$this->decrypt_backup($dir.'/downloads/'.$db);
 				$this->delete_file($dir.'/downloads/'.$db);}
 				redirect('backup');
@@ -105,6 +107,7 @@ class Backup extends MX_Controller {
 				if(!(strpos($f, '.sql'))){ continue;}
 				if($this->zip_backup($f)){
 					$this->delete_file($f);
+
 				}
 			}
 			// delete any encrypted backups on backup_db folder
