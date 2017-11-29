@@ -45,4 +45,5 @@ tools/backup_db/*
 !assets/download/.gitkeep 
 !tools/backup_db/.gitkeep 
 !tools/backup_db/downloads/
-!tools/backup_db/testadt_blank.sql.zip
+!tools/backup_db/testadt_new_site.sql.zip
+!tools/backup_db/testadt_access_editt.sql.zip
