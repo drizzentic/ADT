@@ -43,9 +43,10 @@ LEFT JOIN patient_status pas ON pas.id=p.patient_status_id
 LEFT JOIN facility f ON f.id = p.from_facility_id
 LEFT JOIN (
 	SELECT patient_id, MAX(next_appointment_date) as next_appointment_date ,rc.code
-	FROM visit ,regimen rc
+	FROM visit 
+	LEFT JOIN regimen rc
+	ON rc.id = visit.regimen_id 
 	WHERE next_appointment_date IS NOT NULL
-	AND rc.id = visit.regimen_id 
 	GROUP BY patient_id
 ) v ON v.patient_id = p.id
 WHERE p.{migration_flag_column} = {migration_flag_default}
