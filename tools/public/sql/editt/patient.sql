@@ -23,7 +23,7 @@ SELECT
 	{destination_facility_code} AS facility_code,
 	st.name AS service,
 	r.code AS start_regimen,
-	r.code AS current_regimen,
+	v.code AS current_regimen,
 	DATE_FORMAT(v.next_appointment_date, '%Y-%m-%d') AS nextappointment,
 	DATE_FORMAT(p.therapy_start_date, '%Y-%m-%d') AS start_regimen_date,
 	pas.name AS current_status,
@@ -42,9 +42,10 @@ LEFT JOIN regimen r ON r.id = p.start_regimen_id
 LEFT JOIN patient_status pas ON pas.id=p.patient_status_id
 LEFT JOIN facility f ON f.id = p.from_facility_id
 LEFT JOIN (
-	SELECT patient_id, MAX(next_appointment_date) as next_appointment_date 
-	FROM visit 
-	WHERE next_appointment_date IS NOT NULL 
+	SELECT patient_id, MAX(next_appointment_date) as next_appointment_date ,rc.code
+	FROM visit ,regimen rc
+	WHERE next_appointment_date IS NOT NULL
+	AND rc.id = visit.regimen_id 
 	GROUP BY patient_id
 ) v ON v.patient_id = p.id
 WHERE p.{migration_flag_column} = {migration_flag_default}
