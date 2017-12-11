@@ -87,10 +87,18 @@ class Dispensement_management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 
 		$dispensing_date = "";
+		$data = array();
 		$data['last_regimens'] = "";
 		$data['visits'] = "";
 		$data['appointments'] = "";
 		$dispensing_date = date('Y-m-d');
+
+		$sql="SELECT * FROM Facilities where facilitycode='$facility_code'";
+        $query = $this -> db -> query($sql);
+        $facility_settings = $query -> result_array()[0];
+
+        $data['pill_count'] = $facility_settings['pill_count'];
+        
 
 		$sql = "select ps.name as patient_source,p.patient_number_ccc,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, LOWER(rst.name) as service_name , p.clinicalappointment from patient p 
 		LEFT JOIN patient_source ps ON ps.id = p.source
@@ -127,7 +135,6 @@ class Dispensement_management extends MY_Controller {
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 		}
-		$data = array();
 		
 		$username = ($this -> session -> userdata('username'));
 		$sql = "select ccc_store_sp from users where Username = '$username'";

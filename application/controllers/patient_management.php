@@ -13,6 +13,15 @@ class Patient_management extends MY_Controller {
 
     public function index() {
         //$data['content_view'] = "patient_listing_v";
+
+        $source = $this -> session -> userdata('facility');
+
+        $sql="SELECT * FROM Facilities where facilitycode='$source'";
+        $query = $this -> db -> query($sql);
+        $facility_settings = $query -> result_array()[0];
+
+        $data['medical_number'] = $facility_settings['medical_number'];
+        $data['pill_count'] = $facility_settings['pill_count'];
         $data['content_view'] = "patients/listing_view";
         $this -> base_params($data);
     }
@@ -2046,11 +2055,25 @@ class Patient_management extends MY_Controller {
         $facility_code = $this -> session -> userdata("facility");
         $access_level = $this -> session -> userdata('user_indicator');
 
+        $sql="SELECT * FROM Facilities where facilitycode='$facility_code'";
+        $query = $this -> db -> query($sql);
+        $facility_settings = $query -> result_array()[0];
+
+        $medical_number = $facility_settings['medical_number'];
+
+        $contact_sql = "IF(p.phone='',p.alternate,p.phone) as phone_number,";
+        $medical_cond = 'p.patient_number_ccc as ccc_no,';
+
+        if  ($medical_number ==  '1'){
+        $medical_cond = 'p.medical_record_number,';
+        $contact_sql = "";
+        }
+
         $sql = "SELECT 
-		            p.patient_number_ccc as ccc_no,
-		            UPPER(CONCAT_WS(' ',CONCAT_WS(' ',p.first_name,p.other_name),p.last_name)) as patient_name,
-		            DATE_FORMAT(p.nextappointment,'%b %D, %Y') as appointment,
-		            IF(p.phone='',p.alternate,p.phone) as phone_number,
+        $medical_cond
+                    UPPER(CONCAT_WS(' ',CONCAT_WS(' ',p.first_name,p.other_name),p.last_name)) as patient_name,
+                    DATE_FORMAT(p.nextappointment,'%b %D, %Y') as appointment,
+                    $contact_sql
                     CONCAT_WS(' | ',r.regimen_code,r.regimen_desc) as regimen,
                     ps.name as status,
                     p.active,

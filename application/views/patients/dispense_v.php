@@ -1468,14 +1468,14 @@ request.fail(function(jqXHR, textStatus) {
             
     //Function to validate required fields
     function processData(form) {
-      var form_selector = "#" + form;
-      var validated = $(form_selector).validationEngine('validate');
-      if(!validated) {
-        return false;
-    }else{
-        return saveData();      
+        var form_selector = "#" + form;
+        var validated = $(form_selector).validationEngine('validate');
+        if(!validated) {
+            return false;
+        }else{
+            return saveData();      
+        }
     }
-}
     //Function to post data to the server
     function saveData(){
         $("#btn_submit").attr("readonly","readonly");
@@ -1503,12 +1503,14 @@ request.fail(function(jqXHR, textStatus) {
             if(last_row.find(".qty_disp").hasClass("input_error")&&last_row.find(".qty_disp").val()>stock_at_hand){
                 msg+='<b>'+drug_name + '</b> :  There is a commodity that has a quantity greater than the quantity available<br/>';
             }
+            <?php  if ($pill_count !== "0"){ ?> 
             if(!last_row.find(".next_pill_count").val() && last_row.find(".drug option:selected").attr('arv_status') == 1){
                 msg+='<b>'+drug_name + '</b> : You have not entered the pill count!<br/>';
             }
             if(!last_row.find(".missed_pills ").val() && last_row.find(".drug option:selected").attr('arv_status') == 1){
                 msg+='<b>'+drug_name + '</b> : You have not entered the missed pills!<br/>';
             }
+            <?php } ?>
             
         });
         //Show Bootbox

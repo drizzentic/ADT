@@ -53,10 +53,14 @@
                 <table class="table table-bordered table-condensed table-hover" id="patient_listing">
                     <thead>
                         <tr>
+							<?php if($medical_number == '1'){ ?>
+							<th>Medical Number</th>
+							<?php }else {?>
 							<th>CCC No</th>
+							<?php } ?>
 							<th>Patient Name</th>
 							<th>Next Appointment</th>
-							<th>Contact</th>
+							<?php if($medical_number !== '1'){ ?><th>Contact</th> <?php }?>
 							<th>Current Regimen</th>
 							<th>Status</th>
 							<th>Action</th>
@@ -66,10 +70,14 @@
                     </tbody>
                     <tfoot>
 	                    <tr>
+							<?php if($medical_number == '1'){ ?>
+							<th>Medical Number</th>
+							<?php }else {?>
 							<th>CCC No</th>
+							<?php } ?>
 							<th>Patient Name</th>
 							<th>Next Appointment</th>
-							<th>Contact</th>
+							<?php if($medical_number !== '1'){ ?><th>Contact</th> <?php }?>
 							<th>Current Regimen</th>
 							<th>Status</th>
 							<th>Action</th>
