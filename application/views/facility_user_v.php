@@ -55,6 +55,8 @@ $("#central_site").attr("value","<?php echo @$facility['parent'];?>");
 $("#county").attr("value","<?php echo @$facility['county'];?>");
 $("#sms_map").val("<?php echo $facility['map'];?>");
 $("#autobackup").val("<?php echo $facility['autobackup'];?>");
+$("#pill_count").val("<?php echo $facility['pill_count'];?>");
+$("#medical_number").val("<?php echo $facility['medical_number'];?>");
 
 });
 </script>
@@ -164,6 +166,25 @@ $("#autobackup").val("<?php echo $facility['autobackup'];?>");
 									</select>
 									</td>
 								</tr>
+								<tr>
+								    <td><strong class="label">Do you want to enforce checks on Pill count ?</strong></td>
+									<td>
+									<select name="pill_count" id="pill_count">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+									</select>
+									</td>
+								</tr>
+								<tr>
+								    <td><strong class="label">Do you want to enable Medical Number?</strong></td>
+									<td>
+									<select name="medical_number" id="medical_number">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+									</select>
+									</td>
+								</tr>
+
 							<?php $supported_by=$facility['supported_by']; ?>
 
 							</table>

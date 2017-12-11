@@ -93,6 +93,8 @@ class Facility_Management extends MY_Controller {
 				      'supplied_by' => $this -> input -> post('supplied_by'), 
 				      'parent' => $this -> input -> post('central_site'),
 				      'map'=>$this->input->post("sms_map", TRUE),
+				      'pill_count' => $this -> input -> post('pill_count'),
+				      'medical_number' => $this -> input -> post('medical_number'),
 				      'autobackup' => $this -> input -> post('autobackup')
 				    );
 			$this -> db -> where('id', $facility_id);
