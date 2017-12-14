@@ -1,0 +1,13 @@
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_regimen_category', 'regimen_category', 'name', 'regimen', 'category')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_drug_classification', 'drug_classification', 'name', 'drugcode', 'classification')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_drug_unit', 'drug_unit', 'name', 'drugcode', 'unit')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_dose', 'dose', 'name', 'drugcode', 'dose')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_drug_instructions', 'drug_instructions', 'name', 'drugcode', 'instructions')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_generic_name', 'generic_name', 'name', 'drugcode', 'generic_name')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_prep_reason', 'prep_reason', 'name', 'patient_prep_test', 'prep_reason_id')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_pep_reason', 'pep_reason', 'name', 'patient', 'pep_reason')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_regimen_change_purpose', 'regimen_change_purpose', 'name', 'patient_visit', 'regimen_change_reason')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_visit_purpose', 'visit_purpose', 'name', 'patient_visit', 'visit_purpose')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_non_adherence_reasons', 'non_adherence_reasons', 'name', 'patient_visit', 'non_adherence_reason')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_drug_source', 'drug_source', 'name', 'drug_stock_movement', 'source')//
+CALL `proc_duplicate_to_unique`('testadt_i', 'temp_drug_destination', 'drug_destination', 'name', 'drug_stock_movement', 'destination')//
