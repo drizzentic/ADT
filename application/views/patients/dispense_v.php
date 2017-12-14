@@ -1242,8 +1242,9 @@ request.fail(function(jqXHR, textStatus) {
     //check if quantity dispensed is greater than quantity available
     $(".qty_disp").change(function() {
         var row = $(this);
-        var qty_disp = parseInt(row.closest("tr").find(".qty_disp").val());
-        var soh = parseInt(row.closest("tr").find(".soh").val());
+        var qty_disp = row.closest("tr").find(".qty_disp").val();
+        var soh = row.closest("tr").find(".soh").val();
+
         if (qty_disp>soh){
             alert('You cannot dispense more than ' +soh);
             row.closest("tr").find(".qty_disp").val(soh);
@@ -1296,19 +1297,8 @@ request.fail(function(jqXHR, textStatus) {
         if(parseInt(days)>parseInt(days_to_next_clinical)){
             $("#days_to_next_clinical").val(days);
 
-            var days_to_next_clinical = $("#days_to_next_clinical").attr("value");
-            if(days_to_next_clinical > 0){
-                var base_date = new Date();
-                var clinical_appointment_date = $("#next_clinical_appointment_date");
-                var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
-                var today_timestamp = today.getTime();
-                var appointment_timestamp = (1000 * 60 * 60 * 24 * days_to_next_clinical) + today_timestamp;
-                clinical_appointment_date.datepicker("setDate", new Date(appointment_timestamp));
-                // retrieveAppointedPatients();
-         }
-
-
             alert('Pharmacy appointments must be on or before clinical appointment.');
+            $("#next_clinical_appointment_date").val($("#next_appointment_date").attr("value"));
         }
     }
 

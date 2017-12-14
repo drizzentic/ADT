@@ -3,13 +3,53 @@
 ob_start();
 
 class Patient_management extends MY_Controller {
+    var $api;        
+    var $patient_module;            
+    var $dispense_module;            
+    var $appointment_module;            
     function __construct() {
         parent::__construct();
         $this -> load -> database();
         $this -> load -> library('PHPExcel');
         ini_set("max_execution_time", "100000");
         ini_set('memory_limit', '512M');
-    }
+        // $this->init_api_values();
+        }
+        public function init_api_values(){
+
+            $sql="SELECT * FROM api_config";
+            $query = $this -> db -> query($sql);
+            $api_config = $query -> result_array();
+
+
+            $conf = array();
+            foreach ($api_config as $ob) {
+
+                $conf[$ob['config']] = $ob['value'];
+            }
+
+            $this->api = ($conf['api_status'] =='on') ? TRUE : FALSE ;
+            $this->patient_module = ($conf['api_patients_module'] =='on') ? TRUE : FALSE ;
+            $this->dispense_module = ($conf['api_dispense_module'] =='on') ? TRUE : FALSE ;
+            $this->appointment_module = ($conf['api_appointments_module'] =='on') ? TRUE : FALSE ;
+            $this->api_adt_url = (strlen($conf['api_adt_url'])> 2) ? $conf['api_adt_url'] : FALSE ;
+
+        }
+
+
+        function test(){
+            $this->init_api_values();
+            echo "<pre>";
+
+            if ($this->api || $this->patient_module){
+                echo "string";
+            }
+            echo "api"; var_dump($this->api);
+            echo "patient_module"; var_dump($this->patient_module);
+            echo "dispense_module"; var_dump($this->dispense_module);
+            echo "appointments_module"; var_dump($this->appointments_module);
+            echo "api_adt_url"; var_dump($this->api_adt_url);
+        }
 
     public function index() {
         //$data['content_view'] = "patient_listing_v";
@@ -302,15 +342,15 @@ class Patient_management extends MY_Controller {
         $patient = "";
         $facility = "";
         $sql = "SELECT p.*,
-		               rst.Name as service_name,
-		               dp.child,
-		               s.secondary_spouse 
-		        FROM patient p 
-		        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
-		        LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
-		        LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse 
-		        WHERE p.id='$record_no'
-		        GROUP BY p.id";
+                       rst.Name as service_name,
+                       dp.child,
+                       s.secondary_spouse 
+                FROM patient p 
+                LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+                LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
+                LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse 
+                WHERE p.id='$record_no'
+                GROUP BY p.id";
         $query = $this -> db -> query($sql);
         $results = $query -> result_array();
 
@@ -342,35 +382,35 @@ class Patient_management extends MY_Controller {
         }
         //Patient History
         $sql = "SELECT pv.dispensing_date,
-						 v.name AS visit, 
-						 u.Name AS unit, 
-						 pv.dose, 
-						 pv.duration, 
-						 pv.indication, 
-						 pv.patient_visit_id AS record, 
-						 d.drug, 
-						 pv.quantity, 
-						 pv.current_weight, 
-						 pv.current_height, 
-						 r1.regimen_desc as last_regimen, 
-						 r.regimen_desc, 
-						 pv.batch_number, 
-						 pv.pill_count, 
-						 pv.adherence, 
-						 pv.user, 
-						 rcp.name as regimen_change_reason 
-		        FROM v_patient_visits pv 
-			        LEFT JOIN drugcode d ON pv.drug_id = d.id 
-			        LEFT JOIN drug_unit u ON d.unit = u.id 
-			        LEFT JOIN regimen r ON pv.regimen_id = r.id 
-			        LEFT JOIN regimen r1 ON pv.last_regimen = r1.id 
-			        LEFT JOIN visit_purpose v ON pv.visit_purpose_id = v.id 
-			        LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason
-		        WHERE pv.patient_id = '$patient' 
-		        AND pv.facility =  '$facility' 
-		        AND pv.active='1' AND pv.pv_active='1'
-		        GROUP BY d.drug,pv.dispensing_date
-		        ORDER BY  pv.patient_visit_id DESC";
+                         v.name AS visit, 
+                         u.Name AS unit, 
+                         pv.dose, 
+                         pv.duration, 
+                         pv.indication, 
+                         pv.patient_visit_id AS record, 
+                         d.drug, 
+                         pv.quantity, 
+                         pv.current_weight, 
+                         pv.current_height, 
+                         r1.regimen_desc as last_regimen, 
+                         r.regimen_desc, 
+                         pv.batch_number, 
+                         pv.pill_count, 
+                         pv.adherence, 
+                         pv.user, 
+                         rcp.name as regimen_change_reason 
+                FROM v_patient_visits pv 
+                    LEFT JOIN drugcode d ON pv.drug_id = d.id 
+                    LEFT JOIN drug_unit u ON d.unit = u.id 
+                    LEFT JOIN regimen r ON pv.regimen_id = r.id 
+                    LEFT JOIN regimen r1 ON pv.last_regimen = r1.id 
+                    LEFT JOIN visit_purpose v ON pv.visit_purpose_id = v.id 
+                    LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason
+                WHERE pv.patient_id = '$patient' 
+                AND pv.facility =  '$facility' 
+                AND pv.active='1' AND pv.pv_active='1'
+                GROUP BY d.drug,pv.dispensing_date
+                ORDER BY  pv.patient_visit_id DESC";
         $query = $this -> db -> query($sql);
         $results = $query -> result_array();
         if ($results) {
@@ -408,14 +448,14 @@ class Patient_management extends MY_Controller {
 
     public function edit($record_no) {
         $sql = "SELECT p.*,
-		               rst.Name as service_name,
-		               dp.parent,
-		               s.secondary_spouse,
+                       rst.Name as service_name,
+                       dp.parent,
+                       s.secondary_spouse,
                        t.* 
-		               FROM patient p 
-		               LEFT JOIN regimen_service_type rst ON rst.id=p.service 
-		               LEFT JOIN dependants dp ON p.patient_number_ccc=dp.child  
-		        	   LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse
+                       FROM patient p 
+                       LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+                       LEFT JOIN dependants dp ON p.patient_number_ccc=dp.child  
+                       LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse
                        LEFT JOIN (
                             SELECT 
                                 patient_id, prep_reason_id AS prep_reason, is_tested AS prep_test_answer, test_date AS prep_test_date, test_result AS prep_test_result 
@@ -424,8 +464,8 @@ class Patient_management extends MY_Controller {
                             ORDER BY test_date DESC
                             LIMIT 1
                         ) t ON t.patient_id = p.id
-		               WHERE p.id = ?
-		               GROUP BY p.id";
+                       WHERE p.id = ?
+                       GROUP BY p.id";
         $query = $this -> db -> query($sql, array($record_no, $record_no));
         //echo $this->db->last_query();die();
         $results = $query -> result_array();
@@ -461,6 +501,7 @@ class Patient_management extends MY_Controller {
     }
 
     public function save() {
+        $this->init_api_values();
         $family_planning = "";
         $other_illness_listing = "";
         $other_allergies_listing = "";
@@ -602,6 +643,12 @@ class Patient_management extends MY_Controller {
         $patient = $this -> input -> post('patient_number', TRUE);
         $direction = $this -> input -> post('direction', TRUE);
 
+        if ($this->api && $this->patient_module){
+        // post to IL via API
+            file_get_contents(base_url().'tools/api/getPatient/'.$auto_id.'/ADD');
+        // /> POST TO IL VIA API
+        }
+
         if ($direction == 0) {
             $this -> session -> set_userdata('msg_save_transaction', 'success');
             $this -> session -> set_flashdata('dispense_updated', 'Patient: ' . $this -> input -> post('first_name', TRUE) . " " . $this -> input -> post('last_name', TRUE) . ' was Saved');
@@ -613,9 +660,9 @@ class Patient_management extends MY_Controller {
 
     public function getDependentStatus($patient_number_ccc){
         $sql = "SELECT ps.name,p.patient_number_ccc,p.first_name,p.last_name,p.other_name FROM patient p
-				INNER JOIN patient_status ps ON ps.id = p.current_status
-				AND p.patient_number_ccc='$patient_number_ccc'
-				AND ps.name LIKE '%lost%'";
+                INNER JOIN patient_status ps ON ps.id = p.current_status
+                AND p.patient_number_ccc='$patient_number_ccc'
+                AND ps.name LIKE '%lost%'";
         $query = $this -> db -> query($sql);
         $result = $query -> result_array();
         if(count($result)>0){
@@ -904,17 +951,17 @@ class Patient_management extends MY_Controller {
     public function export() {
         $facility_code = $this -> session -> userdata('facility');
         $sql = "SELECT medical_record_number,patient_number_ccc,first_name,last_name,other_name,dob,pob,IF(gender=1,'MALE','FEMALE')as gender,IF(pregnant=1,'YES','NO')as pregnant,weight as Current_Weight,height as Current_height,sa as Current_BSA,p.phone,physical as Physical_Address,alternate as Alternate_Address,other_illnesses,other_drugs,adr as Drug_Allergies,IF(tb=1,'YES','NO')as TB,IF(smoke=1,'YES','NO')as smoke,IF(alcohol=1,'YES','NO')as alcohol,date_enrolled,ps.name as Patient_source,s.Name as supported_by,timestamp,facility_code,rst.name as Service,r1.regimen_desc as Start_Regimen,start_regimen_date,pst.Name as Current_status,migration_id,machine_code,IF(sms_consent=1,'YES','NO') as SMS_Consent,fplan as Family_Planning,tbphase,startphase,endphase,IF(partner_status=1,'Concordant',IF(partner_status=2,'Discordant','')) as partner_status,status_change_date,IF(partner_type=1,'YES','NO') as Disclosure,support_group,r.regimen_desc as Current_Regimen,nextappointment,start_height,start_weight,start_bsa,IF(p.transfer_from !='',f.name,'N/A') as Transfer_From,DATEDIFF(nextappointment,CURDATE()) AS Days_to_NextAppointment,dp.name as prophylaxis
-				FROM patient p
-				left join regimen r on r.id=p.current_regimen
-				left join regimen r1 on r1.id=p.start_regimen
-				left join patient_source ps on ps.id=p.source
-				left join supporter s on s.id=p.supported_by
-				left join regimen_service_type rst on rst.id=p.service
-				left join patient_status pst on pst.id=p.current_status
-				left join facilities f on f.facilitycode=p.transfer_from
-				left join drug_prophylaxis dp on dp.id=p.drug_prophylaxis
-				WHERE facility_code='$facility_code'
-				ORDER BY p.patient_number_ccc ASC";
+                FROM patient p
+                left join regimen r on r.id=p.current_regimen
+                left join regimen r1 on r1.id=p.start_regimen
+                left join patient_source ps on ps.id=p.source
+                left join supporter s on s.id=p.supported_by
+                left join regimen_service_type rst on rst.id=p.service
+                left join patient_status pst on pst.id=p.current_status
+                left join facilities f on f.facilitycode=p.transfer_from
+                left join drug_prophylaxis dp on dp.id=p.drug_prophylaxis
+                WHERE facility_code='$facility_code'
+                ORDER BY p.patient_number_ccc ASC";
                 // echo $sql;die();
         $query = $this -> db -> query($sql);
         $results = $query -> result_array();
@@ -1031,7 +1078,7 @@ class Patient_management extends MY_Controller {
 
         if (ob_get_contents())
             ob_end_clean();
-        $filename = "Patient Master For " . $facility_code . ".csv";
+        $filename = "Patient Master List For " . $facility_code . ".csv";
         header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
         header("Cache-Control: no-store, no-cache, must-revalidate");
         header("Cache-Control: post-check=0, pre-check=0", false);
@@ -1109,20 +1156,20 @@ class Patient_management extends MY_Controller {
         $facility = $this -> session -> userdata("facility");
 
         $sql = "SELECT
-					DATE_FORMAT(pv.dispensing_date,'%d-%b-%Y') as dispensing_date,
-					UPPER(dc.Drug) as drug,
-					pv.quantity,
-					pv.pill_count,
-					pv.missed_pills,
-					round(((pv.quantity-(pv.pill_count-pv.months_of_stock))/pv.quantity)*100,2) as pill_adh,
-					round(((pv.quantity-pv.missed_pills)/pv.quantity)*100,2) as missed_adh,
-					pv.adherence
-				FROM patient_visit pv
-				LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
-				LEFT JOIN drugcode dc ON dc.id=pv.drug_id
-			    WHERE pv.patient_id = ?
-			    AND pv.facility = ?
-			    ORDER BY pv.dispensing_date DESC";
+                    DATE_FORMAT(pv.dispensing_date,'%d-%b-%Y') as dispensing_date,
+                    UPPER(dc.Drug) as drug,
+                    pv.quantity,
+                    pv.pill_count,
+                    pv.missed_pills,
+                    round(((pv.quantity-(pv.pill_count-pv.months_of_stock))/pv.quantity)*100,2) as pill_adh,
+                    round(((pv.quantity-pv.missed_pills)/pv.quantity)*100,2) as missed_adh,
+                    pv.adherence
+                FROM patient_visit pv
+                LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+                LEFT JOIN drugcode dc ON dc.id=pv.drug_id
+                WHERE pv.patient_id = ?
+                AND pv.facility = ?
+                ORDER BY pv.dispensing_date DESC";
         $query = $this -> db -> query($sql, array($patient_no, $facility));
         $results = $query -> result_array();
 
@@ -1143,7 +1190,7 @@ class Patient_management extends MY_Controller {
                 $average_adherence = (( doubleval($result['pill_adh']) + doubleval($result['missed_adh']) + $adherence) / 3);
                 $dyn_table .= "<td>" . $adherence . "%</td>";
                 $dyn_table .= "<td>" . number_format($average_adherence,2) . "%</td>";
-                $dyn_table .= "</tr></tbody>";			}
+                $dyn_table .= "</tr></tbody>";          }
         }
         echo $dyn_table;
     }
@@ -1286,7 +1333,7 @@ class Patient_management extends MY_Controller {
         $status = "";
         $facility = $this -> session -> userdata("facility");
         $sql = "SELECT pa.appointment,IF(pa.appointment=pv.dispensing_date,'Visited',DATEDIFF(pa.appointment,curdate()))as Days_To 
-				FROM(SELECT patient,appointment FROM patient_appointment pa WHERE patient = ? AND facility = ?) as pa,(SELECT patient_id,dispensing_date FROM patient_visit WHERE patient_id = ? AND facility = ?) as pv GROUP BY pa.appointment ORDER BY pa.appointment desc";
+                FROM(SELECT patient,appointment FROM patient_appointment pa WHERE patient = ? AND facility = ?) as pa,(SELECT patient_id,dispensing_date FROM patient_visit WHERE patient_id = ? AND facility = ?) as pv GROUP BY pa.appointment ORDER BY pa.appointment desc";
         $query = $this -> db -> query($sql, array($patient_no, $facility, $patient_no, $facility));
         $results = $query -> result_array();
         if ($results) {
@@ -1319,8 +1366,8 @@ class Patient_management extends MY_Controller {
 
         //Get list of patients who changed regimen
         $sql_patient = "SELECT DISTINCT(p.id) as patient_id FROM patient p
-						LEFT JOIN patient_visit pv ON pv.patient_id=p.id
-						WHERE pv.regimen_change_reason IS NOT NULL";
+                        LEFT JOIN patient_visit pv ON pv.patient_id=p.id
+                        WHERE pv.regimen_change_reason IS NOT NULL";
         $query_exec = $this -> db -> query($sql_patient);
         $patients = $query_exec -> result_array();
         foreach ($patients as $patient) {
@@ -1365,8 +1412,8 @@ class Patient_management extends MY_Controller {
         $patient_ccc = $this -> input ->post("patient_ccc");
         //Check if patient is on PMTCT and change them to ART
         $sql = "SELECT rst.name FROM patient p
-				LEFT JOIN regimen_service_type rst ON p.service = rst.id
-				WHERE p.patient_number_ccc ='$patient_ccc'";
+                LEFT JOIN regimen_service_type rst ON p.service = rst.id
+                WHERE p.patient_number_ccc ='$patient_ccc'";
         $query = $this ->db ->query($sql);
         $result = $query ->result_array();
         $service = $result[0]['name'];
@@ -2079,11 +2126,11 @@ class Patient_management extends MY_Controller {
                     p.active,
                     p.id,
                     p.current_status
-		        FROM patient p  
-		        LEFT JOIN regimen r ON r.id=p.current_regimen
-		        LEFT JOIN patient_status ps ON ps.id=p.current_status
-		        WHERE p.facility_code = '$facility_code'
-		        AND p.patient_number_ccc != '' $filter ";
+                FROM patient p  
+                LEFT JOIN regimen r ON r.id=p.current_regimen
+                LEFT JOIN patient_status ps ON ps.id=p.current_status
+                WHERE p.facility_code = '$facility_code'
+                AND p.patient_number_ccc != '' $filter ";
         $query = $this -> db -> query($sql);
         $patients = $query ->result_array();
         $temp = array();
