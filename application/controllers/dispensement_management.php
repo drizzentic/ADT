@@ -30,12 +30,7 @@ class Dispensement_management extends MY_Controller {
 		echo json_encode($results);
 
 	}
-	public function dispense1($patient_id = NULL) {
-		$data['patient_id'] = $patient_id;
-		$data['hide_side_menu'] = 1;
-		$data['content_view'] = "patients/dispense_v1";
-		$this -> base_params($data);
-	}
+
 
 	public function get_patient_data($patient_id = NULL){
 		$data = array();
@@ -135,16 +130,7 @@ class Dispensement_management extends MY_Controller {
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 		}
-		
-		$username = ($this -> session -> userdata('username'));
-		$sql = "select ccc_store_sp from users where Username = '$username'";
-		$query = $this -> db -> query($sql);
-		$store_results = $query -> result_array();
-		if ($store_results) {
-			$data['ccc_store'] = $store_results[0]['ccc_store_sp'];
-		// $data['ccc_store'] = $this -> session -> userdata('ccc_store')[0]['id'];
-		}
-		
+			
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
 		$data['purposes'] = Visit_Purpose::getAll();
@@ -395,8 +381,9 @@ class Dispensement_management extends MY_Controller {
 		AND pv.active = 1
 		AND pv.ccc_store_sp = '$ccc_id'
 		AND pv.dispensing_date = (SELECT MAX(dispensing_date) dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '$patient_ccc' AND pv.active=1)
-		GROUP BY pv.id
+		GROUP BY pv.drug_id,pv.dispensing_date,pv.patient_id 
 		ORDER BY dispensing_date DESC";	
+		// echo $sql;
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		echo json_encode($results);

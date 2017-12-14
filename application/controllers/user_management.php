@@ -345,6 +345,7 @@ class User_management extends MY_Controller {
 						             'Phone_Number' => $phone, 
 						             'facility' => $logged_in -> Facility_Code, 
 						             'ccc_store' => $logged_in -> ccc_store_sp, 
+						             'ccc_store_id' => $logged_in -> ccc_store_sp, 
 						             'facility_id' => $facility_details[0]['id'],
 						             'county' => $facility_details[0]['county'],
 						             'facility_phone' => $facility_details[0]['phone'],
@@ -354,7 +355,7 @@ class User_management extends MY_Controller {
 						             'medical_number'=> ((@$facility_details[0]['medical_number'])!== null) ? @$facility_details[0]['medical_number'] : 0 ,
 						             'autobackup'=> ((@$facility_details[0]['autobackup'])!== null) ? @$facility_details[0]['autobackup'] : 0 
 						             );
-					
+
 					$this -> session -> set_userdata($session_data);
 
 					$user = $this -> session -> userdata('user_id');

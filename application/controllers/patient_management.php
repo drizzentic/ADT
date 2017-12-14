@@ -1169,6 +1169,7 @@ class Patient_management extends MY_Controller {
                 LEFT JOIN drugcode dc ON dc.id=pv.drug_id
                 WHERE pv.patient_id = ?
                 AND pv.facility = ?
+                GROUP BY dispensing_date,pv.patient_id, pv.drug_id
                 ORDER BY pv.dispensing_date DESC";
         $query = $this -> db -> query($sql, array($patient_no, $facility));
         $results = $query -> result_array();

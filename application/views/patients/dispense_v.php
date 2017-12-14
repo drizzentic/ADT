@@ -61,8 +61,7 @@
                             $selected = '';
                             if ($count_ccc > 0) {//In case on has more than one dispensing point
                                 echo "<label><span class='astericks'>*</span>Select dispensing point</label>
-                                <select name='ccc_store_id' id='ccc_store_id' class='validate[required]'>
-                                <option value=''>Select One</option>";
+                                <select name='ccc_store_id' id='ccc_store_id' class='validate[required]'>";
                                 //Check if facility has more than one dispensing point
                                 foreach ($ccc_stores as $value) {
                                     $name = $value['Name'];
@@ -70,11 +69,10 @@
                                         $ccc_storeid = $this -> session -> userdata('ccc_store_id');
                                         if ($value['id'] === $ccc_storeid) {
                                             $selected = "selected";
-                                        } else {
-                                            $selected = "";
+                                            echo "<option value='" . $value['id'] . "' " . $selected . ">" . $name . "</option>";
                                         }
-                                    } 
-                                    echo "<option value='" . $value['id'] . "' " . $selected . ">" . $name . "</option>";
+
+                                    }
                                 }
                                 echo "</select>";
                             }
@@ -244,12 +242,6 @@
                             <table class="table table-bordered prev_dispense" id="last_visit_data" style="float:left;width:100%;">
                                 <thead><th style="width: 70%">Drug Dispensed</th><th>Qty Dispensed</th></thead>
                                 <tbody>
-                                    <?php foreach($patient_appointment as $appointment): ?>
-                                        <tr>
-                                            <td><?php echo $appointment['drug']; ?></td>
-                                            <td><?php echo $appointment['quantity']; ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -781,7 +773,7 @@
 
     //-------------------------------- CHANGE EVENT --------------------------------------
     //store type change event
-    $("#ccc_store_id").change(function() {
+    /*$("#ccc_store_id").change(function() {
         if($(this).val()!=''){
             $("#ccc_store_id").css('border','none');
         }else{
@@ -793,7 +785,7 @@
         $("#current_regimen").trigger("change");
         reinitialize();
         storeSession($(this).val());
-    });
+    });*/
     
     //Add listener to check purpose
     $("#purpose").change(function() {
