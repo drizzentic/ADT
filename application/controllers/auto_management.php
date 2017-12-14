@@ -61,7 +61,6 @@ class Auto_management extends MY_Controller {
 		 		$message .= $this->update_dose_name();
 			//function to do_procs
 		 		$message .= $this->do_procs();			
-
 			//function to run_migrations
 		 		$message .= $this->run_migrations();			
 			//function to auto_backup
@@ -559,14 +558,7 @@ class Auto_management extends MY_Controller {
 		$duplicate_error_codes = array(1022, 1060, 1061, 1062, 1064);
 		if (is_dir($queries_dir)) {
 			$files = scandir($queries_dir);
-			//Create migrations table
-			$migration_tbl_sql = "CREATE TABLE IF NOT EXISTS `migrations` (
-			`id` int(11) NOT NULL AUTO_INCREMENT,
-			`migration` varchar(100) NOT NULL,
-			`run_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=latin1";
-			$this->db->query($migration_tbl_sql);
+			
 			//Get all executed migrations
 			$migrations = array();
 			$get_migrations_sql = "SELECT migration from migrations";
@@ -759,6 +751,7 @@ class Auto_management extends MY_Controller {
 	public function do_procs($file_path = null){
 		$file_path = (isset($file_path)) ? $file_path : '' ;
 		$file_path  = './assets/migrations/procs/';
+		$this->setup_migration_table();
 
 
 		$procs = array();
@@ -795,6 +788,17 @@ class Auto_management extends MY_Controller {
 				}
 			}}
 
+		}
+
+		public function setup_migration_table(){
+			//Create migrations table
+			$migration_tbl_sql = "CREATE TABLE IF NOT EXISTS `migrations` (
+			`id` int(11) NOT NULL AUTO_INCREMENT,
+			`migration` varchar(100) NOT NULL,
+			`run_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+			$this->db->query($migration_tbl_sql);
 		}
 
 	}
