@@ -11,12 +11,13 @@ class Recover extends MX_Controller {
 
 	}
 
+
 	public function index() {
 		$data['backup_files'] = $this -> checkdir();
 		$data['active_menu'] = 1;
-		$data['content_view'] = "recover/test_v";
+		$data['content_view'] = "recover/recovery_v";
 		$data['title'] = "Dashboard | System Recovery";
-
+		$this->recovery_tasks();
 		$CI = &get_instance();
 		$CI -> load -> database();
 		$data['sys_hostname'] = explode(':', $CI->db->hostname)[0];
@@ -166,9 +167,21 @@ class Recover extends MX_Controller {
 				}
 			}
 		}
-		$this->delete_file($file_path);
+		// $recovery_status = $this->delete_file($file_path);
 		echo $recovery_status;
 	}
+
+	public function recovery_tasks(){
+			// find sql files on root folder, zip & save zipped files to backup_db
+		$files = scandir(FCPATH.'backup_db');
+		foreach ($files as $key => $f) {
+			if(!(strpos($f, '.sql'))){ 	continue;}
+			if((strpos($f, '.sql.zip'))){ 	continue;}
+			$this->delete_file('backup_db/'.$f);
+		}
+	}
+
+
 	public function delete_file($file_path) {
 		if(unlink($file_path)) {
 			return true;

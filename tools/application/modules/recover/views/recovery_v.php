@@ -207,6 +207,7 @@
 	    			"file_name" : file_name
 	    		},
 	    		success : function(data) {
+	    		
 	    			if(data==1){
 	    				alert("Recovery Successful!");
 	    				$("#log3_status").val(1);
