@@ -689,7 +689,7 @@ class Dispensement_management extends MY_Controller {
 			$query = $this ->db ->query($q);
 			$result = $query->result_array();
 			$clinical_appointment_id = $result[0]['id'];
-			$sql_str = ($clinical_appointment_id>0) ? "UPDATE clinic_appointment set appointment='$next_clinical_appointment_date' where id = $clinical_appointment_id " : "insert into clinic_appointment (patient,appointment,facility) values ('$patient', '$next_clinical_appointment_date', 'facility'); " ;
+			$sql_str = ($clinical_appointment_id>0) ? "UPDATE clinic_appointment set appointment='$next_clinical_appointment_date' where id = $clinical_appointment_id " : "insert into clinic_appointment (patient,appointment,facility) values ('$patient', '$next_clinical_appointment_date', '$facility'); " ;
 			$query = $this ->db ->query($sql_str);
 
 			$q = "SELECT id FROM clinic_appointment WHERE patient = '$patient' AND appointment = '$next_clinical_appointment_date' LIMIT 1";
