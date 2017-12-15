@@ -42,7 +42,7 @@ class Backup extends MX_Controller {
 		$facility_code = $result->result_array()[0]['Facility_Code'];
 		$remote_dir = $this->ftp_root."$facility_code/";
 		// decrypt_backups
-		if(count($downloaded_backups)>2){
+		if(count($downloaded_backups)>3){
 
 			foreach ($downloaded_backups as $key => $db) {
 				if(strlen($db)<3){continue;}
