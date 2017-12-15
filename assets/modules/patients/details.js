@@ -333,7 +333,6 @@ function get_patient_prescriptions(ccc_no){
 		$('#viral_load_data tbody').empty();
 
 		$.each(data.prescription_details, function(key, val) {
-		// $("#viral_load_date").text(val.test_date);
 
 		$('#viral_load_data tbody').append('<tr><td>'+val.drug_name+'</td>'+
 			'<td>'+val.strength+'</td>'+
@@ -344,7 +343,7 @@ function get_patient_prescriptions(ccc_no){
 			'<td>'+val.prescription_notes+'</td><tr>');
 
 		$('#dispense_prescription_btn').show();
-		$('#dispense_prescription_btn').attr('href',base_url+'dispensement_management/dispense/'+patient_id);
+		$('#dispense_prescription_btn').attr('href',base_url+'dispensement_management/dispense/'+patient_id+'?pid='+val.drug_prescriptionid);
 	});	
 
 		$('#viral_load_data table').append('<a id="dispense_btn" class="btn btn-default" href="'+base_url+'dispensement_management/dispense/'+patient_id+'"><strong>Dispense to Patient</strong></a>');

@@ -2,6 +2,10 @@
 ob_start();
 
 class Dispensement_management extends MY_Controller {
+    var $api;        
+    var $patient_module;            
+    var $dispense_module;            
+    var $appointment_module; 
 	function __construct() {
 		parent::__construct();
 
@@ -12,11 +16,23 @@ class Dispensement_management extends MY_Controller {
 	public function index() {
 		//$this -> listing();
 	}
-	public function trialdispense($patientID)
-	{
-		$this->load->model('patientmodel');
-		print_r($this->patientmodel->get_patient_details($patientID));
-	}
+
+    public function init_api_values(){
+        $sql="SELECT * FROM api_config";
+        $query = $this -> db -> query($sql);
+        $api_config = $query -> result_array();
+
+        $conf = array();
+        foreach ($api_config as $ob) {
+            $conf[$ob['config']] = $ob['value'];
+        }
+
+        $this->api = ($conf['api_status'] =='on') ? TRUE : FALSE ;
+        $this->patient_module = ($conf['api_patients_module'] =='on') ? TRUE : FALSE ;
+        $this->dispense_module = ($conf['api_dispense_module'] =='on') ? TRUE : FALSE ;
+        $this->appointment_module = ($conf['api_appointments_module'] =='on') ? TRUE : FALSE ;
+        $this->api_adt_url = (strlen($conf['api_adt_url'])> 2) ? $conf['api_adt_url'] : FALSE ;
+    }
 
 	public function get_patient_details(){
 		$record_no = $this -> input -> post('record_no');
@@ -77,12 +93,17 @@ class Dispensement_management extends MY_Controller {
 	}
 
 	public function dispense($record_no) {
-
+        $this->init_api_values();
 
 		$facility_code = $this -> session -> userdata('facility');
 
 		$dispensing_date = "";
 		$data = array();
+		$data['api'] = $this->api;
+		$data['dispense_module'] = $this->dispense_module;
+		$data['appointment_module'] = $this->appointment_module;
+		$data['patient_module'] = $this->patient_module;            
+
 		$data['last_regimens'] = "";
 		$data['visits'] = "";
 		$data['appointments'] = "";
@@ -92,7 +113,7 @@ class Dispensement_management extends MY_Controller {
         $query = $this -> db -> query($sql);
         $facility_settings = $query -> result_array()[0];
 
-        $data['pill_count'] = $facility_settings['pill_count'];
+        $data['pill_count'] = @$facility_settings['pill_count'];
         
 
 		$sql = "select ps.name as patient_source,p.patient_number_ccc,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, LOWER(rst.name) as service_name , p.clinicalappointment from patient p 
@@ -130,6 +151,32 @@ class Dispensement_management extends MY_Controller {
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 		}
+
+
+		// /*************/
+		$data['prescription'] = array();
+		$pid = (isset($_GET['pid'])) ? $_GET['pid'] : null;
+		if ($pid && $this->api && $this->dispense_module){
+			$ps_sql="SELECT * from drug_prescription dp,drug_prescription_details dpd where
+			dp.id = dpd.drug_prescriptionid and dp.id = $pid";
+			$query = $this -> db -> query($ps_sql);
+			$ps = $query -> result_array();
+			$data['prescription'] = $ps;
+			// find if possible regimen from prescription
+			foreach ($ps as $key=>$p) {
+				$drugname = $p['drug_name'];
+				$regimen_sql="SELECT  * FROM regimen where regimen_code like '%$drugname%'";
+				$r_query = $this -> db -> query($regimen_sql);
+				$rs = $r_query -> result_array();
+				if ($rs){
+					$data['prescription_regimen_id'] = $rs[0]['id'];
+				}
+			}
+		}
+		// var_dump($data['prescription']);die;
+		//// dispense prescription from EMR
+
+
 			
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();

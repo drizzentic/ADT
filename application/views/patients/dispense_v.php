@@ -245,6 +245,50 @@
                                 </tbody>
                             </table>
                         </div>
+
+
+
+
+                          <?php  if(count($prescription)>0 && $api){?>
+                <div id="prescription_div">
+                    Ordering Physician: <?= $prescription[0]['order_physician']; ?>
+                    <span class="pull-right"> <?= $prescription[0]['timecreated']; ?></span>
+                    <table>
+                        <thead>
+                            <th></th>
+                            <th></th>
+                        </thead>
+
+                        <tbody>
+
+                            <?php foreach ($prescription as $ps) {  ?>
+                            <tr>
+                                <td>
+                                    <?= $ps['drug_name'].' '; ?>
+                                </td>
+                                <td>
+                                    <?= 'notes- '.$ps['notes'].' '; ?>
+                                </td>
+
+                                <?= 'drug_name- '.$ps['drug_name'].' '; ?>
+
+                                <?= 'strength- '.$ps['strength'].' '; ?>
+                                <?= 'dosage- '.$ps['dosage'].' '; ?>
+                                <?= 'frequency- '.$ps['frequency'].' '; ?>
+                                <?= 'duration- '.$ps['duration'].' '; ?>
+
+                                <?= 'quantity_prescribed- '.$ps['quantity_prescribed'].' '; ?>
+                                <?= 'prescription_notes- '.$ps['prescription_notes'].' '; ?>
+                            </tr>    
+                            <?php }?>
+                        </tbody>
+                    </table>
+
+                </div>
+                <?php }?>
+
+
+
                     </div>
                 </div>
             </div>
