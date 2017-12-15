@@ -6,6 +6,16 @@ class Api extends MX_Controller {
 	var $backup_dir = "./backup_db";
 	var $il_url = 'http://tedb19:9721/api/'; // IL url
 
+	var $api;        
+	var $patient_module;            
+	var $dispense_module;            
+	var $appointment_module; 
+	var $logging;
+	var $il_port;
+	var $il_ip;
+	var $adt_port;
+	var $adt_url;
+
 	function __construct() {
 		parent::__construct();
 		$this->load->library('ftp');
@@ -155,7 +165,7 @@ class Api extends MX_Controller {
 	}
 	function testjs (){
 		// var_dump($this->api_model->getActivePatientStatus()->id);die;
-	
+
 		$json = '{"facility_code":"13122","dob":"19770615","first_name":"Ivanka","gender":"F","last_name":"Trump","other_name":"Melania","patient_number_ccc":"13122-87878","phone":"","physical":"","pob":"MERU","alcohol":" ","current_regimen":" ","height":" ","pregnant":" ","smoke":" ","start_height":" ","start_regimen":" ","start_weight":" ","active":1,"current_status":1,"weight":" "}';
 		$patient = json_decode($json,TRUE);
 		// echo "<pre>";		var_dump($patient);die;
@@ -739,6 +749,51 @@ class Api extends MX_Controller {
 		fclose($fp);
 
 	}
+	public function init_api_values(){
+		$CI = &get_instance();
+		$CI -> load -> database();
 
+		$sql="SELECT * FROM api_config";
+		$query = $CI-> db -> query($sql);
+		$api_config = $query -> result_array();
+
+		$conf = array();
+		foreach ($api_config as $ob) {
+			$conf[$ob['config']] = $ob['value'];
+		}
+
+		$this->api = ($conf['api_status'] =='on') ? TRUE : FALSE ;
+		$this->patient_module = ($conf['api_patients_module'] =='on') ? TRUE : FALSE ;
+		$this->dispense_module = ($conf['api_dispense_module'] =='on') ? TRUE : FALSE ;
+		$this->appointment_module = ($conf['api_appointments_module'] =='on') ? TRUE : FALSE ;
+		$this->adt_url = (strlen($conf['api_adt_url'])> 2) ? $conf['api_adt_url'] : FALSE ;
+		$this->adt_port = (strlen($conf['api_adt_port']) > 1) ? $conf['api_adt_port'] : FALSE;
+		$this->il_ip = (strlen($conf['api_il_ip']) > 1) ? $conf['api_il_ip'] : FALSE;
+		$this->il_port = (strlen($conf['api_il_port']) > 1) ? $conf['api_il_port'] : FALSE;
+		$this->logging = $conf['api_logging'] == 'on'? TRUE : FALSE;
+		return $api_config;
+	}
+
+	public function settings(){
+		if ($_POST){
+			if ($this->api_model->saveAPIConfig($_POST)){
+				$data['message'] = 'Settings Saved successfully';
+			}
+
+		}
+
+		$data['api_config'] = $this->init_api_values();
+		$data['active_menu'] = 8;
+		$data['content_view'] = "api/settings_view";
+		$data['title'] = "Dashboard | API Settings";
+		$this -> template($data);
+	}
+
+	public function template($data) {
+		$data['show_menu'] = 0;
+		$data['show_sidemenu'] = 0;
+		$this -> load -> module('template');
+		$this -> template -> index($data);
+	}
 
 }

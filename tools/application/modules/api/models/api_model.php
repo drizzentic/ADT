@@ -10,6 +10,18 @@ class Api_model extends CI_Model {
 		// $CI -> load -> database();
 	}
 
+	function saveAPIConfig($conf){
+		$CI = &get_instance();
+		$CI -> load -> database();
+		$CI->db->query("update api_config set value = 'off' where type='toggle'");
+
+		foreach ($conf as $key => $val) {
+		$CI->db->where('config' , $key);
+		$CI->db->update('api_config', array('value'=>$val));
+		}
+
+		return true;
+	}
 	function savePatientMatching($patient){
 		$CI = &get_instance();
 		$CI -> load -> database();

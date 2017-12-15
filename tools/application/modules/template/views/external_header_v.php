@@ -26,6 +26,7 @@
         <li><a href="<?= base_url() ?>adminer/index.php" target="_blank">DB Manager</a></li>
         <li><a href="<?= base_url() ?>help">Help</a></li>
         <li><a href="<?= base_url() ?>setup">Initial Setup</a></li>
+        <li><a href="<?= base_url() ?>api/settings">API Settings</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>
