@@ -987,6 +987,51 @@ class Dispensement_management extends MY_Controller {
 		echo ($instructions);
 	}
 
+	public function getPrescriptions($patient_ccc = nuull){
+		$prescription = array();
+		$sql="SELECT * FROM drug_prescription WHERE patient = '$patient_ccc'";
+		$query=$this->db->query($sql);
+		$results=$query->result_array();
+		if($results){
+			$sql="SELECT * FROM drug_prescription_details WHERE drug_prescriptionid =".$results[0]['id'];
+			$query=$this->db->query($sql);
+			$res=$query->result_array();
+			if($res){
+				$prescription= $results[0];
+				$prescription['prescription_details'] = $res;
+			} 
+		}
+		header('Content-Type: application/json');
+		echo json_encode($prescription);
+		die;
+	}
+	public function getPrescription($pid){
+		$data = array();
+		$ps_sql="SELECT dpd.id,drug_prescriptionid,drug_name from drug_prescription dp,drug_prescription_details dpd where
+		dp.id = dpd.drug_prescriptionid and dp.id = $pid";
+		$query = $this -> db -> query($ps_sql);
+		$ps = $query -> result_array();
+		$data = $ps;
+			// find if possible regimen from prescription
+		foreach ($ps as $key=>$p) {
+			$drugname = $p['drug_name'];
+			$regimen_sql="SELECT  * FROM regimen where regimen_code like '%$drugname%'";
+			$r_query = $this -> db -> query($regimen_sql);
+			$rs = $r_query -> result_array();
+			if ($rs){
+				$data[$key]['prescription_regimen_id'] = $rs[0]['id'];
+				$arv_prescription = $p['id'];
+				$data['arv_prescription'] = $arv_prescription;
+					//Get oi_prescription(s)
+				$sql="SELECT dpd.id from drug_prescription dp,drug_prescription_details dpd where
+				dp.id = dpd.drug_prescriptionid and dp.id = $pid and dpd.id != '$arv_prescription'";
+				$query = $this -> db -> query($sql);
+				$data['oi_prescription'] = $query -> row_array()['id'];
+			}
+		}
+		return $data;
+	}
+
 	public function base_params($data) {
 		$data['title'] = "webADT | Drug Dispensing";
 		$data['banner_text'] = "Facility Dispensing";

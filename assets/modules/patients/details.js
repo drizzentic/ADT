@@ -324,42 +324,30 @@ function getViralResult(ccc_no){
 
 	});
 }
+
 function get_patient_prescriptions(ccc_no){
 	var data_source=base_url+"dispensement_management/getPrescriptions/"+ccc_no;
 	var patient_id = $("#hidden_data").data("patient");
 
 	$.getJSON(data_source, function(data){
-		console.log('getting patient prescriptions' + data.patient);
-		console.log('getting patient prescriptions' + data.patient);
-// order_number
-// order_physician
-// timecreated
+		$('#viral_load_data tbody').empty();
 
+		$.each(data.prescription_details, function(key, val) {
+		// $("#viral_load_date").text(val.test_date);
 
-$.each(data.prescription_details, function(key, val) {
-	console.log('value ' + val.drug_name);
-			// $("#viral_load_date").text(val.test_date);
+		$('#viral_load_data tbody').append('<tr><td>'+val.drug_name+'</td>'+
+			'<td>'+val.strength+'</td>'+
+			'<td>'+val.dosage+'</td>'+
+			'<td>'+val.frequency+'</td>'+
+			'<td>'+val.duration+'</td>'+
+			'<td>'+val.quantity_prescribed+'</td>'+
+			'<td>'+val.prescription_notes+'</td><tr>');
 
-			$('#viral_load_data tbody').append('<tr><td>'+val.drug_name+'</td>'+
-				'<td>'+val.strength+'</td>'+
-				'<td>'+val.dosage+'</td>'+
-				'<td>'+val.frequency+'</td>'+
-				'<td>'+val.duration+'</td>'+
-				'<td>'+val.quantity_prescribed+'</td>'+
-				'<td>'+val.prescription_notes+'</td><tr>');
-				
-			if (val.length > 0){
-				$('#dispense_prescription_btn').show();
-				$('#dispense_prescription_btn').attr('href',base_url+'dispensement_management/dispense/'+patient_id);
-			}
+		$('#dispense_prescription_btn').show();
+		$('#dispense_prescription_btn').attr('href',base_url+'dispensement_management/dispense/'+patient_id);
+	});	
 
-			// $("#viral_load_result").text(val.result)       
-		});	
-
-
-
-
-$('#viral_load_data table').append('<a id="dispense_btn" class="btn btn-default" href="'+base_url+'dispensement_management/dispense/'+patient_id+'"><strong>Dispense to Patient</strong></a>');
-});
+		$('#viral_load_data table').append('<a id="dispense_btn" class="btn btn-default" href="'+base_url+'dispensement_management/dispense/'+patient_id+'"><strong>Dispense to Patient</strong></a>');
+	});
 
 }
