@@ -1,6 +1,7 @@
 /*Remove Duplicates and make columns unique*/
+DROP PROCEDURE IF EXISTS proc_duplicate_to_unique;
 DELIMITER  $$
-CREATE OR REPLACE PROCEDURE proc_duplicate_to_unique(
+CREATE PROCEDURE proc_duplicate_to_unique(
 	IN db_name CHAR(64),
     IN tmp_tbl CHAR(64), 
     IN source_tbl CHAR(64),
@@ -89,14 +90,8 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 
 	/*Alter back target_col to int*/
-	SET @alter_target_back = CONCAT('ALTER TABLE ', target_tbl, ' MODIFY COLUMN ', target_col , ' INT(11)');
+	SET @alter_target_back = CONCAT('ALTER TABLE ', target_tbl, ' MODIFY COLUMN ', target_col , ' INT(11) NULL');
 	PREPARE stmt FROM @alter_target_back;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-
-	/*Add foreign_key constraint*/
-	SET @alter_target_fkey = CONCAT('ALTER TABLE ', target_tbl, ' ADD FOREIGN KEY (' , target_col , ') REFERENCES ', source_tbl, '(id) ON DELETE CASCADE ON UPDATE CASCADE');
-	PREPARE stmt FROM @alter_target_fkey;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
 

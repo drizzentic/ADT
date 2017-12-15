@@ -13,11 +13,11 @@ class Recover extends MX_Controller {
 
 
 	public function index() {
+		$this->recovery_tasks();
 		$data['backup_files'] = $this -> checkdir();
 		$data['active_menu'] = 1;
 		$data['content_view'] = "recover/recovery_v";
 		$data['title'] = "Dashboard | System Recovery";
-		$this->recovery_tasks();
 		$CI = &get_instance();
 		$CI -> load -> database();
 		$data['sys_hostname'] = explode(':', $CI->db->hostname)[0];

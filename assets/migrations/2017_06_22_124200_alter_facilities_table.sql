@@ -1,5 +1,4 @@
-ALTER TABLE facilities
-ADD autobackup tinyint(1) NOT NULL DEFAULT '0' AFTER map//
+ALTER TABLE facilities ADD autobackup tinyint(1) NOT NULL DEFAULT '0' AFTER map//
 
 ALTER TABLE facilities DROP lost_to_follow_up //
 
