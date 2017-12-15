@@ -3258,11 +3258,15 @@ public function getScheduledPatients($from = "", $to = "", $filter_from = NULL, 
 		WHERE tmp.appointment_description = '$app_desc'";
 	}else{
 			//Get all patients who have apppointments on the selected date range
-		$sql = "SELECT patient,appointment 
-		FROM patient_appointment 
-		WHERE appointment BETWEEN '$from' AND '$to' 
-		AND facility='$facility_code' 
-		GROUP BY patient,appointment";
+		$sql = "SELECT pa.patient,pa.appointment ,ca.appointment as clinic_appointment,
+				CASE
+				WHEN pa.appointment != ca.appointment THEN 'diff care' ELSE  'N/A' END as diff_care,
+			 DATEDIFF(pa.appointment, ca.appointment) as days_diff
+				FROM patient_appointment pa
+				LEFT JOIN clinic_appointment ca on ca.id = pa.clinical_appointment
+				WHERE pa.appointment BETWEEN '$from' AND '$to' 
+				AND ca.facility='$facility_code' 
+				GROUP BY patient,appointment";
 	}
 
 	$query = $this -> db -> query($sql);
@@ -3282,6 +3286,8 @@ public function getScheduledPatients($from = "", $to = "", $filter_from = NULL, 
 	<th> Appointment Date </th>
 	<th> Visit Status</th>
 	<th> Source</th>
+	<th> On Diff Care</th>
+	<th> Days to Clinic Appointment</th>
 
 	</tr>
 	</thead>
@@ -3290,6 +3296,9 @@ public function getScheduledPatients($from = "", $to = "", $filter_from = NULL, 
 		foreach ($results as $result) {
 			$patient = $result['patient'];
 			$appointment = $result['appointment'];
+			$diff_care = $result['diff_care'];
+			$days_diff = $result['days_diff'];
+
 				//Check if Patient visited on set appointment
 			$sql = "select * from patient_visit where patient_id='$patient' and dispensing_date='$appointment' and facility='$facility_code'";
 			$query = $this -> db -> query($sql);
@@ -3352,8 +3361,9 @@ public function getScheduledPatients($from = "", $to = "", $filter_from = NULL, 
 					$last_regimen = $result['last_regimen'];
 					$appointment = date('d-M-Y', strtotime($appointment));
 					$source=$result['source'];
+
 				}
-				$row_string .= "<tr><td>$patient_id</td><td width='300' style='text-align:left;'>$first_name $other_name $last_name</td><td>$phone</td><td>$address</td><td>$gender</td><td>$age</td><td>$service</td><td style='white-space:nowrap;'>$last_regimen</td><td>$appointment</td><td width='200px'>$status</td><td>$source</td></tr>";
+				$row_string .= "<tr><td>$patient_id</td><td width='300' style='text-align:left;'>$first_name $other_name $last_name</td><td>$phone</td><td>$address</td><td>$gender</td><td>$age</td><td>$service</td><td style='white-space:nowrap;'>$last_regimen</td><td>$appointment</td><td width='200px'>$status</td><td>$source</td><td>$diff_care</td><td>$days_diff</td></tr>";
 				$overall_total++;
 			}
 		}
