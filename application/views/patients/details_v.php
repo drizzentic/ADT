@@ -471,8 +471,9 @@
 			<div class="btn-group pull-right">
 				<button class="btn btn-inverse" id="viral_load"><strong>Viral Load Data</strong></button>
 				<button class="btn btn-inverse" id="patient_info"><strong>Patient Info Report</strong></button>
+				<?php if ($api && $patient_module){?>
 				<button class="btn btn-inverse" id="view_prescription"><strong>View Prescription</strong></button>
-
+				<?php } ?>
 				<a class="btn btn-inverse" href="<?php echo base_url().'patient_management/edit/'.$patient_id; ?>"><strong>Edit Patient Record</strong></a>
 				<a id="dispense_btn" class="btn btn-inverse" href="<?php echo base_url().'dispensement_management/dispense/'.$patient_id; ?>"><strong>Dispense to Patient</strong></a>
 			</div>

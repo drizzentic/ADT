@@ -1634,7 +1634,10 @@ class Patient_management extends MY_Controller {
 
     public function load_view( $page_id = NULL ,$id = NULL)
     {
+        $this->init_api_values();
         $config['details'] = array(
+            'api' => $this->api,
+            'patient_module' => $this->patient_module,
             'patient_id' => $id,
             'content_view' => 'patients/details_v',
             'hide_side_menu' => '1',
