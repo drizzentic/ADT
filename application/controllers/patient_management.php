@@ -6,56 +6,45 @@ class Patient_management extends MY_Controller {
     var $api;        
     var $patient_module;            
     var $dispense_module;            
-    var $appointment_module;            
+    var $appointment_module; 
+
     function __construct() {
         parent::__construct();
         $this -> load -> database();
         $this -> load -> library('PHPExcel');
         ini_set("max_execution_time", "100000");
         ini_set('memory_limit', '512M');
-        // $this->init_api_values();
-        }
-        public function init_api_values(){
+    }
 
-            $sql="SELECT * FROM api_config";
-            $query = $this -> db -> query($sql);
-            $api_config = $query -> result_array();
+    public function init_api_values(){
+        $sql="SELECT * FROM api_config";
+        $query = $this -> db -> query($sql);
+        $api_config = $query -> result_array();
 
-
-            $conf = array();
-            foreach ($api_config as $ob) {
-
-                $conf[$ob['config']] = $ob['value'];
-            }
-
-            $this->api = ($conf['api_status'] =='on') ? TRUE : FALSE ;
-            $this->patient_module = ($conf['api_patients_module'] =='on') ? TRUE : FALSE ;
-            $this->dispense_module = ($conf['api_dispense_module'] =='on') ? TRUE : FALSE ;
-            $this->appointment_module = ($conf['api_appointments_module'] =='on') ? TRUE : FALSE ;
-            $this->api_adt_url = (strlen($conf['api_adt_url'])> 2) ? $conf['api_adt_url'] : FALSE ;
-
+        $conf = array();
+        foreach ($api_config as $ob) {
+            $conf[$ob['config']] = $ob['value'];
         }
 
+        $this->api = ($conf['api_status'] =='on') ? TRUE : FALSE ;
+        $this->patient_module = ($conf['api_patients_module'] =='on') ? TRUE : FALSE ;
+        $this->dispense_module = ($conf['api_dispense_module'] =='on') ? TRUE : FALSE ;
+        $this->appointment_module = ($conf['api_appointments_module'] =='on') ? TRUE : FALSE ;
+        $this->api_adt_url = (strlen($conf['api_adt_url'])> 2) ? $conf['api_adt_url'] : FALSE ;
+    }
 
-        function test(){
-            $this->init_api_values();
-            echo "<pre>";
+    public function get_api_values(){
+        $this->init_api_values();
 
-            if ($this->api || $this->patient_module){
-                echo "string";
-            }
-            echo "api"; var_dump($this->api);
-            echo "patient_module"; var_dump($this->patient_module);
-            echo "dispense_module"; var_dump($this->dispense_module);
-            echo "appointments_module"; var_dump($this->appointments_module);
-            echo "api_adt_url"; var_dump($this->api_adt_url);
-        }
+        echo "api: ". $this->api ."<br/>";
+        echo "patient_module: ". $this->patient_module ."<br/>";
+        echo "dispense_module: ". $this->dispense_module ."<br/>";
+        echo "appointments_module: ". $this->appointment_module ."<br/>";
+        echo "api_adt_url: ". $this->api_adt_url ."<br/>";
+    }
 
     public function index() {
-        //$data['content_view'] = "patient_listing_v";
-
         $source = $this -> session -> userdata('facility');
-
         $sql="SELECT * FROM Facilities where facilitycode='$source'";
         $query = $this -> db -> query($sql);
         $facility_settings = $query -> result_array()[0];
@@ -644,9 +633,9 @@ class Patient_management extends MY_Controller {
         $direction = $this -> input -> post('direction', TRUE);
 
         if ($this->api && $this->patient_module){
-        // post to IL via API
+            // post to IL via API
             file_get_contents(base_url().'tools/api/getPatient/'.$auto_id.'/ADD');
-        // /> POST TO IL VIA API
+            // /> POST TO IL VIA API
         }
 
         if ($direction == 0) {

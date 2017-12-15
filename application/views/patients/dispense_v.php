@@ -353,7 +353,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
 
-            $('#ccc_store_id').val(<?= $ccc_store;?>);
+            $('#ccc_store_id').val(<?= $this -> session -> userdata('ccc_store_id');?>);
             $('#ccc_store_id').attr('readonly','true');
             var loopcounter = 0;
             var patient_id="<?php echo $patient_id; ?>";

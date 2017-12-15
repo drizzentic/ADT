@@ -10,4 +10,4 @@ CREATE TABLE drug_prescription_details (
   quantity_prescribed int(11) NOT NULL,
   prescription_notes varchar(300) NOT NULL,
   PRIMARY KEY (id)
-)
+)//

@@ -541,8 +541,8 @@ class Inventory_management extends MY_Controller {
 		$data['appointments'] = "";
 		$dispensing_date = date('Y-m-d');
 
-		
-		
+		$dated = NULL;
+		$service_name = NULL;
 		
 		$data['dated'] = $dated;
 		$data['patient_id'] = $record_no; 
@@ -552,7 +552,7 @@ class Inventory_management extends MY_Controller {
 		
 	}
 	// pqmp view list, view one, edit one
-	public function new_pqmp($record_no){
+	public function new_pqmp($record_no = NULL){
 		if($this -> input -> post("facility_name")){
 			$pqmp_data = array(
 				'facility_name' => $this->input->post('facility_name'),

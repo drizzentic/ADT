@@ -5,4 +5,4 @@ CREATE TABLE `api_drug_matching` (
   `strength` varchar(50) NOT NULL,
   `formulation` int(30) NOT NULL,
   `drug_id` int NOT NULL
-);
+)//
