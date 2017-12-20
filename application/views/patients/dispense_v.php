@@ -1331,11 +1331,15 @@ request.fail(function(jqXHR, textStatus) {
         var days_to_next_clinical = $("#days_to_next_clinical").attr("value");
         var days = $("#days_to_next").attr("value");
         if(parseInt(days)>parseInt(days_to_next_clinical)){
-            $("#days_to_next_clinical").val(days);
-
+            setClinicalAppointment(days);
             alert('Pharmacy appointments must be on or before clinical appointment.');
-            $("#next_clinical_appointment_date").val($("#next_appointment_date").attr("value"));
         }
+    }
+
+    function setClinicalAppointment(days){
+            $("#days_to_next_clinical").val(days);
+            $("#days_to_next_clinical").trigger('change');
+            // $("#next_clinical_appointment_date").val($("#next_appointment_date").val());
     }
 
     //function to add drug row in table 
