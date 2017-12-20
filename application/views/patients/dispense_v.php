@@ -1278,8 +1278,8 @@ request.fail(function(jqXHR, textStatus) {
     //check if quantity dispensed is greater than quantity available
     $(".qty_disp").change(function() {
         var row = $(this);
-        var qty_disp = row.closest("tr").find(".qty_disp").val();
-        var soh = row.closest("tr").find(".soh").val();
+        var qty_disp = parseInt(row.closest("tr").find(".qty_disp").val());
+        var soh = parseInt(row.closest("tr").find(".soh").val());
 
         if (qty_disp>soh){
             alert('You cannot dispense more than ' +soh);
