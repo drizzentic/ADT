@@ -2,7 +2,18 @@ ADT
 ================================
 This is an ARV Dispensing Tool.
 
-Version 3.2.2 22/06/2017 (Latest)
+Version 3.2.3 02/01/2018 (Latest)
+==============================================
+- Added: New MOH 731 template
+- Added: Patients scheduled to visit on differentiated care report
+- Added: When installing to a new facility how to set up MFL code. Initial setup (facility, users, drugs)
+- Added: Adverse drug reaction form for the health care worker to fill and submit as PDF
+- Added: Generation of the S11 PDF when issuing stock transactions 
+- Added: Create and Encrypt the backup files
+- Fixed: No duplication in specific settings
+- Fixed: When migrating on EDITT point to the last regimen dispensed instead of the current regimen in the patient table
+
+Version 3.2.2 22/06/2017
 ==============================================
 - Added: Ensure to make PEP/PREP reasons required 
 - Added: EWI to Link Viral Load to Regimen/Drug(Resistance)

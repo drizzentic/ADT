@@ -35,7 +35,10 @@ class Backup extends MX_Controller {
 		$CI = &get_instance();
 		$CI -> load -> database();
 
-
+		$default_backups =  array(
+			'testadt_access_editt.sql.zip',
+			'testadt_new_site.sql.zip'
+		);
 
 		$sql = "SELECT Facility_Code from users limit 1";
 		$result = $CI->db->query($sql);
@@ -62,11 +65,16 @@ class Backup extends MX_Controller {
 			for ($key=0; $key <count($files)-2 ; $key++) { 
 				if ($files[$key] == 'downloads'){continue;}
 				if ($files[$key] == '.gitkeep'){continue;}
-				if (in_array($remote_dir.$files[$key], $data['remote_files']) ){
+				if (in_array($remote_dir.$files[$key], $data['remote_files'])){
 					$table .='<tr><td>'.$files[$key].'</td>';
 					$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button></td>';
 
 					$table .='</td><td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
+					$table .='</tr>';
+				}elseif (in_array(basename($remote_dir.$files[$key]), $default_backups)) {
+					$table .='<tr><td>'.$files[$key].'</td>';
+					$table .='<td>-</td>';
+					$table .='<td align="center">-</td><td align="center">-</td></tr>';
 					$table .='</tr>';
 				}	
 				else{
