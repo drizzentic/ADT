@@ -408,6 +408,8 @@ class Backup extends MX_Controller {
 			$this->disconnect_ftp();
 		}
 		public function encrypt_backup($file){
+			// create destination file path by adding _e at end of file
+
 			$destination = str_replace('.sql.', '_e.sql.', $file);
 			$passphrase = 'WebADTencryption';
 
@@ -422,6 +424,7 @@ class Backup extends MX_Controller {
 			$iv = substr(md5("\x1B\x3C\x58".$passphrase, true), 0, 8);
 			$key = substr(md5("\x2D\xFC\xD8".$passphrase, true) . md5("\x2D\xFC\xD9".$passphrase, true), 0, 24);
 			$opts = array('iv'=>$iv, 'key'=>$key);
+			// open destination file with write options 
 			$fp = fopen($destination, 'wb') or die("Could not open file for writing.");
         // Add the Mcrypt stream filter with Triple DES
 			stream_filter_append($fp, 'mcrypt.tripledes', STREAM_FILTER_WRITE, $opts); 
@@ -445,6 +448,10 @@ class Backup extends MX_Controller {
 			file_put_contents($destination, $fp);
 			return true;
 
+		}
+
+		public function passwordzip(){
+			echo "password zipping now";
 		}
 
 
