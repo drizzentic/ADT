@@ -1,3 +1,5 @@
+DROP PROCEDURE proc_check_viralload;
+
 DELIMITER $$
 CREATE PROCEDURE IF NOT EXISTS proc_check_viralload(
 
