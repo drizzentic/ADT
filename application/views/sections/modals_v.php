@@ -63,6 +63,19 @@
 					</select>
 				</td>
 			</tr>
+
+					<tr>
+				<td>
+					<label>Store/Pharmacy</label>
+				</td>
+				<td>
+					<span class="add-on"><i class=" icon-chevron-down icon-black"></i></span>
+					<select name="user_store" id="profile_user_store" class="input-xlarge"  required="">
+					</select>
+				</td>
+			</tr>
+
+
 		</table>
 	
   </div>
@@ -208,9 +221,29 @@
 
 <script type="text/javascript">
 	var sitesURL = "<?php echo base_url().'order_settings/fetch/sync_facility';?>"
+	var storesURL = "<?php echo base_url().'user_management/get_stores';?>"
 	var userSitesURL = "<?php echo base_url().'user_management/get_sites/'.$this->session->userdata('user_id') ;?>"
 	var profileDiv = '#profile_user_facilities'
+	var storesDiv = '#profile_user_store'
+	var ccc_store = <?= $this->session->userdata('ccc_store_id') ?>;
+
 	$(function(){
+
+		
+	    $.get(storesURL, function(data) {
+	       	//Parse json to array
+			data = $.parseJSON(data);
+
+			//Append results to selectbox
+			$.each(data, function(i, item) {
+			    $(storesDiv).append($("<option></option>").attr("value", item.id).text(item.Name));
+			});
+
+			$(storesDiv).val(ccc_store);
+
+	    });
+
+
 	    $.get(sitesURL, function(data) {
 	       	//Parse json to array
 			data = $.parseJSON(data);
@@ -256,4 +289,6 @@
 		});
 
 	});
+
+
 </script>

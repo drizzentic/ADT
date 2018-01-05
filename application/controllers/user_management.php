@@ -699,6 +699,8 @@ class User_management extends MY_Controller {
 		$user_name = $this -> input -> post('u_username');
 		$email = $this -> input -> post('u_email');
 		$phone = $this -> input -> post('u_phone');
+		$store = $this -> input -> post('user_store');
+
 		$c_user = 0;
 		$e_user = 0;
 
@@ -726,12 +728,12 @@ class User_management extends MY_Controller {
 		//Neither email nor username is in use
 		else if ($e_user == 0 and $c_user == 0) {
 			//Update user details
-			$update_user_sql = $this -> db -> query("UPDATE users SET Name='$full_name',username='$user_name',Email_Address='$email',Phone_Number='$phone' WHERE id='$user_id'");
+			$update_user_sql = $this -> db -> query("UPDATE users SET Name='$full_name',username='$user_name',Email_Address='$email',Phone_Number='$phone',ccc_store_sp='$store' WHERE id='$user_id'");
 			if ($update_user_sql == 1) {
 				$message_success = "<span class='message info'>Your details were successfully updated!<span>";
 			}
 			//Update session details!
-			$session_data = array('username' => $user_name, 'full_name' => $full_name, 'Email_Address' => $email, 'Phone_Number' => $phone);
+			$session_data = array('username' => $user_name, 'full_name' => $full_name, 'Email_Address' => $email, 'Phone_Number' => $phone,'ccc_store_id'=>$store);
 			$this -> session -> set_userdata($session_data);
 			$this -> session -> set_userdata("message_user_update_success", $message_success);
 
@@ -800,5 +802,12 @@ class User_management extends MY_Controller {
 		}
 		echo $data;
 	}
+
+		public function get_stores(){
+		$store_results = CCC_store_service_point::getActive();
+		echo json_encode($store_results);
+
+	}
+
 
 }
