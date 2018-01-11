@@ -47,6 +47,7 @@
         <input type="hidden" id="stock_type_text" name="stock_type_text" value="main pharmacy" />
         <input type="hidden" id="purpose_refill_text" name="purpose_refill_text" value="" />
         <input type="hidden" id="patient_source" name="patient_source" value="<?php echo @$result['patient_source']; ?>" />
+        <input type="hidden" id="prescription" name="prescription" value="<?php echo @$_GET['pid']; ?>" />
         <div class="row-fluid">
             <div class="span6">
                 <legend>

@@ -165,15 +165,14 @@ function getPatientbyID($internal_id = null){
 		$CI = &get_instance();
 		$CI -> load -> database();
 
-		$sql = "SELECT *,pv.id visit_id, DATE_FORMAT(timecreated, '%Y%m%d%h%i%s') timecreated, pv.duration disp_duration, TRIM(d.drug) drugcode, pv.quantity disp_quantity, pv.dose disp_dose
+		$sql = "SELECT *, dpd.strength as drug_strength, pv.id visit_id, DATE_FORMAT(timecreated, '%Y%m%d%h%i%s') timecreated, pv.duration disp_duration, TRIM(d.drug) drugcode, pv.quantity disp_quantity, pv.dose disp_dose
 				FROM patient_visit pv 
 				INNER JOIN drug_prescription_details_visit dpdv ON dpdv.visit_id = pv.id
 				INNER JOIN drug_prescription_details dpd ON dpd.id = dpdv.drug_prescription_details_id
 				INNER JOIN drug_prescription dp ON dp.id = dpd.drug_prescriptionid AND pv.patient_id = dp.patient
 				INNER JOIN patient p ON p.patient_number_ccc = pv.patient_id
 				INNER JOIN drugcode d ON d.id = pv.drug_id
-				WHERE dp.id = '$order_id '";
-				echo '<pre>'.$sql;
+				WHERE dp.id = '$order_id'";
 		$query = $CI->db->query($sql);
 		// echo "<pre>";		var_dump($query->result_array);die;
 

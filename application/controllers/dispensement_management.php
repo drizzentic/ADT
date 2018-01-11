@@ -2,10 +2,10 @@
 ob_start();
 
 class Dispensement_management extends MY_Controller {
-    var $api;        
-    var $patient_module;            
-    var $dispense_module;            
-    var $appointment_module; 
+	var $api;        
+	var $patient_module;            
+	var $dispense_module;            
+	var $appointment_module; 
 	function __construct() {
 		parent::__construct();
 
@@ -17,22 +17,22 @@ class Dispensement_management extends MY_Controller {
 		//$this -> listing();
 	}
 
-    public function init_api_values(){
-        $sql="SELECT * FROM api_config";
-        $query = $this -> db -> query($sql);
-        $api_config = $query -> result_array();
+	public function init_api_values(){
+		$sql="SELECT * FROM api_config";
+		$query = $this -> db -> query($sql);
+		$api_config = $query -> result_array();
 
-        $conf = array();
-        foreach ($api_config as $ob) {
-            $conf[$ob['config']] = $ob['value'];
-        }
+		$conf = array();
+		foreach ($api_config as $ob) {
+			$conf[$ob['config']] = $ob['value'];
+		}
 
-        $this->api = ($conf['api_status'] =='on') ? TRUE : FALSE ;
-        $this->patient_module = ($conf['api_patients_module'] =='on') ? TRUE : FALSE ;
-        $this->dispense_module = ($conf['api_dispense_module'] =='on') ? TRUE : FALSE ;
-        $this->appointment_module = ($conf['api_appointments_module'] =='on') ? TRUE : FALSE ;
-        $this->api_adt_url = (strlen($conf['api_adt_url'])> 2) ? $conf['api_adt_url'] : FALSE ;
-    }
+		$this->api = ($conf['api_status'] =='on') ? TRUE : FALSE ;
+		$this->patient_module = ($conf['api_patients_module'] =='on') ? TRUE : FALSE ;
+		$this->dispense_module = ($conf['api_dispense_module'] =='on') ? TRUE : FALSE ;
+		$this->appointment_module = ($conf['api_appointments_module'] =='on') ? TRUE : FALSE ;
+		$this->api_adt_url = (strlen($conf['api_adt_url'])> 2) ? $conf['api_adt_url'] : FALSE ;
+	}
 
 	public function get_patient_details(){
 		$record_no = $this -> input -> post('record_no');
@@ -93,7 +93,7 @@ class Dispensement_management extends MY_Controller {
 	}
 
 	public function dispense($record_no) {
-        $this->init_api_values();
+		$this->init_api_values();
 
 		$facility_code = $this -> session -> userdata('facility');
 
@@ -110,11 +110,11 @@ class Dispensement_management extends MY_Controller {
 		$dispensing_date = date('Y-m-d');
 
 		$sql="SELECT * FROM Facilities where facilitycode='$facility_code'";
-        $query = $this -> db -> query($sql);
-        $facility_settings = $query -> result_array()[0];
+		$query = $this -> db -> query($sql);
+		$facility_settings = $query -> result_array()[0];
 
-        $data['pill_count'] = @$facility_settings['pill_count'];
-        
+		$data['pill_count'] = @$facility_settings['pill_count'];
+		
 
 		$sql = "select ps.name as patient_source,p.patient_number_ccc,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, LOWER(rst.name) as service_name , p.clinicalappointment from patient p 
 		LEFT JOIN patient_source ps ON ps.id = p.source
@@ -177,7 +177,7 @@ class Dispensement_management extends MY_Controller {
 		//// dispense prescription from EMR
 
 
-			
+		
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
 		$data['purposes'] = Visit_Purpose::getAll();
@@ -590,6 +590,7 @@ class Dispensement_management extends MY_Controller {
 		$next_appointment_date = $this -> input -> post("next_appointment_date");
 		$next_clinical_appointment_date = $this -> input -> post("next_clinical_appointment_date");
 		$next_clinical_appointment = $this -> input -> post("next_clinical_appointment");
+		$prescription = $this -> input -> post("prescription");
 
 		$last_appointment_date = $this -> input -> post("last_appointment_date");
 		$last_appointment_date = date('Y-m-d', strtotime($last_appointment_date));
@@ -742,8 +743,26 @@ class Dispensement_management extends MY_Controller {
 			 $mos[$i] = $quantity[$i] + (int)$mos[$i];
 			}*/
 			
-			
-			$sql .= "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason','$last_regimen' ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id');";
+			//Add visit
+			$visit_sql = "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason',$last_regimen ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id');";
+			$this->db->query($visit_sql);
+			$visit_id = $this->db->insert_id();
+			if(isset($prescription)){
+			//Check Regimen Drug Table to figure out which drug is ART/OI
+				$chk_reg_drug_sql = "SELECT 1 FROM regimen_drug WHERE regimen = '$current_regimen' AND drugcode = '$drugs[$i]'";
+				$chk_result = $this->db->query($chk_reg_drug_sql)->row_array();
+				if($chk_result){
+				//Is an ARV
+					$this->db->insert('drug_prescription_details_visit', array('drug_prescription_details_id' => $this->getPrescription($prescription)['arv_prescription'], 'visit_id' => $visit_id));
+
+				}else{
+				//Is an OI
+					$this->db->insert('drug_prescription_details_visit', array('drug_prescription_details_id' => $this->getPrescription($prescription)['oi_prescription'], 'visit_id' => $visit_id));
+				}
+
+			}
+
+
 			$sql .= "insert into drug_stock_movement (drug, transaction_date, batch_number, transaction_type,source,destination,expiry_date,quantity, quantity_out,balance, facility,`timestamp`,machine_code,ccc_store_sp) VALUES ('$drugs[$i]','$dispensing_date','$batch[$i]','$transaction_type','$source','$destination','$expiry[$i]',0,'$quantity[$i]',$remaining_balance,'$facility','$dispensing_date_timestamp','$act_run_balance','$ccc_id');";
 			$sql .= "update drug_stock_balance SET balance=balance - '$quantity[$i]' WHERE drug_id='$drugs[$i]' AND batch_number='$batch[$i]' AND expiry_date='$expiry[$i]' AND stock_type='$ccc_id' AND facility_code='$facility';";
 			$sql .= "INSERT INTO drug_cons_balance(drug_id,stock_type,period,facility,amount,ccc_store_sp) VALUES('$drugs[$i]','$ccc_id','$period','$facility','$quantity[$i]','$ccc_id') ON DUPLICATE KEY UPDATE amount=amount+'$quantity[$i]';";
@@ -759,6 +778,10 @@ class Dispensement_management extends MY_Controller {
 			$this -> db -> query($query);
 			//}
 
+		}
+		if(isset($prescription)){
+			file_get_contents(base_url().'tools/api/getDispensing/'.$prescription);
+			file_get_contents(base_url().'tools/api/getAppointment/'.$appointment_id);
 		}
 
 		$this -> session -> set_userdata('msg_save_transaction', 'success');
