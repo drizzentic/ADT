@@ -33,7 +33,7 @@ class Api_model extends CI_Model {
 
 		$CI = &get_instance();
 		$CI -> load -> database();
-		var_dump($CI->db->insert('patient', $patient));
+		$CI->db->insert('patient', $patient);
 		$insert_id = $CI->db->insert_id();
 		// $this->savePatientMatching(array('internal_id'=>$insert_id, 'external_id'=>$external_id));
 		return $insert_id;
@@ -59,6 +59,32 @@ class Api_model extends CI_Model {
 	}
 
 	function getPatient($internal_id = null){
+
+		$CI = &get_instance();
+		$CI -> load -> database();
+		$cond = '';
+		$query_str = "SELECT p.*,ps.name as patient_status,pso.name as patient_source ,g.name as patient_gender FROM patient p
+		left join patient_status ps on p.current_status = ps.id 
+		left join patient_source pso on p.source = pso.id
+		left join gender g on g.id = p.gender
+
+		WHERE p.patient_number_ccc   = '$internal_id' ";
+
+		// do left join in the case of patient created on adt and not already on IL
+
+
+		$query = $CI->db->query($query_str);
+
+		if (count($query->result()) > 0) {
+			$returnable = $query->result()[0];
+		} else {
+			$returnable = false;
+		}
+		return $returnable;
+	}
+
+
+function getPatientbyID($internal_id = null){
 
 		$CI = &get_instance();
 		$CI -> load -> database();
@@ -174,13 +200,13 @@ class Api_model extends CI_Model {
 
 
 	function saveAppointment($appointment,$appointment_type){
-		$appointment_tbl = ($appointment_type == 'pharmacy') ? 'patient_appointment' : 'clinical_appointment' ;
-
+		$appointment_tbl = ($appointment_type == 'CLINICAL') ? 'clinic_appointment' : 'patient_appointment' ;
 		$CI = &get_instance();
 		$CI -> load -> database();
-		$CI->db->insert('patient_appointment', $appointment);
-		$insert_id = $CI->db->insert_id();
-		return $insert_id;
+		$CI->db->insert("$appointment_tbl", $appointment);
+		$insert_id = $CI->db->insert_id();				
+		return $insert_id ;
+
 	}
 
 	function saveDrugPrescription($prescription,$prescription_details){
@@ -246,4 +272,3 @@ class Api_model extends CI_Model {
 
 
 }
-

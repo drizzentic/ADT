@@ -90,7 +90,6 @@ class Api extends MX_Controller {
 
 	function processPatientRegistration($patient){
 // internal & external patient ID matching
-		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
 
 // 		$EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
 // 		$ASSIGNING_AUTHORITY = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ASSIGNING_AUTHORITY;
@@ -108,10 +107,11 @@ class Api extends MX_Controller {
 		$MIDDLE_NAME = $patient->PATIENT_IDENTIFICATION->PATIENT_NAME->MIDDLE_NAME;
 		$LAST_NAME = $patient->PATIENT_IDENTIFICATION->PATIENT_NAME->LAST_NAME;
 
+		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
 
 		$MOTHER_NAME = $patient->PATIENT_IDENTIFICATION->MOTHER_NAME; 
 		$DATE_OF_BIRTH = $patient->PATIENT_IDENTIFICATION->DATE_OF_BIRTH; 
-		$SEX = $patient->PATIENT_IDENTIFICATION->SEX; 
+		$SEX =  ( $patient->PATIENT_IDENTIFICATION->SEX  == 'M') ? 1 : 2 ;
 		$VILLAGE = $patient->PATIENT_IDENTIFICATION->PATIENT_ADDRESS->PHYSICAL_ADDRESS->VILLAGE;
 		// var_dump($patient);die;
 		$WARD = $patient->PATIENT_IDENTIFICATION->PATIENT_ADDRESS->PHYSICAL_ADDRESS->WARD;
@@ -123,12 +123,12 @@ class Api extends MX_Controller {
 		$DEATH_DATE = $patient->PATIENT_IDENTIFICATION->DEATH_DATE;
 		$DEATH_INDICATOR = $patient->PATIENT_IDENTIFICATION->DEATH_INDICATOR;
 
-		$patient_matching = $EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID;
+		// $patient_matching = $EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID;
+		$ENROLLMENT_DATE =  $patient->PATIENT_VISIT->HIV_CARE_ENROLLMENT_DATE;
 
 // $patient->PATIENT_VISIT->VISIT_DATE;
 // $patient->PATIENT_VISIT->PATIENT_TYPE;
 // $patient->PATIENT_VISIT->PATIENT_SOURCE;
-// $patient->PATIENT_VISIT->HIV_CARE_ENROLLMENT_DATE;
 		
 		$patient = array(
 			'facility_code'=>$SENDING_FACILITY,
@@ -154,6 +154,7 @@ class Api extends MX_Controller {
 			'start_regimen'=>' ',
 			'start_weight'=>' ',
 			'active' => 1,
+			'date_enrolled' => substr($ENROLLMENT_DATE,0, 4).'-'.substr($ENROLLMENT_DATE,4, 2).'-'.substr($ENROLLMENT_DATE, -2),
 			// 'current_status' => 1,
 			'current_status' => $this->api_model->getActivePatientStatus()->id,
 			'weight'=>' '
@@ -161,7 +162,15 @@ class Api extends MX_Controller {
 		$this->writeLog('msg',json_encode($patient));
 		$internal_patient_id = $this->api_model->savePatient($patient,$EXTERNAL_PATIENT_ID);
 		$this->writeLog('internal_patient_id ',json_encode($internal_patient_id));
-		$this->api_model->savePatientMatching($patient_matching,$internal_patient_id);
+		// $patient_matching = $EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
+
+		$patient_matching = array(
+			'internal_id'=>$internal_patient_id,
+			'external_id'=>	$patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID,
+			'identifier_type'=>	$patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->IDENTIFIER_TYPE,
+			'assigning_authority'=> $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ASSIGNING_AUTHORITY
+		 );
+		$this->api_model->savePatientMatching($patient_matching);
 	}
 	function testjs (){
 		// var_dump($this->api_model->getActivePatientStatus()->id);die;
@@ -178,21 +187,16 @@ class Api extends MX_Controller {
 	}
 
 	function processPatientUpdate($patient){
-		$internal_patient = $this->api_model->getPatient(null,$patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID);
+		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+
+		$internal_patient = $this->api_model->getPatient($ccc_no);
 		if (!$internal_patient){
 			$this->processPatientRegistration($patient);
 // registration successful
 			die;
 		}
-		$internal_patient_id = $internal_patient->internal_id;
-// internal & external patient ID matching
-		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
 
-		$EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
-
-// internal identification is an array of objects
-		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
-
+		$internal_patient_id = $internal_patient->id;
 		$FIRST_NAME = $patient->PATIENT_IDENTIFICATION->PATIENT_NAME->FIRST_NAME;
 		$MIDDLE_NAME = $patient->PATIENT_IDENTIFICATION->PATIENT_NAME->MIDDLE_NAME;
 		$LAST_NAME = $patient->PATIENT_IDENTIFICATION->PATIENT_NAME->LAST_NAME;
@@ -200,8 +204,9 @@ class Api extends MX_Controller {
 
 		$MOTHER_NAME = $patient->PATIENT_IDENTIFICATION->MOTHER_NAME; 
 		$DATE_OF_BIRTH = $patient->PATIENT_IDENTIFICATION->DATE_OF_BIRTH; 
-		$SEX = $patient->PATIENT_IDENTIFICATION->SEX; 
+		$SEX =  ( $patient->PATIENT_IDENTIFICATION->SEX  == 'M') ? 1 : 2 ;
 		$VILLAGE = $patient->PATIENT_IDENTIFICATION->PATIENT_ADDRESS->PHYSICAL_ADDRESS->VILLAGE;
+		// var_dump($patient);die;
 		$WARD = $patient->PATIENT_IDENTIFICATION->PATIENT_ADDRESS->PHYSICAL_ADDRESS->WARD;
 		$SUB_COUNTY = $patient->PATIENT_IDENTIFICATION->PATIENT_ADDRESS->PHYSICAL_ADDRESS->SUB_COUNTY;
 		$COUNTY = $patient->PATIENT_IDENTIFICATION->PATIENT_ADDRESS->PHYSICAL_ADDRESS->COUNTY;
@@ -211,15 +216,18 @@ class Api extends MX_Controller {
 		$DEATH_DATE = $patient->PATIENT_IDENTIFICATION->DEATH_DATE;
 		$DEATH_INDICATOR = $patient->PATIENT_IDENTIFICATION->DEATH_INDICATOR;
 
+		// $patient_matching = $EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID;
+		$ENROLLMENT_DATE =  $patient->PATIENT_VISIT->HIV_CARE_ENROLLMENT_DATE;
 
-
-		$patient = array('facility_code'=>$SENDING_FACILITY,
-			'alcohol'=>$IS_ALCOHOLIC,
-			'current_regimen'=>$CURRENT_REGIMEN,
+// $patient->PATIENT_VISIT->VISIT_DATE;
+// $patient->PATIENT_VISIT->PATIENT_TYPE;
+// $patient->PATIENT_VISIT->PATIENT_SOURCE;
+		
+		$patient = array(
 			'dob'=>$DATE_OF_BIRTH,
+		// substr($DATE_OF_BIRTH,0, 4).'-'.substr($DATE_OF_BIRTH,4, 2).'-'.substr($DATE_OF_BIRTH, -2)
 			'first_name'=>$FIRST_NAME,
 			'gender'=>$SEX,
-			'height'=>$START_WEIGHT,
 			'last_name'=>$LAST_NAME,
 			'other_name'=>$MIDDLE_NAME,
 			'patient_number_ccc'=>$ccc_no,
@@ -229,12 +237,20 @@ class Api extends MX_Controller {
 			'pob'=>$WARD,
 			'pob'=>$SUB_COUNTY,
 			'pob'=>$COUNTY,
-			'pregnant'=>$IS_PREGNANT,
-			'smoke'=>$IS_SMOKER,
-			'start_height'=>$START_HEIGHT,
-			'start_regimen'=>$CURRENT_REGIMEN,
-			'start_weight'=>$START_WEIGHT,
-			'weight'=>$START_HEIGHT);
+			'alcohol'=> ' ',
+			'current_regimen'=>' ',
+			'height'=>' ',
+			'pregnant'=>' ',
+			'smoke'=>' ',
+			'start_height'=>' ',
+			'start_regimen'=>' ',
+			'start_weight'=>' ',
+			'active' => 1,
+			'date_enrolled' => substr($ENROLLMENT_DATE,0, 4).'-'.substr($ENROLLMENT_DATE,4, 2).'-'.substr($ENROLLMENT_DATE, -2),
+			// 'current_status' => 1,
+			'current_status' => $this->api_model->getActivePatientStatus()->id,
+			'weight'=>' '
+		);
 
 		$result = $this->api_model->updatePatient($patient,$internal_patient_id);
 		var_dump($result);
@@ -313,8 +329,12 @@ class Api extends MX_Controller {
 	}
 
 	function processAppointment($appointment){
-		$internal_patient_ccc = $this->api_model->getPatient(null,$appointment->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID)->patient_number_ccc;
-		// var_dump($internal_patient_ccc);die;
+		$internal_patient_ccc = $appointment->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+
+		// $internal_patient = $this->api_model->getPatient($ccc_no);
+
+		$internal_patient_ccc = $this->api_model->getPatient($internal_patient_ccc);
+		if (!$internal_patient_ccc){$this->writeLog('Patient not found ',$internal_patient_ccc);die;}
 
 		$SENDING_APPLICATION = $appointment->MESSAGE_HEADER->SENDING_APPLICATION;
 		$SENDING_FACILITY = $appointment->MESSAGE_HEADER->SENDING_FACILITY;
@@ -346,20 +366,15 @@ class Api extends MX_Controller {
 		$APPINTMENT_HONORED = $appointment->APPOINTMENT_INFORMATION[0]->APPINTMENT_HONORED;
 
 		$patient_appointment = array(
-			'patient'=>	$internal_patient_ccc,
-			// 'appointment'=>	$APPOINTMENT_REASON,
+			'patient'=>	$internal_patient_ccc->patient_number_ccc,
 			'facility' => $SENDING_FACILITY,
-			'appointment_type'=>	$APPOINTMENT_TYPE,
-			'appointment'=>	$APPOINTMENT_DATE,
+			'appointment'=>	$APPOINTMENT_DATE
 		);
-		// var_dump($patient_appointment);die;
-		// check appointment_type and save to respective table
+		$this->writeLog('saving patient appointment ',json_encode($patient_appointment));
+		$this->writeLog('appointment type ',json_encode($APPOINTMENT_TYPE));
 
 		$res = $this->api_model->saveAppointment($patient_appointment, $APPOINTMENT_TYPE);
-
-
-
-		var_dump($res);
+		$this->writeLog('saved  patient appointment ',json_encode($res));
 
 	}
 	function processDrugOrder($order){
@@ -474,8 +489,7 @@ class Api extends MX_Controller {
 	}
 
 	public function getPatient($patient_id, $msg_type){
-		$pat =   $this->api_model->getPatient($patient_id);
-		// echo "<pre>";		var_dump($pat);die;
+		$pat =   $this->api_model->getPatientbyID($patient_id);
 
 		$message_type = ($msg_type == 'ADD') ? 'ADT^A04' : 'ADT^A08' ;
 		$patient['MESSAGE_HEADER'] = array( 
@@ -523,7 +537,7 @@ class Api extends MX_Controller {
 		echo "<pre>";
 		echo(json_encode($patient,JSON_PRETTY_PRINT));
 		$this->writeLog('PATIENT '.$msg_type.' ' .$message_type ,json_encode($patient));
-		$this->tcpILRequest(null, json_encode($patient));
+		// $this->tcpILRequest(null, json_encode($patient));
 		$this->getObservation($patient);
 
 	}
