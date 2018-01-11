@@ -169,7 +169,7 @@ class Api extends MX_Controller {
 			'external_id'=>	$patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID,
 			'identifier_type'=>	$patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->IDENTIFIER_TYPE,
 			'assigning_authority'=> $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ASSIGNING_AUTHORITY
-		 );
+		);
 		$this->api_model->savePatientMatching($patient_matching);
 	}
 	function testjs (){
@@ -378,6 +378,12 @@ class Api extends MX_Controller {
 
 	}
 	function processDrugOrder($order){
+		$internal_patient_ccc = $order->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+
+		// $internal_patient = $this->api_model->getPatient($ccc_no);
+		$internal_patient_ccc = $this->api_model->getPatient($internal_patient_ccc);
+		if (!$internal_patient_ccc){$this->writeLog('Patient not found ',$internal_patient_ccc);die;}
+
 
 		$SENDING_APPLICATION = $order->MESSAGE_HEADER->SENDING_APPLICATION;
 		$SENDING_FACILITY = $order->MESSAGE_HEADER->SENDING_FACILITY;
@@ -407,10 +413,6 @@ class Api extends MX_Controller {
 
 
 // PHARMACY_ENCODED_ORDER
-		$internal_patient_ccc = $this->api_model->getPatient(null,$order->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID)->patient_number_ccc;
-		if (!$internal_patient_ccc){
-			echo "patient does not exist";die;
-		}
 
 		$pe_order = array();
 		foreach ($order->PHARMACY_ENCODED_ORDER as $eo) {
@@ -430,12 +432,18 @@ class Api extends MX_Controller {
 		$pe = array(
 			'order_number' => $PLACER_ORDER_NUMBER,
 			'order_status' => $ORDER_STATUS,
+			'patient' => $internal_patient_ccc->patient_number_ccc,
 			'order_physician' => $OP_FIRST_NAME.' '.$OP_MIDDLE_NAME.' '.$OP_LAST_NAME,
 			'notes' => $NOTES
 		);
 
+
+		$this->writeLog('prescription ',json_encode($pe));
+		$this->writeLog('prescription order ',json_encode($pe_order));
+
 		// var_dump($pe);
-		$this->api_model->saveDrugPrescription($pe,$pe_order);
+		$res  = $this->api_model->saveDrugPrescription($pe,$pe_order);
+		$this->writeLog('res ',json_encode($res));
 
 
 # @todo check if order exists
@@ -537,7 +545,7 @@ class Api extends MX_Controller {
 		echo "<pre>";
 		echo(json_encode($patient,JSON_PRETTY_PRINT));
 		$this->writeLog('PATIENT '.$msg_type.' ' .$message_type ,json_encode($patient));
-		// $this->tcpILRequest(null, json_encode($patient));
+		$this->tcpILRequest(null, json_encode($patient));
 		$this->getObservation($patient);
 
 	}

@@ -173,7 +173,9 @@ function getPatientbyID($internal_id = null){
 				INNER JOIN patient p ON p.patient_number_ccc = pv.patient_id
 				INNER JOIN drugcode d ON d.id = pv.drug_id
 				WHERE dp.id = '$order_id '";
+				echo '<pre>'.$sql;
 		$query = $CI->db->query($sql);
+		// echo "<pre>";		var_dump($query->result_array);die;
 
 		if (count($query->result()) > 0) {
 			$returnable = $query->result();
@@ -200,9 +202,14 @@ function getPatientbyID($internal_id = null){
 
 
 	function saveAppointment($appointment,$appointment_type){
-		$appointment_tbl = ($appointment_type == 'CLINICAL') ? 'clinic_appointment' : 'patient_appointment' ;
+		$appointment_tbl = ($appointment_type == 'CLINICAL') ? 'clinic_appointment' : 'patient_appointment' ; // appointment table
+		$appointment_col = ($appointment_type == 'CLINICAL') ? 'clinicalappointment' : 'nextappointment' ; // appointment column
+		$patient = $appointment['patient'];
+		$appointment = $appointment['appointment'];
+
 		$CI = &get_instance();
 		$CI -> load -> database();
+		$query = $CI->db->query("update patient set $appointment_col = '$appointment' where patient_number_ccc = '$patient'");
 		$CI->db->insert("$appointment_tbl", $appointment);
 		$insert_id = $CI->db->insert_id();				
 		return $insert_id ;
@@ -210,6 +217,7 @@ function getPatientbyID($internal_id = null){
 	}
 
 	function saveDrugPrescription($prescription,$prescription_details){
+		$pe_details = array();
 		$CI = &get_instance();
 		$CI -> load -> database();
 		$CI->db->insert('drug_prescription', $prescription);
@@ -233,8 +241,7 @@ function getPatientbyID($internal_id = null){
 			);
 			$CI->db->insert('drug_prescription_details', $pe_details);
 		}
-
-
+		return $pe_details;
 
 	}
 
