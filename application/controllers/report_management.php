@@ -1157,7 +1157,6 @@ class Report_management extends MY_Controller {
 		WHERE current_status LIKE '%active%'
 		AND prophylaxis LIKE '%dap%'
 		OR prophylaxis LIKE '%cotri%'
-		AND 	start_regimen_date >= '$period_start'
 		AND 	start_regimen_date <= '$period_end'";
 
 		$query = $this -> db -> query($sql);
@@ -1254,6 +1253,7 @@ class Report_management extends MY_Controller {
 		$sql = "SELECT 
 		COUNT(*) as prep_current FROM vw_patient_list
 		WHERE lower(current_status) LIKE '%active%' 
+		AND	 lower(service) like '%prep%'
 		AND 	start_regimen_date >= '$period_start'
 		AND 	start_regimen_date <= '$period_end'";
 		$query = $this -> db -> query($sql);
