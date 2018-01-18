@@ -116,7 +116,7 @@ class Regimen_management extends MY_Controller {
 
 	public function save() {
 			$regimencode = $this -> input -> post('regimen_code');
-		if (!strripos($regimencode, "X")){
+		// if (!strripos($regimencode, "X")){
 		
 		// check for duplicate code before 
 			$query = $this->db->query("SELECT * FROM regimen WHERE regimen_code = '$regimencode'");
@@ -153,7 +153,7 @@ class Regimen_management extends MY_Controller {
 				//Filter after saving
 				redirect('settings_management');
 			}
-		}
+		// }
 	}
 
 	public function edit() {
