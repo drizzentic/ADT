@@ -890,7 +890,7 @@ class Report_management extends MY_Controller {
 		$data['D51'] = $enrolled_1_9;
 		$data['D52'] = $enrolled_10_14;
 		$data['D53'] = $enrolled_15_19;
-		$data['D55'] = $enrolled_20_24;
+		$data['D54'] = $enrolled_20_24;
 		$data['D55'] = $enrolled_25;
 		$data['F52'] = $enrolled_f_10_14;
 		$data['F53'] = $enrolled_f_15_19;
@@ -922,8 +922,8 @@ class Report_management extends MY_Controller {
 		$art_0_14 = $results['art_0_14'];
 		$art_15 = $results['art_15'];
 
-		$data['D60'] = $art_0_14;
-		$data['D61'] = $art_15;
+		$data['D59'] = $art_0_14;
+		$data['D60'] = $art_15;
 		return $data;
 	}
 
@@ -1013,21 +1013,21 @@ class Report_management extends MY_Controller {
 
 		$sql = "
 		SELECT 
-		COUNT(IF(age <= 1 , 1, NULL)) as art_1,
-		COUNT(IF(age > 1 AND age < 9 , 1, NULL)) as art_1_9,
-		COUNT(IF(age > 10 AND age < 14 AND LOWER(gender) = 'male' , 1, NULL)) as art_10_14,
-		COUNT(IF(age > 15 AND age < 19  AND LOWER(gender) = 'male' , 1, NULL)) as art_15_19,
-		COUNT(IF(age > 20 AND age < 24  AND LOWER(gender) = 'male' , 1, NULL)) as art_20_24,
-		COUNT(IF(age > 25  AND LOWER(gender) = 'male' , 1, NULL)) as art_25,
+		COUNT(*) as total,
+		COUNT(IF(age < 1 , 1, NULL)) as art_1,
+		COUNT(IF(age >= 1 AND age <= 9 , 1, NULL)) as art_1_9,
+		COUNT(IF(age >= 10 AND age <= 14 AND LOWER(gender) = 'male' , 1, NULL)) as art_10_14,
+		COUNT(IF(age >= 15 AND age <= 19  AND LOWER(gender) = 'male' , 1, NULL)) as art_15_19,
+		COUNT(IF(age >= 20 AND age <= 24  AND LOWER(gender) = 'male' , 1, NULL)) as art_20_24,
+		COUNT(IF(age >= 25  AND LOWER(gender) = 'male' , 1, NULL)) as art_25,
 
-		COUNT(IF(age > 10 AND age < 14 AND LOWER(gender) = 'female' , 1, NULL)) as art_f_10_14,
-		COUNT(IF(age > 15 AND age < 19  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_15_19,
-		COUNT(IF(age > 20 AND age < 24  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_20_24,
-		COUNT(IF(age > 25  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_25
+		COUNT(IF(age >= 10 AND age <= 14 AND LOWER(gender) = 'female' , 1, NULL)) as art_f_10_14,
+		COUNT(IF(age >= 15 AND age <= 19  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_15_19,
+		COUNT(IF(age >= 20 AND age <= 24  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_20_24,
+		COUNT(IF(age >= 25  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_25
 		FROM vw_patient_list
-		WHERE current_status LIKE '%active%'
-		AND service LIKE '%art%' or service LIKE '%pmtct%'
-		AND 	start_regimen_date >= '$period_start'
+		WHERE  (service LIKE '%pmtct%' OR service LIKE '%art%')
+		and current_status LIKE '%active%'
 		AND 	start_regimen_date <= '$period_end'
 		";
 		$query = $this -> db -> query($sql, array($patient, $facility_code, $today));
@@ -1146,12 +1146,12 @@ class Report_management extends MY_Controller {
 
 		$sql = "
 		SELECT 
-		COUNT(IF(age <= 1 , 1, NULL)) as ctx_dds_1,
-		COUNT(IF(age > 1 AND age < 9 , 1, NULL)) as ctx_dds_1_9,
-		COUNT(IF(age > 10 AND age < 14 , 1, NULL)) as ctx_dds_10_14,
-		COUNT(IF(age > 15 AND age < 19 , 1, NULL)) as ctx_dds_15_19,
-		COUNT(IF(age > 20 AND age < 24 , 1, NULL)) as ctx_dds_20_24,
-		COUNT(IF(age > 25 , 1, NULL)) as ctx_dds_25
+		COUNT(IF(age < 1 , 1, NULL)) as ctx_dds_1,
+		COUNT(IF(age >= 1 AND age <= 9 , 1, NULL)) as ctx_dds_1_9,
+		COUNT(IF(age >= 10 AND age <= 14 , 1, NULL)) as ctx_dds_10_14,
+		COUNT(IF(age >= 15 AND age <= 19 , 1, NULL)) as ctx_dds_15_19,
+		COUNT(IF(age >= 20 AND age <= 24 , 1, NULL)) as ctx_dds_20_24,
+		COUNT(IF(age >= 25 , 1, NULL)) as ctx_dds_25
 
 		FROM vw_patient_list
 		WHERE current_status LIKE '%active%'
@@ -1198,11 +1198,11 @@ class Report_management extends MY_Controller {
 		$sql = "
 		SELECT 
 		COUNT(IF(age <= 1 , 1, NULL)) as start_ipt_1,
-		COUNT(IF(age > 1 AND age < 9 , 1, NULL)) as start_ipt_1_9,
-		COUNT(IF(age > 10 AND age < 14 , 1, NULL)) as start_ipt_10_14,
-		COUNT(IF(age > 15 AND age < 19 , 1, NULL)) as start_ipt_15_19,
-		COUNT(IF(age > 20 AND age < 24 , 1, NULL)) as start_ipt_20_24,
-		COUNT(IF(age > 25 , 1, NULL)) as start_ipt_25
+		COUNT(IF(age >= 1 AND age <= 9 , 1, NULL)) as start_ipt_1_9,
+		COUNT(IF(age >= 10 AND age <= 14 , 1, NULL)) as start_ipt_10_14,
+		COUNT(IF(age >= 15 AND age <= 19 , 1, NULL)) as start_ipt_15_19,
+		COUNT(IF(age >= 20 AND age <= 24 , 1, NULL)) as start_ipt_20_24,
+		COUNT(IF(age >= 25 , 1, NULL)) as start_ipt_25
 		FROM vw_patient_list vp,patient p 
 		WHERE  vp.current_status LIKE '%active%'
 		AND p.id = vp.patient_id
@@ -8190,13 +8190,14 @@ public function getBMI($start_date = "") {
 				<th>Total</th><th></th>
 				<th>Adult</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 				<th>Children</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+				<th></th><th></th><th></th><th></th>
 				</tr>
 				<tr>
 				<th></th>
 				<th></th>
 				<th></th>
 				<th>Male</th><th></th><th></th><th></th><th></th><th></th><th></th>
-				<th>Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+				<th>Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 				<th>Male</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 				<th>Female</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
 				</tr>
