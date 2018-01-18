@@ -55,8 +55,6 @@ class Auto_management extends MY_Controller {
 		 		$message .= $this->updateFixes();
 			//function to add new facilities list
 		 		$message .= $this->updateFacilties();
-			//function to get viral load data
-		 		$message .= $this->updateViralLoad();
 			//function to update patient visit dose from id to name
 		 		$message .= $this->update_dose_name();
 			//function to do_procs
@@ -65,6 +63,8 @@ class Auto_management extends MY_Controller {
 		 		$message .= $this->run_migrations();			
 			//function to auto_backup
 		 		$message .= $this->auto_backup();			
+			//function to get viral load data
+		 		$message .= $this->updateViralLoad();
 
 	        //finally update the log file for auto_update 
 		 		if ($this -> session -> userdata("curl_error") == '') {
