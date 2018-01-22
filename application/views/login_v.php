@@ -13,8 +13,11 @@
 		<header>
 			<div class="container-fluid">
 			<div class="row-fluid">
-			<div class="span12" style="text-align:center">
+			<div class="span9" style="text-align:center">
 			<img src='<?php echo asset_url();?>images/nascop.jpg'>
+			</div>
+			<div class="span3" style="text-align:center">
+							<a class="btn btn-warning pull-right" href="<?= base_url() ?>tools">ADT Tools</a>
 			</div>
 			</div>
 			</div>
@@ -62,7 +65,7 @@
 					<br>
 					<input type="password" name="password" class="input-xlarge" id="password" placeholder="password">
 				</label>
-				<a class="btn btn-warning pull-right" href="<?= base_url() ?>tools">ADT Tools</a>
+
 				<input type="submit" class="btn" name="register" id="register" value="Login" >
 
 				<div style="margin:auto;width:auto" class="anchor">
