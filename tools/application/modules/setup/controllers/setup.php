@@ -22,7 +22,20 @@ class Setup extends MX_Controller {
 		$CI = &get_instance();
 		$CI -> load -> database();
 		//Update all users to mflcode
-		$sql = "UPDATE users SET Facility_Code = '$mflcode'";
+		$sql = "
+		UPDATE facilities SET facilitycode = $mflcode ;
+		UPDATE users SET Facility_Code = $mflcode ;
+		UPDATE drug_stock_movement SET facility = $mflcode ;
+		UPDATE drug_stock_movement SET source = $mflcode ;
+		UPDATE drug_stock_movement SET destination = $mflcode ;
+		UPDATE drug_cons_balance set facility = $mflcode ;
+		UPDATE drug_stock_balance set facility_code = $mflcode;
+		UPDATE patient SET facility_code = $mflcode ;
+		UPDATE patient_visit SET facility = $mflcode ;
+		UPDATE patient_appointment SET facility = $mflcode ;
+		UPDATE clinic_appointment SET facility = $mflcode ;
+		";
+		
 		$CI->db->query($sql);
 		//Redirect with message
 		$message = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Success!</strong> Facility initialized to MFLCODE: '.$mflcode.'</div>';
