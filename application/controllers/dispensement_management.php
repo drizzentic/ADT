@@ -448,8 +448,17 @@ class Dispensement_management extends MY_Controller {
 		LEFT JOIN regimen r ON r.id = rd.regimen 
 		LEFT JOIN drugcode d ON d.id=rd.drugcode 
 		WHERE d.enabled='1'
-		AND (rd.regimen='" . $regimen_id . "' OR r.regimen_code LIKE '%oi%')  
-		ORDER BY d.drug asc";
+		AND rd.regimen='$regimen_id'  
+and rd.active= 1
+UNION 
+
+SELECT DISTINCT(d.id),UPPER(d.drug) as drug,IF(none_arv = 1, FALSE, TRUE) as is_arv
+		FROM regimen_drug rd
+		LEFT JOIN regimen r ON r.id = rd.regimen 
+		LEFT JOIN drugcode d ON d.id=rd.drugcode 
+		WHERE d.enabled='1'
+AND  r.regimen_code LIKE '%oi%' 
+ 		ORDER BY drug asc";
 		$get_drugs_sql = $this -> db -> query($sql);
 		$get_drugs_array = $get_drugs_sql -> result_array();
 		echo json_encode($get_drugs_array);
@@ -710,6 +719,11 @@ class Dispensement_management extends MY_Controller {
 			}
 		}
 		$sql .= "insert into patient_appointment (patient,appointment,facility,clinical_appointment) values ('$patient','$next_appointment_date','$facility','$clinical_appointment_id');";
+
+			$q = "SELECT id FROM patient_appointment WHERE patient = '$patient' AND appointment = '$next_appointment_date' LIMIT 1";
+			$query = $this ->db ->query($q);
+			$result = $query->result_array();
+			$appointment_id = $result[0]['id'];
 
 
 		/*
