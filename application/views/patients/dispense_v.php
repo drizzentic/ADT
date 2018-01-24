@@ -948,7 +948,7 @@
         if (last_regimen != 0) {
             if ($("#last_regimen_disp").val().toLowerCase().indexOf("oi") == -1) {
                 //contains oi
-                if (regimen != last_regimen) {
+                if (regimen != last_regimen && regimen.length > 1) {
 
 
                     $("#regimen_change_reason_container").show();
