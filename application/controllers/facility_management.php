@@ -63,6 +63,8 @@ class Facility_Management extends MY_Controller {
 		$art_service = 0;
 		$pmtct_service = 0;
 		$pep_service = 0;
+		$prep_service = 0;
+		$service_hep = 0;
 
 		if ($this -> input -> post('art_service') == "on") {
 			$art_service = 1;
@@ -73,6 +75,15 @@ class Facility_Management extends MY_Controller {
 		if ($this -> input -> post('pep_service') == "on") {
 			$pep_service = 1;
 		}
+
+		if ($this -> input -> post('prep_service') == "on") {
+			$prep_service = 1;
+		}
+
+		if ($this -> input -> post('hep_service') == "on") {
+			$service_hep = 1;
+		}
+
 
 		$facility_id = $this -> input -> post('facility_id');
 		if ($facility_id) {
@@ -90,6 +101,8 @@ class Facility_Management extends MY_Controller {
 				      'service_art' => $art_service, 
 				      'service_pmtct' => $pmtct_service, 
 				      'service_pep' => $pep_service, 
+				      'service_prep' => 1, 
+				      'service_hep' => $service_hep, 
 				      'supplied_by' => $this -> input -> post('supplied_by'), 
 				      'parent' => $this -> input -> post('central_site'),
 				      'map'=>$this->input->post("sms_map", TRUE),
@@ -97,6 +110,7 @@ class Facility_Management extends MY_Controller {
 				      'medical_number' => $this -> input -> post('medical_number'),
 				      'autobackup' => $this -> input -> post('autobackup')
 				    );
+
 			$this -> db -> where('id', $facility_id);
 			$this -> db -> update('facilities', $data);
 			$this->session->set_userdata("facility_sms_consent",$this->input->post("sms_map", TRUE));

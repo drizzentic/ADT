@@ -222,6 +222,14 @@ $("#medical_number").val("<?php echo $facility['medical_number'];?>");
 									  <input type="checkbox" id="pep_service" name="pep_service" <?php if(@$facility['service_pep']==1){?> checked <?php } ?>>
 									 PEP
 									</label>
+									<label class="checkbox">
+										<input type="checkbox" id="prep_service" name="prep_service" <?php if(@$facility['service_prep']==1){?> checked <?php } ?>>
+										PREP
+									</label>
+									<label class="checkbox">
+										<input type="checkbox" id="hep_service" name="hep_service" <?php if(@$facility['service_hep']==1){?> checked <?php } ?>>
+										Hepatitis
+									</label>
 								</fieldset>
 							</div>
 							<!--<div class="span2">
