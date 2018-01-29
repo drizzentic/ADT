@@ -104,14 +104,20 @@ CREATE OR REPLACE VIEW vw_patient_list AS
         pep_reason.name AS pep_reason,
         prep_reason.name AS prep_reason,
         patient_prep_test.test_date AS prep_reason_test_date,
-        patient_prep_test.test_result AS prep_reason_test_result
--- , patient_viral_load.result as viral_load_result
-
-
-,(SELECT  patient_viral_load.result FROM patient_viral_load
-                                WHERE patient_ccc_number = p.patient_number_ccc
-                                order by test_date desc
-                            LIMIT 1 ) as viral_load_test_results
+        patient_prep_test.test_result AS prep_reason_test_result,
+        (SELECT 
+                patient_viral_load.result
+            FROM
+                patient_viral_load
+            WHERE
+                patient_ccc_number = p.patient_number_ccc
+            ORDER BY test_date DESC
+            LIMIT 1) AS viral_load_test_results,
+        IF((p.nextappointment <= p.clinicalappointment),
+            'differentiated',
+            IF((p.nextappointment = p.clinicalappointment),
+                'notdifferentiated',
+                'notdifferentiated')) AS differentiated_care_status
     FROM
         (((((((((((patient p
         LEFT JOIN regimen r ON ((r.id = p.current_regimen)))
