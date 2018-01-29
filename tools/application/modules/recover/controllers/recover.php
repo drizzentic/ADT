@@ -53,10 +53,10 @@ class Recover extends MX_Controller {
 		$host_name = $this -> session -> userdata("db_host");
 		$host_user = $this -> session -> userdata("db_user");
 		$host_password = $this -> session -> userdata("db_pass");
+		$database_port =$this -> session -> userdata("db_port");
 		$database_name = $this -> input -> post("inputDb");
-		$database_port = $this -> input -> post("inputport");
 
-		$link = @mysql_connect($host_name, $host_user, $host_password);
+		$link = @mysql_connect($host_name.':'.$database_port, $host_user, $host_password);
 		$db_selected = @mysql_select_db($database_name, $link);
 		if (!$db_selected) {
 			$status = "\nConnection Success!\nDatabase does not exist!";
