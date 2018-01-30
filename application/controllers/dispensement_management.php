@@ -599,7 +599,7 @@ AND  r.regimen_code LIKE '%oi%'
 		$next_appointment_date = $this -> input -> post("next_appointment_date");
 		$next_clinical_appointment_date = $this -> input -> post("next_clinical_appointment_date");
 		$next_clinical_appointment = $this -> input -> post("next_clinical_appointment");
-		$prescription = $this -> input -> post("prescription");
+		$prescription = $this -> input -> post("prescription")+0;
 
 		$last_appointment_date = $this -> input -> post("last_appointment_date");
 		$last_appointment_date = date('Y-m-d', strtotime($last_appointment_date));
@@ -761,7 +761,7 @@ AND  r.regimen_code LIKE '%oi%'
 			$visit_sql = "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason',$last_regimen ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id');";
 			$this->db->query($visit_sql);
 			$visit_id = $this->db->insert_id();
-			if(isset($prescription)){
+			if($prescription > 0){
 			//Check Regimen Drug Table to figure out which drug is ART/OI
 				$chk_reg_drug_sql = "SELECT 1 FROM regimen_drug WHERE regimen = '$current_regimen' AND drugcode = '$drugs[$i]'";
 				$chk_result = $this->db->query($chk_reg_drug_sql)->row_array();
@@ -780,7 +780,7 @@ AND  r.regimen_code LIKE '%oi%'
 			$sql .= "insert into drug_stock_movement (drug, transaction_date, batch_number, transaction_type,source,destination,expiry_date,quantity, quantity_out,balance, facility,`timestamp`,machine_code,ccc_store_sp) VALUES ('$drugs[$i]','$dispensing_date','$batch[$i]','$transaction_type','$source','$destination','$expiry[$i]',0,'$quantity[$i]',$remaining_balance,'$facility','$dispensing_date_timestamp','$act_run_balance','$ccc_id');";
 			$sql .= "update drug_stock_balance SET balance=balance - '$quantity[$i]' WHERE drug_id='$drugs[$i]' AND batch_number='$batch[$i]' AND expiry_date='$expiry[$i]' AND stock_type='$ccc_id' AND facility_code='$facility';";
 			$sql .= "INSERT INTO drug_cons_balance(drug_id,stock_type,period,facility,amount,ccc_store_sp) VALUES('$drugs[$i]','$ccc_id','$period','$facility','$quantity[$i]','$ccc_id') ON DUPLICATE KEY UPDATE amount=amount+'$quantity[$i]';";
-			$sql .= "UPDATE patient p    JOIN patient_visit pv on p.patient_number_ccc = pv.patient_id JOIN drugcode dc on  pv.drug_id = dc.id SET p.isoniazid_start_date  = pv.dispensing_date , p.isoniazid_end_date = pv.dispensing_date + INTERVAL 168 DAY WHERE dc.drug LIKE '%iso%'  and p.isoniazid_start_date = '' AND pv.patient_id  = '$patient';";
+			$sql .= "UPDATE patient p JOIN patient_visit pv on p.patient_number_ccc = pv.patient_id JOIN drugcode dc on  pv.drug_id = dc.id SET p.isoniazid_start_date  = pv.dispensing_date , p.isoniazid_end_date = pv.dispensing_date + INTERVAL 168 DAY, drug_prophylaxis = concat(drug_prophylaxis ,',',(select id from drug_prophylaxis where  name like '%iso%')) WHERE dc.drug LIKE '%iso%'  and p.isoniazid_start_date = '' AND pv.patient_id  = '$patient';";
 
 
 		}
