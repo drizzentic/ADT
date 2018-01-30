@@ -490,7 +490,7 @@ AND  r.regimen_code LIKE '%oi%'
 		$adult_age = $get_adult_age_sql -> result_array()[0]['adult_age'];
 
 		if ($age < $adult_age){
-			$sql = "select drug_id as id,Name as dose from dossing_chart d  inner join dose do on do.id=d.dose_id 
+			$sql = "select drug_id as id,Name as dose,frequency as freq,value from dossing_chart d  inner join dose do on do.id=d.dose_id 
 			where min_weight <= $weight
 			and max_weight >= $weight
 			and drug_id=$drug_id
@@ -499,7 +499,7 @@ AND  r.regimen_code LIKE '%oi%'
 			$dose_array = $get_dose_sql -> result_array();
 		}
 		if (empty($dose_array) || $age > $adult_age){
-			$get_doses_sql = $this -> db -> query("SELECT id,dose FROM drugcode where id='$drug_id'");
+			$get_doses_sql = $this -> db -> query("SELECT id,dose,frequency as freq,value FROM drugcode where id='$drug_id'");
 			$doses_array = $get_doses_sql -> result_array();
 			$dose_array = $doses_array;
 		}
