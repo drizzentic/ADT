@@ -6519,7 +6519,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		//Default data
 			$main_data = $params[$report_name][$report_filter]['data_array'];
 		//Filters
-			$column_filter = $report_filter+'_adherence';
+			$column_filter = 'missed_pill_adherence';
 			$select_filter = $params[$report_name][$report_filter]['select_filter'];
 			$group_filter = $params[$report_name][$report_filter]['group_filter'];
 
@@ -6539,7 +6539,6 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			WHEN $column_filter >= 80 AND $column_filter < 91 THEN '80-90'
 			ELSE '<80' END
 			$group_filter";
-
 			$results = $this ->db ->query($sql) -> result_array();
 			if($results)
 			{
