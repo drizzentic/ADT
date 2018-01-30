@@ -32,6 +32,11 @@ class Generic_name extends Doctrine_Record {
 		$drugcodes = $query -> execute();
 		return $drugcodes[0];
 	}
+	public static function getGenericByName($name) {
+		$query = Doctrine_Query::create() -> select("*") -> from("generic_name") -> where("name = '$name'");
+		$drugcodes = $query -> execute();
+		return $drugcodes[0];
+	}
 
 	public function getAllActive() {
 		$query = Doctrine_Query::create() -> select("Id,Name") -> from("generic_name")->where("Active=1");
