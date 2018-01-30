@@ -654,6 +654,7 @@ if($table){
 			});
 			//Get lower access_levels
 			var accessURL = base_url + "settings_management/getActiveAccessLevels";
+		    		$("#access_level").empty();
 			$.getJSON(accessURL, function(levels){
 				$.each(levels, function(i, level){
 		    		$("#access_level").append($("<option></option>").attr("value",level.id).text(level.level_name));
