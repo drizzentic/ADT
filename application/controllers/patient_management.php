@@ -850,6 +850,12 @@ class Patient_management extends MY_Controller {
         $this -> session -> set_userdata('msg_save_transaction', 'success');
         $this -> session -> set_userdata('user_updated', $this -> input -> post('first_name'));
 
+        if ($this->api && $this->patient_module){
+            // post to IL via API
+            file_get_contents(base_url().'tools/api/getPatient/'.$record_id.'/EDIT');
+            // /> POST TO IL VIA API
+        }
+
         redirect("patient_management/load_view/details/$record_id");
     }
 
