@@ -109,7 +109,7 @@ $(function(){
 });
 
 function getPatientData(url){
-	var checkbox = ["sms_consent", "disclosure"];
+	var checkbox = ["sms_consent", "disclosure","differentiated_care"];
 	var multiselect = ["fplan","other_illnesses","drug_allergies","drug_prophylaxis"];
 
 	//Get JSON data for patient details page
