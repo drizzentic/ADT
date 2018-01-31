@@ -146,8 +146,16 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row-fluid">
+                    <div class="span2 dispensing-field">
+                        <div class="control-group">
+                            <label><span class='astericks'>*</span>Differentiated care?</label>
+                            <input  type="checkbox" name="differentiated_care" id="differentiated_care"  class="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid clinical_appointment_input" style="display:none;">
                     <div class="span6 dispensing-field">
                         <div class="control-group">
                             <label><span class='astericks'>*</span>Days to Next Clinical Appointment</label>
@@ -327,11 +335,11 @@
                         </td>
                         <td><select name="batch[]" class="batch input-small next_pill span2"></select></td>
                         <td>
-                            <input type="text" name="expiry[]" name="expiry" class="expiry input-small" id="expiry_date" readonly="" size="15"/>
+                            <input type="text" name="expiry[]" name="expiry" class="expiry input-small expiry_date" readonly="" size="15"/>
                         </td>
                         <td class="dose_col">
                            <!-- <select name="dose[]" class="next_pill input-small dose  span2"></select></td>-->
-                           <input  name="dose[]" list="dose" id="doselist" class="input-small next_pill dose icondose"> 
+                           <input  name="dose[]" list="dose" class="input-small next_pill dose icondose doselist"> 
                            <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist> 
                        </td>
                        <td>
@@ -344,9 +352,9 @@
                         <input type="number" name="duration[]" class="duration input-small" />
                     </td>
                     <td>
-                        <input type="number" name="qty_disp[]" class="qty_disp input-small next_pill validate[requireds]"  id="qty_disp"/>
+                        <input type="number" name="qty_disp[]" id="qty_disp" class="qty_disp input-small next_pill validate[requireds]"  />
                         <td>
-                            <input type="text" name="soh[]" class="soh input-small" id="soh" readonly="readonly"/>
+                            <input type="text" name="soh[]" id="soh" class="soh input-small"  readonly="readonly"/>
                         </td>
                     </td>
                     <!--                        <td><select name="brand[]" class="brand input-small"></select></td>-->
@@ -624,7 +632,7 @@
                     var drug_name = row.closest("tr").find(".drug option[value='" + drug_id + "']").text();
                     var drug_unit = row.closest("tr").find(".unit").val();
                     var expiry_date = row.closest("tr").find(".expiry").val();
-                    var val = row.closest("tr").find('#doselist').val();
+                    var val = row.closest("tr").find('.doselist').val();
                     var dose_value = row.closest("tr").find('.dose option').filter(function() {
                         return this.value == val;
                     }).data('dose_val');
@@ -1004,6 +1012,17 @@
 
     });
 
+    $('#differentiated_care').click(function(event) {
+        if ($(this).is(":checked"))
+        {
+          $(".clinical_appointment_input").show();
+          validateAppointments();
+      }
+      else
+      {
+          $(".clinical_appointment_input").hide();
+      }
+  });
 
     // on change weight, sort doses.
     $('#weight').change(function() {
@@ -1309,7 +1328,7 @@ request.fail(function(jqXHR, textStatus) {
     function duration_quantity(row){
         var duration = row.closest("tr").find(".duration").val();
         if(duration > 0){
-            var val = row.closest("tr").find('#doselist').val();
+            var val = row.closest("tr").find('.doselist').val();
             var dose_val = row.closest("tr").find('.dose option').filter(function() {
                 return this.value == val;
             }).data('dose_val');
@@ -1331,7 +1350,7 @@ request.fail(function(jqXHR, textStatus) {
     function validateAppointments() {
         var days_to_next_clinical = $("#days_to_next_clinical").attr("value");
         var days = $("#days_to_next").attr("value");
-        if(parseInt(days)>parseInt(days_to_next_clinical)){
+        if(parseInt(days)>parseInt(days_to_next_clinical) && $('#differentiated_care').is(":checked")) {
             setClinicalAppointment(days);
             alert('Pharmacy appointments must be on or before clinical appointment.');
         }
@@ -2041,7 +2060,7 @@ request.fail(function(jqXHR, textStatus) {
         $(".expiry").val('');
         $(".dose").val('');
         $(".dose option").remove();
-        $("#doselist").val('');
+        $(".doselist").val('');
         $(".pill_count ").val('');
         $(".next_pill_count ").val('');
         $(".duration").val('');

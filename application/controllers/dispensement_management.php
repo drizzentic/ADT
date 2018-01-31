@@ -597,6 +597,7 @@ AND  r.regimen_code LIKE '%oi%'
 		$record_no = $this -> session -> userdata('record_no');
 		$patient_name= $this -> input -> post("patient_details");
 		$next_appointment_date = $this -> input -> post("next_appointment_date");
+		$differentiated_care = ($this -> input -> post("differentiated_care")) ? 1 : 0 ;
 		$next_clinical_appointment_date = $this -> input -> post("next_clinical_appointment_date");
 		$next_clinical_appointment = $this -> input -> post("next_clinical_appointment");
 		$prescription = $this -> input -> post("prescription")+0;
@@ -654,6 +655,19 @@ AND  r.regimen_code LIKE '%oi%'
 			$sql="UPDATE patient SET service='$service' WHERE service='$patient_service' AND patient_number_ccc='$patient';";
 			$this->db->query($sql);
 		}
+
+		if(!$differentiated_care){
+			$next_clinical_appointment_date = $next_appointment_date;
+			$sql="UPDATE patient SET differentiated_care=0 WHERE patient_number_ccc='$patient';";
+			$this->db->query($sql);
+		}
+
+		if($differentiated_care ==1){
+			$sql="UPDATE patient SET differentiated_care=1 WHERE patient_number_ccc='$patient';";
+			$this->db->query($sql);
+		}
+
+
         //end update service type
 		//echo var_dump($dose);die();
 		
