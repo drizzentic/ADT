@@ -1076,7 +1076,7 @@ class Report_management extends MY_Controller {
 		COUNT(*) as on_art_12mths FROM vw_patient_list
 		WHERE current_status LIKE '%active%'
 		AND service LIKE '%art%' or service LIKE '%pmtct%'
-		AND 	start_regimen_date >= '$period_start'
+		AND 	start_regimen_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
 		AND 	start_regimen_date <= '$period_end'
 		";
 		$query = $this -> db -> query($sql);
@@ -1088,7 +1088,7 @@ class Report_management extends MY_Controller {
 		COUNT(*) as net_cohort_12mths FROM vw_patient_list
 		WHERE lower(current_status) LIKE '%active%' OR lower(current_status) LIKE '%transfer out%'
 		AND service LIKE '%art%' or service LIKE '%pmtct%'
-		AND 	start_regimen_date >= '$period_start'
+		AND 	start_regimen_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
 		AND 	start_regimen_date <= '$period_end'
 		";
 		$query = $this -> db -> query($sql);
@@ -1100,7 +1100,7 @@ class Report_management extends MY_Controller {
 		$sql = "SELECT 
 		COUNT(*) as viral_load_1000_12mths FROM patient_viral_load
 		WHERE result <= '1000'	OR `result` = '< LDL copies/ml'
-		AND	 	test_date  >= '$period_start'
+		AND 	test_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
 		AND 	test_date  <= '$period_end'
 		";
 		$query = $this -> db -> query($sql);
@@ -1111,15 +1111,12 @@ class Report_management extends MY_Controller {
 
 
 		$sql = "SELECT COUNT(*) as viral_load_result_12mths FROM patient_viral_load
-		WHERE  	test_date  >= '$period_start'
+		WHERE  	test_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
 		AND 	test_date  <= '$period_end'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array()[0];
 
 		$viral_load_result_12mths = $results['viral_load_result_12mths'];
-
-
-
 
 		$data['D81'] = $on_art_12mths;
 		$data['D82'] = $net_cohort_12mths;
@@ -1254,7 +1251,6 @@ class Report_management extends MY_Controller {
 		COUNT(*) as prep_current FROM vw_patient_list
 		WHERE lower(current_status) LIKE '%active%' 
 		AND	 lower(service) like '%prep%'
-		AND 	start_regimen_date >= '$period_start'
 		AND 	start_regimen_date <= '$period_end'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array()[0];
@@ -1262,11 +1258,13 @@ class Report_management extends MY_Controller {
 
 
 		$sql = "SELECT 
-		COUNT(*) as prep_start_new FROM vw_patient_list
+		COUNT(*) as prep_stopped FROM vw_patient_list
 		WHERE lower(service) like '%prep%'
 		AND lower(current_status) NOT LIKE '%active%'
-		AND	 	status_change_date  >= '$period_start'
-		AND 	status_change_date  <= '$period_end'";
+		AND current_status in (select id from patient_status where Name LIKE '%Stopped %' OR Name LIKE '%lost%')
+		AND 	status_change_date >= '$period_start'
+		AND 	status_change_date  <= '$period_end'
+		";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array()[0];
 		$prep_stopped = $results['prep_stopped'];
