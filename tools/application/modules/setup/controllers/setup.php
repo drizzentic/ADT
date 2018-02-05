@@ -16,26 +16,32 @@ class Setup extends MX_Controller {
 	}
 
 	public function initialize(){
+		// @todo find old code from users table
+
+
 		//Get mflcode
 		$mflcode = $this->input->post('facility', TRUE);
 		//Get database config
 		$CI = &get_instance();
 		$CI -> load -> database();
+
+		$sql = "SELECT Facility_Code from users limit 1";
+		$result = $CI->db->query($sql);
+		$old_facility_code = $result->result_array()[0]['Facility_Code'];
+
 		//Update all users to mflcode
 		$sql = "
-		UPDATE facilities SET facilitycode = $mflcode ;
-		UPDATE users SET Facility_Code = $mflcode ;
-		UPDATE drug_stock_movement SET facility = $mflcode ;
-		UPDATE drug_stock_movement SET source = $mflcode ;
-		UPDATE drug_stock_movement SET destination = $mflcode ;
-		UPDATE drug_cons_balance set facility = $mflcode ;
-		UPDATE drug_stock_balance set facility_code = $mflcode;
-		UPDATE patient SET facility_code = $mflcode ;
-		UPDATE patient_visit SET facility = $mflcode ;
-		UPDATE patient_appointment SET facility = $mflcode ;
-		UPDATE clinic_appointment SET facility = $mflcode ;
+			UPDATE users SET Facility_Code = $mflcode  WHERE Facility_Code = $old_facility_code;
+			UPDATE drug_stock_movement SET facility = $mflcode  WHERE facility = $old_facility_code;
+			UPDATE drug_stock_movement SET source = $mflcode  WHERE source = $old_facility_code;
+			UPDATE drug_stock_movement SET destination = $mflcode  WHERE destination = $old_facility_code;
+			UPDATE patient SET facility_code = $mflcode  WHERE facility_code = $old_facility_code;
+			UPDATE patient_visit SET facility = $mflcode  WHERE facility = $old_facility_code;
+			UPDATE patient_appointment SET facility = $mflcode  WHERE facility = $old_facility_code;
+			UPDATE clinic_appointment SET facility = $mflcode  WHERE facility = $old_facility_code;
+			UPDATE drug_cons_balance set facility = $mflcode where facility = $old_facility_code ;
+			UPDATE drug_stock_balance set facility_code = $mflcode where facility_code = $old_facility_code; 
 		";
-		
 		$CI->db->query($sql);
 		//Redirect with message
 		$message = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Success!</strong> Facility initialized to MFLCODE: '.$mflcode.'</div>';

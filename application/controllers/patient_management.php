@@ -558,6 +558,7 @@ class Patient_management extends MY_Controller {
         $new_patient -> SMS_Consent = $this -> input -> post('sms_consent', TRUE);
         $new_patient -> Physical = $this -> input -> post('physical', TRUE);
         $new_patient -> Alternate = $this -> input -> post('alternate', TRUE);
+        $new_patient -> differentiated_care = $this -> input -> post('differentiated_care', TRUE);
 
 
         //Patient History
@@ -789,6 +790,7 @@ class Patient_management extends MY_Controller {
             'Partner_Status' => $this -> input -> post('partner_status', TRUE),
             'Disclosure' => $this -> input -> post('disclosure', TRUE),
             'Fplan' => $family_planning,
+            'differentiated_care' => $this -> input -> post('differentiated_care', TRUE),
             'clinicalappointment' => $this -> input -> post('next_clinical_appointment_date', TRUE),
             'breastfeeding' => $this -> input -> post('breastfeeding', TRUE),
             'Other_Illnesses' => $other_illness_listing,
@@ -1785,6 +1787,7 @@ class Patient_management extends MY_Controller {
             'p.Endphase AS endphase',
             'p.NextAppointment AS nextappointment',
             'p.clinicalappointment AS nextappointment_clinical',
+            'p.differentiated_care AS differentiated_care',
             'DATEDIFF(p.clinicalappointment,CURDATE()) AS days_to_next_clinical',
             'DATEDIFF(p.NextAppointment,CURDATE()) AS days_to_next',
             'p.Date_Enrolled AS date_enrolled',
