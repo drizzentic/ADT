@@ -150,7 +150,7 @@
                 <div class="row-fluid">
                     <div class="span2 dispensing-field">
                         <div class="control-group">
-                            <label><span class='astericks'>*</span>Differentiated care?</label>
+                            <label>Differentiated care?</label>
                             <input  type="checkbox" name="differentiated_care" id="differentiated_care"  class="">
                         </div>
                     </div>
