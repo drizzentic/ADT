@@ -644,7 +644,7 @@
                     var duration = row.find(".duration").val();
                     var qty = row.find(".qty_disp ").val();
                     var dose_hours = (24 / (dose_value * dose_frequency));
-                    dose_frequency
+                    console.log(dose_frequency)
                     switch (dose_frequency) {
                         case 1:
                         dose_frequency = "once";
@@ -700,8 +700,10 @@
                             <div class="span12">\
                             <label class="inline">\
                             <input type="number" name="print_dose_value[]" class="span1 label_dose_value" value="' + dose_value + '" required/>\
+                            <input type="hidden" name="print_drug_unit[]" class="span1 label_drug_unit" value="' + drug_unit + '"/>\
                             '+drug_unit+' to be taken\
                             '+ dose_frequency + ' a day after every\
+                            <input type="hidden" name="print_dose_frequency[]" class="span1 label_dose_frequency" value="' + dose_frequency + '"/>\
                             <input type="number" name="print_dose_hours[]" class="span1 label_hours" value="' + dose_hours + '" required/> hours\
                             </label>\
                             </div>\
@@ -1199,7 +1201,6 @@
                                 });
                                 request_one_dose.done(function(data_single_dose) {
                                     var current_dose = data_single_dose[0].dose;
-                                    console.log(current_dose)
                                     row.closest("tr").find(".dose option").remove();
                                     $.each(data, function(key, value) {
                                         row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
