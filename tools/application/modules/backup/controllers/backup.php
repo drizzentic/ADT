@@ -51,7 +51,7 @@ class Backup extends MX_Controller {
 		// echo "<pre>";		print_r($data['remote_files']);		print_r($files);die;
 		if (!is_array($data['remote_files'])){$data['ftp_status'] = "$('.alert').addClass('alert-danger');$('.alert').text('Cannot connect to remote server');$('.alert').show();$('.upload').attr('disabled',true);";}
 		// foreach ($files as $key => $file) {
-		for ($key=0; $key <count($files)-2 ; $key++) { 
+		for ($key=0; $key <6 ; $key++) { 
 			if ($files[$key] == 'downloads'){continue;}
 			if ($files[$key] == '.gitkeep'){continue;}
 			if (in_array($remote_dir.$files[$key], $data['remote_files'])){
