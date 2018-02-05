@@ -2,16 +2,30 @@ ADT
 ================================
 This is an ARV Dispensing Tool.
 
-Version 3.2.3 02/01/2018 (Latest)
+Version 3.3 06/02/2018 (Latest)
 ==============================================
+- Added: From the admin side need to have ability to add new user category and define their user right
 - Added: New MOH 731 template
 - Added: Patients scheduled to visit on differentiated care report
 - Added: When installing to a new facility how to set up MFL code. Initial setup (facility, users, drugs)
 - Added: Adverse drug reaction form for the health care worker to fill and submit as PDF
 - Added: Generation of the S11 PDF when issuing stock transactions 
 - Added: Create and Encrypt the backup files
+- Added: Access to viral load data using encryption(https)
+- Added: Changed ordering templates from .xlsx to .xls for compatibility with KEMSA upload
+- Added: On patient record, on partner status need to include unknown. For Discordant to have ability link to their partner in the system.
+- Added: Partner status should be required and option "select one" as default not "no partner"
+- Added: In entering new patient record and an error pops out, you can only reload consequently losing all the data one has entered
+- Added: Instead of body surface area that people are not familiar with, why don't we use BMI
+- Added: Update the patient master list to include new features like PREP reasons, PEP reasons and other new features
+- Added: HL7 Interoperability layer to allow communication with EMRS and sharing of services such as registration, appointments
 - Fixed: No duplication in specific settings
 - Fixed: When migrating on EDITT point to the last regimen dispensed instead of the current regimen in the patient table
+- Fixed: When dispensing remove ability to select the stores and autoselect store for user logged in
+- Fixed: Make current_weight mandatory, shouldn't auto-populate from previous data
+- Fixed: Viral load notification display errors
+- Fixed: When you select prep service Prophylaxis should not pop out, edit page
+- Fixed: When PREP is not selected PREP Reason, Test Question, Test Date and Test Result should not be shown
 
 Version 3.2.2 22/06/2017
 ==============================================
