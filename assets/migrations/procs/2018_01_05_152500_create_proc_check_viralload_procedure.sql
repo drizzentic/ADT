@@ -1,7 +1,7 @@
-DROP PROCEDURE proc_check_viralload;
+DROP PROCEDURE IF EXISTS  proc_check_viralload;
 
 DELIMITER $$
-CREATE PROCEDURE IF NOT EXISTS proc_check_viralload(
+CREATE PROCEDURE proc_check_viralload(
 
 	IN in_test_number INT,
 	IN in_ccc_number VARCHAR(30), 
