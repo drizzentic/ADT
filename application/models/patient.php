@@ -51,6 +51,7 @@ class Patient extends Doctrine_Record {
 		$this -> hasColumn('Current_Regimen_Merged_From', 'varchar', 20);
 		$this -> hasColumn('NextAppointment', 'varchar', 20);
 		$this -> hasColumn('clinicalappointment', 'varchar', 20);
+		$this -> hasColumn('differentiated_care', 'int', 1);
 		$this -> hasColumn('Start_Height', 'varchar', 20);
 		$this -> hasColumn('Start_Weight', 'varchar', 20);
 		$this -> hasColumn('Start_Bsa', 'varchar', 20);

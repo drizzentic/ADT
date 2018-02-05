@@ -631,6 +631,7 @@
                 if (drug_id != null) {
                     var drug_name = row.closest("tr").find(".drug option[value='" + drug_id + "']").text();
                     var drug_unit = row.closest("tr").find(".unit").val();
+                    if (drug_unit.toLowerCase()  == 'bottle') {drug_unit = 'ml';}
                     var expiry_date = row.closest("tr").find(".expiry").val();
                     var val = row.closest("tr").find('.doselist').val();
                     var dose_value = row.closest("tr").find('.dose option').filter(function() {
@@ -642,6 +643,23 @@
                     var duration = row.find(".duration").val();
                     var qty = row.find(".qty_disp ").val();
                     var dose_hours = (24 / (dose_value * dose_frequency));
+                    dose_frequency
+                    switch (dose_frequency) {
+                        case 1:
+                        dose_frequency = "once";
+                        break;
+                        case 2:
+                        dose_frequency = "twice";
+                        break;
+                        case 3:
+                        dose_frequency = "Thrice";
+                        break;
+                        case 4:
+                        dose_frequency = "4 times";
+                        break;
+                        case 5:
+                        day = "";
+                    }
                     var patient_name = $('#patient_details').val();
                     //get instructions
                     var base_url = "<?php echo base_url(); ?>";
@@ -680,9 +698,9 @@
                             <div class="row-fluid">\
                             <div class="span12">\
                             <label class="inline">\
-                            Tablets/Capsules:\
-                            <input type="number" name="print_dose_value[]" class="span1 label_dose_value" value="' + dose_value + '" required/> to be taken\
-                            <input type="number" name="print_dose_frequency[]" class="span1 label_dose_frequency" value="' + dose_frequency + '" required/> times a day after every\
+                            <input type="number" name="print_dose_value[]" class="span1 label_dose_value" value="' + dose_value + '" required/>\
+                            '+drug_unit+' to be taken\
+                            '+ dose_frequency + ' a day after every\
                             <input type="number" name="print_dose_hours[]" class="span1 label_hours" value="' + dose_hours + '" required/> hours\
                             </label>\
                             </div>\
@@ -1317,7 +1335,7 @@ request.fail(function(jqXHR, textStatus) {
         var dose_val = row.closest("tr").find(".dose option:selected").attr("dose_val");
         var dose_freq = row.closest("tr").find(".dose option:selected").attr("dose_freq");
     });
-    $(".duration").on('keyup', function() {
+    $(".duration").on('change', function() {
      duration_quantity($(this));
  });
     $(".dose").on('input', function() {

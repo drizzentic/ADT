@@ -352,7 +352,17 @@
 					<div class="span4">
 						<label> Days to Next Clinical Appointment</label>
 						<input  type="text"name="days_to_next_clinical" id="days_to_next_clinical" class="span12 red">
-					</div>								
+					</div>
+
+						<div class="span6">
+						<label> Differentiated care</label>
+						<label class="radio inline">
+							<input type="radio" name="differentiated_care" id="differentiated_care_yes" value="1"> Yes
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="differentiated_care" id="differentiated_care_no" value="0"> No
+						</label>
+					</div>
 				</div>
 			</fieldset>
 		</div>
