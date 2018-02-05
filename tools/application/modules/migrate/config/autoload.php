@@ -80,7 +80,7 @@ $autoload['helper'] = array('url','form');
 |
 */
 
-$autoload['config'] = array('migrator_config','edit_migrator_config');
+$autoload['config'] = array('migrator_config');
 
 
 /*

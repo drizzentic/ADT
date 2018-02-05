@@ -990,6 +990,7 @@ AND  r.regimen_code LIKE '%oi%'
 		$no_to_print=$this->input->post("print_count");
 		$drug_name=$this->input->post("print_drug_name");
 		$qty=$this->input->post("print_qty");
+		$drug_unit=$this->input->post("print_drug_unit");
 		$dose_value=$this->input->post("print_dose_value");
 		$dose_frequency=$this->input->post("print_dose_frequency");
 		$dose_hours=$this->input->post("print_dose_hours");
@@ -1032,8 +1033,8 @@ AND  r.regimen_code LIKE '%oi%'
 						$str.='<td>Qty: <b>'.$qty[$counter].'</b></td>';
 						$str.='</tr>';
 						$str.='<tr>';
-						$str.='<td colspan="3">Tablets/Capsules: ';
-						$str.='<b>'.$dose_value[$counter].'</b> to be taken <b>'.$dose_frequency[$counter].'</b> times a day after every <b>'.$dose_hours[$counter].'</b> hours</td>';
+						$str.='<td colspan="3">';
+						$str.='<b>'.$dose_value[$counter].' '.$drug_unit[$counter].'</b> to be taken <b>'.$dose_frequency[$counter].'</b> a day after every <b>'.$dose_hours[$counter].'</b> hours</td>';
 						$str.='</tr>';
 						$str.='<tr>';
 						$str.='<td colspan="3">Before/After Meals: ';

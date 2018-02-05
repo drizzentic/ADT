@@ -44,6 +44,7 @@
         <textarea name="sql" id="sql" style="display:none;"></textarea>
         <input type="hidden" id="hidden_stock" name="hidden_stock"/>
         <input type="hidden" id="days_count" name="days_count"/>
+        <input type="hidden" id="age" name="age" value="<?php echo @$results[0]['age']; ?>"/>
         <input type="hidden" id="stock_type_text" name="stock_type_text" value="main pharmacy" />
         <input type="hidden" id="purpose_refill_text" name="purpose_refill_text" value="" />
         <input type="hidden" id="patient_source" name="patient_source" value="<?php echo @$result['patient_source']; ?>" />
@@ -643,7 +644,7 @@
                     var duration = row.find(".duration").val();
                     var qty = row.find(".qty_disp ").val();
                     var dose_hours = (24 / (dose_value * dose_frequency));
-                    dose_frequency
+                    console.log(dose_frequency)
                     switch (dose_frequency) {
                         case 1:
                         dose_frequency = "once";
@@ -699,8 +700,10 @@
                             <div class="span12">\
                             <label class="inline">\
                             <input type="number" name="print_dose_value[]" class="span1 label_dose_value" value="' + dose_value + '" required/>\
+                            <input type="hidden" name="print_drug_unit[]" class="span1 label_drug_unit" value="' + drug_unit + '"/>\
                             '+drug_unit+' to be taken\
                             '+ dose_frequency + ' a day after every\
+                            <input type="hidden" name="print_dose_frequency[]" class="span1 label_dose_frequency" value="' + dose_frequency + '"/>\
                             <input type="number" name="print_dose_hours[]" class="span1 label_hours" value="' + dose_hours + '" required/> hours\
                             </label>\
                             </div>\
@@ -1061,7 +1064,6 @@
             });
             request_one_dose.done(function(data_single_dose) {
                 var current_dose = data_single_dose[0].dose;
-                row.closest("tr").find(".dose option").remove();
                 row.closest("tr").find(".dose").val(current_dose);
             });
         });

@@ -14,7 +14,7 @@ $config['target_hostname'] = 'localhost';
 $config['target_port'] = 3306;
 $config['target_username'] = 'root';
 $config['target_password'] = 'root';
-$config['target_database'] = 'testadt2';
+$config['target_database'] = 'testadt';
 $config['target_driver'] = 'mysqli';
 
 /*Migration flags*/
