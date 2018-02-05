@@ -730,7 +730,7 @@ AND  r.regimen_code LIKE '%oi%'
 		if ($last_appointment_date) {
 			if ($last_appointment_date > $dispensing_date) {
 				//come early for appointment
-				$sql .= "update patient_appointment set appointment='$dispensing_date',machine_code='1' where patient='$patient' and appointment='$last_appointment_date';";
+				$sql .= "delete from patient_appointment where patient='$patient' and appointment='$last_appointment_date';";
 			}
 		}
 		$sql .= "insert into patient_appointment (patient,appointment,facility,clinical_appointment) values ('$patient','$next_appointment_date','$facility','$clinical_appointment_id');";
