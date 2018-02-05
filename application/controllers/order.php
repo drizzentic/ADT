@@ -2368,13 +2368,15 @@ class Order extends MY_Controller {
 			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'] - $row['adjustments_neg'];
         	$row['resupply'] = ($row['dispensed_to_patients'] * 3) - $row['physical_stock'];
         }
-
-        if($code == "F-CDRR_packs"){
-            foreach ($row as $i => $v) {
-				if ($i != "expiry_month" && $i != "dispensed_to_patients" && $i !="beginning_balance") {
-					$row[$i] = round(@$v / @$pack_size);
-				}
+        
+        //Convert all items from units to packs
+        foreach ($row as $i => $v) {
+			if ($i != "expiry_month" && $i !="beginning_balance") {
+				$row[$i] = round(@$v / @$pack_size);
 			}
+		}
+
+		if($code == "F-CDRR_packs"){
 			$row['dispensed_packs']=0;
 			if($row['dispensed_to_patients'] >0){
 			   $row['dispensed_packs']=round(@$row['dispensed_to_patients'] / @$pack_size);
@@ -2397,13 +2399,13 @@ class Order extends MY_Controller {
 		// $param = array('period_begin'=>'2017-05-01','drug_id'=>7,'facility_id'=>2408);
 		//we are checking for the physical count of this drug month before reporting period
 		$param['period_begin']=date('Y-m-d',strtotime($param['period_begin']."-$month month"));
-		$balance=Cdrr_Item::getLastPhysicalStock($param['period_begin'], $param['drug_id'], $param['facility_id']);
+		$balance=Cdrr_Item::getLastPhysicalStock($param['period_begin'], $param['drug_id'], $param['facility_id'], $param['code']);
 
 		if(!$balance && $month<3){
 
 			$date = date('Y-m-d',strtotime($param['period_begin']."-3 month"));
 			$sql  = " ( SELECT  count FROM cdrr_item ci, cdrr c WHERE drug_id = ".$param['drug_id']." and ci.cdrr_id = c.id 
-			 and c.facility_id = ".$param['facility_id']." and period_begin >= '$date' and c.status != 'deleted' 
+			 and c.facility_id = ".$param['facility_id']." and period_begin >= '$date' and c.code = '".$param['code']."' and c.status != 'deleted' 
 			 and c.status != 'prepared' ORDER BY `cdrr_id` desc limit 1) union (select 0 count) limit 1;";
 
 			$query = $this -> db -> query($sql);
