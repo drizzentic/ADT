@@ -42,7 +42,10 @@ class Setup extends MX_Controller {
 			UPDATE drug_cons_balance set facility = $mflcode where facility = $old_facility_code ;
 			UPDATE drug_stock_balance set facility_code = $mflcode where facility_code = $old_facility_code; 
 		";
-		$CI->db->query($sql);
+
+		foreach (explode(';', $sql) as $q) {
+		$CI->db->query($q);
+		}
 		//Redirect with message
 		$message = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Success!</strong> Facility initialized to MFLCODE: '.$mflcode.'</div>';
 		$this->session->set_flashdata('init_msg', $message);
