@@ -21,7 +21,7 @@ class Backup extends MX_Controller {
 	}
 
 	public function index() {
-
+		$backup_limit = 5;
 		$data['active_menu'] = 2;
 		$data['content_view'] = "backup/backup_v";
 		$data['title'] = "Dashboard | System Recovery";
@@ -32,14 +32,19 @@ class Backup extends MX_Controller {
 
 		$data['ftp_status'] = '';
 		
-		$files = scandir($dir, 1); // local backup files
+		$local_files = scandir($dir, 1); // local backup files
 
+		$exempted_files_dir = array('.','..','.gitkeep', 'downloads', 'testadt_new_site.sql.zip', 'testadt_access_editt.sql.zip');
 		$downloaded_backups = scandir($dir.'/downloads', 1); // downloaded files  -- for purposes of decryption
 
 		$data['remote_files'] = ($this->connect_ftp()) ? $this->list_remote_files() : false ; // fetch files from remote server
 		$CI = &get_instance();
 		$CI -> load -> database();
-
+		// pick facility code from database
+		$sql = "SELECT Facility_Code from users limit 1";
+		$result = $CI->db->query($sql);
+		$facility_code = $result->result_array()[0]['Facility_Code'];
+		$remote_dir = $this->ftp_root."$facility_code/";
 
 		// default backup files available on each ADT distribution
 		$default_backups =  array(
@@ -47,59 +52,47 @@ class Backup extends MX_Controller {
 			'testadt_new_site.sql.zip'
 		);
 
-		// pick facility code from database
-		$sql = "SELECT Facility_Code from users limit 1";
-		$result = $CI->db->query($sql);
-		$facility_code = $result->result_array()[0]['Facility_Code'];
-		$remote_dir = $this->ftp_root."$facility_code/";
-		
+		//Remove exempted files
+		foreach ($local_files as $index=> $object) {
+			if (in_array($object, $exempted_files_dir)) {
+				unset($local_files[$index]);
+			}else{
+				$local_files[$index] = $remote_dir.$object;
+			}
+		}
+		//Get all files both local and remote
+		$files = array_unique(array_merge_recursive($local_files, $data['remote_files']));
+
 		// table html string
 		$table = '<table id="dyn_table" class="table table-striped table-condensed table-bordered" cellspacing="0" width="100%">'; 
 		$table .= '<thead><th>backup</th>		<th>action</th>		<th>local</th>		<th>remote</th>		</thead>';
 		$table .= '<tbody>';
 
 		if (!is_array($data['remote_files'])){$data['ftp_status'] = "$('.alert').addClass('alert-danger');$('.alert').text('Cannot connect to remote server');$('.alert').show();$('.upload').attr('disabled',true);";}
-		// foreach ($files as $key => $file) {
-		for ($key=0; $key <6 ; $key++) { 
-			if ($files[$key] == 'downloads'){continue;} // skip downloads directory
-			if ($files[$key] == '.gitkeep'){continue;} // skip .gitkeep
-			if (in_array($remote_dir.$files[$key], $data['remote_files'])){
-
-				$table .='<tr><td>'.$files[$key].'</td>';
-				$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button></td>';
-				$table .='</td><td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
-				$table .='</tr>';
-			}elseif (in_array(basename($remote_dir.$files[$key]), $default_backups)) {
-				// skip 
-				continue;
-			}	
-			else{
-
-				$table .='<tr><td>'.$files[$key].'</td>';
-				$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button>
-				<button class="btn btn-info btn-sm upload" >Upload</button> </td>';
-				$table .='<td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"><img src="./public/assets/img/x-mark.png" height="20px"></td></tr>';
-				$table .='</tr>';
-			}
-
-		}
-		foreach ($data['remote_files'] as $key => $file) {
-			if (in_array(str_replace($remote_dir, '', $file), $files)){
-			}else{
-				// Files only found on remote server
-				if($key>4){break;} // breaks loop if finds only 5 files
-
-				$table .='<td>'.str_replace("/backups/".$facility_code."/", "", $file).'</td>';
-				$table .='<td><button class="btn btn-warning btn-sm download" >Download</button> </td>';
-				$table .='<td align="center"><img src="./public/assets/img/x-mark.png" height="20px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
-				$table .='</tr>';
-
+		foreach ($files as $key => $file) {
+			if($key < $backup_limit){
+				if (in_array($file, $data['remote_files'])){
+					$table .='<tr><td>'.basename($file).'</td>';
+					$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button></td>';
+					$table .='</td><td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
+					$table .='</tr>';
+				}else if(!in_array($file, $local_files)){
+					$table .='<td>'.str_replace("/backups/".$facility_code."/", "", $file).'</td>';
+					$table .='<td><button class="btn btn-warning btn-sm download" >Download</button> </td>';
+					$table .='<td align="center"><img src="./public/assets/img/x-mark.png" height="20px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
+					$table .='</tr>';
+				}else{
+					$table .='<tr><td>'.basename($file).'</td>';
+					$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button>
+					<button class="btn btn-info btn-sm upload" >Upload</button> </td>';
+					$table .='<td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"><img src="./public/assets/img/x-mark.png" height="20px"></td></tr>';
+					$table .='</tr>';
+				}
 			}
 		}
 
 		$table .='</tbody>';
 		$table .='</table>';
-		// echo $table;die;
 		$data['backup_files'] = $table;
 		$this -> template($data);
 	}
@@ -331,6 +324,7 @@ class Backup extends MX_Controller {
 			$this->ftp->mkdir($this->ftp_root.$facility_code.'/', 0755);
 		}
 		$uploaded_backups = $this->ftp->list_files($this->ftp_root.$facility_code.'/');
+		//return array_slice($uploaded_backups,0,5);
 		return $uploaded_backups;
 	}
 

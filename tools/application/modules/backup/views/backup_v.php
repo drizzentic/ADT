@@ -1,6 +1,7 @@
 <div class="external-content">
   <div class="container">
     <div class="row">
+
       <div class="col col-md-2">
         <form class="form-horizontal" id="backup_frm">
          <div class="form-group">
@@ -39,8 +40,10 @@
     $("td:contains('testadt_blank.sql.zip')").next().html('');
 
     $('#dyn_table').DataTable({
-      "order": [[ 0, "desc" ]]
-    } );
+      "bJQueryUI" : false,
+      "sPaginationType" : "full_numbers",
+      "aaSorting": [[0, 'desc']]
+    });
 
     $("#backup_frm").on('submit',function(e){
   		//disable button when submitted
