@@ -52,6 +52,7 @@ CREATE OR REPLACE VIEW vw_patient_list AS
         p.support_group AS support_group,
         r.regimen_desc AS current_regimen,
         p.nextappointment AS nextappointment,
+        p.clinicalappointment AS clinicalappointment,
         (TO_DAYS(p.nextappointment) - TO_DAYS(CURDATE())) AS days_to_nextappointment,
         p.start_height AS start_height,
         p.start_weight AS start_weight,
@@ -113,9 +114,9 @@ CREATE OR REPLACE VIEW vw_patient_list AS
                 patient_ccc_number = p.patient_number_ccc
             ORDER BY test_date DESC
             LIMIT 1) AS viral_load_test_results,
-        IF((p.nextappointment <= p.clinicalappointment),
+        IF((p.differentiated_care = 1),
             'differentiated',
-            IF((p.nextappointment = p.clinicalappointment),
+            IF((p.differentiated_care = 0),
                 'notdifferentiated',
                 'notdifferentiated')) AS differentiated_care_status
     FROM
