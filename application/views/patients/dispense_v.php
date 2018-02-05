@@ -44,6 +44,7 @@
         <textarea name="sql" id="sql" style="display:none;"></textarea>
         <input type="hidden" id="hidden_stock" name="hidden_stock"/>
         <input type="hidden" id="days_count" name="days_count"/>
+        <input type="hidden" id="age" name="age" value="<?php echo @$results[0]['age']; ?>"/>
         <input type="hidden" id="stock_type_text" name="stock_type_text" value="main pharmacy" />
         <input type="hidden" id="purpose_refill_text" name="purpose_refill_text" value="" />
         <input type="hidden" id="patient_source" name="patient_source" value="<?php echo @$result['patient_source']; ?>" />
@@ -1061,7 +1062,6 @@
             });
             request_one_dose.done(function(data_single_dose) {
                 var current_dose = data_single_dose[0].dose;
-                row.closest("tr").find(".dose option").remove();
                 row.closest("tr").find(".dose").val(current_dose);
             });
         });
@@ -1199,6 +1199,7 @@
                                 });
                                 request_one_dose.done(function(data_single_dose) {
                                     var current_dose = data_single_dose[0].dose;
+                                    console.log(current_dose)
                                     row.closest("tr").find(".dose option").remove();
                                     $.each(data, function(key, value) {
                                         row.closest("tr").find(".dose").append("<option value='" + value.Name + "'  data-dose_val='" + value.value + "' data-dose_freq='" + value.frequency + "' >" + value.Name + "</option> ");
