@@ -72,13 +72,12 @@ class Backup extends MX_Controller {
 				$table .='</tr>';
 			}
 
-
-
 		}
 		foreach ($data['remote_files'] as $key => $file) {
 			if (in_array(str_replace($remote_dir, '', $file), $files)){
 			}else{
 				// Files only found on remote server
+				if($key>4){break;}
 
 				$table .='<td>'.str_replace("/backups/".$facility_code."/", "", $file).'</td>';
 				$table .='<td><button class="btn btn-warning btn-sm download" >Download</button> </td>';
