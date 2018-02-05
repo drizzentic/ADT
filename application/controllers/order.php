@@ -1820,11 +1820,11 @@ class Order extends MY_Controller {
 	public function getoiPatients() {
 		$facility_code = $this -> session -> userdata("facility");
 		
-		$sql = "SELECT FLOOR(DATEDIFF(CURRENT_DATE,dob)/365) AS age
-		,drug_prophylaxis
-		        FROM patient 
-		        WHERE  current_status=1 AND
-				(drug_prophylaxis=1 OR drug_prophylaxis=2 OR drug_prophylaxis=3 OR drug_prophylaxis=4)";
+		$sql = "SELECT FLOOR(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
+		        FROM patient p
+		        LEFT JOIN patient_status ps ON ps.id = p.current_status
+		        WHERE ps.Name LIKE '%active%'
+		        AND drug_prophylaxis IN ('1', '2', '3', '4')";
 		$query = $this ->db->query($sql);
 		$results = $query->result_array();
 		$x=0;
