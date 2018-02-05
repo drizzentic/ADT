@@ -2114,7 +2114,7 @@ class Patient_management extends MY_Controller {
         $medical_cond = 'p.patient_number_ccc as ccc_no,';
 
         if  ($medical_number ==  '1'){
-        $medical_cond = 'p.medical_record_number,';
+        $medical_cond = 'p.medical_record_number,p.patient_number_ccc as ccc_no,';
         $contact_sql = "";
         }
 

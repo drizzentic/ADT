@@ -55,6 +55,7 @@
                         <tr>
 							<?php if($medical_number == '1'){ ?>
 							<th>Medical Number</th>
+							<th>CCC No</th>
 							<?php }else {?>
 							<th>CCC No</th>
 							<?php } ?>
@@ -72,6 +73,7 @@
 	                    <tr>
 							<?php if($medical_number == '1'){ ?>
 							<th>Medical Number</th>
+							<th>CCC No</th>
 							<?php }else {?>
 							<th>CCC No</th>
 							<?php } ?>
