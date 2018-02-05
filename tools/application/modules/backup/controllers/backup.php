@@ -45,22 +45,6 @@ class Backup extends MX_Controller {
 		$facility_code = $result->result_array()[0]['Facility_Code'];
 		$remote_dir = $this->ftp_root."$facility_code/";
 		
-		// ============ deactivated backup encryption-decryption
-
-		// decrypt_backups
-		// if(count($downloaded_backups)>3){
-
-		// 	foreach ($downloaded_backups as $key => $db) {
-		// 		if(strlen($db)<3){continue;}
-		// 		if ($db == '.gitkeep'){continue;}
-
-		// 		$this->decrypt_backup($dir.'/downloads/'.$db);
-		// 		$this->delete_file($dir.'/downloads/'.$db);}
-		// 		redirect('backup');
-		// 	}
-
-		// ============ deactivated backup encryption-decryption
-
 		$table = '<table id="dyn_table" class="table table-striped table-condensed table-bordered" cellspacing="0" width="100%">';
 		$table .= '<thead><th>backup</th>		<th>action</th>		<th>local</th>		<th>remote</th>		</thead>';
 		$table .= '<tbody>';
@@ -77,10 +61,7 @@ class Backup extends MX_Controller {
 				$table .='</td><td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
 				$table .='</tr>';
 			}elseif (in_array(basename($remote_dir.$files[$key]), $default_backups)) {
-				$table .='<tr><td>'.$files[$key].'</td>';
-				$table .='<td>-</td>';
-				$table .='<td align="center">-</td><td align="center">-</td></tr>';
-				$table .='</tr>';
+				continue;
 			}	
 			else{
 
