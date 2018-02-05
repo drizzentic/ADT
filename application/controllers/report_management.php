@@ -6517,7 +6517,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		//Default data
 			$main_data = $params[$report_name][$report_filter]['data_array'];
 		//Filters
-			$column_filter = 'missed_pill_adherence';
+			$column_filter = $report_name.'_adherence';
 			$select_filter = $params[$report_name][$report_filter]['select_filter'];
 			$group_filter = $params[$report_name][$report_filter]['group_filter'];
 
