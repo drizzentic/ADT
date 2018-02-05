@@ -42,12 +42,14 @@ LEFT JOIN regimen r ON r.id = p.start_regimen_id
 LEFT JOIN patient_status pas ON pas.id=p.patient_status_id
 LEFT JOIN facility f ON f.id = p.from_facility_id
 LEFT JOIN (
-	SELECT patient_id, MAX(next_appointment_date) as next_appointment_date ,rc.code
-	FROM visit 
-	LEFT JOIN regimen rc
-	ON rc.id = visit.regimen_id 
-	WHERE next_appointment_date IS NOT NULL
-	GROUP BY patient_id
+	SELECT v.patient_id, DATE(v.next_appointment_date) next_appointment_date, rc.code
+	FROM visit v 
+	INNER JOIN (
+		SELECT patient_id, MAX(start_date) start_date 
+		FROM visit 
+		GROUP BY patient_id
+	) mx ON mx.patient_id = v.patient_id AND mx.start_date = v.start_date
+	INNER JOIN regimen rc ON rc.id = v.regimen_id
 ) v ON v.patient_id = p.id
 WHERE p.{migration_flag_column} = {migration_flag_default}
 GROUP BY p.id
