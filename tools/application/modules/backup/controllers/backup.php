@@ -27,40 +27,50 @@ class Backup extends MX_Controller {
 		$data['title'] = "Dashboard | System Recovery";
 		$dir = $this -> backup_dir;
 
+		// run backup tasks on pageload
 		$this->backup_tasks();
+
 		$data['ftp_status'] = '';
-		$files = scandir($dir, 1);
-		$downloaded_backups = scandir($dir.'/downloads', 1);
-		$data['remote_files'] = ($this->connect_ftp()) ? $this->list_remote_files() : false ;
+		
+		$files = scandir($dir, 1); // local backup files
+
+		$downloaded_backups = scandir($dir.'/downloads', 1); // downloaded files  -- for purposes of decryption
+
+		$data['remote_files'] = ($this->connect_ftp()) ? $this->list_remote_files() : false ; // fetch files from remote server
 		$CI = &get_instance();
 		$CI -> load -> database();
 
+
+		// default backup files available on each ADT distribution
 		$default_backups =  array(
 			'testadt_access_editt.sql.zip',
 			'testadt_new_site.sql.zip'
 		);
 
+		// pick facility code from database
 		$sql = "SELECT Facility_Code from users limit 1";
 		$result = $CI->db->query($sql);
 		$facility_code = $result->result_array()[0]['Facility_Code'];
 		$remote_dir = $this->ftp_root."$facility_code/";
 		
-		$table = '<table id="dyn_table" class="table table-striped table-condensed table-bordered" cellspacing="0" width="100%">';
+		// table html string
+		$table = '<table id="dyn_table" class="table table-striped table-condensed table-bordered" cellspacing="0" width="100%">'; 
 		$table .= '<thead><th>backup</th>		<th>action</th>		<th>local</th>		<th>remote</th>		</thead>';
 		$table .= '<tbody>';
-		// echo "<pre>";		print_r($data['remote_files']);		print_r($files);die;
+
 		if (!is_array($data['remote_files'])){$data['ftp_status'] = "$('.alert').addClass('alert-danger');$('.alert').text('Cannot connect to remote server');$('.alert').show();$('.upload').attr('disabled',true);";}
 		// foreach ($files as $key => $file) {
 		for ($key=0; $key <6 ; $key++) { 
-			if ($files[$key] == 'downloads'){continue;}
-			if ($files[$key] == '.gitkeep'){continue;}
+			if ($files[$key] == 'downloads'){continue;} // skip downloads directory
+			if ($files[$key] == '.gitkeep'){continue;} // skip .gitkeep
 			if (in_array($remote_dir.$files[$key], $data['remote_files'])){
+
 				$table .='<tr><td>'.$files[$key].'</td>';
 				$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button></td>';
-
 				$table .='</td><td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
 				$table .='</tr>';
 			}elseif (in_array(basename($remote_dir.$files[$key]), $default_backups)) {
+				// skip 
 				continue;
 			}	
 			else{
@@ -77,7 +87,7 @@ class Backup extends MX_Controller {
 			if (in_array(str_replace($remote_dir, '', $file), $files)){
 			}else{
 				// Files only found on remote server
-				if($key>4){break;}
+				if($key>4){break;} // breaks loop if finds only 5 files
 
 				$table .='<td>'.str_replace("/backups/".$facility_code."/", "", $file).'</td>';
 				$table .='<td><button class="btn btn-warning btn-sm download" >Download</button> </td>';
@@ -103,7 +113,7 @@ class Backup extends MX_Controller {
 
 			}
 		}
-			// delete any encrypted backups on backup_db folder
+		// delete any encrypted backups on backup_db folder
 
 		$files = scandir(FCPATH.'backup_db');
 		foreach ($files as $key => $f) {
