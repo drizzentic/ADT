@@ -58,18 +58,8 @@ class Genericname_management extends MY_Controller {
 			$data['settings_view'] = "generic_listing_v";
 			$this -> base_params($data);
 		} else {
-			$generic_name = new Generic_Name();
 			$drugname = $this -> input -> post("generic_name");
-			if (count($generic_name -> getGenericByName($drugname))>0){
-			$this -> session -> set_userdata('msg_error', $this -> input -> post('generic_name') . ' already exists');
-			$this -> session -> set_flashdata('filter_datatable',$this -> input -> post('generic_name'));//Filter datatable
-			redirect("settings_management");
-
-				die;
-			}
-			$generic_name -> Name = $drugname;
-			$generic_name -> Active = "1";
-			$generic_name -> save();
+			$this->db->replace('generic_name', array($drugname));
 			$this -> session -> set_userdata('msg_success', $this -> input -> post('generic_name') . ' was Added');
 			$this -> session -> set_flashdata('filter_datatable',$this -> input -> post('generic_name'));//Filter datatable
 			redirect("settings_management");
