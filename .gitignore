@@ -34,6 +34,7 @@ RCSLOG
 SCCS
 _$*
 application/views/sections/link.php
+application/config/db_conf.php
 
 # exclude everything
 assets/cache/*
