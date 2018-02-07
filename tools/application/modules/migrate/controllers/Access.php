@@ -602,8 +602,7 @@ class Access extends MX_Controller {
 				'update'=>array(
 					'0'=>'UPDATE users
 					SET Facility_Code='.$facility_code.',
-					ccc_store_sp='.$ccc_pharmacy.'
-					WHERE id IN(1,2)')
+					ccc_store_sp='.$ccc_pharmacy)
 			), 
 			'Drug Transactions' => array(
 				'source'=>'tblARVDrugStockTransactions',
@@ -713,12 +712,13 @@ class Access extends MX_Controller {
 				'update'=>array()
 			)
 		);
-            //if table is not null get value of array in position of the table
-if($table!=null){
-	$tables=$tables[$table];
-}
-return $tables;
-}
+		
+		//if table is not null get value of array in position of the table
+		if($table!=null){
+			$tables=$tables[$table];
+		}
+		return $tables;
+	}
 	
 	public function migrate(){
 		//get posted data
