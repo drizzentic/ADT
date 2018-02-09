@@ -3258,8 +3258,8 @@ public function getScheduledPatients($from = "", $to = "", $filter_from = NULL, 
 			//Get all patients who have apppointments on the selected date range
 		$sql = "SELECT pa.patient,pa.appointment ,ca.appointment as clinic_appointment,
 				CASE
-				WHEN pa.appointment != ca.appointment THEN 'YES' ELSE  'NO' END as diff_care,
-			 DATEDIFF(ca.appointment, pa.appointment) as days_diff
+				WHEN  ca.differentiated_care = 1 THEN 'YES' ELSE  'NO' END as diff_care,
+				DATEDIFF(ca.appointment, pa.appointment) as days_diff
 				FROM patient_appointment pa
 				LEFT JOIN clinic_appointment ca on ca.id = pa.clinical_appointment
 				WHERE pa.appointment BETWEEN '$from' AND '$to' 
