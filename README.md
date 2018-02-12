@@ -2,7 +2,7 @@ ADT
 ================================
 This is an ARV Dispensing Tool.
 
-Version 3.3 06/02/2018 (Latest)
+Version 3.3 12/02/2018 (Latest)
 ==============================================
 - Added: From the admin side need to have ability to add new user category and define their user right
 - Added: New MOH 731 template
