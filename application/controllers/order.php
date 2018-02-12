@@ -105,20 +105,20 @@ class Order extends MY_Controller {
 		if($facilities){
 			if ($type == "cdrr") {
 				$sql = "SELECT c.id,IF(c.code='D-CDRR',CONCAT('D-CDRR#',c.id),CONCAT('F-CDRR#',c.id)) as cdrr_id,c.period_begin,LCASE(c.status) as status_name,$facility_name as facility_name
-					    FROM cdrr c
-					    LEFT JOIN $facility_table f ON f.id=c.facility_id
-					    WHERE facility_id IN($facilities)
-					    AND c.status NOT LIKE '%deleted%'
-					    $conditions
-					    ORDER BY c.period_begin desc";
+				FROM cdrr c
+				LEFT JOIN $facility_table f ON f.id=c.facility_id
+				WHERE facility_id IN($facilities)
+				AND c.status NOT LIKE '%deleted%'
+				$conditions
+				ORDER BY c.period_begin desc";
 			} else if ($type == "maps") {
 				$sql = "SELECT m.id,IF(m.code='D-MAPS',CONCAT('D-MAPS#',m.id),CONCAT('F-MAPS#',m.id)) as maps_id,m.period_begin,LCASE(m.status) as status_name,$facility_name as facility_name
-						FROM maps m
-						LEFT JOIN $facility_table f ON f.id=m.facility_id
-						WHERE facility_id IN($facilities)
-						AND m.status NOT LIKE '%deleted%'
-						$conditions
-						ORDER BY m.period_begin desc";
+				FROM maps m
+				LEFT JOIN $facility_table f ON f.id=m.facility_id
+				WHERE facility_id IN($facilities)
+				AND m.status NOT LIKE '%deleted%'
+				$conditions
+				ORDER BY m.period_begin desc";
 			} 
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
@@ -157,13 +157,13 @@ class Order extends MY_Controller {
 					$link_values .= "<a href='" . site_url($i . '/' . $mydata['id']) . "' class='delete_order'>$link</a> | ";
 				} else {
 					if ($table == "aggregate") {
-					    $link_values .= "<a href='" . site_url($i . '/' . $mydata['id'].'/'.$mydata['facility_id'].'/'.$mydata['cdrr_id'].'/'.$mydata['maps_id'].'/'.$mydata['facility_code']) . "'>$link</a> | ";
-					    unset($mydata['facility_code']);
-					    unset($mydata['facility_id']);
-					    unset($mydata['cdrr_id']);
-					    unset($mydata['maps_id']);
+						$link_values .= "<a href='" . site_url($i . '/' . $mydata['id'].'/'.$mydata['facility_id'].'/'.$mydata['cdrr_id'].'/'.$mydata['maps_id'].'/'.$mydata['facility_code']) . "'>$link</a> | ";
+						unset($mydata['facility_code']);
+						unset($mydata['facility_id']);
+						unset($mydata['cdrr_id']);
+						unset($mydata['maps_id']);
 					}else{
-					    $link_values .= "<a href='" . site_url($i . '/' . $mydata['id']) . "'>$link</a> | ";
+						$link_values .= "<a href='" . site_url($i . '/' . $mydata['id']) . "'>$link</a> | ";
 					}
 				}
 			}
@@ -250,11 +250,11 @@ class Order extends MY_Controller {
 					$data['commodities'] = Sync_Drug::getActiveList();
 				} else {
 					$sql = "SELECT sd.id,CONCAT_WS('] ',CONCAT_WS(' [',name,abbreviation),CONCAT_WS(' ',strength,formulation)) as Drug,unit as Unit_Name,packsize as Pack_Size,category_id as Category
-			        FROM cdrr_item ci
-			        LEFT JOIN sync_drug sd ON sd.id=ci.drug_id
-			        WHERE ci.cdrr_id='$cdrr_id'
-			        AND(sd.category_id='1' OR sd.category_id='2' OR sd.category_id='3' OR sd.category_id='4')
-			        AND Active = '1'";
+					FROM cdrr_item ci
+					LEFT JOIN sync_drug sd ON sd.id=ci.drug_id
+					WHERE ci.cdrr_id='$cdrr_id'
+					AND(sd.category_id='1' OR sd.category_id='2' OR sd.category_id='3' OR sd.category_id='4')
+					AND Active = '1'";
 					$query = $this -> db -> query($sql);
 					$data['commodities'] = $query -> result();
 				}
@@ -353,10 +353,10 @@ class Order extends MY_Controller {
 					$regimen_join = 'mi.regimen_id=r.id';
 
 					$sql_regimen = "SELECT rc.id,r.id as reg_id,rc.Name as name,$regimen_code,$regimen_desc,$regimen_cat_join,mi.total
-									FROM $regimen_table r
-									LEFT JOIN $regimen_cat_table rc ON rc.id = $regimen_cat_join
-									LEFT JOIN maps_item mi ON $regimen_join
-									WHERE maps_id='$map_id'";
+					FROM $regimen_table r
+					LEFT JOIN $regimen_cat_table rc ON rc.id = $regimen_cat_join
+					LEFT JOIN maps_item mi ON $regimen_join
+					WHERE maps_id='$map_id'";
 
 					$query_regimen = $this -> db -> query($sql_regimen);
 					$regimen_array = $query_regimen -> result_array();
@@ -500,9 +500,9 @@ class Order extends MY_Controller {
 						$cdrr_array[$commodity_counter]['balance'] = $opening_balances[$commodity_counter];
 						$cdrr_array[$commodity_counter]['received'] = $quantities_received[$commodity_counter];
 						if ($code == "F-CDRR_units") {
-						    $cdrr_array[$commodity_counter]['dispensed_units'] = $quantities_dispensed[$commodity_counter];
-					        $cdrr_array[$commodity_counter]['dispensed_packs'] = ceil(@$quantities_dispensed[$commodity_counter] / @$pack_size[$commodity_counter]);
-					    }
+							$cdrr_array[$commodity_counter]['dispensed_units'] = $quantities_dispensed[$commodity_counter];
+							$cdrr_array[$commodity_counter]['dispensed_packs'] = ceil(@$quantities_dispensed[$commodity_counter] / @$pack_size[$commodity_counter]);
+						}
 						else if ($code == "F-CDRR_packs") {
 							$cdrr_array[$commodity_counter]['dispensed_units'] = (@$quantities_dispensed_packs[$commodity_counter] * @$pack_size[$commodity_counter]);
 							$cdrr_array[$commodity_counter]['dispensed_packs'] = $quantities_dispensed_packs[$commodity_counter];
@@ -691,7 +691,7 @@ class Order extends MY_Controller {
 			}
 		}
 		$main_array = array($main_array);
-        if ($status == "prepared") {
+		if ($status == "prepared") {
 			$id = $this -> extract_order($type, $main_array);
 			$this -> session -> set_flashdata('order_message', "Your " . strtoupper($type) . " data was successfully saved !");
 			redirect("order");
@@ -806,13 +806,13 @@ class Order extends MY_Controller {
 		if ($type == "cdrr") {
 			$cdrr_array = array();
 			$sql = "SELECT c.*,ci.*,f.*,co.county as county_name,d.name as district_name,IF(c.code='D-CDRR',CONCAT('D-CDRR#',c.id),CONCAT('F-CDRR#',c.id)) as cdrr_label,c.status as status_name,sf.name as facility_name,ci.id as item_id,sf.code as facility_code
-				FROM cdrr c
-				LEFT JOIN cdrr_item ci ON ci.cdrr_id = c.id
-				LEFT JOIN sync_facility sf ON sf.id = c.facility_id
-				LEFT JOIN facilities f ON f.facilitycode = sf.code
-				LEFT JOIN counties co ON co.id = f.county
-				LEFT JOIN district d ON d.id = f.district
-				WHERE c.id = '$id'";
+			FROM cdrr c
+			LEFT JOIN cdrr_item ci ON ci.cdrr_id = c.id
+			LEFT JOIN sync_facility sf ON sf.id = c.facility_id
+			LEFT JOIN facilities f ON f.facilitycode = sf.code
+			LEFT JOIN counties co ON co.id = f.county
+			LEFT JOIN district d ON d.id = f.district
+			WHERE c.id = '$id'";
 			$query = $this -> db -> query($sql);
 			$cdrr_array = $query -> result_array();
 			$data['cdrr_array'] = $cdrr_array;
@@ -834,14 +834,14 @@ class Order extends MY_Controller {
 			$facility_table = 'sync_facility';
 			$fmaps_array = array();
 			$sql = "SELECT m.*,mi.*,ml.*,f.*,co.county as county_name,d.name as district_name,IF(m.code='D-MAPS',CONCAT('D-MAPS#',m.id),CONCAT('F-MAPS#',m.id)) as maps_id,m.status as status_name,sf.name as facility_name,m.id as map_id,sf.code as facility_code
-			 	FROM maps m
-			 	LEFT JOIN maps_item mi ON mi.maps_id=m.id
-			 	LEFT JOIN maps_log ml ON ml.maps_id=m.id
-			 	LEFT JOIN $facility_table sf ON sf.id=m.facility_id
-				LEFT JOIN facilities f ON f.facilitycode=sf.code
-			 	LEFT JOIN counties co ON co.id=f.county
-				LEFT JOIN district d ON d.id=f.district
-				WHERE m.id='$id'";
+			FROM maps m
+			LEFT JOIN maps_item mi ON mi.maps_id=m.id
+			LEFT JOIN maps_log ml ON ml.maps_id=m.id
+			LEFT JOIN $facility_table sf ON sf.id=m.facility_id
+			LEFT JOIN facilities f ON f.facilitycode=sf.code
+			LEFT JOIN counties co ON co.id=f.county
+			LEFT JOIN district d ON d.id=f.district
+			WHERE m.id='$id'";
 			$query = $this -> db -> query($sql);
 			$fmaps_array = $query -> result_array();
 			$data['fmaps_array'] = $fmaps_array;
@@ -866,13 +866,13 @@ class Order extends MY_Controller {
 		if ($type == "cdrr") {
 			$cdrr_array = array();
 			$sql = "SELECT c.*,ci.*,f.*,co.county as county_name,d.name as district_name,IF(c.code='D-CDRR',CONCAT('D-CDRR#',c.id),CONCAT('F-CDRR#',c.id)) as cdrr_label,c.status as status_name,sf.name as facility_name,ci.id as item_id,sf.code as facility_code
-				FROM cdrr c
-				LEFT JOIN cdrr_item ci ON ci.cdrr_id=c.id
-				LEFT JOIN sync_facility sf ON sf.id=c.facility_id
-				LEFT JOIN facilities f ON f.facilitycode=sf.code
-				LEFT JOIN counties co ON co.id=f.county
-				LEFT JOIN district d ON d.id=f.district
-				WHERE c.id = '$id'";
+			FROM cdrr c
+			LEFT JOIN cdrr_item ci ON ci.cdrr_id=c.id
+			LEFT JOIN sync_facility sf ON sf.id=c.facility_id
+			LEFT JOIN facilities f ON f.facilitycode=sf.code
+			LEFT JOIN counties co ON co.id=f.county
+			LEFT JOIN district d ON d.id=f.district
+			WHERE c.id = '$id'";
 			$query = $this -> db -> query($sql);
 			$cdrr_array = $query -> result_array();
 			$data['cdrr_array'] = $cdrr_array;
@@ -893,14 +893,14 @@ class Order extends MY_Controller {
 		} else if ($type == "maps") {
 			$fmaps_array = array();
 			$sql = "SELECT m.*,mi.*,ml.*,f.*,co.county as county_name,d.name as district_name,IF(m.code='D-MAPS',CONCAT('D-MAPS#',m.id),CONCAT('F-MAPS#',m.id)) as maps_id,m.status as status_name,sf.name as facility_name,m.id as map_id,mi.id as item_id,sf.code as facility_code
-			 	FROM maps m
-			 	LEFT JOIN maps_item mi ON mi.maps_id=m.id
-			 	LEFT JOIN maps_log ml ON ml.maps_id=m.id
-			 	LEFT JOIN sync_facility sf ON sf.id=m.facility_id
-				LEFT JOIN facilities f ON f.facilitycode=sf.code
-			 	LEFT JOIN counties co ON co.id=f.county
-				LEFT JOIN district d ON d.id=f.district
-				WHERE m.id='$id'";
+			FROM maps m
+			LEFT JOIN maps_item mi ON mi.maps_id=m.id
+			LEFT JOIN maps_log ml ON ml.maps_id=m.id
+			LEFT JOIN sync_facility sf ON sf.id=m.facility_id
+			LEFT JOIN facilities f ON f.facilitycode=sf.code
+			LEFT JOIN counties co ON co.id=f.county
+			LEFT JOIN district d ON d.id=f.district
+			WHERE m.id='$id'";
 			$query = $this -> db -> query($sql);
 			$fmaps_array = $query -> result_array();
 			$data['fmaps_array'] = $fmaps_array;
@@ -979,18 +979,18 @@ class Order extends MY_Controller {
 			$drug_name = "CONCAT_WS('] ',CONCAT_WS(' [',sd.name,sd.abbreviation),CONCAT_WS(' ',sd.strength,sd.formulation)) as drug_map";
 
 			$sql = "SELECT c.*,ci.*,cl.*,f.*,co.county as county_name,d.name as district_name,u.*,al.level_name,IF(c.code='D-CDRR',CONCAT('D-CDRR#',c.id),CONCAT('F-CDRR#',c.id)) as cdrr_label,c.status as status_name,sf.name as facility_name,$drug_name
-				FROM cdrr c
-				LEFT JOIN cdrr_item ci ON ci.cdrr_id=c.id
-				LEFT JOIN cdrr_log cl ON cl.cdrr_id=c.id
-				LEFT JOIN sync_facility sf ON sf.id=c.facility_id
-				LEFT JOIN facilities f ON f.facilitycode=sf.code
-				LEFT JOIN counties co ON co.id=f.county
-				LEFT JOIN district d ON d.id=f.district
-				LEFT JOIN users u ON u.id = cl.user_id
-				LEFT JOIN access_level al ON al.id=u.Access_Level
-				LEFT JOIN sync_drug sd ON sd.id=ci.drug_id
-				LEFT JOIN drugcode dc ON dc.map=sd.id
-				WHERE c.id = '$cdrr_id'";
+			FROM cdrr c
+			LEFT JOIN cdrr_item ci ON ci.cdrr_id=c.id
+			LEFT JOIN cdrr_log cl ON cl.cdrr_id=c.id
+			LEFT JOIN sync_facility sf ON sf.id=c.facility_id
+			LEFT JOIN facilities f ON f.facilitycode=sf.code
+			LEFT JOIN counties co ON co.id=f.county
+			LEFT JOIN district d ON d.id=f.district
+			LEFT JOIN users u ON u.id = cl.user_id
+			LEFT JOIN access_level al ON al.id=u.Access_Level
+			LEFT JOIN sync_drug sd ON sd.id=ci.drug_id
+			LEFT JOIN drugcode dc ON dc.map=sd.id
+			WHERE c.id = '$cdrr_id'";
 			$query = $this -> db -> query($sql);
 			$cdrr_array = $query -> result_array();
 			$report_type = $cdrr_array[0]['code'];
@@ -1006,7 +1006,7 @@ class Order extends MY_Controller {
 			}
 			$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/templates/orders/v2/' . $template;
 			$inputFileType = PHPExcel_IOFactory::identify($inputFileName);
-    		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
+			$objReader = PHPExcel_IOFactory::createReader($inputFileType);
 			$objPHPExcel = $objReader -> load($inputFileName);
 
 			/*Delete all files in export folder*/
@@ -1134,16 +1134,16 @@ class Order extends MY_Controller {
 			$dir = "assets/download";
 
 			$sql = "SELECT m.*,mi.*,ml.*,f.*,co.county as county_name,d.name as district_name,u.*,al.level_name,IF(m.code='D-MAPS',CONCAT('D-MAPS#',m.id),CONCAT('F-MAPS#',m.id)) as maps_id,m.status as status_name,sf.name as facility_name,m.id as map_id
-			 	FROM maps m
-			 	LEFT JOIN maps_item mi ON mi.maps_id=m.id
-			 	LEFT JOIN maps_log ml ON ml.maps_id=m.id
-			 	LEFT JOIN sync_facility sf ON sf.id=m.facility_id
-			 	LEFT JOIN facilities f ON f.facilitycode=sf.code	
-			 	LEFT JOIN counties co ON co.id=f.county
-				LEFT JOIN district d ON d.id=f.district
-				LEFT JOIN users u ON u.id=ml.user_id
-				LEFT JOIN access_level al ON al.id=u.Access_Level
-				WHERE m.id = '$fmaps_id'";
+			FROM maps m
+			LEFT JOIN maps_item mi ON mi.maps_id=m.id
+			LEFT JOIN maps_log ml ON ml.maps_id=m.id
+			LEFT JOIN sync_facility sf ON sf.id=m.facility_id
+			LEFT JOIN facilities f ON f.facilitycode=sf.code	
+			LEFT JOIN counties co ON co.id=f.county
+			LEFT JOIN district d ON d.id=f.district
+			LEFT JOIN users u ON u.id=ml.user_id
+			LEFT JOIN access_level al ON al.id=u.Access_Level
+			WHERE m.id = '$fmaps_id'";
 			$query = $this -> db -> query($sql);
 			$fmaps_array = $query -> result_array();
 			$report_type = $fmaps_array[0]['code'];
@@ -1157,7 +1157,7 @@ class Order extends MY_Controller {
 			}
 			$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/templates/orders/v2/' . $template;
 			$inputFileType = PHPExcel_IOFactory::identify($inputFileName);
-    		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
+			$objReader = PHPExcel_IOFactory::createReader($inputFileType);
 			$objPHPExcel = $objReader -> load($inputFileName);
 
 			/*Delete all files in export folder*/
@@ -1321,13 +1321,13 @@ class Order extends MY_Controller {
 				$drug = str_ireplace(array("(", ")"), array("", ""), $drug);
 				if ($drug != null) {
 					$sql = "SELECT sd.id 
-		      FROM sync_drug sd
-		      WHERE (sd.name like '%$drug%'
-		      OR sd.abbreviation like '%$drug%'
-		      OR sd.strength = '$drug'
-		      OR sd.formulation = '$drug'
-		      OR sd.unit='$drug')
-		      AND sd.packsize='$packsize'";
+					FROM sync_drug sd
+					WHERE (sd.name like '%$drug%'
+					OR sd.abbreviation like '%$drug%'
+					OR sd.strength = '$drug'
+					OR sd.formulation = '$drug'
+					OR sd.unit='$drug')
+					AND sd.packsize='$packsize'";
 					$query = $this -> db -> query($sql);
 					$results = $query -> result_array();
 					if ($results) {
@@ -1350,8 +1350,8 @@ class Order extends MY_Controller {
 	public function getMappedRegimen($regimen_code = "", $regimen_desc = "") {
 		if ($regimen_code != "") {
 			$sql = "SELECT r.id as map
-				    FROM sync_regimen r
-				    WHERE r.code='$regimen_code'";
+			FROM sync_regimen r
+			WHERE r.code='$regimen_code'";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if ($results) {
@@ -1372,7 +1372,7 @@ class Order extends MY_Controller {
 			for ($i = 0; $i < $fileCount; $i++) {
 				$filename = $_FILES["file"]["name"][$i];
 				$inputFileType = PHPExcel_IOFactory::identify($_FILES["file"]["tmp_name"][$i]);
-    			$objReader = PHPExcel_IOFactory::createReader($inputFileType);
+				$objReader = PHPExcel_IOFactory::createReader($inputFileType);
 				$objPHPExcel = $objReader -> load($_FILES["file"]["tmp_name"][$i]);
 				$status = "prepared";
 				$arr = $objPHPExcel -> getActiveSheet() -> toArray(null, true, true, true);
@@ -1399,7 +1399,7 @@ class Order extends MY_Controller {
 					$file_type = $this -> checkFileType($code, $text);
 					$facilities = Sync_Facility::getId($facility_code, 0);
 
-				    $facility_id= $facilities['id'];
+					$facility_id= $facilities['id'];
 					$duplicate = $this -> check_duplicate($code, $period_begin, $period_end, $facilities['id']);
 
 					if ($period_begin != date('Y-m-01', strtotime(date('Y-m-d') . "-1 month")) || $period_end != date('Y-m-t', strtotime(date('Y-m-d') . "-1 month"))) {
@@ -1410,8 +1410,8 @@ class Order extends MY_Controller {
 						$ret[] = "A cdrr report already exists for this month !-" . $_FILES["file"]["name"][$i];
 					} else if ($facility_id == null) {
 						$ret[] = "No facility found associated with this user!<br>
-						 		- Make sure that you have updated your settings
-						 		- Check that you have entered the correct facility code for the file being uploaded!";
+						- Make sure that you have updated your settings
+						- Check that you have entered the correct facility code for the file being uploaded!";
 					} else {
 						$seventh_row = 75;
 						$comments = trim($arr[$seventh_row]['B']);
@@ -1523,7 +1523,7 @@ class Order extends MY_Controller {
 					$text = $arr[2]['B'];
 
 					$facilities = Sync_Facility::getId($facility_code, 0);
-				    $facility_id= $facilities['id'];
+					$facility_id= $facilities['id'];
 					$duplicate = $this -> check_duplicate($code, $period_begin, $period_end, $facilities['id'], "maps");
 
 					$file_type = $this -> checkFileType($code, $text);
@@ -1536,8 +1536,8 @@ class Order extends MY_Controller {
 						$ret[] = "Incorrect File Selected-" . $_FILES["file"]["name"][$i];
 					} else if ($facility_id == null) {
 						$ret[] = "No facility found associated with this user!<br>
-						 		- Make sure that you have updated your settings
-						 		- Check that you have entered the correct facility code for the file being uploaded!";
+						- Make sure that you have updated your settings
+						- Check that you have entered the correct facility code for the file being uploaded!";
 					} else {	
 						//Save Import Values
 						$created = date('Y-m-d H:i:s');
@@ -1630,9 +1630,9 @@ class Order extends MY_Controller {
 	public function getMainRegimen($regimen_code = "", $regimen_desc = "") {
 		if ($regimen_code != "") {
 			$sql = "SELECT sr.id
-				    FROM sync_regimen sr
-				    WHERE(sr.code='$regimen_code'
-				    OR sr.name='$regimen_desc')";
+			FROM sync_regimen sr
+			WHERE(sr.code='$regimen_code'
+			OR sr.name='$regimen_desc')";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if ($results) {
@@ -1650,14 +1650,14 @@ class Order extends MY_Controller {
 
 		//Get only F-MAPS
 		$sql_maps = "
-					SELECT m.id, m.code, m.status, m.period_begin,m.period_end,m.reports_expected,m.reports_actual,m.services,m.sponsors,m.art_adult, m.art_child,m.new_male,m.revisit_male,m.new_female,m.revisit_female,m.new_pmtct,m.revisit_pmtct,m.total_infant,m.pep_adult,m.pep_child,m.total_adult,m.total_child, m.diflucan_adult,m.diflucan_child,m.new_cm,m.revisit_cm,m.new_oc,m.revisit_oc,m.comments 
-					FROM maps m LEFT JOIN sync_facility sf ON sf.id=m.facility_id 
-                    WHERE  m.status ='prepared' 
-                    AND m.code='F-MAPS'
-                   
-                    AND m.period_begin='$period_start'  ORDER BY m.code DESC
-					";
-					
+		SELECT m.id, m.code, m.status, m.period_begin,m.period_end,m.reports_expected,m.reports_actual,m.services,m.sponsors,m.art_adult, m.art_child,m.new_male,m.revisit_male,m.new_female,m.revisit_female,m.new_pmtct,m.revisit_pmtct,m.total_infant,m.pep_adult,m.pep_child,m.total_adult,m.total_child, m.diflucan_adult,m.diflucan_child,m.new_cm,m.revisit_cm,m.new_oc,m.revisit_oc,m.comments 
+		FROM maps m LEFT JOIN sync_facility sf ON sf.id=m.facility_id 
+		WHERE  m.status ='prepared' 
+		AND m.code='F-MAPS'
+		
+		AND m.period_begin='$period_start'  ORDER BY m.code DESC
+		";
+		
 		$query = $this -> db -> query($sql_maps);
 		$results = $query -> result_array();
 		$maps_array = array();
@@ -1724,191 +1724,192 @@ class Order extends MY_Controller {
 		
 		//Get maps items
 		$sql_items = '
-			SELECT temp.regimen_id,temp.maps_id,SUM(temp.total) as total FROM
-					(
-					SELECT DISTINCT regimen_id,maps_id,total FROM maps_item WHERE (maps_id=' . $map_id . ')
-					) as temp  GROUP BY temp.regimen_id';
-		
-		$query_items = $this -> db -> query($sql_items);
-		$maps_items_array = $query_items -> result_array();
+		SELECT temp.regimen_id,temp.maps_id,SUM(temp.total) as total FROM
+		(
+		SELECT DISTINCT regimen_id,maps_id,total FROM maps_item WHERE (maps_id=' . $map_id . ')
+	) as temp  GROUP BY temp.regimen_id';
+	
+	$query_items = $this -> db -> query($sql_items);
+	$maps_items_array = $query_items -> result_array();
 
-		$data['maps_array'] = $maps_array;
-		$data['maps_items_array'] = $maps_items_array;
-		
-		echo json_encode($data);
-		
-	}
+	$data['maps_array'] = $maps_array;
+	$data['maps_items_array'] = $maps_items_array;
+	
+	echo json_encode($data);
+	
+}
 
-	public function get_fmaps_details($map_id) {
-		$facility_code = $this -> session -> userdata('facility');
+public function get_fmaps_details($map_id) {
+	$facility_code = $this -> session -> userdata('facility');
 		//Get maps
-		$sql_maps = 'SELECT m.* FROM maps m WHERE m.id="' . $map_id . '" ORDER BY m.code DESC';
-		$query = $this->db->query($sql_maps);
-		$results = $query->result_array();
-		$maps_array = array();
-		$maps_items_array = array();
-		$maps_array['art_adult'] = 0;
-		$maps_array['art_child'] = 0;
-		$maps_array['new_male']  = 0;
-		$maps_array['revisit_male'] = 0;
-		$maps_array['new_female']   = 0;
-		$maps_array['revisit_female'] = 0;
-		$maps_array['new_pmtct'] = 0;
-		$maps_array['revisit_pmtct'] = 0;
-		$maps_array['total_infant']  = 0;
-		$maps_array['pep_adult'] = 0;
-		$maps_array['pep_child'] = 0;
+	$sql_maps = 'SELECT m.* FROM maps m WHERE m.id="' . $map_id . '" ORDER BY m.code DESC';
+	$query = $this->db->query($sql_maps);
+	$results = $query->result_array();
+	$maps_array = array();
+	$maps_items_array = array();
+	$maps_array['art_adult'] = 0;
+	$maps_array['art_child'] = 0;
+	$maps_array['new_male']  = 0;
+	$maps_array['revisit_male'] = 0;
+	$maps_array['new_female']   = 0;
+	$maps_array['revisit_female'] = 0;
+	$maps_array['new_pmtct'] = 0;
+	$maps_array['revisit_pmtct'] = 0;
+	$maps_array['total_infant']  = 0;
+	$maps_array['pep_adult'] = 0;
+	$maps_array['pep_child'] = 0;
 		// Reusable variables
-		$maps_array['total_adult'] 	= 0;
-		$maps_array['total_child'] 	= 0;
-		$maps_array['diflucan_adult'] = 0;
-		$maps_array['diflucan_child'] = 0;
+	$maps_array['total_adult'] 	= 0;
+	$maps_array['total_child'] 	= 0;
+	$maps_array['diflucan_adult'] = 0;
+	$maps_array['diflucan_child'] = 0;
 		// Used in the new template. NEW ADDED******
-		$maps_array['cm&oc_adult'] 	= 0;
-		$maps_array['cm&oc_child'] 	= 0;
-		$maps_array['new_cm&oc'] 	= 0;
-		$maps_array['revisit_cm&oc']= 0;
+	$maps_array['cm&oc_adult'] 	= 0;
+	$maps_array['cm&oc_child'] 	= 0;
+	$maps_array['new_cm&oc'] 	= 0;
+	$maps_array['revisit_cm&oc']= 0;
 
 		// not used in the new tenplate. Discard****
-		$maps_array['new_cm'] = 0;
-		$maps_array['revisit_cm'] = 0;
-		$maps_array['new_oc'] = 0;
-		$maps_array['revisit_oc'] = 0;
-		$maps_array['comments'] = '';
-		foreach ($results as $value) {
-			$maps_array['status'] = $value['status'];
-			$maps_array['period_begin'] = $value['period_begin'];
-			$maps_array['period_end'] = $value['period_end'];
-			$maps_array['services'] = $value['services'];
-			$maps_array['sponsors'] = $value['sponsors'];
-			$maps_array['reports_actual'] = count($results);
-			$maps_array['art_adult'] = $maps_array['art_adult'] + $value['art_adult'];
-			$maps_array['art_child'] = $maps_array['art_child'] + $value['art_child'];
-			$maps_array['new_male'] = $maps_array['new_male'] + $value['new_male'];
-			$maps_array['revisit_male'] = $maps_array['revisit_male'] + $value['revisit_male'];
-			$maps_array['new_female'] = $maps_array['new_female'] + $value['new_female'];
-			$maps_array['revisit_female'] = $maps_array['revisit_female'] + $value['revisit_female'];
-			$maps_array['new_pmtct'] = $maps_array['new_pmtct'] + $value['new_pmtct'];
-			$maps_array['revisit_pmtct'] = $maps_array['revisit_pmtct'] + $value['revisit_pmtct'];
-			$maps_array['total_infant'] = $maps_array['total_infant'] + $value['total_infant'];
-			$maps_array['pep_adult'] = $maps_array['pep_adult'] + $value['pep_adult'];
-			$maps_array['pep_child'] = $maps_array['pep_child'] + $value['pep_child'];
-			$maps_array['total_adult'] = $maps_array['total_adult'] + $value['total_adult'];
-			$maps_array['total_child'] = $maps_array['total_child'] + $value['total_child'];
-			$maps_array['diflucan_adult'] = $maps_array['diflucan_adult'] + $value['diflucan_adult'];
-			$maps_array['diflucan_child'] = $maps_array['diflucan_child'] + $value['diflucan_child'];
-			$maps_array['new_cm'] = $maps_array['new_cm'] + $value['new_cm'];
-			$maps_array['revisit_cm'] = $maps_array['revisit_cm'] + $value['revisit_cm'];
-			$maps_array['new_oc'] = $maps_array['new_oc'] + $value['new_oc'];
-			$maps_array['revisit_oc'] = $maps_array['revisit_oc'] + $value['revisit_oc'];
-			$maps_array['comments'] = $value['comments'];
-		}
-		
-		$maps_array['reports_expected'] = $this->expectedReports($facility_code);
-		$maps_array['reports_actual'] = $this ->actualReports($facility_code,$maps_array['period_begin'],'maps');
+	$maps_array['new_cm'] = 0;
+	$maps_array['revisit_cm'] = 0;
+	$maps_array['new_oc'] = 0;
+	$maps_array['revisit_oc'] = 0;
+	$maps_array['comments'] = '';
+	foreach ($results as $value) {
+		$maps_array['status'] = $value['status'];
+		$maps_array['period_begin'] = $value['period_begin'];
+		$maps_array['period_end'] = $value['period_end'];
+		$maps_array['services'] = $value['services'];
+		$maps_array['sponsors'] = $value['sponsors'];
+		$maps_array['reports_actual'] = count($results);
+		$maps_array['art_adult'] = $maps_array['art_adult'] + $value['art_adult'];
+		$maps_array['art_child'] = $maps_array['art_child'] + $value['art_child'];
+		$maps_array['new_male'] = $maps_array['new_male'] + $value['new_male'];
+		$maps_array['revisit_male'] = $maps_array['revisit_male'] + $value['revisit_male'];
+		$maps_array['new_female'] = $maps_array['new_female'] + $value['new_female'];
+		$maps_array['revisit_female'] = $maps_array['revisit_female'] + $value['revisit_female'];
+		$maps_array['new_pmtct'] = $maps_array['new_pmtct'] + $value['new_pmtct'];
+		$maps_array['revisit_pmtct'] = $maps_array['revisit_pmtct'] + $value['revisit_pmtct'];
+		$maps_array['total_infant'] = $maps_array['total_infant'] + $value['total_infant'];
+		$maps_array['pep_adult'] = $maps_array['pep_adult'] + $value['pep_adult'];
+		$maps_array['pep_child'] = $maps_array['pep_child'] + $value['pep_child'];
+		$maps_array['total_adult'] = $maps_array['total_adult'] + $value['total_adult'];
+		$maps_array['total_child'] = $maps_array['total_child'] + $value['total_child'];
+		$maps_array['diflucan_adult'] = $maps_array['diflucan_adult'] + $value['diflucan_adult'];
+		$maps_array['diflucan_child'] = $maps_array['diflucan_child'] + $value['diflucan_child'];
+		$maps_array['new_cm'] = $maps_array['new_cm'] + $value['new_cm'];
+		$maps_array['revisit_cm'] = $maps_array['revisit_cm'] + $value['revisit_cm'];
+		$maps_array['new_oc'] = $maps_array['new_oc'] + $value['new_oc'];
+		$maps_array['revisit_oc'] = $maps_array['revisit_oc'] + $value['revisit_oc'];
+		$maps_array['comments'] = $value['comments'];
+	}
+	
+	$maps_array['reports_expected'] = $this->expectedReports($facility_code);
+	$maps_array['reports_actual'] = $this ->actualReports($facility_code,$maps_array['period_begin'],'maps');
 
 		//Get maps items
-		$sql_items = 'SELECT id as item_id,regimen_id,maps_id, total FROM maps_item WHERE maps_id=' . $map_id . ' GROUP BY regimen_id';
-		$query_items = $this -> db -> query($sql_items);
-		$maps_items_array = $query_items -> result_array();
+	$sql_items = 'SELECT id as item_id,regimen_id,maps_id, total FROM maps_item WHERE maps_id=' . $map_id . ' GROUP BY regimen_id';
+	$query_items = $this -> db -> query($sql_items);
+	$maps_items_array = $query_items -> result_array();
 
-		$data['maps_array'] = $maps_array;
-		$data['maps_items_array'] = $maps_items_array;
-		echo json_encode($data);
-	}
-	/******oi*/
-	public function getoiPatients() {
-		$facility_code = $this -> session -> userdata("facility");
-		
-		$sql = "SELECT FLOOR(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
-		        FROM patient p
-		        LEFT JOIN patient_status ps ON ps.id = p.current_status
-		        WHERE ps.Name LIKE '%active%'
-		        AND drug_prophylaxis IN ('1', '2', '3', '4')";
-		$query = $this ->db->query($sql);
-		$results = $query->result_array();
-		$x=0;
-		$y=0;
-		$z=0;
-		$s=0;
-		$t=0;
-		$u=0;
-		$a=0;$b=0;$c=0;$d=0;$e=0;$f=0;
-		foreach($results as $oipatient)
-			{
-			$age=$oipatient['age'];
-			$drugprophilaxis=$oipatient['drug_prophylaxis'];
+	$data['maps_array'] = $maps_array;
+	$data['maps_items_array'] = $maps_items_array;
+	echo json_encode($data);
+}
+/******oi*/
+public function getoiPatients() {
+	$facility_code = $this -> session -> userdata("facility");
+	
+	$sql = "SELECT FLOOR(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
+	FROM patient p
+	LEFT JOIN patient_status ps ON ps.id = p.current_status
+	WHERE ps.Name LIKE '%active%'
+	AND drug_prophylaxis IN ('1', '2', '3', '4')";
+	$query = $this ->db->query($sql);
+	$results = $query->result_array();
+	$x=0;
+	$y=0;
+	$z=0;
+	$s=0;
+	$t=0;
+	$u=0;
+	$a=0;$b=0;$c=0;$d=0;$e=0;$f=0;
+	foreach($results as $oipatient)
+	{
+		$age=$oipatient['age'];
+		$drugprophilaxis=$oipatient['drug_prophylaxis'];
 
-			//cotrimoxazole
-			if($drugprophilaxis==1 AND $age >= 15){
+			//cotrimoxazole ctx
+		if(strpos($drugprophilaxis, '1')!== false AND $age >= 15){
 			$a=$x++;
-				
-			}
-			if($drugprophilaxis==1 AND $age < 15){
+			
+		}
+		if(strpos($drugprophilaxis, '1') !== false AND $age < 15){
 			$b=$y++;
-				
-			}
+			
+		}
 
 			//Dapsone
-			if($drugprophilaxis==2 AND $age >= 15){
+		if($drugprophilaxis==2 AND $age >= 15){
 			$c=$z++;
-				
-			}
-			if($drugprophilaxis==2 AND $age < 15){
-			$d=$s++;
-				
-			}
-			//Isoniazid 
-			if($drugprophilaxis==3 AND $age >= 15){
-			$e=$t++;
-				
-			}
-			if($drugprophilaxis==3 AND $age < 15){
-			$f=$u++;
-				
-			}
+			
 		}
+		if($drugprophilaxis==2 AND $age < 15){
+			$d=$s++;
+			
+		}
+			//Isoniazid 
+			// if has isoniazid
+		if(strpos($drugprophilaxis, '3') !== false AND $age >= 15){
+			$e=$t++;
+			
+		}
+		if(strpos($drugprophilaxis, '3') !== false AND $age < 15){
+			$f=$u++;
+			
+		}
+	}
 
 		//get the data and convert it to an array that corresponds to the regimens
 
-		$oi_patients[] = array('OI1A'=>$a,'OI1C'=>$b,'OI2A'=>$c,'OI2C'=>$d,'OI4AN'=>$e,'OI4CN'=>$f);
-		echo json_encode($oi_patients);		
-	}
-	public function getPeriodRegimenPatients($from, $to) {
-		$regimen_column = "r.map";
-		$sql = "SELECT count(DISTINCT(p.id)) as patients,rc.name as regimen_category,r.id as regimen_id, r.regimen_desc,r.regimen_code,$regimen_column as regimen 
-		        FROM patient p
-		        INNER JOIN regimen r ON r.id=p.current_regimen
-		        INNER JOIN patient_status ps ON ps.id=p.current_status
-		        INNER JOIN regimen_category rc ON rc.id=r.category
+	$oi_patients[] = array('OI1A'=>$a,'OI1C'=>$b,'OI2A'=>$c,'OI2C'=>$d,'OI4AN'=>$e,'OI4CN'=>$f);
+	echo json_encode($oi_patients);		
+}
+public function getPeriodRegimenPatients($from, $to) {
+	$regimen_column = "r.map";
+	$sql = "SELECT count(DISTINCT(p.id)) as patients,rc.name as regimen_category,r.id as regimen_id, r.regimen_desc,r.regimen_code,$regimen_column as regimen 
+	FROM patient p
+	INNER JOIN regimen r ON r.id=p.current_regimen
+	INNER JOIN patient_status ps ON ps.id=p.current_status
+	INNER JOIN regimen_category rc ON rc.id=r.category
 		        -- INNER JOIN sync_regimen_category rc ON rc.id=r.category
 		        WHERE p.date_enrolled<='$to' 
-				AND ps.name LIKE '%active%' 
-				AND r.id=p.current_regimen 
-				AND p.facility_code='$this->facility_code'
-				GROUP BY $regimen_column 
-				ORDER BY r.regimen_code ASC";
-				$query = $this ->db->query($sql);
-				$results = $query->result_array();
-				echo json_encode($results);
-	}
+		        AND ps.name LIKE '%active%' 
+		        AND r.id=p.current_regimen 
+		        AND p.facility_code='$this->facility_code'
+		        GROUP BY $regimen_column 
+		        ORDER BY r.regimen_code ASC";
+		        $query = $this ->db->query($sql);
+		        $results = $query->result_array();
+		        echo json_encode($results);
+		    }
 
-	public function getNotMappedRegimenPatients($from,$to){
-		$regimen_column = "r.map";
-		$sql = "SELECT count(DISTINCT(p.id)) as patients, r.id as regimen_id, r.regimen_desc,r.regimen_code FROM regimen r
-				INNER JOIN patient p ON p.current_regimen = r.id
-				INNER JOIN patient_status ps ON ps.id=p.current_status
-				WHERE p.date_enrolled<='$to' 
-				AND ps.name LIKE '%active%' 
-				AND p.facility_code='$this->facility_code' 
-				AND r.enabled='1'
-				AND (r.map='' OR r.map='0')
-				GROUP BY r.id
-				ORDER BY r.regimen_code ASC";
-		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
-		echo json_encode($results);
-	}
+		    public function getNotMappedRegimenPatients($from,$to){
+		    	$regimen_column = "r.map";
+		    	$sql = "SELECT count(DISTINCT(p.id)) as patients, r.id as regimen_id, r.regimen_desc,r.regimen_code FROM regimen r
+		    	INNER JOIN patient p ON p.current_regimen = r.id
+		    	INNER JOIN patient_status ps ON ps.id=p.current_status
+		    	WHERE p.date_enrolled<='$to' 
+		    	AND ps.name LIKE '%active%' 
+		    	AND p.facility_code='$this->facility_code' 
+		    	AND r.enabled='1'
+		    	AND (r.map='' OR r.map='0')
+		    	GROUP BY r.id
+		    	ORDER BY r.regimen_code ASC";
+		    	$query = $this -> db -> query($sql);
+		    	$results = $query -> result_array();
+		    	echo json_encode($results);
+		    }
 
 	public function getCentralDataMaps($start_date, $end_date, $data_type ='') {//Get data when generating reports for central site
 		$data = array();
@@ -1920,40 +1921,40 @@ class Order extends MY_Controller {
 				//Males,females, revisit and new patients
 				//New , only get ART
 				$sql_clients = 'SELECT COUNT(DISTINCT(pv.id)) as total,IF(pv.gender=1,"new_male","new_female") as gender 
-								FROM v_patient_visits pv
-								INNER JOIN patient_status ps ON ps.id=pv.current_status
-								WHERE pv.date_enrolled >= "' . $start_date . '" AND pv.date_enrolled <= "' . $end_date . '"  
-								AND pv.dispensing_date>= "' . $start_date . '"
-								AND pv.dispensing_date <= "' . $end_date . '"
-								AND ps.name LIKE "%active%"
-								GROUP BY pv.gender';
+				FROM v_patient_visits pv
+				INNER JOIN patient_status ps ON ps.id=pv.current_status
+				WHERE pv.date_enrolled >= "' . $start_date . '" AND pv.date_enrolled <= "' . $end_date . '"  
+				AND pv.dispensing_date>= "' . $start_date . '"
+				AND pv.dispensing_date <= "' . $end_date . '"
+				AND ps.name LIKE "%active%"
+				GROUP BY pv.gender';
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['new_patient'] = $results;
 			}else if($data_type=='revisit_patient'){
 				//revisit
 				$sql_clients = "SELECT COUNT(DISTINCT(p.id)) as total,IF(p.gender=1,'revisit_male','revisit_female') as  gender 
-								FROM patient p
-								LEFT JOIN patient_visit pv ON pv.patient_id = p.patient_number_ccc
-								INNER JOIN patient_status ps ON ps.id=p.current_status
-								WHERE p.date_enrolled < '$start_date' 
-								AND ( pv.dispensing_date BETWEEN '$start_date' AND '$end_date')
-								AND ps.name LIKE '%active%'
-								GROUP BY p.gender;
-								";
+				FROM patient p
+				LEFT JOIN patient_visit pv ON pv.patient_id = p.patient_number_ccc
+				INNER JOIN patient_status ps ON ps.id=p.current_status
+				WHERE p.date_enrolled < '$start_date' 
+				AND ( pv.dispensing_date BETWEEN '$start_date' AND '$end_date')
+				AND ps.name LIKE '%active%'
+				GROUP BY p.gender;
+				";
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['revisit_patient'] = $results;
 			}else if($data_type=='revisit_pmtct'){
 				//PMTCT clients, New and revisit
 				$sql_clients = 'SELECT COUNT(DISTINCT(p.id)) as total
-							  FROM patient p
-							  LEFT JOIN regimen r ON r.id = p.current_regimen
-							  LEFT JOIN regimen_category rc ON rc.id = r.category
-							  LEFT JOIN patient_status ps ON ps.id=p.current_status
-							  WHERE (p.date_enrolled <  STR_TO_DATE("' . $start_date . '", "%Y-%m-%d")) 
-							  AND rc.name = "PMTCT Mother"
-							  AND ps.name LIKE "%active%"';
+				FROM patient p
+				LEFT JOIN regimen r ON r.id = p.current_regimen
+				LEFT JOIN regimen_category rc ON rc.id = r.category
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE (p.date_enrolled <  STR_TO_DATE("' . $start_date . '", "%Y-%m-%d")) 
+				AND rc.name = "PMTCT Mother"
+				AND ps.name LIKE "%active%"';
 				//echo $sql_clients;
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
@@ -1961,12 +1962,12 @@ class Order extends MY_Controller {
 			}else if($data_type=='new_pmtct'){
 				//New
 				$sql_clients = 'SELECT COUNT(DISTINCT(p.id)) as total FROM patient p
-							  LEFT JOIN regimen r ON r.id = p.current_regimen
-							  LEFT JOIN regimen_category rc ON rc.id = r.category
-							  LEFT JOIN patient_status ps ON ps.id=p.current_status
-							  WHERE (p.date_enrolled BETWEEN "' . $start_date . '" AND "' . $end_date . '") 
-							  AND rc.name = "PMTCT Mother"
-							  AND ps.name LIKE "%active%"';
+				LEFT JOIN regimen r ON r.id = p.current_regimen
+				LEFT JOIN regimen_category rc ON rc.id = r.category
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE (p.date_enrolled BETWEEN "' . $start_date . '" AND "' . $end_date . '") 
+				AND rc.name = "PMTCT Mother"
+				AND ps.name LIKE "%active%"';
 
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
@@ -1974,23 +1975,23 @@ class Order extends MY_Controller {
 			}else if($data_type=='prophylaxis'){
 				//Total No. of Infants receiving ARV prophylaxis for PMTCT
 				$sql_clients = 'SELECT COUNT(DISTINCT(p.id)) as total FROM patient p 
-								LEFT JOIN regimen r ON r.id = p.current_regimen
-								LEFT JOIN regimen_category rc ON rc.id = r.category
-								LEFT JOIN patient_status ps ON ps.id=p.current_status
-								WHERE rc.name = "PMTCT Child" 
-								AND p.date_enrolled<="'.$end_date.'"
-								AND ps.name LIKE "%active%" 
-								AND p.drug_prophylaxis !=0';
+				LEFT JOIN regimen r ON r.id = p.current_regimen
+				LEFT JOIN regimen_category rc ON rc.id = r.category
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE rc.name = "PMTCT Child" 
+				AND p.date_enrolled<="'.$end_date.'"
+				AND ps.name LIKE "%active%" 
+				AND p.drug_prophylaxis !=0';
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['prophylaxis'] = $results;
 			}else if($data_type=='pep'){
 				//Totals for PEP Clients ONLY
 				$sql_clients = 'SELECT IF(round(datediff(CURDATE(),p.dob)/360)>15,"pep_adult","pep_child") as age,COUNT(DISTINCT(p.id)) as total FROM patient p 
-							LEFT JOIN regimen_service_type rs ON rs.id=p.service
-							LEFT JOIN patient_status ps ON ps.id=p.current_status
-							WHERE rs.name LIKE "%pep%" 
-							AND ps.name LIKE "%active%" GROUP BY age';
+				LEFT JOIN regimen_service_type rs ON rs.id=p.service
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE rs.name LIKE "%pep%" 
+				AND ps.name LIKE "%active%" GROUP BY age';
 				;
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
@@ -1998,13 +1999,13 @@ class Order extends MY_Controller {
 			}else if($data_type=='cotrimo_dapsone'){
 				//Totals for Patients / Clients (ART plus Non-ART) on Cotrimoxazole/Dapsone prophylaxis
 				$sql_clients = 'SELECT IF(round(datediff(CURDATE(),p.dob)/360)>15,"total_adult","total_child") as age,COUNT(DISTINCT(p.id)) as total
-								FROM  patient p 
-								LEFT JOIN drug_prophylaxis dp ON dp.id = p.drug_prophylaxis
-								INNER JOIN patient_status ps ON ps.id=p.current_status
-								WHERE (dp.name LIKE "%cotrimo%" OR dp.name LIKE "%dapsone%")
-								AND ps.name LIKE "%active%" 
-								GROUP BY age
-								';
+				FROM  patient p 
+				LEFT JOIN drug_prophylaxis dp ON dp.id = p.drug_prophylaxis
+				INNER JOIN patient_status ps ON ps.id=p.current_status
+				WHERE (dp.name LIKE "%cotrimo%" OR dp.name LIKE "%dapsone%")
+				AND ps.name LIKE "%active%" 
+				GROUP BY age
+				';
 				//echo $sql_clients;
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
@@ -2012,12 +2013,12 @@ class Order extends MY_Controller {
 			}else if($data_type=='diflucan'){
 				//Totals for Patients / Clients on Diflucan (For Diflucan Donation Program ONLY):
 				$sql_clients ='SELECT IF(round(datediff(CURDATE(),p.dob)/360)>15,"diflucan_adult","diflucan_child") as age,COUNT(DISTINCT(p.id)) as total
-								FROM  patient p 
-								LEFT JOIN drug_prophylaxis dp ON dp.id = p.drug_prophylaxis
-								INNER JOIN patient_status ps ON ps.id=p.current_status
-								WHERE (dp.name LIKE "%flucona%")
-								AND ps.name LIKE "%active%" 
-								GROUP BY age';
+				FROM  patient p 
+				LEFT JOIN drug_prophylaxis dp ON dp.id = p.drug_prophylaxis
+				INNER JOIN patient_status ps ON ps.id=p.current_status
+				WHERE (dp.name LIKE "%flucona%")
+				AND ps.name LIKE "%active%" 
+				GROUP BY age';
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['diflucan'] = $results;
@@ -2025,31 +2026,31 @@ class Order extends MY_Controller {
 				//New and revisit CM/OM
 				//New
 				$sql_clients = "SELECT IF(p.other_illnesses LIKE '%cryptococcal%','new_cm',
-							    	   IF(oi.name LIKE '%oesophageal%','new_oc','')) as OI, COUNT(DISTINCT(p.patient_number_ccc)) as total 
-							    	   FROM patient p
-								LEFT JOIN patient_visit pv ON pv.patient_id = p.patient_number_ccc
-								LEFT JOIN opportunistic_infection oi ON oi.indication = pv.indication
-								INNER JOIN patient_status ps ON ps.id=p.current_status
-								WHERE (p.other_illnesses LIKE '%cryptococcal%' OR oi.name LIKE '%oesophageal%')
-								AND p.date_enrolled BETWEEN '$start_date' AND '$end_date'
-								AND ps.name LIKE '%active%'
-								GROUP BY OI " ;	
+				IF(oi.name LIKE '%oesophageal%','new_oc','')) as OI, COUNT(DISTINCT(p.patient_number_ccc)) as total 
+				FROM patient p
+				LEFT JOIN patient_visit pv ON pv.patient_id = p.patient_number_ccc
+				LEFT JOIN opportunistic_infection oi ON oi.indication = pv.indication
+				INNER JOIN patient_status ps ON ps.id=p.current_status
+				WHERE (p.other_illnesses LIKE '%cryptococcal%' OR oi.name LIKE '%oesophageal%')
+				AND p.date_enrolled BETWEEN '$start_date' AND '$end_date'
+				AND ps.name LIKE '%active%'
+				GROUP BY OI " ;	
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['new_cm_oc'] = $results;
 			}else if($data_type=='revisit_cm_oc'){
 				//Revisit
 				$sql_clients="SELECT IF(temp2.other_illnesses LIKE '%cryptococcal%','revisit_cm','revisit_oc') as OI,COUNT(temp2.ccc_number) as total
-								FROM (SELECT DISTINCT(pv.patient_id) as ccc_number,oi.name as opportunistic_infection FROM patient_visit pv
-												INNER JOIN  opportunistic_infection oi ON oi.indication = pv.indication
-											) as temp1
-								INNER JOIN (
-										SELECT DISTINCT(p.patient_number_ccc) as ccc_number,other_illnesses FROM patient p
-										INNER JOIN patient_status ps ON ps.id = p.current_status
-										WHERE p.date_enrolled < '$start_date'
-										AND ps.name LIKE '%active%'
-								) as temp2 ON temp2.ccc_number = temp1.ccc_number
-								WHERE temp2.other_illnesses LIKE '%cryptococcal%' OR temp1.opportunistic_infection LIKE '%oesophageal%';";			
+				FROM (SELECT DISTINCT(pv.patient_id) as ccc_number,oi.name as opportunistic_infection FROM patient_visit pv
+				INNER JOIN  opportunistic_infection oi ON oi.indication = pv.indication
+				) as temp1
+				INNER JOIN (
+				SELECT DISTINCT(p.patient_number_ccc) as ccc_number,other_illnesses FROM patient p
+				INNER JOIN patient_status ps ON ps.id = p.current_status
+				WHERE p.date_enrolled < '$start_date'
+				AND ps.name LIKE '%active%'
+				) as temp2 ON temp2.ccc_number = temp1.ccc_number
+				WHERE temp2.other_illnesses LIKE '%cryptococcal%' OR temp1.opportunistic_infection LIKE '%oesophageal%';";			
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['revisit_cm_oc'] = $results;
@@ -2061,8 +2062,8 @@ class Order extends MY_Controller {
 	public function expectedReports($facility_code) {//Get number of total expected reports
 		if($facility_code!=''){
 			$sql = "SELECT COUNT(sf.id) as total FROM sync_facility sf 
-												INNER JOIN sync_facility sf1 ON sf1.parent_id = sf.id
-												WHERE sf.code ='$facility_code'";
+			INNER JOIN sync_facility sf1 ON sf1.parent_id = sf.id
+			WHERE sf.code ='$facility_code'";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if($results){
@@ -2084,11 +2085,11 @@ class Order extends MY_Controller {
 			} 
 			$sql = "
 			SELECT COUNT(m.id) as total FROM $type m LEFT JOIN sync_facility sf ON sf.id=m.facility_id 
-                    WHERE  m.status ='approved' 
-                    AND m.code LIKE '%$filter%'
-                    AND sf.category = 'satellite'
-                    AND m.period_begin='$period_begin'  ORDER BY m.code DESC
-                    ";
+			WHERE  m.status ='approved' 
+			AND m.code LIKE '%$filter%'
+			AND sf.category = 'satellite'
+			AND m.period_begin='$period_begin'  ORDER BY m.code DESC
+			";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if($results){
@@ -2100,7 +2101,7 @@ class Order extends MY_Controller {
 			return 0;
 		}
 	}
-    
+	
 	public function base_params($data) {
 		$data['title'] = "Order Reporting";
 		$data['link'] = "order_management";
@@ -2164,12 +2165,12 @@ class Order extends MY_Controller {
 		$notification = "";
 
 		$sql = "SELECT sf.name as facility_name,sf.code as facility_code,IF(c.id,'reported','not reported') as status
-		        FROM sync_facility sf
-		        LEFT JOIN cdrr c ON c.facility_id=sf.id AND c.period_begin='$start_date' 
-		        WHERE sf.parent_id='$central_site'
-		        AND sf.category LIKE '%satellite%'
-		        AND sf.name NOT LIKE '%dispensing%'
-		        GROUP BY sf.id";
+		FROM sync_facility sf
+		LEFT JOIN cdrr c ON c.facility_id=sf.id AND c.period_begin='$start_date' 
+		WHERE sf.parent_id='$central_site'
+		AND sf.category LIKE '%satellite%'
+		AND sf.name NOT LIKE '%dispensing%'
+		GROUP BY sf.id";
 		$query = $this -> db -> query($sql);
 
 		$satellites = $query -> result_array();
@@ -2202,16 +2203,16 @@ class Order extends MY_Controller {
 		$amc = 0;
 
 		$sql = "SELECT SUM(ci.dispensed_packs) as dispensed_packs,SUM(ci.dispensed_units) as dispensed_units,SUM(ci.aggr_consumed) as aggr_consumed,SUM(ci.aggr_on_hand) as aggr_on_hand,SUM(ci.count) as count,c.code
-		        FROM cdrr_item ci 
-		        INNER JOIN (SELECT max(id) as id,period_begin,code
-		        FROM cdrr 
-		        WHERE (period_begin='$first' OR period_begin='$second' OR period_begin='$third')
-		        AND facility_id='$facility_id'
-		        AND status NOT LIKE '%prepared%'
-		        AND status NOT LIKE '%deleted%'
-		        GROUP BY period_begin) as c ON ci.cdrr_id=c.id
-		        AND ci.drug_id='$drug_id'
-		        GROUP BY ci.drug_id";
+		FROM cdrr_item ci 
+		INNER JOIN (SELECT max(id) as id,period_begin,code
+		FROM cdrr 
+		WHERE (period_begin='$first' OR period_begin='$second' OR period_begin='$third')
+		AND facility_id='$facility_id'
+		AND status NOT LIKE '%prepared%'
+		AND status NOT LIKE '%deleted%'
+		GROUP BY period_begin) as c ON ci.cdrr_id=c.id
+		AND ci.drug_id='$drug_id'
+		GROUP BY ci.drug_id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -2229,24 +2230,24 @@ class Order extends MY_Controller {
 		return $amc;
 	}
 
-    public function getItems() {
+	public function getItems() {
     	//Default row values
 		$row = array(
-		    'beginning_balance' => 0,
-		    'received_from' => 0,
-		    'dispensed_to_patients' => 0,
-		    'losses' => 0,
-		    'adjustments' => 0,
-		    'adjustments_neg' => 0,
-		    'physical_stock' => 0,
-		    'expiry_qty' => 0,
-		    'expiry_month' => "--",
-		    'stock_out' => 0,
-		    'resupply' => 0
-	    );
+			'beginning_balance' => 0,
+			'received_from' => 0,
+			'dispensed_to_patients' => 0,
+			'losses' => 0,
+			'adjustments' => 0,
+			'adjustments_neg' => 0,
+			'physical_stock' => 0,
+			'expiry_qty' => 0,
+			'expiry_month' => "--",
+			'stock_out' => 0,
+			'resupply' => 0
+		);
 
         //Set parameters
-        $param=array(
+		$param=array(
 			"drug_id" => $this->input->post("drug_id"),
 			"period_begin" => $this->input->post("period_begin"),
 			"facility_id" => $this->input->post("facility_id"),
@@ -2254,14 +2255,14 @@ class Order extends MY_Controller {
 			"stores" => $this->input->post("stores")
 		);
 
-        $code=$param['code'];
-        $facility_id=$param['facility_id'];
-        $period_begin=date('Y-m-01',strtotime($param['period_begin']));
-        $period_end=date('Y-m-t',strtotime($param['period_begin'])); 
-        $stores=$param['stores'];
-        $stores=implode(",",$stores);
-        $stores =str_replace("multiselect-all,","",$stores);
-        $drug_id=$param['drug_id'];
+		$code=$param['code'];
+		$facility_id=$param['facility_id'];
+		$period_begin=date('Y-m-01',strtotime($param['period_begin']));
+		$period_end=date('Y-m-t',strtotime($param['period_begin'])); 
+		$stores=$param['stores'];
+		$stores=implode(",",$stores);
+		$stores =str_replace("multiselect-all,","",$stores);
+		$drug_id=$param['drug_id'];
 
         //get packsize
 		$drug = Sync_Drug::getPackSize($drug_id);
@@ -2275,10 +2276,10 @@ class Order extends MY_Controller {
 		$row['beginning_balance']=$this->getBeginningBalance($param);
 		$row['pack_size']=$pack_size;
 
-	    $row=$this->getOtherTransactions($param,$row);
+		$row=$this->getOtherTransactions($param,$row);
 
-	    
-	    if($row['stock_out']==null){
+		
+		if($row['stock_out']==null){
 			$row['stock_out']=0;
 		}
 
@@ -2292,14 +2293,14 @@ class Order extends MY_Controller {
 				foreach ($satellites as $satellite) {
 					$satellite_site = $satellite['id'];
 					$sql = "SELECT ci.drug_id,SUM(ci.dispensed_units) as consumed,SUM(ci.count) as phy_count
-						    FROM cdrr c
-						    LEFT JOIN cdrr_item ci ON ci.cdrr_id=c.id
-						    WHERE c.period_begin='$period_begin' 
-						    AND c.period_end='$period_end'
-						    AND ci.drug_id='$drug_id'
-						    AND c.status LIKE '%approved%'
-						    AND c.facility_id='$satellite_site'
-						    GROUP BY ci.drug_id";
+					FROM cdrr c
+					LEFT JOIN cdrr_item ci ON ci.cdrr_id=c.id
+					WHERE c.period_begin='$period_begin' 
+					AND c.period_end='$period_end'
+					AND ci.drug_id='$drug_id'
+					AND c.status LIKE '%approved%'
+					AND c.facility_id='$satellite_site'
+					GROUP BY ci.drug_id";
 					$query = $this -> db -> query($sql);
 					$results = $query -> result_array();
 					if (!$results) {
@@ -2307,13 +2308,13 @@ class Order extends MY_Controller {
 						$start_date = date('Y-m-01', strtotime($period_begin . "-1 month"));
 						$end_date = date('Y-m-t', strtotime($period_end . "-1 month"));
 						$sql = "SELECT ci.drug_id,SUM(ci.dispensed_units) as consumed,SUM(ci.count) as phy_count
-					            FROM cdrr c
-					            LEFT JOIN cdrr_item ci ON ci.cdrr_id=c.id
-					            WHERE c.period_begin='$start_date' 
-							    AND c.period_end='$end_date'
-							    AND ci.drug_id='$drug_id'
-							    AND c.facility_id='$satellite_site'
-							    GROUP BY ci.drug_id";
+						FROM cdrr c
+						LEFT JOIN cdrr_item ci ON ci.cdrr_id=c.id
+						WHERE c.period_begin='$start_date' 
+						AND c.period_end='$end_date'
+						AND ci.drug_id='$drug_id'
+						AND c.facility_id='$satellite_site'
+						GROUP BY ci.drug_id";
 						$query = $this -> db -> query($sql);
 						$results = $query -> result_array();
 					}
@@ -2325,26 +2326,26 @@ class Order extends MY_Controller {
 				//append to json array
 				$row['reported_consumed'] = $reported_consumed;
 				$row['reported_physical_stock'] = $reported_count;
-                
+				
                 //get issued to satellites as dispensed_to patients
-                $sql="SELECT SUM(dsm.quantity_out) AS total 
-			          FROM drug_stock_movement dsm
-			          LEFT JOIN drugcode d ON d.id=dsm.drug
-			          LEFT JOIN sync_drug sd ON d.map=sd.id
-			          LEFT JOIN transaction_type t ON t.id=dsm.transaction_type
-			          WHERE dsm.transaction_date 
-			          BETWEEN  '$period_begin' 
-			          AND  '$period_end' 
-			          AND sd.id =  '$drug_id'
-			          AND t.name LIKE '%issue%'
-			          AND dsm.ccc_store_sp IN($stores)";
+				$sql="SELECT SUM(dsm.quantity_out) AS total 
+				FROM drug_stock_movement dsm
+				LEFT JOIN drugcode d ON d.id=dsm.drug
+				LEFT JOIN sync_drug sd ON d.map=sd.id
+				LEFT JOIN transaction_type t ON t.id=dsm.transaction_type
+				WHERE dsm.transaction_date 
+				BETWEEN  '$period_begin' 
+				AND  '$period_end' 
+				AND sd.id =  '$drug_id'
+				AND t.name LIKE '%issue%'
+				AND dsm.ccc_store_sp IN($stores)";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$row['dispensed_to_patients'] = 0;
 				if ($results) {
-                    if($results[0]['total'] !=null){
-                    	$row['dispensed_to_patients']=$results[0]['total'];
-                    }
+					if($results[0]['total'] !=null){
+						$row['dispensed_to_patients']=$results[0]['total'];
+					}
 				}
 			} 
 		}
@@ -2361,16 +2362,16 @@ class Order extends MY_Controller {
 			//Get Physical Count
 			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'] - $row['adjustments_neg'];
 		    //Get Resupply
-		    $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
+			$row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
 		}
 		else
 		{
 			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'] - $row['adjustments_neg'];
-        	$row['resupply'] = ($row['dispensed_to_patients'] * 3) - $row['physical_stock'];
-        }
-        
+			$row['resupply'] = ($row['dispensed_to_patients'] * 3) - $row['physical_stock'];
+		}
+		
         //Convert all items from units to packs
-        foreach ($row as $i => $v) {
+		foreach ($row as $i => $v) {
 			if ($i != "expiry_month" && $i !="beginning_balance") {
 				$row[$i] = round(@$v / @$pack_size);
 			}
@@ -2379,7 +2380,7 @@ class Order extends MY_Controller {
 		if($code == "F-CDRR_packs"){
 			$row['dispensed_packs']=0;
 			if($row['dispensed_to_patients'] >0){
-			   $row['dispensed_packs']=round(@$row['dispensed_to_patients'] / @$pack_size);
+				$row['dispensed_packs']=round(@$row['dispensed_to_patients'] / @$pack_size);
 			}
 		}
 
@@ -2405,8 +2406,8 @@ class Order extends MY_Controller {
 
 			$date = date('Y-m-d',strtotime($param['period_begin']."-3 month"));
 			$sql  = " ( SELECT  count FROM cdrr_item ci, cdrr c WHERE drug_id = ".$param['drug_id']." and ci.cdrr_id = c.id 
-			 and c.facility_id = ".$param['facility_id']." and period_begin >= '$date' and c.code = '".$param['code']."' and c.status != 'deleted' 
-			 and c.status != 'prepared' ORDER BY `cdrr_id` desc limit 1) union (select 0 count) limit 1;";
+			and c.facility_id = ".$param['facility_id']." and period_begin >= '$date' and c.code = '".$param['code']."' and c.status != 'deleted' 
+			and c.status != 'prepared' ORDER BY `cdrr_id` desc limit 1) union (select 0 count) limit 1;";
 
 			$query = $this -> db -> query($sql);
 			$balance= $query -> result_array()[0]['count'];
@@ -2422,32 +2423,32 @@ class Order extends MY_Controller {
 
 	public function getOtherTransactions($param=array(),$row=array()){
 		$period_begin=date('Y-m-01',strtotime($param['period_begin']));
-        $period_end=date('Y-m-t',strtotime($param['period_begin']));
-        $stores=$param['stores'];
-        $stores=implode(",",$stores);
-        $stores =str_replace("multiselect-all,","",$stores);
-        $drug_id=$param['drug_id'];
+		$period_end=date('Y-m-t',strtotime($param['period_begin']));
+		$stores=$param['stores'];
+		$stores=implode(",",$stores);
+		$stores =str_replace("multiselect-all,","",$stores);
+		$drug_id=$param['drug_id'];
 
         //execute query to get all other transactions
-        $sql = "SELECT trans.name, trans.id, trans.effect, dsm.in_total, dsm.out_total 
-			    FROM (SELECT id, name, effect 
-			          FROM transaction_type 
-			          WHERE name LIKE  '%received%' 
-			          OR name LIKE  '%dispense%' 
-			          OR name LIKE  '%loss%' 
-			          OR name LIKE  '%adjustment%' 
-			          ) AS trans 
-			    LEFT JOIN (SELECT dsm.transaction_type, SUM( dsm.quantity ) AS in_total, SUM( dsm.quantity_out ) AS out_total 
-			               FROM drug_stock_movement dsm
-			               LEFT JOIN drugcode d ON d.id=dsm.drug
-			               LEFT JOIN sync_drug sd ON d.map=sd.id
-			               WHERE dsm.transaction_date 
-			               BETWEEN  '$period_begin' 
-			               AND  '$period_end' 
-			               AND sd.id =  '$drug_id'
-			               AND dsm.ccc_store_sp IN($stores)
-			               GROUP BY transaction_type) AS dsm ON trans.id = dsm.transaction_type 
-			    GROUP BY trans.name";
+		$sql = "SELECT trans.name, trans.id, trans.effect, dsm.in_total, dsm.out_total 
+		FROM (SELECT id, name, effect 
+		FROM transaction_type 
+		WHERE name LIKE  '%received%' 
+		OR name LIKE  '%dispense%' 
+		OR name LIKE  '%loss%' 
+		OR name LIKE  '%adjustment%' 
+		) AS trans 
+		LEFT JOIN (SELECT dsm.transaction_type, SUM( dsm.quantity ) AS in_total, SUM( dsm.quantity_out ) AS out_total 
+		FROM drug_stock_movement dsm
+		LEFT JOIN drugcode d ON d.id=dsm.drug
+		LEFT JOIN sync_drug sd ON d.map=sd.id
+		WHERE dsm.transaction_date 
+		BETWEEN  '$period_begin' 
+		AND  '$period_end' 
+		AND sd.id =  '$drug_id'
+		AND dsm.ccc_store_sp IN($stores)
+		GROUP BY transaction_type) AS dsm ON trans.id = dsm.transaction_type 
+		GROUP BY trans.name";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		$total = 0;
@@ -2473,8 +2474,8 @@ class Order extends MY_Controller {
 		}
 		
 		$row['losses'] = @$row['losses_'];
-        $row['adjustments'] = @$row['adjustment_plus'];
-        $row['adjustments_neg'] = @$row['adjustment__'];
+		$row['adjustments'] = @$row['adjustment_plus'];
+		$row['adjustments_neg'] = @$row['adjustment__'];
 
 		unset($row['losses_']);
 		unset($row['adjustment_plus']);
@@ -2485,17 +2486,17 @@ class Order extends MY_Controller {
 		$row['expiry_month'] = "-";
 
 		$sql = "SELECT SUM(dsb.balance) AS expiry_qty,DATE_FORMAT(MIN(dsb.expiry_date),'%M-%Y') as expiry_month
-				FROM drugcode d
-				LEFT JOIN sync_drug sd ON sd.id=d.map
-				LEFT JOIN drug_unit u ON d.unit = u.id
-				LEFT JOIN drug_stock_balance dsb ON d.id = dsb.drug_id
-				WHERE DATEDIFF( dsb.expiry_date,'$period_end') <=180
-				AND DATEDIFF( dsb.expiry_date,'$period_end') >=0
-				AND d.enabled =1
-				AND sd.id='$drug_id'
-				AND dsb.ccc_store_sp IN ($stores)
-				AND dsb.balance >0
-				GROUP BY d.drug";
+		FROM drugcode d
+		LEFT JOIN sync_drug sd ON sd.id=d.map
+		LEFT JOIN drug_unit u ON d.unit = u.id
+		LEFT JOIN drug_stock_balance dsb ON d.id = dsb.drug_id
+		WHERE DATEDIFF( dsb.expiry_date,'$period_end') <=180
+		AND DATEDIFF( dsb.expiry_date,'$period_end') >=0
+		AND d.enabled =1
+		AND sd.id='$drug_id'
+		AND dsb.ccc_store_sp IN ($stores)
+		AND dsb.balance >0
+		GROUP BY d.drug";
 
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
@@ -2506,21 +2507,21 @@ class Order extends MY_Controller {
 
 		//Days out of stock this month
 		$sql = "SELECT DATEDIFF('$period_end',MAX(dsm.transaction_date)) AS last_update
-				FROM drug_stock_movement dsm
-				LEFT JOIN drugcode d ON d.id = dsm.drug
-				LEFT JOIN sync_drug sd ON sd.id = d.map
-				WHERE dsm.transaction_date
-				BETWEEN  '$period_begin'
-				AND  '$period_end'
-				AND dsm.ccc_store_sp IN($stores)
-				AND sd.id =  '$drug_id'
-				AND dsm.machine_code='0'";
+		FROM drug_stock_movement dsm
+		LEFT JOIN drugcode d ON d.id = dsm.drug
+		LEFT JOIN sync_drug sd ON sd.id = d.map
+		WHERE dsm.transaction_date
+		BETWEEN  '$period_begin'
+		AND  '$period_end'
+		AND dsm.ccc_store_sp IN($stores)
+		AND sd.id =  '$drug_id'
+		AND dsm.machine_code='0'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		$row['stock_out'] = 0;
 		if ($results) {
 			if($results[0]['last_update'] !=null){
-			   $row['stock_out'] = $results[0]['last_update'];
+				$row['stock_out'] = $results[0]['last_update'];
 			}
 		}
 		return $row;
