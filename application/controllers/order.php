@@ -1823,8 +1823,7 @@ public function getoiPatients() {
 	$sql = "SELECT FLOOR(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
 	FROM patient p
 	LEFT JOIN patient_status ps ON ps.id = p.current_status
-	WHERE ps.Name LIKE '%active%'
-	AND drug_prophylaxis IN ('1', '2', '3', '4')";
+	WHERE ps.Name LIKE '%active%'";
 	$query = $this ->db->query($sql);
 	$results = $query->result_array();
 	$x=0;
@@ -1833,7 +1832,7 @@ public function getoiPatients() {
 	$s=0;
 	$t=0;
 	$u=0;
-	$a=0;$b=0;$c=0;$d=0;$e=0;$f=0;
+	$a=0;$b=0;$c=0;$d=0;$e=0;$f=0;$g=0;$h=0;
 	foreach($results as $oipatient)
 	{
 		$age=$oipatient['age'];
@@ -1868,11 +1867,23 @@ public function getoiPatients() {
 			$f=$u++;
 			
 		}
+			//Fluconazole
+			// if has Fluconazole
+		if(strpos($drugprophilaxis, '4') !== false AND $age >= 15){
+			$g=$t++;
+			
+		}
+		if(strpos($drugprophilaxis, '4') !== false AND $age < 15){
+			$h=$u++;
+			
+		}
+
+
 	}
 
 		//get the data and convert it to an array that corresponds to the regimens
 
-	$oi_patients[] = array('OI1A'=>$a,'OI1C'=>$b,'OI2A'=>$c,'OI2C'=>$d,'OI4AN'=>$e,'OI4CN'=>$f);
+	$oi_patients[] = array('OI1A'=>$a,'OI1C'=>$b,'OI2A'=>$c,'OI2C'=>$d,'OI4AN'=>$e,'OI4CN'=>$f,'OI5A'=>$g,'OI5C'=>$h);
 	echo json_encode($oi_patients);		
 }
 public function getPeriodRegimenPatients($from, $to) {
