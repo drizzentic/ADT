@@ -1879,8 +1879,9 @@ public function getoiPatients() {
 			$f=$f+1;
 			
 		}
+	}
 
-				$sql = "SELECT IF(ROUND(DATEDIFF(CURDATE(), p.dob)/365) >= 15 , COUNT(DISTINCT pv.patient_id), 0) adult_patients,
+	$sql = "SELECT IF(ROUND(DATEDIFF(CURDATE(), p.dob)/365) >= 15 , COUNT(DISTINCT pv.patient_id), 0) adult_patients,
 		       IF(ROUND(DATEDIFF(CURDATE(), p.dob)/365) < 15 , COUNT(DISTINCT pv.patient_id), 0) paed_patients
 		FROM patient_visit pv 
 		INNER JOIN patient p ON p.patient_number_ccc = pv.patient_id
@@ -1896,10 +1897,8 @@ public function getoiPatients() {
 
 
 		//get the data and convert it to an array that corresponds to the regimens
-
 	$oi_patients[] = array('OI1A'=>$a,'OI1C'=>$b,'OI2A'=>$c,'OI2C'=>$d,'OI4AN'=>$e,'OI4CN'=>$f,'OI5A'=>$g,'OI5C'=>$h);
 	echo json_encode($oi_patients);		
-}
 }
 public function getPeriodRegimenPatients($from, $to) {
 	$regimen_column = "r.map";
