@@ -1820,7 +1820,7 @@ public function get_fmaps_details($map_id) {
 public function getoiPatients() {
 	$facility_code = $this -> session -> userdata("facility");
 	
-	$sql = "SELECT FLOOR(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
+	$sql = "SELECT ROUND(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
 	FROM patient p
 	LEFT JOIN patient_status ps ON ps.id = p.current_status
 	WHERE ps.Name LIKE '%active%'
@@ -1856,12 +1856,12 @@ public function getoiPatients() {
 	
 	}
 
-	$sql = "SELECT FLOOR(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
+	$sql = "SELECT ROUND(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
 	FROM patient p
 	LEFT JOIN patient_status ps ON ps.id = p.current_status
 	WHERE ps.Name LIKE '%active%'
-	and start_regimen_date >= DATE_FORMAT(LAST_DAY(CURDATE()-INTERVAL 1 MONTH),'%Y-%m-%01 ')
-	and start_regimen_date <= DATE_FORMAT(LAST_DAY(CURDATE()-INTERVAL 1 MONTH),'%Y-%m-%d ');
+	and isoniazid_start_date >= DATE_FORMAT(LAST_DAY(CURDATE()-INTERVAL 1 MONTH),'%Y-%m-%01 ')
+	and isoniazid_start_date <= DATE_FORMAT(LAST_DAY(CURDATE()-INTERVAL 1 MONTH),'%Y-%m-%d ');
 	";
 	$query = $this ->db->query($sql);
 	$results = $query->result_array();
@@ -1879,22 +1879,27 @@ public function getoiPatients() {
 			$f=$f+1;
 			
 		}
-				//Fluconazole
-		if(strpos($drugprophilaxis, '4') !== false AND $age >= 15){
-			$g=$g+1;
-			
-		}
-		if(strpos($drugprophilaxis, '4') !== false AND $age < 15){
-			$h=$h+1;
-			
-		}
 
-	}
+				$sql = "SELECT IF(ROUND(DATEDIFF(CURDATE(), p.dob)/365) >= 15 , COUNT(DISTINCT pv.patient_id), 0) adult_patients,
+		       IF(ROUND(DATEDIFF(CURDATE(), p.dob)/365) < 15 , COUNT(DISTINCT pv.patient_id), 0) paed_patients
+		FROM patient_visit pv 
+		INNER JOIN patient p ON p.patient_number_ccc = pv.patient_id
+		INNER JOIN drugcode dc ON dc.id = pv.drug_id
+		WHERE pv.dispensing_date >=  DATE_FORMAT(LAST_DAY(CURDATE()-INTERVAL 1 MONTH),'%Y-%m-%01') 
+		AND pv.dispensing_date <= DATE_FORMAT(LAST_DAY(CURDATE()-INTERVAL 1 MONTH),'%Y-%m-%d ')
+		AND dc.drug LIKE '%fluconazole%'
+		AND pv.indication IN ('IND01', 'IND02')";
+	$query = $this ->db->query($sql);
+	$results = $query->result_array()[0];
+	$g = $results['adult_patients'];
+	$h = $results['paed_patients'];
+
 
 		//get the data and convert it to an array that corresponds to the regimens
 
 	$oi_patients[] = array('OI1A'=>$a,'OI1C'=>$b,'OI2A'=>$c,'OI2C'=>$d,'OI4AN'=>$e,'OI4CN'=>$f,'OI5A'=>$g,'OI5C'=>$h);
 	echo json_encode($oi_patients);		
+}
 }
 public function getPeriodRegimenPatients($from, $to) {
 	$regimen_column = "r.map";

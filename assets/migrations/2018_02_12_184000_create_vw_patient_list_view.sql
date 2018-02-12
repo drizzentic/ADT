@@ -102,6 +102,7 @@ ROUND (DATEDIFF(CURDATE(),p.dob)/365) AS age,
                     drug_prophylaxis
                 LIMIT 3 , 1)) AS prophylaxis,
         p.isoniazid_start_date as isoniazid_start_date,
+        p.isoniazid_end_date as isoniazid_end_date,
         pep_reason.name AS pep_reason,
         prep_reason.name AS prep_reason,
         patient_prep_test.test_date AS prep_reason_test_date,
