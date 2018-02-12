@@ -7,9 +7,8 @@ CREATE OR REPLACE VIEW vw_patient_list AS
         p.other_name AS other_name,
         p.last_name AS last_name,
         p.dob AS date_of_birth,
-        FLOOR(((TO_DAYS(CURDATE()) - TO_DAYS(p.dob)) / 365)) AS age,
-        IF((ROUND(((TO_DAYS(CURDATE()) - TO_DAYS(p.dob)) / 365),
-                    0) >= 15),
+ROUND (DATEDIFF(CURDATE(),p.dob)/365) AS age,
+        IF(ROUND (DATEDIFF(CURDATE(),p.dob)/365) >= 15,
             'Adult',
             'Paediatric') AS maturity,
         p.pob AS pob,
@@ -102,6 +101,7 @@ CREATE OR REPLACE VIEW vw_patient_list AS
                 FROM
                     drug_prophylaxis
                 LIMIT 3 , 1)) AS prophylaxis,
+        p.isoniazid_start_date as isoniazid_start_date,
         pep_reason.name AS pep_reason,
         prep_reason.name AS prep_reason,
         patient_prep_test.test_date AS prep_reason_test_date,
@@ -133,4 +133,4 @@ CREATE OR REPLACE VIEW vw_patient_list AS
         LEFT JOIN prep_reason ON ((patient_prep_test.prep_reason_id = prep_reason.id)))
         LEFT JOIN pep_reason ON ((p.pep_reason = pep_reason.id)))
     WHERE
-        (p.active = 1)
+        (p.active = 1);
