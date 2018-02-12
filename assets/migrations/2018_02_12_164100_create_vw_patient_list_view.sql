@@ -9,7 +9,7 @@ CREATE OR REPLACE VIEW vw_patient_list AS
         p.dob AS date_of_birth,
         FLOOR(((TO_DAYS(CURDATE()) - TO_DAYS(p.dob)) / 360)) AS age,
         IF((ROUND(((TO_DAYS(CURDATE()) - TO_DAYS(p.dob)) / 360),
-                    0) >= 14),
+                    0) >= 15),
             'Adult',
             'Paediatric') AS maturity,
         p.pob AS pob,
