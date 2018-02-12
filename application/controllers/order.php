@@ -1823,15 +1823,10 @@ public function getoiPatients() {
 	$sql = "SELECT FLOOR(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
 	FROM patient p
 	LEFT JOIN patient_status ps ON ps.id = p.current_status
-	WHERE ps.Name LIKE '%active%'";
+	WHERE ps.Name LIKE '%active%'
+	AND start_regimen_date <= DATE_FORMAT(LAST_DAY(CURDATE()-INTERVAL 1 MONTH),'%Y-%m-%d ')";
 	$query = $this ->db->query($sql);
 	$results = $query->result_array();
-	$x=0;
-	$y=0;
-	$z=0;
-	$s=0;
-	$t=0;
-	$u=0;
 	$a=0;$b=0;$c=0;$d=0;$e=0;$f=0;$g=0;$h=0;
 	foreach($results as $oipatient)
 	{
@@ -1840,44 +1835,59 @@ public function getoiPatients() {
 
 			//cotrimoxazole ctx
 		if(strpos($drugprophilaxis, '1')!== false AND $age >= 15){
-			$a=$x++;
+			$a=$a+1;
 			
 		}
 		if(strpos($drugprophilaxis, '1') !== false AND $age < 15){
-			$b=$y++;
+			$b=$b+1;
 			
 		}
 
 			//Dapsone
 		if(strpos($drugprophilaxis, '2') !== false AND $age >= 15){
-			$c=$z++;
+			$c=$c+1;
 			
 		}
 		if(strpos($drugprophilaxis, '2') !== false AND $age < 15){
-			$d=$s++;
+			$d=$d+1;
 			
 		}
-			//Isoniazid 
+	
+	
+	}
+
+	$sql = "SELECT FLOOR(DATEDIFF(CURRENT_DATE, dob)/365) AS age, drug_prophylaxis
+	FROM patient p
+	LEFT JOIN patient_status ps ON ps.id = p.current_status
+	WHERE ps.Name LIKE '%active%'
+	and start_regimen_date >= DATE_FORMAT(LAST_DAY(CURDATE()-INTERVAL 1 MONTH),'%Y-%m-%01 ')
+	and start_regimen_date <= DATE_FORMAT(LAST_DAY(CURDATE()-INTERVAL 1 MONTH),'%Y-%m-%d ');
+	";
+	$query = $this ->db->query($sql);
+	$results = $query->result_array();
+	foreach($results as $oipatient)
+	{
+		$age=$oipatient['age'];
+		$drugprophilaxis=$oipatient['drug_prophylaxis'];
+		//Isoniazid 
 			// if has isoniazid
 		if(strpos($drugprophilaxis, '3') !== false AND $age >= 15){
-			$e=$t++;
+			$e=$e+1;
 			
 		}
 		if(strpos($drugprophilaxis, '3') !== false AND $age < 15){
-			$f=$u++;
+			$f=$f+1;
 			
 		}
-			//Fluconazole
-			// if has Fluconazole
+				//Fluconazole
 		if(strpos($drugprophilaxis, '4') !== false AND $age >= 15){
-			$g=$t++;
+			$g=$g+1;
 			
 		}
 		if(strpos($drugprophilaxis, '4') !== false AND $age < 15){
-			$h=$u++;
+			$h=$h+1;
 			
 		}
-
 
 	}
 
