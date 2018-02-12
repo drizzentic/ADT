@@ -1850,11 +1850,11 @@ public function getoiPatients() {
 		}
 
 			//Dapsone
-		if($drugprophilaxis==2 AND $age >= 15){
+		if(strpos($drugprophilaxis, '2') !== false AND $age >= 15){
 			$c=$z++;
 			
 		}
-		if($drugprophilaxis==2 AND $age < 15){
+		if(strpos($drugprophilaxis, '2') !== false AND $age < 15){
 			$d=$s++;
 			
 		}

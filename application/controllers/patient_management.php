@@ -1787,7 +1787,7 @@ class Patient_management extends MY_Controller {
             'p.Endphase AS endphase',
             'p.NextAppointment AS nextappointment',
             'p.clinicalappointment AS nextappointment_clinical',
-            'p.differentiated_care AS differentiated_care',
+            'IF(p.differentiated_care ="1","differentiated_care_yes","differentiated_care_no") AS differentiated_care',
             'DATEDIFF(p.clinicalappointment,CURDATE()) AS days_to_next_clinical',
             'DATEDIFF(p.NextAppointment,CURDATE()) AS days_to_next',
             'p.Date_Enrolled AS date_enrolled',

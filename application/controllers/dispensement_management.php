@@ -709,12 +709,12 @@ AND  r.regimen_code LIKE '%oi%'
 
 			/// save clinical appointment $ return clinical appointment id then tie it to appointment date
 
-		if ($next_clinical_appointment_date !== $next_clinical_appointment) {
+		// if ($next_clinical_appointment_date !== $next_clinical_appointment) {
 			$q = "SELECT id FROM clinic_appointment WHERE patient = '$patient' AND appointment = '$next_clinical_appointment' LIMIT 1";
 			$query = $this ->db ->query($q);
 			$result = $query->result_array();
 			$clinical_appointment_id = $result[0]['id'];
-			$sql_str = ($clinical_appointment_id>0) ? "UPDATE clinic_appointment set appointment='$next_clinical_appointment_date' where id = $clinical_appointment_id " : "insert into clinic_appointment (patient,appointment,facility,differentiated_care) values ('$patient', '$next_clinical_appointment_date', '$facility','$differentiated_care'); " ;
+			$sql_str = ($clinical_appointment_id>0) ? "UPDATE clinic_appointment set appointment='$next_clinical_appointment_date', differentiated_care = '$differentiated_care' where id = $clinical_appointment_id " : "insert into clinic_appointment (patient,appointment,facility,differentiated_care) values ('$patient', '$next_clinical_appointment_date', '$facility','$differentiated_care'); " ;
 			$query = $this ->db ->query($sql_str);
 
 			$q = "SELECT id FROM clinic_appointment WHERE patient = '$patient' AND appointment = '$next_clinical_appointment_date' LIMIT 1";
@@ -722,7 +722,7 @@ AND  r.regimen_code LIKE '%oi%'
 			$result = $query->result_array();
 			$clinical_appointment_id = $result[0]['id'];
 
-		}
+		// }
 			// <!-- save clinical appointment
 
 
@@ -773,7 +773,7 @@ AND  r.regimen_code LIKE '%oi%'
 			}*/
 			
 			//Add visit
-			$visit_sql = "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason',$last_regimen ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id');";
+			$visit_sql = "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason','$last_regimen' ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id');";
 			$this->db->query($visit_sql);
 			$visit_id = $this->db->insert_id();
 			if($prescription > 0){
