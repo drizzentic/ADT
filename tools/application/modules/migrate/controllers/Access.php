@@ -484,7 +484,7 @@ class Access extends MX_Controller {
 				LEFT JOIN '.$source_database.'.tbltypeofservice ps ON ps.typeofserviceid=p.typeofservice 
 				LEFT JOIN '.$source_database.'.tblcurrentstatus cs ON cs.currentstatusid=p.currentstatus 
 				LEFT JOIN '.$source_database.'.tblsourceofclient s ON s.sourceid=p.sourceofclient',
-				'before'=>array(),
+				'before'=>array('ALTER TABLE tempadt.tblartpatientmasterinformation ADD IF NOT EXISTS datestartipt date NULL'),
 				'update'=>array(
 					'0'=>'UPDATE patient 
 					SET start_regimen_date=date_enrolled 
@@ -602,8 +602,7 @@ class Access extends MX_Controller {
 				'update'=>array(
 					'0'=>'UPDATE users
 					SET Facility_Code='.$facility_code.',
-					ccc_store_sp='.$ccc_pharmacy.'
-					WHERE id IN(1,2)')
+					ccc_store_sp='.$ccc_pharmacy)
 			), 
 			'Drug Transactions' => array(
 				'source'=>'tblARVDrugStockTransactions',
@@ -713,12 +712,13 @@ class Access extends MX_Controller {
 				'update'=>array()
 			)
 		);
-            //if table is not null get value of array in position of the table
-if($table!=null){
-	$tables=$tables[$table];
-}
-return $tables;
-}
+		
+		//if table is not null get value of array in position of the table
+		if($table!=null){
+			$tables=$tables[$table];
+		}
+		return $tables;
+	}
 	
 	public function migrate(){
 		//get posted data
@@ -758,7 +758,11 @@ return $tables;
 	    //run before statements that affect source table
 		if(!empty($befores)){
 			foreach($befores as $before){
-	             $this->db->query($before);
+				try{
+					$this->db->query($before);
+				}catch(Exception $e){
+					$e->getMessage();
+				}
 			}
 	    }
 

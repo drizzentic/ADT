@@ -623,7 +623,7 @@ class Auto_management extends MY_Controller {
 			return $returnable;
 		}
 		else {
-			return $returnable.'disabled';
+			return $returnable.'disabled<br/>';
 		}
 	}
 

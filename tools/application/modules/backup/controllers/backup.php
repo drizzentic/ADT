@@ -69,19 +69,24 @@ class Backup extends MX_Controller {
 		$table .= '<tbody>';
 
 		if (!is_array($data['remote_files'])){$data['ftp_status'] = "$('.alert').addClass('alert-danger');$('.alert').text('Cannot connect to remote server');$('.alert').show();$('.upload').attr('disabled',true);";}
+
+		//echo '<pre>';
+		//print_r($local_files);die();
 		foreach ($files as $key => $file) {
 			if($key < $backup_limit){
-				if (in_array($file, $data['remote_files'])){
+				if(in_array($file, $local_files) && in_array($file, $data['remote_files'])){ //Both local and remote -> Delete
 					$table .='<tr><td>'.basename($file).'</td>';
 					$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button></td>';
 					$table .='</td><td align="center"><img src="./public/assets/img/check-mark.png" height="25px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
 					$table .='</tr>';
-				}else if(!in_array($file, $local_files)){
-					$table .='<td>'.str_replace("/backups/".$facility_code."/", "", $file).'</td>';
+				} 
+				if(!in_array($file, $local_files) && in_array($file, $data['remote_files'])){ //Only Remote -> Download
+					$table .='<tr><td>'.str_replace("/backups/".$facility_code."/", "", $file).'</td>';
 					$table .='<td><button class="btn btn-warning btn-sm download" >Download</button> </td>';
 					$table .='<td align="center"><img src="./public/assets/img/x-mark.png" height="20px"></td><td align="center"> <img src="./public/assets/img/check-mark.png" height="25px"></td></tr>';
 					$table .='</tr>';
-				}else{
+				}
+				if(in_array($file, $local_files) && !in_array($file, $data['remote_files'])){ //Only Local -> Upload
 					$table .='<tr><td>'.basename($file).'</td>';
 					$table .='<td><button class="btn btn-danger btn-sm delete" >Delete</button>
 					<button class="btn btn-info btn-sm upload" >Upload</button> </td>';
