@@ -147,7 +147,7 @@
 	<div id="excel_upload" style="text-align:center;display: none">
 		<form id='fmImportData' name="frm" method="post" enctype="multipart/form-data" id="frm" action="<?php echo base_url()."order/import_order/cdrr"?>">
 			<p>
-				<input type="file"  name="file[]" size="30" multiple="multiple"  required="required" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+				<input type="file"  name="file[]" size="30" multiple="multiple"  required="required" accept=".xlsx, .xls"/>
 				<input name="btn_save" class="btn" type="submit"  value="Save"  style="width:80px; height:30px;"/>
 			</p>
 		</form>
