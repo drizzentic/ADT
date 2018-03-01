@@ -37,7 +37,7 @@ class Backup extends MX_Controller {
 		$exempted_files_dir = array('.','..','.gitkeep', 'downloads', 'testadt_new_site.sql.zip', 'testadt_access_editt.sql.zip');
 		$downloaded_backups = scandir($dir.'/downloads', 1); // downloaded files  -- for purposes of decryption
 
-		$data['remote_files'] = ($this->connect_ftp()) ? $this->list_remote_files() : false ; // fetch files from remote server
+		$data['remote_files'] = ($this->connect_ftp()) ? $this->list_remote_files() : array() ; // fetch files from remote server
 		$CI = &get_instance();
 		$CI -> load -> database();
 		// pick facility code from database
