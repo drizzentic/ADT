@@ -112,5 +112,6 @@ $autoload['language'] = array();
 $autoload['model'] = array();
 
 
+require_once(APPPATH.'third_party/array_column.php');
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */
