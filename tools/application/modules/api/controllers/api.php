@@ -519,7 +519,7 @@ class Api extends MX_Controller {
 				array('ID'=>$pat->id, 'IDENTIFIER_TYPE' =>"SOURCE_SYSTEM_ID",'ASSIGNING_AUTHORITY' =>"ADT"),
 				array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
 			],
-			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->last_name,'LAST_NAME' =>$pat->other_name),
+			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->other_name,'LAST_NAME' =>$pat->last_name),
 			'DATE_OF_BIRTH' => date('Ymd',strtotime($pat->dob)),
 			'DATE_OF_BIRTH_PRECISION' => 'EXACT', 
 			'SEX' => substr($pat->patient_gender, 0,1),
