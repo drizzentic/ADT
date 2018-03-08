@@ -7300,7 +7300,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		->from("drug_stock_movement dsm")
 		->join("transaction_type t","t.id = dsm.transaction_type","LEFT")
 		->join("drugcode d","d.id = dsm.drug","LEFT")
-		->join("drug_source ds","ds.id = dsm.source_destination","LEFT")
+		->join("drug_destination ds","ds.id = dsm.source_destination","LEFT")
 		->where("dsm.transaction_date BETWEEN '$start_date' AND '$end_date'")
 		->where("dsm.facility",$facility_code)
 		->like("t.name","issue")
