@@ -465,7 +465,7 @@
                 var appointment_timestamp = $("#next_appointment_date").datepicker("getDate").getTime();
                 var difference = appointment_timestamp - today_timestamp;
                 var days_difference = difference / one_day;
-                $("#days_to_next").attr("value", days_difference);
+                $("#days_to_next").attr("value", Math.round(days_difference));
                 retrieveAppointedPatients();
                 validateAppointments();
             }
@@ -485,7 +485,7 @@
 
                 var difference = appointment_timestamp - today_timestamp;
                 var days_difference = difference / one_day;
-                $("#days_to_next_clinical").attr("value", days_difference);
+                $("#days_to_next_clinical").attr("value", Math.round(days_difference));
                 retrieveAppointedPatients();
             }
         });
