@@ -4,7 +4,6 @@ if (!defined('BASEPATH'))
 
 class Api extends MX_Controller {
 	var $backup_dir = "./backup_db";
-	var $il_url = 'http://tedb19:9721/api/'; // IL url
 
 	var $api;        
 	var $patient_module;            
@@ -16,10 +15,13 @@ class Api extends MX_Controller {
 	var $adt_port;
 	var $adt_url;
 
+
+
 	function __construct() {
 		parent::__construct();
 		$this->load->library('ftp');
 		$this->load->model('api_model');
+		date_default_timezone_set('Africa/Nairobi');
 	}
 
 	public function index() {
@@ -84,6 +86,7 @@ class Api extends MX_Controller {
 			'API Messages' => $api_messages
 		);
 		header('Content-Type: application/json');
+
 		echo json_encode($api_arr) ;
 
 	}
@@ -539,14 +542,11 @@ class Api extends MX_Controller {
 			'HIV_CARE_ENROLLMENT_DATE'=> date('Ymd',strtotime($pat->date_enrolled))
 
 		);
-
-
-
 		echo "<pre>";
 		echo(json_encode($patient,JSON_PRETTY_PRINT));
 		$this->writeLog('PATIENT '.$msg_type.' ' .$message_type ,json_encode($patient));
 		$this->tcpILRequest(null, json_encode($patient));
-		$this->getObservation($patient);
+		$this->getObservation($pat->patient_number_ccc);
 
 	}
 
@@ -730,8 +730,9 @@ class Api extends MX_Controller {
 
 	function postILRequest($request){
 		// echo $request;
+		init_api_values();
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $this->il_url);
+		curl_setopt($ch, CURLOPT_URL, $this->il_ip .':'.$this->il_port);
 
 		curl_setopt_array($ch, array(
 			CURLOPT_POST => TRUE,
@@ -752,8 +753,9 @@ class Api extends MX_Controller {
 	}
 
 	function tcpILRequest($request_type, $request){
-		// $fp = fsockopen("tedb19", 9720, $errno, $errstr, 30);
-		$fp = fsockopen("52.178.24.227", 9720, $errno, $errstr, 30);
+		init_api_values();
+		// echo "sending tcp request";
+		$fp = fsockopen($this->il_ip, $this->il_port, $errno, $errstr, 30);
 		if (!$fp) {
 			echo "$errstr ($errno)<br />\n";
 		} else {
