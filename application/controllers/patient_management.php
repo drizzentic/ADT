@@ -664,6 +664,7 @@ class Patient_management extends MY_Controller {
     }
 
     public function update($record_id) {
+        $this->init_api_values();
         $family_planning = "";
         $other_illness_listing = "";
         $other_allergies_listing = "";

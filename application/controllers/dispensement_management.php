@@ -592,6 +592,7 @@ AND  r.regimen_code LIKE '%oi%'
 	}
 
 	public function save() {
+		$appointment_id;
 		$period = date("M-Y");
 		$ccc_id = $this -> input -> post("ccc_store_id");
 		$this -> session -> set_userdata('ccc_store_id',$ccc_id);
