@@ -5,15 +5,15 @@ if (!defined('BASEPATH'))
 class Api extends MX_Controller {
 	var $backup_dir = "./backup_db";
 
-	var $api;        
-	var $patient_module;            
-	var $dispense_module;            
-	var $appointment_module; 
-	var $logging;
-	var $il_port;
-	var $il_ip;
-	var $adt_port;
-	var $adt_url;
+	var $api = '';        
+	var $patient_module = '';            
+	var $dispense_module = '';            
+	var $appointment_module = ''; 
+	var $logging = '';
+	var $il_port = '';
+	var $il_ip = '';
+	var $adt_port = '';
+	var $adt_url = '';
 
 
 
@@ -730,7 +730,8 @@ class Api extends MX_Controller {
 
 	function postILRequest($request){
 		// echo $request;
-		init_api_values();
+		$this->init_api_values();
+
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->il_ip .':'.$this->il_port);
 
@@ -753,7 +754,8 @@ class Api extends MX_Controller {
 	}
 
 	function tcpILRequest($request_type, $request){
-		init_api_values();
+		var_dump($this->il_ip);
+		$this->init_api_values();
 		// echo "sending tcp request";
 		$fp = fsockopen($this->il_ip, $this->il_port, $errno, $errstr, 30);
 		if (!$fp) {
@@ -766,7 +768,8 @@ class Api extends MX_Controller {
 	}
 	function writeLog($logtype,$msg){
 
-		$fp = fopen('IL-api.log', 'a');
+		$fp = fopen('IL-api.log', (file_exists('IL-api.log')) ? 'a' : 'w');
+
 		fwrite($fp, date('H:i:s'). ' '.$logtype.' : '. $msg."\r\n");
 		// fwrite($fp,'\n');
 
@@ -795,6 +798,7 @@ class Api extends MX_Controller {
 		$this->il_ip = (strlen($conf['api_il_ip']) > 1) ? $conf['api_il_ip'] : FALSE;
 		$this->il_port = (strlen($conf['api_il_port']) > 1) ? $conf['api_il_port'] : FALSE;
 		$this->logging = $conf['api_logging'] == 'on'? TRUE : FALSE;
+
 		return $api_config;
 	}
 
