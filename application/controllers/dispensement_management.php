@@ -157,7 +157,12 @@ class Dispensement_management extends MY_Controller {
 		$data['prescription'] = array();
 		$pid = (isset($_GET['pid'])) ? $_GET['pid'] : null;
 		if ($pid && $this->api && $this->dispense_module){
-			$ps_sql="SELECT * from drug_prescription dp,drug_prescription_details dpd where
+			$ps_sql="SELECT dp.*,dpd.*,
+			CASE WHEN dpdv.id IS NULL THEN 'not dispensed' ELSE 'dispensed' END as dispense_status
+			FROM drug_prescription dp,drug_prescription_details dpd 
+			left outer join drug_prescription_details_visit  dpdv on dpdv.drug_prescription_details_id  =dpd.id
+			left outer join patient_visit on dpdv.visit_id  = patient_visit.id
+			where
 			dp.id = dpd.drug_prescriptionid and dp.id = $pid";
 			$query = $this -> db -> query($ps_sql);
 			$ps = $query -> result_array();
@@ -592,7 +597,7 @@ AND  r.regimen_code LIKE '%oi%'
 	}
 
 	public function save() {
-		$appointment_id;
+		$appointment_id = 0;
 		$period = date("M-Y");
 		$ccc_id = $this -> input -> post("ccc_store_id");
 		$this -> session -> set_userdata('ccc_store_id',$ccc_id);
@@ -730,18 +735,16 @@ AND  r.regimen_code LIKE '%oi%'
 
 		if ($last_appointment_date) {
 			if ($last_appointment_date > $dispensing_date) {
-				//come early for appointment
+			//come early for appointment
 				$sql .= "delete from patient_appointment where patient='$patient' and appointment='$last_appointment_date';";
 			}
 		}
 		$sql .= "insert into patient_appointment (patient,appointment,facility,clinical_appointment) values ('$patient','$next_appointment_date','$facility','$clinical_appointment_id');";
 
-			$q = "SELECT id FROM patient_appointment WHERE patient = '$patient' AND appointment = '$next_appointment_date' LIMIT 1";
-			$query = $this ->db ->query($q);
-			$result = $query->result_array();
-			$appointment_id = $result[0]['id'];
-
-
+		$q = "SELECT id FROM patient_appointment WHERE patient = '$patient' AND appointment = '$next_appointment_date' LIMIT 1";
+		$query = $this ->db ->query($q);
+		$result = $query->result_array();
+		$appointment_id = $result[0]['id'];
 		/*
 		 * Update patient Info
 		 */
@@ -812,8 +815,8 @@ AND  r.regimen_code LIKE '%oi%'
 
 		}
 		if(isset($prescription)){
-			file_get_contents(base_url().'tools/api/getDispensing/'.$prescription);
-			file_get_contents(base_url().'tools/api/getAppointment/'.$appointment_id);
+			file_get_contents(base_url().'tools/api/getdispensing/'.$prescription);
+			file_get_contents(base_url().'tools/api/getappointment/'.$appointment_id);
 		}
 
 		$this -> session -> set_userdata('msg_save_transaction', 'success');
@@ -1092,7 +1095,7 @@ AND  r.regimen_code LIKE '%oi%'
 
 	public function getPrescriptions($patient_ccc = nuull){
 		$prescription = array();
-		$sql="SELECT * FROM drug_prescription WHERE patient = '$patient_ccc'";
+		$sql="SELECT * FROM drug_prescription WHERE patient = '$patient_ccc' ORDER BY id DESC LIMIT 1";
 		$query=$this->db->query($sql);
 		$results=$query->result_array();
 		if($results){

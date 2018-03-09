@@ -47,7 +47,7 @@ class Chat implements MessageComponentInterface {
 		
 		$ch = curl_init();
 		// $url = 'http://'. $_REQUEST['SERVER_NAME'] .':'.$_REQUEST['SERVER_PORT']. '/ADT/tools/api';
-		$url = $_SERVER['APP_URL'].'/ADT/api';
+		$url = 'http://localhost:81/ADT/tools/api';
 		// set the url, number of POST vars, POST data
 		curl_setopt($ch,CURLOPT_URL, $url);
 		curl_setopt($ch,CURLOPT_POST, count($msg));

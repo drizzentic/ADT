@@ -1,38 +1,16 @@
 <style>
-.content{
-    padding:10em 1% 5% 1%;
-    background-color: #FFA8E7;
-    zoom:0.8;
-}
-.dispensing-field input, .dispensing-field select,#tbl-dispensing-drugs input, #tbl-dispensing-drugs select{
-    width: 100%;
-    height:1.9em;
-    border-radius:0px;
-}
-.dispensing-field table{
-    margin:0px;
-}
-
-.dispensing-field label{
-    margin:0px;
-    line-height: 18px;
-    font-size:12px;
-}
-.dispensing-field .control-group{
-    margin-bottom:5px;
-}
-#tbl-dispensing-drugs{
-    margin-top:3px;
-}
+.content{padding:10em 1% 5% 1%;background-color: #FFA8E7;zoom:0.8;}
+.dispensing-field input, .dispensing-field select,#tbl-dispensing-drugs input, #tbl-dispensing-drugs select{width: 100%;height:1.9em;border-radius:0px;}
+.dispensing-field table{margin:0px;}
+.dispensing-field label{margin:0px;line-height: 18px;font-size:12px;}
+.dispensing-field .control-group{margin-bottom:5px;}
+#tbl-dispensing-drugs{margin-top:3px;}
 #tbl-dispensing-drugs,#last_visit_data,#last_visit_data th,#last_visit_data td, #tbl-dispensing-drugs tr, #tbl-dispensing-drugs td, #tbl-dispensing-drugs th{
     border-radius: 0px;
 }
-#tbl-dispensing-drugs tr, #tbl-dispensing-drugs td, #tbl-dispensing-drugs th{
-    padding:2px;
-} 
-#submit_section{
-    text-align:right;
-}
+#tbl-dispensing-drugs tr, #tbl-dispensing-drugs td, #tbl-dispensing-drugs th{padding:2px;} 
+#submit_section{text-align:right;}
+#prescription_div {overflow-y: scroll;width: 100%;max-height: 300px;margin-top: 77px;}
 </style>
 <?php// require 'dispense_adr_v.php' ?>
 <div class="container-fluid content">
@@ -259,43 +237,45 @@
 
 
 
-                          <?php  if(count($prescription)>0 && $api){?>
-                <div id="prescription_div">
-                    Ordering Physician: <?= $prescription[0]['order_physician']; ?>
-                    <span class="pull-right"> <?= $prescription[0]['timecreated']; ?></span>
-                    <table>
-                        <thead>
-                            <th></th>
-                            <th></th>
-                        </thead>
+                        <?php  if(count($prescription)>0 && $api){?>
 
-                        <tbody>
 
-                            <?php foreach ($prescription as $ps) {  ?>
-                            <tr>
-                                <td>
-                                    <?= $ps['drug_name'].' '; ?>
-                                </td>
-                                <td>
-                                    <?= 'notes- '.$ps['notes'].' '; ?>
-                                </td>
+                        <div id="prescription_div">
+                            <div style="background: #f7e9e9;">
+                            Ordering Physician: <?= $prescription[0]['order_physician']; ?>
+                            <span class="pull-right"> <?= $prescription[0]['timecreated']; ?></span>
+                                
+                            </div>
 
-                                <?= 'drug_name- '.$ps['drug_name'].' '; ?>
+                            <table class="table" style="background: #fff;padding: 2px;">
+                                <thead>
+                                    <th>Regimen</th>
+                                    <th>Strength</th>
+                                    <th>Dosage</th>
+                                    <th>Frequency</th>
+                                    <th>Duration</th>
+                                    <th>qty</th>
+                                    <th>notes</th>
+                                    <th>dispense status</th>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($prescription as $ps) {  ?>
+                                    <tr>
+                                        <td> <?= $ps['drug_name'].' '; ?></td>
+                                        <td> <?= $ps['strength'].' '; ?></td>
+                                        <td> <?= $ps['dosage'].' '; ?></td>
+                                        <td> <?= $ps['frequency'].' '; ?></td>
+                                        <td> <?= $ps['duration'].' '; ?></td>
+                                        <td> <?= $ps['quantity_prescribed'].' '; ?></td>
+                                        <td> <?= $ps['prescription_notes'].' '; ?></td>
+                                        <td> <?= $ps['dispense_status'].' '; ?></td>
+                                    </tr>    
+                                    <?php }?>
+                                </tbody>
+                            </table>
 
-                                <?= 'strength- '.$ps['strength'].' '; ?>
-                                <?= 'dosage- '.$ps['dosage'].' '; ?>
-                                <?= 'frequency- '.$ps['frequency'].' '; ?>
-                                <?= 'duration- '.$ps['duration'].' '; ?>
-
-                                <?= 'quantity_prescribed- '.$ps['quantity_prescribed'].' '; ?>
-                                <?= 'prescription_notes- '.$ps['prescription_notes'].' '; ?>
-                            </tr>    
-                            <?php }?>
-                        </tbody>
-                    </table>
-
-                </div>
-                <?php }?>
+                        </div>
+                        <?php }?>
 
 
 
@@ -339,11 +319,11 @@
                             <input type="text" name="expiry[]" name="expiry" class="expiry input-small expiry_date" readonly="" size="15"/>
                         </td>
                         <td class="dose_col">
-                           <!-- <select name="dose[]" class="next_pill input-small dose  span2"></select></td>-->
-                           <input  name="dose[]" list="dose" class="input-small next_pill dose icondose doselist"> 
-                           <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist> 
-                       </td>
-                       <td>
+                         <!-- <select name="dose[]" class="next_pill input-small dose  span2"></select></td>-->
+                         <input  name="dose[]" list="dose" class="input-small next_pill dose icondose doselist"> 
+                         <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist> 
+                     </td>
+                     <td>
                         <input type="text" name="pill_count[]" class="pill_count input-small" readonly="readonly" />
                     </td>
                     <td>
@@ -407,6 +387,9 @@
     <script type="text/javascript">
         $(document).ready(function(){
 
+    <?php  if(count($prescription)>0 && $api){?>
+        $('#current_regimen').val($("#current_regimen option:contains($prescription[0]['drug_name'])").val());
+        <?php } ?>
             $('#ccc_store_id').val(<?= $this -> session -> userdata('ccc_store_id');?>);
             $('#ccc_store_id').attr('readonly','true');
             var loopcounter = 0;
@@ -503,8 +486,8 @@
                 appointment_date.datepicker("setDate", new Date(appointment_timestamp));
                 retrieveAppointedPatients();
             }else{
-               bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
-           }
+             bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
+         }
             //Loop through Table to calculate pill counts for all rows
             $.each($(".drug"), function(i, v) {
                 var row = $(this);
@@ -528,9 +511,9 @@
                 clinical_appointment_date.datepicker("setDate", new Date(appointment_timestamp));
                 // retrieveAppointedPatients();
             }else{
-               bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
-           }
-       });
+             bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
+         }
+     });
         // -------------------------- Dispensing date, date picker settings and checks end--------------------------
         
         
@@ -815,22 +798,22 @@
             $("#next_clinical_appointment").val(data.clinicalappointment);
             if(data.clinicalappointment.length > 1){
 
-             var base_date = new Date();
-             var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
-             var today_timestamp = today.getTime();
-             var one_day = 1000 * 60 * 60 * 24;
+               var base_date = new Date();
+               var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
+               var today_timestamp = today.getTime();
+               var one_day = 1000 * 60 * 60 * 24;
 
-             var clinical_appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
-             var difference = clinical_appointment_timestamp - today_timestamp;
-             var days_difference = difference / one_day;
-             $("#days_to_next_clinical").attr("value", days_difference);
-         }
+               var clinical_appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
+               var difference = clinical_appointment_timestamp - today_timestamp;
+               var days_difference = difference / one_day;
+               $("#days_to_next_clinical").attr("value", days_difference);
+           }
 
 
-         is_pregnant = data.Pregnant;
-         has_tb      = data.Tb;
-         var age = data.age;
-         patient_ccc = data.Patient_Number_CCC;
+           is_pregnant = data.Pregnant;
+           has_tb      = data.Tb;
+           var age = data.age;
+           patient_ccc = data.Patient_Number_CCC;
                 //CHeck if patient is pregnant
                 checkIfPregnant(is_pregnant,patient_ccc);
                 //Check if still has tb
@@ -1338,11 +1321,11 @@ request.fail(function(jqXHR, textStatus) {
         var dose_freq = row.closest("tr").find(".dose option:selected").attr("dose_freq");
     });
     $(".duration").on('change', function() {
-     duration_quantity($(this));
- });
+       duration_quantity($(this));
+   });
     $(".dose").on('input', function() {
-     duration_quantity($(this));
- });
+       duration_quantity($(this));
+   });
 
     //function to change quantity based on the duration 
     function duration_quantity(row){
@@ -1377,10 +1360,10 @@ request.fail(function(jqXHR, textStatus) {
     }
 
     function setClinicalAppointment(days){
-            $("#days_to_next_clinical").val(days);
-            $("#days_to_next_clinical").trigger('change');
+        $("#days_to_next_clinical").val(days);
+        $("#days_to_next_clinical").trigger('change');
             // $("#next_clinical_appointment_date").val($("#next_appointment_date").val());
-    }
+        }
 
     //function to add drug row in table 
     $(".add").click(function() {
@@ -1485,9 +1468,9 @@ request.fail(function(jqXHR, textStatus) {
                 }
             });                                            
         }else{
-           bootbox.alert("<h4>Remove Alert!</h4>\n\<hr/><center>Error!Cannot Delete Last Row Try Reset!</center>");
-       }
-   });
+         bootbox.alert("<h4>Remove Alert!</h4>\n\<hr/><center>Error!Cannot Delete Last Row Try Reset!</center>");
+     }
+ });
     $("#reset").click(function (e){
         e.preventDefault();
         
@@ -1584,24 +1567,24 @@ request.fail(function(jqXHR, textStatus) {
                 msg+='<b>'+drug_name + '</b> :  There is a commodity that has a quantity greater than the quantity available<br/>';
             }
             <?php  if ($pill_count !== "0"){ ?> 
-            if(!last_row.find(".next_pill_count").val() && last_row.find(".drug option:selected").attr('arv_status') == 1){
-                msg+='<b>'+drug_name + '</b> : You have not entered the pill count!<br/>';
-            }
-            if(!last_row.find(".missed_pills ").val() && last_row.find(".drug option:selected").attr('arv_status') == 1){
-                msg+='<b>'+drug_name + '</b> : You have not entered the missed pills!<br/>';
-            }
-            <?php } ?>
-            
-        });
+                if(!last_row.find(".next_pill_count").val() && last_row.find(".drug option:selected").attr('arv_status') == 1){
+                    msg+='<b>'+drug_name + '</b> : You have not entered the pill count!<br/>';
+                }
+                if(!last_row.find(".missed_pills ").val() && last_row.find(".drug option:selected").attr('arv_status') == 1){
+                    msg+='<b>'+drug_name + '</b> : You have not entered the missed pills!<br/>';
+                }
+                <?php } ?>
+
+            });
         //Show Bootbox
         if(msg !=''){
-           bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
-           return;
-       }
+         bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
+         return;
+     }
 
-       var rowCount = $('#drugs_table>tbody tr').length;
-       return true;
-   }
+     var rowCount = $('#drugs_table>tbody tr').length;
+     return true;
+ }
 
     //------------------------------ END DATA PROCESSING ---------------------------------
     
@@ -1755,8 +1738,8 @@ request.fail(function(jqXHR, textStatus) {
                                                 callback: function (test_result) {
                                                     var test_result_url = "<?php echo base_url(); ?>"+'dispensement_management/update_prep_test/'+patient_id+'/'+prep_reason+'/'+is_tested+'/'+test_date+'/'+test_result
                                                     $.get(test_result_url, function(msg){
-                                                     bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
-                                                 });
+                                                       bootbox.alert("<h4>HIV TEST (PREP)</h4>\n\<hr/><center>"+msg+"</center>")
+                                                   });
                                                 }
                                             });
                                         }
@@ -1878,8 +1861,8 @@ request.fail(function(jqXHR, textStatus) {
     function getRoutineDrugs(visits,total_visits,count){
       //loop and add rows 
       for(var count=0;count<(visits.length-1);count++){
-         var row = $('#tbl-dispensing-drugs tr:last');
-         var cloned_row = row.clone(true);
+       var row = $('#tbl-dispensing-drugs tr:last');
+       var cloned_row = row.clone(true);
          //show remove link for cloned row
          cloned_row.find(".remove").show();
          //insert after cloned row
@@ -1959,12 +1942,12 @@ request.fail(function(jqXHR, textStatus) {
     function checkAppointment(){
         if($("#days_to_next").val()!= " ")
         {
-         var days = $("#days_to_next").val();
-         $("#days_to_next").val();
+           var days = $("#days_to_next").val();
+           $("#days_to_next").val();
 
-     }
+       }
 
- }
+   }
     //function to calculate adherence rate(%)
     function getAdherenceRate(){
         $("#adherence").attr("value", " ");
