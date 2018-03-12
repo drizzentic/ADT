@@ -3652,69 +3652,69 @@ public function getisoniazidPatients($from = "", $to = "") {
 
 		//cotrimoxazole
 		//male adult
-	$sql13 = "SELECT * FROM patient WHERE drug_prophylaxis=1 AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
+	$sql13 = "SELECT * FROM patient WHERE drug_prophylaxis like '%1%' AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
 
 	$query13 = $this -> db -> query($sql13);
 	$result13 = $query13 ->num_rows();
 		//$count=$result['COUNT(*)'];
 		//female adult
-	$sql14 = "SELECT * FROM patient WHERE drug_prophylaxis=1 AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
+	$sql14 = "SELECT * FROM patient WHERE drug_prophylaxis like '%1%' AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
 
 	$query14 = $this -> db -> query($sql14);
 	$result14= $query14 -> num_rows();
 		//male child
-	$sql15 = "SELECT * FROM patient WHERE drug_prophylaxis=1 AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
+	$sql15 = "SELECT * FROM patient WHERE drug_prophylaxis like '%1%' AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
 
 	$query15 = $this -> db -> query($sql15);
 	$result15 = $query15 -> num_rows();
 		//female adult
-	$sql16 = "SELECT * FROM patient WHERE drug_prophylaxis=1 AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
+	$sql16 = "SELECT * FROM patient WHERE drug_prophylaxis like '%1%' AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
 
 	$query16 = $this -> db -> query($sql16);
 	$result16 = $query16 -> num_rows();
 
 		//dapsone
 		//male adult
-	$sql17 = "SELECT * FROM patient WHERE drug_prophylaxis=2 AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1 ";
+	$sql17 = "SELECT * FROM patient WHERE drug_prophylaxis like '%2%' AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1 ";
 
 	$query17 = $this -> db -> query($sql17);
 	$result17 = $query17 ->num_rows();
 		//$count=$result['COUNT(*)'];
 		//female adult
-	$sql18 = "SELECT * FROM patient WHERE drug_prophylaxis=2 AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
+	$sql18 = "SELECT * FROM patient WHERE drug_prophylaxis like '%2%' AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
 
 	$query18 = $this -> db -> query($sql18);
 	$result18= $query18 -> num_rows();
 		//male child
-	$sql19 = "SELECT * FROM patient WHERE drug_prophylaxis=2 AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1 ";
+	$sql19 = "SELECT * FROM patient WHERE drug_prophylaxis like '%2%' AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1 ";
 
 	$query19 = $this -> db -> query($sql19);
 	$result19 = $query19 -> num_rows();
 		//female adult
-	$sql20 = "SELECT * FROM patient WHERE drug_prophylaxis=2 AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
+	$sql20 = "SELECT * FROM patient WHERE drug_prophylaxis like '%2%' AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
 
 	$query20 = $this -> db -> query($sql20);
 	$result20 = $query20 -> num_rows();
 
 		//Fluconazole
 		//male adult
-	$sql21 = "SELECT * FROM patient WHERE drug_prophylaxis=4 AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
+	$sql21 = "SELECT * FROM patient WHERE drug_prophylaxis like '%4%' AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
 
 	$query21 = $this -> db -> query($sql21);
 	$result21 = $query21->num_rows();
 		//$count=$result['COUNT(*)'];
 		//female adult
-	$sql22 = "SELECT * FROM patient WHERE drug_prophylaxis=4 AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
+	$sql22 = "SELECT * FROM patient WHERE drug_prophylaxis like '%4%' AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)>15 AND current_status=1";
 
 	$query22 = $this -> db -> query($sql22);
 	$result22= $query22 -> num_rows();
 		//male child
-	$sql23 = "SELECT * FROM patient WHERE drug_prophylaxis=4 AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
+	$sql23 = "SELECT * FROM patient WHERE drug_prophylaxis like '%4%' AND gender=1 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
 
 	$query23 = $this -> db -> query($sql23);
 	$result23 = $query23 -> num_rows();
 		//female adult
-	$sql24 = "SELECT * FROM patient WHERE drug_prophylaxis=4 AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
+	$sql24 = "SELECT * FROM patient WHERE drug_prophylaxis like '%4%' AND gender=2 AND FLOOR(DATEDIFF('$from',dob)/365)<15 AND current_status=1";
 
 	$query24 = $this -> db -> query($sql24);
 	$result24 = $query24 -> num_rows();
