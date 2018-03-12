@@ -315,9 +315,6 @@
 									<a href="#" class="settings/listing/drug_unit" title="Drug Units Management">Drug Units</a>
 								</li>
 								<li>
-									<a href="#" class="drug_stock_balance_sync/setConsumption" title="Drug Consumption">Drug Consumption</a>
-								</li>
-								<li>
 									<a href="#" class="dose_management" title="Drug Dose Management">Drug Doses</a>
 								</li>
 								<li>

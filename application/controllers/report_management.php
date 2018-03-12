@@ -5176,6 +5176,10 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			$data['report_title'] = "Expiring Drugs";
 			$data['content_view'] = 'reports/expiring_drugs_v';
 		} else if ($report_type == "drug_consumption") {
+
+			// run drug_consumption
+			// drug_stock_balance_sync/setConsumption
+		 $update_drug_consumption = file_get_contents(base_url().'drug_stock_balance_sync/setConsumption');
 			//Get actual page
 			if ($this -> uri -> segment(4) != "") {
 				$data['year'] = $this -> uri -> segment(4);
