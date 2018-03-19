@@ -2415,6 +2415,10 @@ $this -> load -> view('template', $data);
 
 
 public function get_pep_reasons($period_start="",$period_end=""){
+
+	$period_start = date('Y-m-d',strtotime($period_start));
+	$period_end = date('Y-m-d',strtotime($period_end));
+	
 	$sql = "SELECT  pr.name,pr.id,
 	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 15 AND (YEAR(CURDATE())-YEAR(dob)) < 20 , 1, NULL)) as male_15,
 	COUNT(IF(LOWER(g.name) = 'male' AND (YEAR(CURDATE())-YEAR(dob)) >= 20 AND (YEAR(CURDATE())-YEAR(dob)) < 25 , 1, NULL)) as male_20,
