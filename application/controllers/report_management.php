@@ -1061,8 +1061,9 @@ class Report_management extends MY_Controller {
 
 	public function art_retention($period){
 		$period_start = date("Y-m-01", strtotime("-12 months", strtotime($period)));
+		$period_end = date("Y-m-01", strtotime("-11 months", strtotime($period)));
+		$period_end = date("Y-m-d", strtotime("-1 day", strtotime($period_end)));
 
-		$period_end = date('Y-m-t', strtotime($period));
 		$data = array();
 
 
@@ -1074,9 +1075,7 @@ class Report_management extends MY_Controller {
 
 		$sql = "SELECT 
 		COUNT(*) as on_art_12mths FROM vw_patient_list
-		WHERE current_status LIKE '%active%'
-		AND service LIKE '%art%' or service LIKE '%pmtct%'
-		AND 	start_regimen_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
+		WHERE 	start_regimen_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
 		AND 	start_regimen_date <= '$period_end'
 		";
 		$query = $this -> db -> query($sql);
@@ -1086,7 +1085,7 @@ class Report_management extends MY_Controller {
 
 		$sql = "SELECT 
 		COUNT(*) as net_cohort_12mths FROM vw_patient_list
-		WHERE lower(current_status) LIKE '%active%' OR lower(current_status) LIKE '%transfer out%'
+		WHERE lower(current_status) LIKE '%active%' 
 		AND service LIKE '%art%' or service LIKE '%pmtct%'
 		AND 	start_regimen_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
 		AND 	start_regimen_date <= '$period_end'
