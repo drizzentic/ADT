@@ -1075,7 +1075,7 @@ class Report_management extends MY_Controller {
 
 		$sql = "SELECT 
 		COUNT(*) as on_art_12mths FROM vw_patient_list
-		WHERE 	start_regimen_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
+		WHERE 	start_regimen_date >= '$period_start'
 		AND 	start_regimen_date <= '$period_end'
 		";
 		$query = $this -> db -> query($sql);
@@ -1086,8 +1086,7 @@ class Report_management extends MY_Controller {
 		$sql = "SELECT 
 		COUNT(*) as net_cohort_12mths FROM vw_patient_list
 		WHERE lower(current_status) LIKE '%active%' 
-		AND service LIKE '%art%' or service LIKE '%pmtct%'
-		AND 	start_regimen_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
+		AND 	start_regimen_date >= '$period_start'
 		AND 	start_regimen_date <= '$period_end'
 		";
 		$query = $this -> db -> query($sql);
