@@ -444,9 +444,10 @@
                 var base_date = new Date();
                 var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
                 var today_timestamp = today.getTime();
+                var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
                 var one_day = 1000 * 60 * 60 * 24;
                 var appointment_timestamp = $("#next_appointment_date").datepicker("getDate").getTime();
-                var difference = appointment_timestamp - today_timestamp;
+                var difference = appointment_timestamp - dispensing_date_timestamp;
                 var days_difference = difference / one_day;
                 $("#days_to_next").attr("value", Math.round(days_difference));
                 retrieveAppointedPatients();
@@ -463,17 +464,18 @@
                 var base_date = new Date();
                 var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
                 var today_timestamp = today.getTime();
+                var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
                 var one_day = 1000 * 60 * 60 * 24;
                 var appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
 
-                var difference = appointment_timestamp - today_timestamp;
+                var difference = appointment_timestamp - dispensing_date_timestamp;
                 var days_difference = difference / one_day;
                 $("#days_to_next_clinical").attr("value", Math.round(days_difference));
                 retrieveAppointedPatients();
             }
         });
         //Add listener to the 'days_to_next' field so that the date picker can reflect the correct number of days!
-        $("#days_to_next").change(function() {
+        $("#days_to_next, #dispensing_date").change(function() {
             var days = $("#days_to_next").attr("value");
 
             if(days > 0){
@@ -482,7 +484,9 @@
                 var appointment_date = $("#next_appointment_date");
                 var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
                 var today_timestamp = today.getTime();
-                var appointment_timestamp = (1000 * 60 * 60 * 24 * days) + today_timestamp;
+                var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
+
+                var appointment_timestamp = (1000 * 60 * 60 * 24 * days) + dispensing_date_timestamp;
                 appointment_date.datepicker("setDate", new Date(appointment_timestamp));
                 retrieveAppointedPatients();
             }else{
@@ -507,7 +511,8 @@
                 var clinical_appointment_date = $("#next_clinical_appointment_date");
                 var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
                 var today_timestamp = today.getTime();
-                var appointment_timestamp = (1000 * 60 * 60 * 24 * days_to_next_clinical) + today_timestamp;
+                var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
+                var appointment_timestamp = (1000 * 60 * 60 * 24 * days_to_next_clinical) + dispensing_date_timestamp;
                 clinical_appointment_date.datepicker("setDate", new Date(appointment_timestamp));
                 // retrieveAppointedPatients();
             }else{
@@ -801,10 +806,11 @@
              var base_date = new Date();
              var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
              var today_timestamp = today.getTime();
+            var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
              var one_day = 1000 * 60 * 60 * 24;
 
              var clinical_appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
-             var difference = clinical_appointment_timestamp - today_timestamp;
+             var difference = clinical_appointment_timestamp - dispensing_date_timestamp;
              var days_difference = difference / one_day;
              $("#days_to_next_clinical").attr("value", days_difference);
          }
@@ -1107,9 +1113,10 @@
                             var base_date = new Date();
                             var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
                             var today_timestamp = today.getTime();
+                var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
                             var one_day = 1000 * 60 * 60 * 24;
                             var appointment_timestamp = Date.parse(prev_date);
-                            var difference = today_timestamp - appointment_timestamp;
+                            var difference = dispensing_date_timestamp - appointment_timestamp;
                             var days_difference = Math.round(difference / one_day);
                             if (days_difference > 0) {
                                 days_difference = days_difference.toFixed(0);
