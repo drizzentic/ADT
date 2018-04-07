@@ -27,7 +27,7 @@
         THE PHARMACY AND POISONS BOARD<br />
         DEPARTMENT OF PHARMACOVIGILANCE<br />
       </h4>
-      <h3 style="color:#3b8476;">FORM FOR SUSPECTED ADVERSE DRUG REACTION REPORTING FORM</h3>
+      <h3 style="color:#3b8476;">FORM FOR REPORTING POOR QUALITY MEDICINAL PRODUCTS</h3>
     </div>
   </div>
 </div>
