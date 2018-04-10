@@ -1051,6 +1051,11 @@ $(document).ready(function() {
 			$(this).addClass("active");
 			$(".reports_types").css("display", "none");
 			$("#visiting_patient_report_row").css("display", "block");
+		}else if($(this).attr("id") == 'differentiated_care') {
+			$(".active").removeClass();
+			$(this).addClass("active");
+			$(".reports_types").css("display", "none");
+			$("#differentiated_care_report_row").css("display", "block");
 		} else if($(this).attr("id") == 'early_warning_indicators') {
 			$(".active").removeClass();
 			$(this).addClass("active");
