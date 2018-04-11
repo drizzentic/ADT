@@ -15,6 +15,9 @@
 
 <div class="container" style="background-color: #fffacc;border: solid thick #0000ff;padding: 30px; margin-top: 130px; margin-bottom: 130px;">
 
+  <a href="<?= base_url();?>inventory_management/adr" class="btn btn-default" > Back </a>
+  <a href="javascript:;;" class="btn btn-default" id="edit-btn" > Edit </a>
+  <a href="<?= base_url();?>inventory_management/adr/<?=  $record_no;?>/export" class="btn btn-default" > Export(.xls) </a>
   <form name="adr_form" id="adr_form">
     <div class="container">
       <div class="row">
@@ -34,23 +37,25 @@
   </div>
   <div class="max-row">
     <div class="mid-row">
+      <input type="hidden" name="adr_id" value="<?=  $adr_data[0]['id'];?>" class="form-control f-input">
+
       <label><span class='astericks'>*</span>NAME OF INSTITUTION: </label>
-      <input type="text" name="institution" id="institution" value="<?= $facility_details['name'];?>" class="validate[required] f-input">
+      <input type="text" name="institution" id="institution" value="<?=  $adr_data[0]['institution_name'];?>" class="validate[required] f-input">
     </div>
     <div class="mid-row">
       <label ><span class='astericks'>*</span>INSTITUTION CODE:</label>
-      <input  type="text" name="institutioncode" id="institutioncode" value="<?= $facility_details['facilitycode'];?>" class="validate[required] f-input">
+      <input  type="text" name="institutioncode" id="institutioncode" value="<?=  $adr_data[0]['institution_code'];?>" class="validate[required] f-input">
     </div>
   </div>
 
   <div class="max-row">
     <div class="mid-row">
       <label><span class='astericks'>*</span>ADDRESS </label>
-      <input type="text" name="address" id="address" value="<?= $facility_details['facilitycode'];?>" class="validate[required] f-input">
+      <input type="text" name="address" id="address" value="<?= $adr_data[0]['address'];?>" class="validate[required] f-input">
     </div>
     <div class="mid-row">
       <label ><span class='astericks'>*</span>CONTACT</label>
-      <input  type="text" name="contact" id="contact" value="<?= $facility_details['phone'];?>" class="validate[required] f-input">
+      <input  type="text" name="contact" id="contact" value="<?= $adr_data[0]['contact'];?>" class="validate[required] f-input">
     </div>
   </div>
 
@@ -70,39 +75,38 @@
     <table border="0" style="width: 100%;">
       <tr>
         <td> <label><span class='astericks'>*</span>PATIENT’S NAME/ INITIAL </label>
-          <input type="text" name="patientname" id="patientname" value="<?= $patient_details['first_name'].' '.$patient_details['last_name'];?>" class="validate[required] f-input">
+          <input type="text" name="patientname" id="patientname" value="<?= $adr_data[0]['patient_name'];?>" class="validate[required] f-input">
         </td>
         <td> <label ><span class='astericks'>*</span>IP/OP. NO</label>
-          <input  type="text" name="ip_no" id="ip_no" value="<?= $patient_details['ccc_number']?>" class="validate[required] f-input">
+          <input  type="text" name="ip_no" id="ip_no" value="<?= $adr_data[0]['ip_no']?>" class="validate[required] f-input">
         </td>
         <td> <label ><span class='astericks'>*</span>D.O.B</label>
-          <input  type="text" name="dob" id="dob" value="<?= $patient_details['date_of_birth']?>" class="validate[required] f-input">
+          <input  type="text" name="dob" id="dob" value="<?= $adr_data[0]['dob']?>" class="validate[required] f-input">
         </td>
       </tr>
       <tr>
         <td>  <label><span class='astericks'>*</span>PATIENT’S ADDRESS </label>
-          <input type="text" name="patientaddress" id="patientaddress"  value="<?= $patient_details['physical_address']?>" class="validate[required] f-input"></td>
+          <input type="text" name="patientaddress" id="patientaddress"  value="<?= $adr_data[0]['patient_address']?>" class="validate[required] f-input"></td>
           <td> <label ><span class='astericks'>*</span>WARD/CLINIC</label>
-            <input  type="text" name="clinic" id="clinic"  value="" class="validate[required] f-input">
+            <input  type="text" name="clinic" id="clinic" value="<?= $adr_data[0]['ward_clinic']?>" class="validate[required] f-input">
           </td>
           <td>
             <label id="dcs" >GENDER</label>
-            <input  type="radio"  name="gender" id="gender" value="MALE">
+            <input  type="radio"  name="gender" gender="gender" value="MALE">
             male 
-            <input  type="radio"  name="gender" id="gender" value="FEMALE">
+            <input  type="radio"  name="gender" gender="gender" value="FEMALE">
             female
-
           </td> 
         </tr>
         <tr>
           <td rowspan="2">
             <label id="dcs" >ANY KNOWN  ALLERGY</label>
-            <input  type="radio"  name="allergy" id="allergy" value="0">
+            <input  type="radio"  name="allergy" class="allergy" value="0">
             no<br />
-            <input  type="radio"  name="allergy" id="allergy" value="1">
+            <input  type="radio"  name="allergy" class="allergy" value="1">
             yes<br />
             if yes, specify
-            <input  type="text" name="allergydesc" id="allergydesc" class="validate[required] f-input" style="display: none;">
+            <input  type="text" name="allergydesc" id="allergydesc" class="validate[required] f-input" style="display: none;" value="<?= $adr_data[0]['alergy_desc']?>">
           </td>
           <td rowspan="2">
             <label id="dcs" >PREGNANCY STATUS</label>
@@ -117,26 +121,26 @@
           </td>
           <td>
             <label><span class='astericks'>*</span>WEIGHT (kg): </label>
-            <input type="text" name="patientweight" id="patientweight" value="<?= $patient_details['current_weight']?>" class="validate[required] f-input">
+            <input type="text" name="patientweight" id="patientweight" value="<?= $adr_data[0]['weight']?>" class="validate[required] f-input">
           </td>
         </tr>
         <tr>
           <td>
             <label ><span class='astericks'>*</span>HEIGHT (cm):</label>
-            <input  type="text" name="patientheight" id="patientheight" value="<?= $patient_details['current_height']?>" class="validate[required] f-input">
+            <input  type="text" name="patientheight" id="patientheight" value="<?= $adr_data[0]['height']?>" class="validate[required] f-input">
           </td>
           
         </tr>
         <tr>
           <td colspan="3">
             <label><span class='astericks'>*</span>DIAGNOSIS: (What was the patient treated for): </label>
-            <textarea name="diagnosis" id="diagnosis" class="" ><?= $patient_details['current_regimen']?></textarea>
+            <textarea name="diagnosis" id="diagnosis" class="" ><?= $adr_data[0]['diagnosis']?></textarea>
           </td>
         </tr>
         <tr>
           <td colspan="3">
             <label ><span class='astericks'>*</span>BRIEF DESCRIPTION OF REACTION:</label>
-            <textarea name="reaction" id="reaction" class=""></textarea>         
+            <textarea name="reaction" id="reaction" class=""><?= $adr_data[0]['reaction_description']?></textarea>         
           </td>
         </tr>
       </table>
@@ -148,7 +152,7 @@
           <th class="text-center">
             #
           </th>
-          <th>LIST OF  ALL DRUGS </th>
+          <th>DRUGS </th>
           <th>Dose</th> 
           <th>ROUTE  AND FREQUENCY</th>
           <th>DATE STARTED </th>
@@ -158,7 +162,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php foreach($patient_visits as $key => $pv) {?>
+        <?php foreach($adr_data as $key => $pv) {?>
         <tr>
           <td> <?= $key; ?></td>
           <?php 
@@ -168,16 +172,17 @@
           $ds = date('Y-m-d',strtotime($pv['dispensing_date'])+($pv['duration']*60*60*24));
 // end date
           ?>
+          <input type="hidden" name="adr_detail_id[]" value="<?= $pv['adr_details_id']?>" class="form-control f-input">
+          <input type="hidden" name="visitid[]" value="<?= $pv['visitid']?>" class="form-control f-input">
           <td><input type="text" name="drug[]" value="<?= $pv['drug']?>" class="form-control f-input"></td>
           <td><input type="text" name="dose[]" value="<?= $pv['dose']?>" class="form-control f-input"></td>
-          <td><input type="text" name="frequency[]" value="<?= $pv['frequency']?>" class="form-control f-input"></td>
-          <td><input type="text" name="dispensing_date[]" value="<?= $pv['dispensing_date']?>" class="form-control f-input"></td>
-          <td><input type="text" name="date_stopped[]" value="<?= $ds;?>" class="form-control f-input adrdate"></td>
+          <td><input type="text" name="frequency[]" value="<?= $pv['route_freq']?>" class="form-control f-input"></td>
+          <td><input type="text" name="dispensing_date[]" value="<?= $pv['date_started']?>" class="form-control f-input"></td>
+          <td><input type="text" name="date_stopped[]" value="<?= $pv['date_stopped'];?>" class="form-control f-input adrdate"></td>
           <td><input type="text" name="indication[]" value="<?= $pv['indication']?>" class="form-control f-input"></td>
-          <td><input type="hidden" name="visitid[]" value="<?= $pv['record_id']?>" class="form-control f-input"></td>
-          <td><input type="checkbox" name="suspecteddrug[]" value=""></td>
+          <td><input type="checkbox" name="suspecteddrug[]" <?php if ($pv['suspecteddrug'] =='on'){?>checked=""<?php }?>></td>
         </tr>
-        <?php   } ?>
+        <?php  } ?>
 
       </tbody>
     </table>
@@ -186,64 +191,64 @@
 
       <div class="mid-row">
         <label id="dcs" for="severity" ><b>Severity of reaction (refer to scale overleaf)</b></label>
-        <input  type="radio" id="severity"  name="severity" value="Mild">
+        <input  type="radio" class="severity"  name="severity" value="Mild">
         Mild <br /> 
-        <input  type="radio" id="severity"  name="severity" value="Moderate">
+        <input  type="radio" class="severity"  name="severity" value="Moderate">
         Moderate <br /> 
-        <input  type="radio" id="severity"  name="severity" value="Severe">
+        <input  type="radio" class="severity"  name="severity" value="Severe">
         Severe <br /> 
-        <input  type="radio" id="severity"  name="severity" value="Fatal">
+        <input  type="radio" class="severity"  name="severity" value="Fatal">
         Fatal <br /> 
-        <input  type="radio" id="severity"  name="severity" value="Unknown">
+        <input  type="radio" class="severity"  name="severity" value="Unknown">
         Unknown
       </div>
 
 
       <div class="mid-row">
         <label id="" for="action" ><b>ACTION TAKEN</b></label>
-        <input  type="radio"  name="action" id="action" value="Drug withdrawn">
+        <input  type="radio"  name="action" class="action" value="Drug withdrawn">
         Drug withdrawn<br />
-        <input  type="radio"  name="action" id="action" value="Dose increased">
+        <input  type="radio"  name="action" class="action" value="Dose increased">
         Dose increased<br />
-        <input  type="radio"  name="action" id="action" value="Dose reduced">
+        <input  type="radio"  name="action" class="action" value="Dose reduced">
         Dose reduced<br />
-        <input  type="radio"  name="action" id="action" value="Dose not changed">
+        <input  type="radio"  name="action" class="action" value="Dose not changed">
         Dose not changed<br />
-        <input  type="radio"  name="action" id="action" value="Unknown">
+        <input  type="radio"  name="action" class="action" value="Unknown">
         Unknown
       </div>
 
 
       <div class="mid-row">
         <label id="dcs" for="outcome" ><b>OUTCOME</b></label>
-        <input  type="radio"  name="outcome" id="outcome" value="Recovering / resolving">
+        <input  type="radio"  name="outcome" class="outcome" value="Recovering / resolving">
         Recovering / resolving<br />
-        <input  type="radio"  name="outcome" id="outcome" value="Recovered / resolved">
+        <input  type="radio"  name="outcome" class="outcome" value="Recovered / resolved">
         Recovered / resolved<br />
-        <input  type="radio"  name="outcome" id="outcome" value="Requires or prolongs hospitalization">
+        <input  type="radio"  name="outcome" class="outcome" value="Requires or prolongs hospitalization">
         Requires or prolongs hospitalization<br />
-        <input  type="radio"  name="outcome" id="outcome" value="Causes a congenital anomaly">
+        <input  type="radio"  name="outcome" class="outcome" value="Causes a congenital anomaly">
         Causes a congenital anomaly<br />
-        <input  type="radio"  name="outcome" id="outcome" value="Requires intervention to prevent permanent damage">
-        Requires intervention to prevent permanent damage<br />
-        <input  type="radio"  name="outcome" id="outcome" value="Unknown">
+        <input  type="radio"  name="outcome" class="outcome" value="Requires intervention to prevent permanent damage">
+        Requires intervention to prevent permanent damage <br />
+        <input  type="radio"  name="outcome" class="outcome" value="Unknown">
         Unknown
       </div>
 
 
       <div class="mid-row">
         <label id="dcs" for="casuality" ><b>CAUSALITY OF REACTION (refer to scale overleaf)</b></label>
-        <input  type="radio"  name="casuality" id="casuality" value="Certain">
+        <input  type="radio"  name="casuality" class="casuality" value="Certain">
         Certain <br />
-        <input  type="radio"  name="casuality" id="casuality" value="Probable / Likely">
+        <input  type="radio"  name="casuality" class="casuality" value="Probable / Likely">
         Probable / Likely <br />
-        <input  type="radio"  name="casuality" id="casuality" value="Possible">
+        <input  type="radio"  name="casuality" class="casuality" value="Possible">
         Possible <br />
-        <input  type="radio"  name="casuality" id="casuality" value="Unlikely">
+        <input  type="radio"  name="casuality" class="casuality" value="Unlikely">
         Unlikely <br />
-        <input  type="radio"  name="casuality" id="casuality" value="Conditional / Unclassified">
+        <input  type="radio"  name="casuality" class="casuality" value="Conditional / Unclassified">
         Conditional / Unclassified <br />
-        <input  type="radio"  name="casuality" id="casuality" value="Unassessable / Unclassifiable">
+        <input  type="radio"  name="casuality" class="casuality" value="Unassessable / Unclassifiable">
         Unassessable / Unclassifiable
       </div>
 
@@ -251,7 +256,7 @@
     <div class="max-row">
       <div class="mid-row">
         <label class="blue" for="othercomment">ANY OTHER COMMENT : </label>
-        <textarea name="othercomment" class="" id="othercomment"></textarea>
+        <textarea name="othercomment" class="" id="othercomment"><?= $adr_data[0]['other_comment']; ?></textarea>
 
       </div>
     </div>
@@ -260,47 +265,47 @@
     <div class="max-row">
       <div class="mid-row">
         <label><span class='astericks'>*</span>NAME OF PERSON REPORTING </label>
-        <input type="text" name="officername" id="officername" value="<?= $user_full_name;?>" class="validate[required] f-input">
+        <input type="text" name="officername" id="officername" value="<?= $adr_data[0]['reporting_officer'];?>" class="validate[required] f-input">
       </div>
       <div class="mid-row">
         <label ><span class='astericks'>*</span>DATE:</label>
-        <input  type="text" name="reportingdate" id="reportingdate" class="validate[required] f-input adrdate">
+        <input  type="text" name="reportingdate" id="reportingdate" class="validate[required] f-input adrdate" value="<?= $adr_data[0]['reporting_date'];?>">
       </div>
       <div class="mid-row">
         <label><span class='astericks'>*</span>Email ADDRESS </label>
-        <input type="text" name="officeremail" id="officeremail" value="<?= $user_email;?>" class="validate[required] f-input">
+        <input type="text" name="officeremail" id="officeremail" value="<?= $adr_data[0]['email_address'];?>" class="validate[required] f-input">
       </div>
       <div class="mid-row">
         <label><span class='astericks'>*</span>Office Phone </label>
-        <input type="text" name="officerphone" id="officerphone" value="<?= $user_phone;?>" class="validate[required] f-input">
+        <input type="text" name="officerphone" id="officerphone" value="<?= $adr_data[0]['office_phone'];?>" class="validate[required] f-input">
       </div>
       <div class="mid-row">
         <label><span class='astericks'>*</span>Designation</label>
-        <input type="text" name="officerdesignation" id="officerdesignation" class="validate[required] f-input">
+        <input type="text" name="officerdesignation" id="officerdesignation" class="validate[required] f-input" value="<?= $adr_data[0]['designation']; ?>">
       </div>
       <div class="mid-row">
         <label><span class='astericks'>*</span>Signature </label>
-        <input type="text" name="officersignature" id="officersignature" class="validate[required] f-input">
+        <input type="text" name="officersignature" id="officersignature" class="validate[required] f-input" value="<?= $adr_data[0]['signature']; ?>">
       </div>
-
-      <div class="mid-row">
+      <div class="mid-row" id="submit-container" style="display: none;">
         <button type="submit" form="adr_form" value="Submit">Submit</button>
         <button>cancel</button>
       </div>
-
     </div>
-
-
   </form>
 </div>
 
 <script type="text/javascript">
 
  $(document).ready(function(){
-
-  $("input[name=gender][value=<?= $patient_details['gender'] ?>]").attr('checked', 'checked');
-  var pregnant= '<?= $patient_details['pregnant'] ?>';
-  var allergies= '<?= $patient_details['drug_allergies'] ?>';
+  $("input[name=outcome][value=<?= $adr_data[0]['outcome'] ?>]").attr('checked', 'checked');
+  $("input[name=casuality][value=<?= $adr_data[0]['reaction_casualty'] ?>]").attr('checked', 'checked');
+  $("input[name=gender][value=<?= $adr_data[0]['gender'] ?>]").attr('checked', 'checked');
+  $("input[name=action][value=<?= $adr_data[0]['action_taken'] ?>]").attr('checked', 'checked');
+  $("input[name=severity][value=<?= $adr_data[0]['severity'] ?>]").attr('checked', 'checked');
+  $('input,textarea').attr('disabled',true);
+  var pregnant= '<?= $adr_data[0]['pregnant'] ?>';
+  var allergies= '<?= $adr_data[0]['alergy_desc'] ?>';
 
   if (pregnant ==='NO'){
     $("input[name=pregnancystatus][value=NotPregnant]").attr('checked', 'checked');
@@ -317,14 +322,15 @@
 
   }
 
-  $('#allergy').change(function(){
+  $('.allergy').change(function(){
   // $('#allergydesc').toggle()
 
-  if ($('#allergy').val() == 0){
-    console.log('0 '+$('#allergy').val());
+  if ($('.allergy').val() == 0){
+    console.log('0 '+$('.allergy').val());
     $('#allergydesc').hide()
 
   }
+
   else{
 
     $('#allergydesc').show()
@@ -344,6 +350,7 @@
       success: (function(data){
         alert(data);
         window.close();
+        window.location ="";
 
       })
     });
@@ -364,6 +371,17 @@
 // getDoses for all drugs
 // getDrugDose(drugid)
 // getIndications(drugid) // fetch on selecting a drug
+
+$('#edit-btn').click(function(e){
+  $('input,textarea').attr('disabled',false);
+
+  $('input,textarea').css('background-color','#fff');
+
+  $('#submit-container').show();
+
+});
 });
 
 </script>
+
+

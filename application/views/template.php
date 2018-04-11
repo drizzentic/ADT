@@ -353,6 +353,7 @@ if (isset($styles)) {
 			    		?>
 			    		  <li class="divider"></li>
 			    		  <li><a tabindex="-1" href="<?php echo base_url().'inventory_management/pqmp/'; ?>">Report Poor Quality Medical Products</a></li>
+			    		  <li><a tabindex="-1" href="<?php echo base_url().'inventory_management/adr/'; ?>">Patient ADR's</a></li>
 
 				    </ul>
 			    </li>

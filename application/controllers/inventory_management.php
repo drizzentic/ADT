@@ -642,7 +642,227 @@ class Inventory_management extends MY_Controller {
 		
 	}
 
+	public function adr($record_no = null,$action = null){
 
+		
+		if($_POST){
+		// adr_form
+
+			$adr = array(
+				'institution_name' => $_POST['institution'],
+				'institution_code' => $_POST['institutioncode'],
+				'address' => $_POST['address'],    
+				'contact' =>  $_POST['contact'],
+				'patient_name' =>  $_POST['patientname'],
+				'ip_no' =>  $_POST['ip_no'],
+				'dob' =>  $_POST['dob'],
+				'patient_address' =>  $_POST['patientaddress'],
+				'ward_clinic' =>  $_POST['clinic'],
+				'gender' =>  $_POST['gender'],
+				'is_alergy' =>  $_POST['allergy'],
+				'alergy_desc' =>  $_POST['allergydesc'],
+				'is_pregnant' =>  $_POST['pregnancystatus'],
+				'weight' =>  $_POST['patientweight'],
+				'height' =>  $_POST['patientheight'],
+				'diagnosis' =>  $_POST['diagnosis'],
+				'reaction_description' =>  $_POST['reaction'],
+				'severity' =>   (isset($_POST['severity'])) ? $_POST['severity'] : false,
+				'action_taken' =>   (isset($_POST['action'])) ? $_POST['action'] : false,
+				'outcome' =>   (isset($_POST['outcome'])) ? $_POST['outcome'] : false,
+				'reaction_casualty' =>   (isset($_POST['casuality'])) ? $_POST['casuality'] : false,
+				'other_comment' =>  $_POST['othercomment'],
+				'reporting_officer' =>  $_POST['officername'],
+				'reporting_officer' =>  $_POST['reportingdate'],
+				'email_address' =>  $_POST['officeremail'],
+				'office_phone' =>  $_POST['officerphone'],
+				'designation' =>  $_POST['officerdesignation'],
+				'signature' =>  $_POST['officersignature']
+			);
+
+			$this->db->where('id', $record_no);
+			$this->db->update('adr_form',$adr);
+			$adr_id = $record_no;
+
+			if(count($_POST['drug'])>0){
+				foreach ($_POST['drug'] as $key => $drug) {
+					$adr_details = array(
+						'adr_id' => $adr_id,
+						'drug' => $_POST['drug'][$key],
+						'dose' => $_POST['dose'][$key],
+						'route_freq' => $_POST['frequency'][$key],
+						'date_started' => $_POST['dispensing_date'][$key],
+						'date_stopped' => $_POST['date_stopped'][$key],
+						'indication' => $_POST['indication'][$key],
+						'suspecteddrug' =>  (isset($_POST['suspecteddrug'][$key])) ? $_POST['suspecteddrug'][$key] : false,
+						'visitid' => $_POST['visitid'][$key]
+
+					);										
+					$this->db->where('id', $_POST['adr_detail_id'][$key]);
+					$this->db->update('adr_form_details', $adr_details);
+
+				}
+				echo "adr form updated successfully";
+				die;
+			}else{ 
+				echo "No drugs selected";
+			// no drugs selected
+		// Form saved successfully
+				die;
+			}
+
+			die;
+		}
+
+		$data = array();
+		$content_view = 'adr_list_v' ;
+		if ($record_no + 0 > 0 ){
+		$this->db->where('adr_form.id', $record_no);
+		$content_view = 'adr_v' ;
+		$data['hide_side_menu'] = 0;
+		$this->db->join('adr_form_details', 'adr_form.id = adr_form_details.adr_id', 'left');
+		$this->db->join('patient_visit', 'adr_form_details.visitid = patient_visit.id ', 'left');
+		$this->db->join('drugcode', 'patient_visit.drug_id = drugcode.id', 'left');
+		$this->db->select('*,adr_form_details.id as adr_details_id');
+		}
+
+
+		$adr_data = $this->db->get('adr_form');
+		$data['adr_data'] = $adr_data->result_array();
+		if ($action =='export'){
+			$this->export_adr($data['adr_data'],'adr');
+			die;
+		}
+
+		$data['record_no'] = $record_no;
+		$data['facility_code'] = $this -> session -> userdata('facility');
+		$data['facility_name'] = $this -> session -> userdata('facility_name');
+		$data['facility_phone'] = $this -> session -> userdata('facility_phone');
+
+		$dispensing_date = "";
+		$data['last_regimens'] = "";
+		$data['visits'] = "";
+		$data['appointments'] = "";
+		$dispensing_date = date('Y-m-d');
+
+		$dated = NULL;
+		$service_name = NULL;
+		
+		$data['dated'] = $dated;
+		$data['patient_id'] = $record_no; 
+		$data['service_name'] = $service_name;
+		$data['content_view'] = $content_view;
+		$this -> base_params($data);
+		
+	}
+	public function export_adr($adr,$type){
+
+		$this -> load -> library('PHPExcel');
+		$dir = "assets/download";
+		if ($type == "adr") {
+			$template = "ADR_form";
+		} else if ($type == "pqmp") {
+			$template = "PQMP_form";
+		}
+
+		$inputFileType = 'Excel5';
+		$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/templates/moh_forms/' . $template . '.xls';
+		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
+		$objPHPExcel = $objReader -> load($inputFileName);
+
+		/*Delete all files in export folder*/
+		if (is_dir($dir)) {
+			$files = scandir($dir);
+			foreach ($files as $object) {
+				if (!in_array($object, array('.','..','.gitkeep'))) {
+					unlink($dir . "/" . $object);
+				}
+			}
+		} else {
+			mkdir($dir);
+		}
+		// echo "<pre>";		var_dump($adr);die;
+
+		//Facility Info
+		$year = date('Y', strtotime($period_start));
+		$facility = Facilities::getCodeFacility($this -> session -> userdata("facility"));
+
+		if ($type == "adr") {
+			// $month = date('F', strtotime($period_start));
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B10', $adr[0]['institution_name']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('I10', $adr[0]['institution_code']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B12', $adr[0]['address']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('I12', $adr[0]['contact']);
+
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B15', $adr[0]['patient_name']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('I15', $adr[0]['ip_no']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('O15', $adr[0]['dob']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B17', $adr[0]['patient_address']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('I17', $adr[0]['ward_clinic']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('P16', $adr[0]['gender']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('E18', $adr[0]['is_alergy']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B22', $adr[0]['alergy_desc']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('L18', $adr[0]['is_pregnant']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('O19', $adr[0]['weight']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('O21', $adr[0]['height']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B24', $adr[0]['diagnosis']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B28', $adr[0]['reaction_description']);
+
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('M39', $adr[0]['action_taken']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('G39', $adr[0]['severity']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('G45', $adr[0]['outcome']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('O45', $adr[0]['casuality']);
+
+
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B53', $adr[0]['other_comment']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B58', $adr[0]['reporting_officer']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('J58', $adr[0]['datecreated']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B60', $adr[0]['email_address']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('J60', $adr[0]['office_phone']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('B62', $adr[0]['designation']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('J62', $adr[0]['signature']);
+			// $objPHPExcel -> getActiveSheet() -> SetCellValue('I12', $adr[0]['severity']);
+
+			$row = 33;
+			for ($i=0; $i < count($adr) ; $i++) { 
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('C'.$row, $adr[$i]['drug']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('E'.$row, $adr[$i]['dose']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('F'.$row, $adr[$i]['route_freq']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('I'.$row, $adr[$i]['date_started']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('K'.$row, $adr[$i]['date_stopped']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('M'.$row, $adr[$i]['indication']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('O'.$row, $adr[$i]['suspecteddrug']);
+			$row=$row+1;
+		}
+		// die;
+
+
+		
+		} else if ($type == "pqmp") {
+
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('M3', $year);
+		}
+
+		foreach ($data_array as $mydata) {
+			foreach ($mydata as $column => $value) {
+				$objPHPExcel -> getActiveSheet() -> SetCellValue($column, $value);
+			}
+		}
+		//Generate file
+		ob_start();
+		// $period_start = date("F-Y", strtotime($period_start));
+		$original_filename = "" .  strtoupper($type) ."-".str_replace(' ', '-', $adr[0]['patient_name']) ."-". $adr[0]['ip_no']. ".xls";
+		$filename = $dir . "/" . urldecode($original_filename);
+		$objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
+		$objWriter -> save($filename);
+		$objPHPExcel -> disconnectWorksheets();
+		unset($objPHPExcel);
+		if (file_exists($filename)) {
+			$filename = str_replace("#", "%23", $filename);
+			redirect($filename);
+		}
+
+	
+	}
 	public function getStockDrugs() {
 		$stock_type = $this -> input -> post("stock_type");
 		$facility_code = $this -> session -> userdata('facility');
