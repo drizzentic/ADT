@@ -543,7 +543,7 @@ foreach ($expiries as $expiry) {
 					<input type="text" name="pill_count" id="pill_count" class="pill_count input-small" />
 					</td>
 					<td>
-					 <input type="text" name="missed_pills" id="missed_pills" class="missed_pills input-small" />
+					 <input type="text" name="missed_pills" id="missed_pills" class="missed_pills input-small validate[required]" />
 					</td>
 					<td>
 					<input type="text" name="comment" id="comment" class="comment input-small" />
