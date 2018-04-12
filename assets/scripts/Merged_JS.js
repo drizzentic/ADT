@@ -1076,8 +1076,8 @@ $(document).ready(function() {
 			$(".active").removeClass();
 			$(this).addClass("active");
 			$(".reports_types").css("display", "none");
-                        var report_url = base_url + "report_management/load_guidelines_view";
-                        window.location = report_url;
+			var report_url = $("#base_url").val() + "report_management/load_guidelines_view";
+            window.location = report_url;
 		}
 	});
 	//Features to select
