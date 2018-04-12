@@ -1346,7 +1346,7 @@ request.fail(function(jqXHR, textStatus) {
                 return this.value == val;
             }).data('dose_freq');
             
-            var qty_disp = parseInt(duration) * parseInt(dose_val) * parseInt(dose_freq);
+            var qty_disp = parseFloat(duration) * parseFloat(dose_val) * parseFloat(dose_freq);
 
             if(!isNaN(qty_disp)) {
                 row.closest("tr").find(".qty_disp").val(qty_disp);
