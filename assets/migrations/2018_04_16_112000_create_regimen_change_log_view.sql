@@ -15,4 +15,4 @@
             LEFT JOIN
         regimen_change_purpose rc ON cl.change_purpose = rc.id
     WHERE
-        change_type = 'regimen';//
+        change_type = 'regimen'//

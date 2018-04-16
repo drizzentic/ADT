@@ -2,7 +2,7 @@
     SELECT 
         cl.*, ps.Name AS old_status, nps.Name AS new_status
     FROM
-        change_logtable cl
+        change_log cl
             LEFT JOIN
         patient p ON p.patient_number_ccc = cl.patient
             LEFT JOIN
@@ -10,4 +10,4 @@
             LEFT JOIN
         patient_status nps ON cl.new_value = nps.id
     WHERE
-        change_type = 'status'//
+        change_type = 'status'
