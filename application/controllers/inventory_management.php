@@ -458,7 +458,6 @@ class Inventory_management extends MY_Controller {
 	}
 
 	public function pqmp($record_no = null,$action = null){
-
 		
 		if($this -> input -> post("facility_name")){
 			$pqmp_data = array(
@@ -531,9 +530,16 @@ class Inventory_management extends MY_Controller {
 
 		$data['pqmp_data'] = $pqmp_data->result_array();
 
+		if ($action =='export'){
+			$this->export_adr($data['pqmp_data'],'pqmp');
+			die;
+		}
+
+
 		$data['facility_code'] = $this -> session -> userdata('facility');
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
 		$data['facility_phone'] = $this -> session -> userdata('facility_phone');
+		$data['record_no'] = $record_no;
 
 		$dispensing_date = "";
 		$data['last_regimens'] = "";
@@ -833,13 +839,55 @@ class Inventory_management extends MY_Controller {
 			$objPHPExcel -> getActiveSheet() -> SetCellValue('O'.$row, $adr[$i]['suspecteddrug']);
 			$row=$row+1;
 		}
-		// die;
-
-
-		
 		} else if ($type == "pqmp") {
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D7', $adr[0]['facility_name']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J7', $adr[0]['district_name']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('Q7', $adr[0]['province_name']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D8', $adr[0]['facility_address']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J8', $adr[0]['facility_phone']);
+			  
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('F10', $adr[0]['brand_name']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('F11', $adr[0]['batch_no']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('F12', $adr[0]['manufacturer_name']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('F13', $adr[0]['supplier_name']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('P10', $adr[0]['generic_name']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('L11', $adr[0]['manufacture_date']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('P11', $adr[0]['expiry_date']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('T11', $adr[0]['receipt_date']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('P12', $adr[0]['origin_county']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('L13', $adr[0]['supplier_address']);
+ 
+ 			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B15', ($adr[0]['formulation_oral'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B16', ($adr[0]['formulation_injection'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B17', ($adr[0]['formulation_diluent'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B18', ($adr[0]['formulation_powdersuspension'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B19', ($adr[0]['formulation_powderinjection'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B20', ($adr[0]['formulation_eyedrops'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B21', ($adr[0]['formulation_eardrops'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B22', ($adr[0]['formulation_nebuliser'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B23', ($adr[0]['formulation_cream'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B24', ($adr[0]['formulation_other'] =='0') ? 'no' : 'yes');
+			    // $objPHPExcel -> getActiveSheet() -> SetCellValue('B10', $adr[0]['other_formulation']);
 
-			$objPHPExcel -> getActiveSheet() -> SetCellValue('M3', $year);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N15', ($adr[0]['complaint_colour'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N16', ($adr[0]['complaint_separating'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N17', ($adr[0]['complaint_powdering'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N18', ($adr[0]['complaint_caking'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N19', ($adr[0]['complaint_moulding'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N20', ($adr[0]['complaint_change'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N21', ($adr[0]['complaint_mislabeilng'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N22', ($adr[0]['complaint_incomplete'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N23', ($adr[0]['complaint_other'] =='0') ? 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N24', ($adr[0]['other_complaint'] =='0') ? 'no' : 'yes');
+
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D25', $adr[0]['description']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J28', $adr[0]['product_refrigiration']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J29', $adr[0]['product_availability']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J30', $adr[0]['product_returned']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J31', $adr[0]['product_storage']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B33', $adr[0]['comments']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D35', $adr[0]['reporter_name']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D36', $adr[0]['reporter_title']);
 		}
 
 		foreach ($data_array as $mydata) {
@@ -851,6 +899,11 @@ class Inventory_management extends MY_Controller {
 		ob_start();
 		// $period_start = date("F-Y", strtotime($period_start));
 		$original_filename = "" .  strtoupper($type) ."-".str_replace(' ', '-', $adr[0]['patient_name']) ."-". $adr[0]['ip_no']. ".xls";
+
+		if($type = 'pqmp'){
+		$original_filename = strtoupper($type) ."-".str_replace(' ', '-', $adr[0]['brand_name'].'-'. $adr[0]['generic_name'].'-'.$adr[0]['facility_name']) . $adr[0]['batch_no']. ".xls";
+
+		}
 		$filename = $dir . "/" . urldecode($original_filename);
 		$objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
 		$objWriter -> save($filename);

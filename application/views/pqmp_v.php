@@ -18,6 +18,7 @@
 <div class="container" style="background-color: #fde8e7;border: solid thick #0000ff;padding: 30px; margin-top: 130px; margin-bottom: 130px;">
     <a href="<?= base_url();?>inventory_management/pqmp" class="btn btn-default" > Back </a>
     <a href="javascript:;;" class="btn btn-default" id="edit-btn" > Edit </a>
+  <a href="<?= base_url();?>inventory_management/pqmp/<?=  $record_no;?>/export" class="btn btn-default" > Export(.xls) </a>
   <div class="container">
     <div class="row">
       <div class="text-center">
@@ -114,24 +115,24 @@
     </tr>
     <tr>
       <td colspan="3">Does the product require refrigiration?</td>
-      <td><input type="radio" name="product_refrigiration" id="product_refrigiration" value="Yes">Yes</td>
-      <td><input type="radio" name="product_refrigiration" id="product_refrigiration" value="No">No</td>
+      <td><input type="radio" name="product_refrigiration" class="product_refrigiration" value="Yes">Yes</td>
+      <td><input type="radio" name="product_refrigiration" class="product_refrigiration" value="No">No</td>
       <td colspan="3" rowspan="4"></td>
     </tr>
     <tr>
       <td colspan="3">Was product available at facility?</td>
-      <td><input type="radio" name="product_availability" id="product_availability" value="Yes">Yes</td>
-      <td><input type="radio" name="product_availability" id="product_availability" value="No">No</td>
+      <td><input type="radio" name="product_availability" class="product_availability" value="Yes">Yes</td>
+      <td><input type="radio" name="product_availability" class="product_availability" value="No">No</td>
     </tr>
     <tr>
       <td colspan="3">Was dispensed and returned by client?</td>
-      <td><input type="radio" name="product_returned" id="product_returned" value="Yes">Yes</td>
-      <td><input type="radio" name="product_returned" id="product_returned" value="No">No</td>
+      <td><input type="radio" name="product_returned" class="product_returned" value="Yes">Yes</td>
+      <td><input type="radio" name="product_returned" class="product_returned" value="No">No</td>
     </tr>
     <tr>
       <td colspan="3">Was product stored according to manufacturer/MOH recommendations?</td>
-      <td><input type="radio" name="product_storage" id="product_storage" value="Yes">Yes</td>
-      <td><input type="radio" name="product_storage" id="product_storage" value="No">No</td>
+      <td><input type="radio" name="product_storage" class="product_storage" value="Yes">Yes</td>
+      <td><input type="radio" name="product_storage" class="product_storage" value="No">No</td>
     </tr>
     <tr>
       <td colspan="8">Comments (if any)
