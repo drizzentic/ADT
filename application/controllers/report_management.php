@@ -5227,7 +5227,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 
 		//Store
 		if ($stock_type == '1') {
-			$stock_param = " AND (source='" . $facility_code . "' OR destination='" . $facility_code . "') AND source!=destination ";
+			$stock_param = " AND (source='" . $facility_code . "' OR destination='" . $facility_code . "') -- AND source!=destination ";
 		}
 		//Pharmacy
 		else if ($stock_type == '2') {
@@ -5322,33 +5322,17 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			//Get consumption for the past three months
 			$drug = $aRow['id'];
 			$stock_level = $aRow['stock_level'];
-			$safetystock_query = "SELECT SUM(d.quantity_out) AS TOTAL FROM drug_stock_movement d WHERE d.drug ='$drug' AND DATEDIFF(CURDATE(),d.transaction_date)<= 90 and facility='$facility_code' $stock_param";
+			$safetystock_query = "SELECT SUM(d.quantity_out)/2 AS TOTAL FROM drug_stock_movement d WHERE d.drug ='$drug' AND DATEDIFF(CURDATE(),d.transaction_date)<= 90 and facility='$facility_code' $stock_param ";
 			$safetystocks = $this -> db -> query($safetystock_query);
 			$safetystocks_results = $safetystocks -> result_array();
-			$three_monthly_consumption = 0;
 			$stock_status = "";
-			foreach ($safetystocks_results as $safetystocks_result) {
-				$three_monthly_consumption = $safetystocks_result['TOTAL'];
-				//Calculating Monthly Consumption hence Max-Min Inventory
-				$monthly_consumption = ($three_monthly_consumption) / 3;
-				$monthly_consumption = number_format($monthly_consumption, 2);
-
-				//Therefore Maximum Consumption
-				$maximum_consumption = $monthly_consumption * 3;
-				$maximum_consumption = number_format($maximum_consumption, 2);
-
-				//Therefore Minimum Consumption
-				$minimum_consumption = $monthly_consumption * 1.5;
-				//$minimum_consumption = number_format($monthly_consumption, 2);
-
-				//If current stock balance is less than minimum consumption
+			$minimum_consumption = $safetystocks_results[0]['TOTAL'];
 				if ($stock_level < $minimum_consumption) {
 					$stock_status = "<span class='red'>LOW</span>";
 					if ($minimum_consumption < 0) {
 						$minimum_consumption = 0;
 					}
 				}
-			}
 
 			$row = array();
 			$x = 0;
