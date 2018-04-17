@@ -17,6 +17,7 @@
 
   <a href="<?= base_url();?>inventory_management/adr" class="btn btn-default" > Back </a>
   <a href="javascript:;;" class="btn btn-default" id="edit-btn" > Edit </a>
+  <a  href="<?= base_url();?>inventory_management/adr/<?=  $record_no;?>/delete" class="btn btn-danger delete-form" > Delete </a>
   <a href="<?= base_url();?>inventory_management/adr/<?=  $record_no;?>/export" class="btn btn-default" > Export(.xls) </a>
   <form name="adr_form" id="adr_form">
     <div class="container">
@@ -338,7 +339,15 @@
 
   }
 });
+  $('.delete-form').click(function(e){
+    var answer = confirm('Deleting ADR. Are You Sure?');
+    if(answer){
 
+    }
+    else{
+      e.preventDefault();
+    }
+  });
   $('#adr_form').submit(function(e){
     // console.log('form submitted');
     // console.log($('form').serializeArray());

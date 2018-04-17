@@ -351,12 +351,10 @@ if (isset($styles)) {
 				    	<?php
 						}
 			    		?>
-			    		  <li class="divider"></li>
-			    		  <li><a tabindex="-1" href="<?php echo base_url().'inventory_management/pqmp/'; ?>">Report Poor Quality Medical Products</a></li>
-			    		  <li><a tabindex="-1" href="<?php echo base_url().'inventory_management/adr/'; ?>">Patient ADR's</a></li>
-
 				    </ul>
 			    </li>
+				<li><a href="<?php echo base_url().'inventory_management/adr/' ?>"><i class="icon-flag"></i>ADR</a></li>
+
                                 <li>
                                     <a href="<?php echo base_url().'home_controller/get_faq';?>" target="_blank"><i class="icon-question-sign"></i>FAQ</a>
                                 </li>

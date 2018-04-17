@@ -11,7 +11,7 @@
     <div class="row">
       <div class="span12" style="background: #fdfdfd;">
       <a class="button disabled" href="<?php echo base_url().'inventory_management/pqmp/'; ?>">PQMP</a>
-      <a class="button info" href="<?php echo base_url().'inventory_management/pqmp/'; ?>">ADR</a>
+      <a class="button info" href="<?php echo base_url().'inventory_management/adr/'; ?>">ADR</a>
       <hr>
       </div>
       <div class="span12">

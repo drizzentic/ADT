@@ -18,6 +18,7 @@
 <div class="container" style="background-color: #fde8e7;border: solid thick #0000ff;padding: 30px; margin-top: 130px; margin-bottom: 130px;">
     <a href="<?= base_url();?>inventory_management/pqmp" class="btn btn-default" > Back </a>
     <a href="javascript:;;" class="btn btn-default" id="edit-btn" > Edit </a>
+  <a href="<?= base_url();?>inventory_management/pqmp/<?=  $record_no;?>/delete" class="btn btn-danger delete-form" > Delete  </a>
   <a href="<?= base_url();?>inventory_management/pqmp/<?=  $record_no;?>/export" class="btn btn-default" > Export(.xls) </a>
   <div class="container">
     <div class="row">
@@ -221,6 +222,19 @@ $('#submit-container').show();
 
 })
 
+
+
+  $('.delete-form').click(function(e){
+    var answer = confirm('Deleting ADR. Are You Sure?');
+    if(answer){
+
+    }
+    else{
+      e.preventDefault();
+    }
+  });
+
+  
 });
 
 </script>

@@ -113,24 +113,24 @@
     </tr>
     <tr>
       <td colspan="3">Does the product require refrigiration?</td>
-      <td><input type="radio" name="product_refrigiration" id="product_refrigiration" value="Yes">Yes</td>
-      <td><input type="radio" name="product_refrigiration" id="product_refrigiration" value="No">No</td>
+      <td><input type="radio" name="product_refrigiration" class="product_refrigiration" value="Yes">Yes</td>
+      <td><input type="radio" name="product_refrigiration" class="product_refrigiration" value="No">No</td>
       <td colspan="3" rowspan="4"></td>
     </tr>
     <tr>
       <td colspan="3">Was product available at facility?</td>
-      <td><input type="radio" name="product_availability" id="product_availability" value="Yes">Yes</td>
-      <td><input type="radio" name="product_availability" id="product_availability" value="No">No</td>
+      <td><input type="radio" name="product_availability" class="product_availability" value="Yes">Yes</td>
+      <td><input type="radio" name="product_availability" class="product_availability" value="No">No</td>
     </tr>
     <tr>
       <td colspan="3">Was dispensed and returned by client?</td>
-      <td><input type="radio" name="product_returned" id="product_returned" value="Yes">Yes</td>
-      <td><input type="radio" name="product_returned" id="product_returned" value="No">No</td>
+      <td><input type="radio" name="product_returned" class="product_returned" value="Yes">Yes</td>
+      <td><input type="radio" name="product_returned" class="product_returned" value="No">No</td>
     </tr>
     <tr>
       <td colspan="3">Was product stored according to manufacturer/MOH recommendations?</td>
-      <td><input type="radio" name="product_storage" id="product_storage" value="Yes">Yes</td>
-      <td><input type="radio" name="product_storage" id="product_storage" value="No">No</td>
+      <td><input type="radio" name="product_storage" class="product_storage" value="Yes">Yes</td>
+      <td><input type="radio" name="product_storage" class="product_storage" value="No">No</td>
     </tr>
     <tr>
       <td colspan="8">Comments (if any)

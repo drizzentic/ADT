@@ -535,6 +535,11 @@ class Inventory_management extends MY_Controller {
 			die;
 		}
 
+		if ($action =='delete'){
+			$this->db->query('delete from pqmp where id = '.$record_no);
+			redirect('inventory_management/pqmp');
+			die;
+		}	
 
 		$data['facility_code'] = $this -> session -> userdata('facility');
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
@@ -738,6 +743,12 @@ class Inventory_management extends MY_Controller {
 			$this->export_adr($data['adr_data'],'adr');
 			die;
 		}
+		if ($action =='delete'){
+			$this->db->query('delete from adr_form where id = '.$record_no);
+			$this->db->query('delete from adr_form_details where adr_id  = '.$record_no);
+			redirect('inventory_management/adr');
+			die;
+		}
 
 		$data['record_no'] = $record_no;
 		$data['facility_code'] = $this -> session -> userdata('facility');
@@ -836,7 +847,7 @@ class Inventory_management extends MY_Controller {
 			$objPHPExcel -> getActiveSheet() -> SetCellValue('I'.$row, $adr[$i]['date_started']);
 			$objPHPExcel -> getActiveSheet() -> SetCellValue('K'.$row, $adr[$i]['date_stopped']);
 			$objPHPExcel -> getActiveSheet() -> SetCellValue('M'.$row, $adr[$i]['indication']);
-			$objPHPExcel -> getActiveSheet() -> SetCellValue('O'.$row, $adr[$i]['suspecteddrug']);
+			$objPHPExcel -> getActiveSheet() -> SetCellValue('O'.$row, ($adr[$i]['suspecteddrug'] =='on') ? 'yes' : 'no');
 			$row=$row+1;
 		}
 		} else if ($type == "pqmp") {
@@ -880,14 +891,14 @@ class Inventory_management extends MY_Controller {
 			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N23', ($adr[0]['complaint_other'] =='0') ? 'no' : 'yes');
 			    $objPHPExcel -> getActiveSheet() -> SetCellValue('N24', ($adr[0]['other_complaint'] =='0') ? 'no' : 'yes');
 
-			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D25', $adr[0]['description']);
-			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J28', $adr[0]['product_refrigiration']);
-			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J29', $adr[0]['product_availability']);
-			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J30', $adr[0]['product_returned']);
-			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J31', $adr[0]['product_storage']);
-			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B33', $adr[0]['comments']);
-			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D35', $adr[0]['reporter_name']);
-			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D36', $adr[0]['reporter_title']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D25', ($adr[0]['description']=='0')            ?	 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J28', ($adr[0]['product_refrigiration']=='0')  ?	 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J29', ($adr[0]['product_availability']=='0')   ?	 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J30', ($adr[0]['product_returned']=='0')       ?	 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('J31', ($adr[0]['product_storage']=='0')        ?	 'no' : 'yes');
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('B33',  $adr[0]['comments']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D35',  $adr[0]['reporter_name']);
+			    $objPHPExcel -> getActiveSheet() -> SetCellValue('D36',  $adr[0]['reporter_title']);
 		}
 
 		foreach ($data_array as $mydata) {
@@ -900,7 +911,7 @@ class Inventory_management extends MY_Controller {
 		// $period_start = date("F-Y", strtotime($period_start));
 		$original_filename = "" .  strtoupper($type) ."-".str_replace(' ', '-', $adr[0]['patient_name']) ."-". $adr[0]['ip_no']. ".xls";
 
-		if($type = 'pqmp'){
+		if($type == 'pqmp'){
 		$original_filename = strtoupper($type) ."-".str_replace(' ', '-', $adr[0]['brand_name'].'-'. $adr[0]['generic_name'].'-'.$adr[0]['facility_name']) . $adr[0]['batch_no']. ".xls";
 
 		}
