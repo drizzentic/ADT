@@ -9,15 +9,15 @@
  
 </style>
     <div class="row">
-      <div class="span12" style="background: #fdfdfd;">
-      <a class="button info" href="<?php echo base_url().'inventory_management/pqmp/'; ?>">PQMP</a>
-      <a class="button disabled" href="<?php echo base_url().'inventory_management/pqmp/'; ?>">ADR</a>
+      <div class="span11" style="background: #fdfdfd;">
+      <a class="button disabled" href="<?php echo base_url().'inventory_management/pqmp/'; ?>">PQMP</a>
+      <a class="button info" href="<?php echo base_url().'inventory_management/adr'; ?>">ADR</a>
       <hr>
       </div>
-    <div class="span12">
+    <div class="span11">
       <h5>Patient ADR Reports</h5>
     </div>
-      <div class="span12">
+      <div class="span11">
         <table border="1" class="table" >
           <thead>
             <th>#</th>

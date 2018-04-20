@@ -5225,14 +5225,20 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 	public function drug_stock_on_hand($stock_type) {
 		$facility_code = $this -> session -> userdata('facility');
 
-		//Store
-		if ($stock_type == '1') {
-			$stock_param = " AND (source='" . $facility_code . "' OR destination='" . $facility_code . "') -- AND source!=destination ";
-		}
-		//Pharmacy
-		else if ($stock_type == '2') {
-			$stock_param = " AND (source=destination) AND(source='" . $facility_code . "') ";
-		}
+		//CCC Store Name
+		$ccc = CCC_store_service_point::getCCC($stock_type);
+		$ccc_name = $ccc['Name'];
+
+		//Get transaction_type
+		$transaction_type='';
+        if (stripos($ccc_name, "pharmacy")) {
+        	$transaction_type = Transaction_Type::getTransactionType('dispense',0);
+        	$transaction_type = $transaction_type['id'];
+        } else if (stripos($ccc_name, "store")) {
+        	$transaction_type = Transaction_Type::getTransactionType('issue',0);
+        	$transaction_type = $transaction_type['id'];
+        }
+
 		$data = array();
 		/* Array of database columns which should be read and sent back to DataTables. Use a space where
 		 * you want to insert a non-database field (for example a counter or static image)
@@ -5322,7 +5328,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			//Get consumption for the past three months
 			$drug = $aRow['id'];
 			$stock_level = $aRow['stock_level'];
-			$safetystock_query = "SELECT SUM(d.quantity_out)/2 AS TOTAL FROM drug_stock_movement d WHERE d.drug ='$drug' AND DATEDIFF(CURDATE(),d.transaction_date)<= 90 and facility='$facility_code' $stock_param ";
+			$safetystock_query = "SELECT SUM(d.quantity_out)/2 AS TOTAL FROM drug_stock_movement d WHERE d.drug = '$drug' AND facility = '$facility_code' AND DATEDIFF(CURDATE(),d.transaction_date) <= 90 AND transaction_type ='$transaction_type' AND ccc_store_sp='$stock_type'";
 			$safetystocks = $this -> db -> query($safetystock_query);
 			$safetystocks_results = $safetystocks -> result_array();
 			$stock_status = "";

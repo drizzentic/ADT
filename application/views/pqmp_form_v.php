@@ -20,7 +20,7 @@
   <div class="container">
     <div class="row">
       <div class="text-center">
-       <img src="../../assets/images/top_logo.png">
+       <img src="<?php echo base_url().'assets/images/top_logo.png';?>">
        <h4 style="color: #2e3092;">
         MINISTRY OF HEALTH <br />
         THE PHARMACY AND POISONS BOARD<br />
