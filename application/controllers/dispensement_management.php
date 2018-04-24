@@ -741,10 +741,6 @@ AND  r.regimen_code LIKE '%oi%'
 		}
 		$sql .= "insert into patient_appointment (patient,appointment,facility,clinical_appointment) values ('$patient','$next_appointment_date','$facility','$clinical_appointment_id');";
 
-		$q = "SELECT id FROM patient_appointment WHERE patient = '$patient' AND appointment = '$next_appointment_date' LIMIT 1";
-		$query = $this ->db ->query($q);
-		$result = $query->result_array();
-		$appointment_id = $result[0]['id'];
 		/*
 		 * Update patient Info
 		 */
@@ -814,7 +810,17 @@ AND  r.regimen_code LIKE '%oi%'
 			//}
 
 		}
+		
+
 		if(isset($prescription)){
+		// fetch appointment_id
+		$q = "SELECT id FROM patient_appointment WHERE patient = '$patient' AND appointment = '$next_appointment_date' LIMIT 1";
+		$query = $this ->db ->query($q);
+		$result = $query->result_array();
+		$appointment_id = $result[0]['id'];
+
+
+
 			file_get_contents(base_url().'tools/api/getdispensing/'.$prescription);
 			file_get_contents(base_url().'tools/api/getappointment/'.$appointment_id);
 		}

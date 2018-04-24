@@ -54,7 +54,7 @@
 							<div class="control-group">
 								<label class="control-label" for="inputPort">Database Port</label>
 								<div class="controls">
-									<input type="hidden" id="log1_status" name="log1_status" value="0" />
+									<input type="hidden" id="log12_status" name="log12_status" value="0" />
 									<input type="text" id="inputPort" name="inputPort" placeholder="localhost" value="<?php echo $sys_hostport; ?>" />
 								</div>
 							</div>

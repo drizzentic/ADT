@@ -27,7 +27,7 @@ class Chat implements MessageComponentInterface {
 		$this->apiPOST($msg);
 
 
-		// $from->send('message received');
+		$from->send('message received');
 
 
 	}

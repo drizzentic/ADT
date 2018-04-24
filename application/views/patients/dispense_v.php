@@ -809,7 +809,10 @@
             var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
              var one_day = 1000 * 60 * 60 * 24;
 
-             var clinical_appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
+             if ( $("#next_clinical_appointment_date") ==""){
+                 $("#next_clinical_appointment_date").val(Date.now);
+             }             var clinical_appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
+             
              var difference = clinical_appointment_timestamp - dispensing_date_timestamp;
              var days_difference = difference / one_day;
              $("#days_to_next_clinical").attr("value", days_difference);
