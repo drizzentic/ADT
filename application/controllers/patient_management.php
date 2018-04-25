@@ -817,10 +817,20 @@ class Patient_management extends MY_Controller {
             'Current_Regimen' => $this -> input -> post('current_regimen', TRUE),
             'Nextappointment' => $this -> input -> post('next_appointment_date', TRUE));
         // echo "<pre>";
-        // var_dump($data);die;
+        $status_change_query = " insert into change_log (old_value,new_value,facility,patient,change_type)
+        select current_status
+        ,'".$this -> input -> post('current_status', TRUE)."' 
+        ,'".$this -> session -> userdata('facility')."'
+        ,'".$this -> input -> post('patient_number', TRUE)."',
+        'status' from patient where patient_number_ccc  = '"
+        .$this -> input -> post('patient_number', TRUE)."'";
+
+        $this->db->query($status_change_query);
+
         $this -> db -> update('patients');
         $this -> db -> where('id', $record_id);
         $this -> db -> update('patient', $data);
+
 
         $spouse_no=$this->input->post('match_spouse');
         $patient_no=$this->input->post('patient_number');
