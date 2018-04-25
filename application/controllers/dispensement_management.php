@@ -775,6 +775,17 @@ AND  r.regimen_code LIKE '%oi%'
 			//Add visit
 			$visit_sql = "insert into patient_visit (patient_id, visit_purpose, current_height, current_weight, regimen, regimen_change_reason,last_regimen, drug_id, batch_number, brand, indication, pill_count, comment, `timestamp`, user, facility, dose, dispensing_date, dispensing_date_timestamp,quantity,duration,adherence,missed_pills,non_adherence_reason,months_of_stock,ccc_store_sp,differentiated_care) VALUES ('$patient','$purpose', '$height', '$weight', '$current_regimen', '$regimen_change_reason','$last_regimen' ,'$drugs[$i]', '$batch[$i]', '$brand[$i]', '$indication[$i]', '$pill_count[$i]','$comment[$i]', '$timestamp', '$user','$facility', '$dose[$i]','$dispensing_date', '$dispensing_date_timestamp','$quantity[$i]','$duration[$i]','$adherence','$missed_pill[$i]','$non_adherence_reasons','$mos[$i]','$ccc_id','$differentiated_care');";
 			$this->db->query($visit_sql);
+
+        $regimen_change_query = " insert into change_log (old_value,new_value,facility,patient,change_purpose,change_type)
+        select '".$last_regimen."' 
+        ,'".$current_regimen."'
+        ,'".$facility."'
+        ,'".$patient."'
+        ,'".$regimen_change_reason."','regimen' where '".$current_regimen."' != '".$last_regimen."'";
+
+        $this->db->query($regimen_change_query);
+
+
 			$visit_id = $this->db->insert_id();
 			if($prescription > 0){
 			//Check Regimen Drug Table to figure out which drug is ART/OI
