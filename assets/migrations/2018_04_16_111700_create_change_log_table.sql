@@ -1,6 +1,6 @@
 CREATE TABLE change_log (
   id bigint(20) NOT NULL AUTO_INCREMENT,
-  patient int(10) NOT NULL,
+  patient varchar(20) NOT NULL,
   facility int(32) NOT NULL,
   change_type varchar(20) NOT NULL,
   old_value varchar(50) NOT NULL,

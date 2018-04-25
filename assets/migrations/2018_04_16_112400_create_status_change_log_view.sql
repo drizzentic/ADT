@@ -10,4 +10,4 @@
             LEFT JOIN
         patient_status nps ON cl.new_value = nps.id
     WHERE
-        change_type = 'status'
+        change_type = 'status'//

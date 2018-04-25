@@ -134,4 +134,4 @@ ROUND (DATEDIFF(CURDATE(),p.dob)/365) AS age,
         LEFT JOIN prep_reason ON ((patient_prep_test.prep_reason_id = prep_reason.id)))
         LEFT JOIN pep_reason ON ((p.pep_reason = pep_reason.id)))
     WHERE
-        (p.active = 1);
+        (p.active = 1)//
