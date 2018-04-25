@@ -823,8 +823,19 @@ class Patient_management extends MY_Controller {
         ,'".$this -> session -> userdata('facility')."'
         ,'".$this -> input -> post('patient_number', TRUE)."',
         'status' from patient where patient_number_ccc  = '"
-        .$this -> input -> post('patient_number', TRUE)."'";
+        .$this -> input -> post('patient_number', TRUE)."' and current_status != '"
+        .$this -> input -> post('current_status', TRUE)."'";
 
+        $service_change_query = " insert into change_log (old_value,new_value,facility,patient,change_type)
+        select service
+        ,'".$this -> input -> post('service', TRUE)."' 
+        ,'".$this -> session -> userdata('facility')."'
+        ,'".$this -> input -> post('patient_number', TRUE)."',
+        'service' from patient where patient_number_ccc  = '"
+        .$this -> input -> post('patient_number', TRUE)."' and service !='"
+        .$this -> input -> post('service', TRUE)."'";
+
+        $this->db->query($service_change_query);
         $this->db->query($status_change_query);
 
         $this -> db -> update('patients');
