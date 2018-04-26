@@ -27,6 +27,21 @@
 	$(function () {
 	
 		$('<?php echo "#" . $container; ?>').highcharts({
+			exporting: {
+        chartOptions: { // specific options for the exported image
+            plotOptions: {
+                series: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            }
+        },
+        sourceWidth: 400,
+        sourceHeight: 300,
+        scale: 1,
+        fallbackToExportServer: false
+    },
 			chart:{
 				height:<?php echo $chartSize;?>,
 			    type:'<?php echo $chartType ?>',

@@ -46,7 +46,14 @@ if($this->session->userdata("changed_password")){
 			  }
 		</style>
 
-
+<script src="<?= base_url(); ?>assets/scripts/jquery-1.7.2.min.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/jquery-ui.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/datatable/jquery.dataTables.min.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/jquery.multiselect.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/jquery.multiselect.filter.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/highcharts/highcharts.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/highcharts/modules/exporting.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/highcharts/modules/offline-exporting.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
       var period=30;
