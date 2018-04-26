@@ -7,6 +7,7 @@
 	<ul class="nav nav-tabs nav-pills" id="top_menus">  
 		<li id="standard_report" class="active reports_tabs standard_report_row"><a  href="#">Standard Reports</a> </li>   
 		<li id="visiting_patient" class="reports_tabs visiting_patient_report_row"><a  href="#">Visiting Patients</a></li> 
+		<li id="differentiated_care" class="reports_tabs differentiated_care_report_row"><a  href="#">Differentiated Care</a></li> 
 		<li id="early_warning_indicators" class="reports_tabs early_warning_report_select"><a  href="#">Early Warning Indicators</a> </li>   
 		<li id="drug_inventory" class="reports_tabs drug_inventory_report_row"><a  href="#">Drug Inventory</a></li>   
 		<li id="moh_forms" class="reports_tabs"><a  href="#">MOH Forms</a></li>
