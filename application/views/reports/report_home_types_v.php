@@ -123,9 +123,20 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 				<option class="date_range_report" value="getPatientsforRefill">List of Patients Visited For Refill</option>
 				<option class="date_range_report" value="getPatientMissingAppointments">Patients Missing Appointments</option>
 				<option class="date_range_report" value="dispensingReport">Patients Visit Summary</option>
+				<option class="date_range_report" value="get_viral_load_results">List of Patient Viral Load Results</option>
+			</select></td>
+		</tr>
+
+		<tr id="differentiated_care_report_row" class="reports_types">
+			<td><label >Select Report </label></td>
+			<td>
+			<select id="differentiated_care_report_select" class="input-xlarge select_report">
+				<option value="0" class="none">-- Select a Report  --</option>
+				<option class="date_range_report" value="getScheduledPatientsDiffCare">List of Patients Scheduled to Visit</option>
+				<option class="date_range_report" value="getPatientsStartedonDateDiffCare">List of Patients Started (on a Particular Date)</option>
+				<option class="date_range_report" value="getPatientsforRefillDiffCare">List of Patients Visited For Refill</option>
 				<option class="date_range_report" value="differenciated_package_of_care">Patients on Differentiated Care(Viral Load)</option>
 				<option class="date_range_report" value="get_differentiated_care_appointments">Patients on Differentiated Care(Appointments)</option>
-				<option class="date_range_report" value="get_viral_load_results">List of Patient Viral Load Results</option>
 			</select></td>
 		</tr>
 		<!-- Early warning reports -->

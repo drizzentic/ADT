@@ -3388,6 +3388,195 @@ public function getScheduledPatients($from = "", $to = "", $filter_from = NULL, 
 	$data['content_view'] = 'reports/patients_scheduled_v';
 	$this -> load -> view('template', $data);
 }
+public function getScheduledPatientsDiffCare($from = "", $to = "", $filter_from = NULL, $filter_to = NULL, $appointment_description = NULL) {
+		//Variables
+	$visited = 0;
+	$not_visited = 0;
+	$visited_later = 0;
+	$row_string = "";
+	$status = "";
+	$overall_total = 0;
+	$today = date('Y-m-d');
+	$late_by = "";
+	$facility_code = $this -> session -> userdata("facility");
+	$from = date('Y-m-d', strtotime($from));
+	$to = date('Y-m-d', strtotime($to));
+
+	if($filter_from != NULL && $filter_to != NULL && $appointment_description != NULL){
+		$filter_from = date('Y-m-d', strtotime($filter_from));
+		$filter_to = date('Y-m-d', strtotime($filter_to));
+		$app_desc = str_ireplace('_', ' ', $appointment_description).'(s)';
+			//Get all patients who have apppointments on the selected date range and visited in the filtered date range
+		$sql = "SELECT 
+		tmp.patient,
+		tmp.appointment
+		FROM
+		(
+		SELECT 
+		pa.patient,
+		MIN(pa.appointment) appointment, 
+		CASE 
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 0 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 31 THEN '1 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 30 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 61 THEN '2 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 60 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 91 THEN '3 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 90 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 121 THEN '4 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 120 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 151 THEN '5 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 150 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 181 THEN '6 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 180 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 211 THEN '7 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 210 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 241 THEN '8 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 240 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 271 THEN '9 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 270 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 301 THEN '10 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 300 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 331 THEN '11 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 330 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 361 THEN '12 Month(s)'
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 360 THEN 'Over 1 Year'
+		ELSE 'N/A'
+		END AS appointment_description
+		FROM clinic_appointment pa 
+		INNER JOIN 
+		(
+		SELECT 
+		patient_id, dispensing_date visit_date
+		FROM patient_visit
+		WHERE dispensing_date BETWEEN '$filter_from' AND '$filter_to'
+		and differentiated_care = '1'
+		GROUP BY patient_id, visit_date
+		) pv ON pv.patient_id = pa.patient AND pa.appointment > visit_date
+		GROUP BY patient_id,visit_date
+		) tmp
+		WHERE tmp.appointment_description = '$app_desc'";
+	}else{
+			//Get all patients who have apppointments on the selected date range
+		$sql = "SELECT pa.patient,pa.appointment ,ca.appointment as clinic_appointment,
+				CASE
+				WHEN  p.differentiated_care = 1 THEN 'YES' ELSE  'NO' END as diff_care,
+				DATEDIFF(ca.appointment, pa.appointment) as days_diff
+				FROM patient_appointment pa
+				LEFT JOIN clinic_appointment ca on ca.id = pa.clinical_appointment
+				LEFT JOIN patient p on p.patient_number_ccc = pa.patient
+				WHERE pa.appointment BETWEEN '$from' AND '$to' 
+				AND pa.facility='$facility_code' 
+				AND p.differentiated_care = '1'
+				GROUP BY patient,appointment";
+	}
+
+	$query = $this -> db -> query($sql);
+	$results = $query -> result_array();
+	$row_string = "
+	<table border='1' class='dataTables'>
+	<thead >
+	<tr>
+	<th> Patient No </th>
+	<th> Patient Name </th>
+	<th> Phone No /Alternate No</th>
+	<th> Phys. Address </th>
+	<th> Sex </th>
+	<th> Age </th>
+	<th> Service </th>
+	<th> Last Regimen </th>
+	<th> Appointment Date </th>
+	<th> Visit Status</th>
+	<th> Source</th>
+	<th> On Diff Care</th>
+	<th> Days to Clinic Appointment</th>
+
+	</tr>
+	</thead>
+	<tbody>";
+	if ($results) {
+		foreach ($results as $result) {
+			$patient = $result['patient'];
+			$appointment = $result['appointment'];
+			$diff_care = $result['diff_care'];
+			$days_diff = $result['days_diff'];
+
+				//Check if Patient visited on set appointment
+			$sql = "select * from patient_visit where patient_id='$patient' and dispensing_date='$appointment' and facility='$facility_code'";
+			$query = $this -> db -> query($sql);
+			$results = $query -> result_array();
+			if ($results) {
+					//Visited
+				$visited++;
+				$status = "<span style='color:green;'>Yes</span>";
+			} else if (!$results) {
+					//Check if visited later or not
+				$sql = "select DATEDIFF(dispensing_date,'$appointment')as late_by from patient_visit where patient_id='$patient' and dispensing_date>'$appointment' and facility='$facility_code' ORDER BY dispensing_date asc LIMIT 1";
+				$query = $this -> db -> query($sql);
+				$results = $query -> result_array();
+				if ($results) {
+						//Visited Later
+					$visited_later++;
+					$late_by = $results[0]['late_by'];
+					$status = "<span style='color:blue;'>Late by $late_by Day(s)</span>";
+				} else {
+						//Not Visited
+					$not_visited++;
+					$status = "<span style='color:red;'>Not Visited</span>";
+				}
+			}
+			$sql = "SELECT 
+			patient_number_ccc as art_no,
+			UPPER(first_name)as first_name,
+			pss.name as source,
+			UPPER(other_name)as other_name,
+			UPPER(last_name)as last_name, 
+			IF(gender=1,'Male','Female')as gender,
+			UPPER(physical) as physical,
+			phone,
+			alternate,
+			FLOOR(DATEDIFF('$today',dob)/365) as age,
+			regimen_service_type.name as service,
+			r.regimen_desc as last_regimen 
+			FROM patient 
+			LEFT JOIN patient_source pss on pss.id=patient.source 
+			LEFT JOIN regimen_service_type on regimen_service_type.id = patient.service
+			LEFT JOIN regimen r ON current_regimen = r.id 
+			WHERE patient_number_ccc = '$patient' 
+			AND facility_code='$facility_code'";
+			$query = $this -> db -> query($sql);
+			$results = $query -> result_array();
+			if ($results) {
+				foreach ($results as $result) {
+					$patient_id = $result['art_no'];
+					$first_name = $result['first_name'];
+					$other_name = $result['other_name'];
+					$last_name = $result['last_name'];
+					$phone = $result['phone'];
+					if (!$phone) {
+						$phone = $result['alternate'];
+					}
+					$address = $result['physical'];
+					$gender = $result['gender'];
+					$age = $result['age'];
+					$service = $result['service'];
+					$last_regimen = $result['last_regimen'];
+					$appointment = date('d-M-Y', strtotime($appointment));
+					$source=$result['source'];
+
+				}
+				$row_string .= "<tr><td>$patient_id</td><td width='300' style='text-align:left;'>$first_name $other_name $last_name</td><td>$phone</td><td>$address</td><td>$gender</td><td>$age</td><td>$service</td><td style='white-space:nowrap;'>$last_regimen</td><td>$appointment</td><td width='200px'>$status</td><td>$source</td><td>$diff_care</td><td>$days_diff</td></tr>";
+				$overall_total++;
+			}
+		}
+	} 
+
+	$row_string .= "</tbody></table>";
+	$data['from'] = date('d-M-Y', strtotime($from));
+	$data['to'] = date('d-M-Y', strtotime($to));
+	$data['dyn_table'] = $row_string;
+	$data['visited_later'] = $visited_later;
+	$data['not_visited'] = $not_visited;
+	$data['visited'] = $visited;
+	$data['all_count'] = $overall_total;
+	$data['title'] = "webADT | Reports";
+	$data['hide_side_menu'] = 1;
+	$data['banner_text'] = "Facility Reports";
+	$data['selected_report_type_link'] = "differentiated_care_report_row";
+	$data['selected_report_type'] = "Differentiated Care";
+	$data['report_title'] = "List of Patients on Differentiated Care Scheduled to Visit";
+	$data['facility_name'] = $this -> session -> userdata('facility_name');
+	$data['content_view'] = 'reports/patients_scheduled_v';
+	$this -> load -> view('template', $data);
+}
 
 public function getPatientMissingAppointments($from = "", $to = "") {
 				//Variables
@@ -3562,7 +3751,78 @@ public function getPatientsStartedonDate($from = "", $to = "") {
 	$data['banner_text'] = "Facility Reports";
 	$data['selected_report_type_link'] = "visiting_patient_report_row";
 	$data['selected_report_type'] = "Visiting Patients";
-	$data['report_title'] = "List of Patients Scheduled to Visit";
+	$data['report_title'] = "Listing of Patients Who Started";
+	$data['facility_name'] = $this -> session -> userdata('facility_name');
+	$data['content_view'] = 'reports/patients_started_on_date_v';
+	$this -> load -> view('template', $data);
+
+}
+public function getPatientsStartedonDateDiffCare($from = "", $to = "") {
+		//Variables
+	$today=date('Y-m-d');
+	$overall_total = 0;
+	$facility_code = $this -> session -> userdata("facility");
+	$from = date('Y-m-d', strtotime($from));
+	$to = date('Y-m-d', strtotime($to));
+
+	$sql = "SELECT p.patient_number_ccc as art_no,UPPER(p.first_name) as first_name,pss.name as source, UPPER(p.last_name) as last_name,UPPER(p.other_name)as other_name,FLOOR(DATEDIFF('$today',p.dob)/365) as age, p.dob, IF(p.gender=1,'Male','Female') as gender, p.weight, r.regimen_desc,r.regimen_code,p.start_regimen_date, t.name AS service_type, s.name AS supported_by 
+	from patient p 
+	LEFT JOIN patient_source pss on pss.id=p.source
+	LEFT JOIN regimen r ON p.start_regimen =r.id
+	LEFT JOIN regimen_service_type t ON t.id = p.service
+	LEFT JOIN supporter s ON s.id = p.supported_by
+	WHERE p.start_regimen_date BETWEEN '$from' and '$to' and p.facility_code='$facility_code'
+	and p.differentiated_care = '1' 
+	GROUP BY p.patient_number_ccc";
+
+	$query = $this -> db -> query($sql);
+	$results = $query -> result_array();
+	$row_string = "<table border='1' class='dataTables' width='100%'>
+	<thead>
+	<tr>
+	<th> Patient No </th>
+	<th> Type of Service </th>
+	<th> Client Support </th>
+	<th> Patient Name </th>
+	<th> Sex</th>
+	<th>Age</th>
+	<th> Start Regimen Date </th>
+	<th> Regimen </th>
+	<th> Current Weight (Kg)</th>
+	<th> Source</th>
+	</tr>
+	</thead>
+	<tbody>";
+	if ($results) {
+		foreach ($results as $result) {
+			$patient_no = $result['art_no'];
+			$service_type = $result['service_type'];
+			$supported_by = $result['supported_by'];
+			$patient_name = $result['first_name'] . " " . $result['other_name'] . " " . $result['last_name'];
+			$gender = $result['gender'];
+			$age = $result['age'];
+			$start_regimen_date = date('d-M-Y', strtotime($result['start_regimen_date']));
+			$regimen_desc = "<b>" . $result['regimen_code'] . "</b>|" . $result['regimen_desc'];
+			$weight = number_format($result['weight'], 2);
+			$source = $result['source'];
+			$row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$supported_by</td><td>$patient_name</td><td>$gender</td><td>$age</td><td>$start_regimen_date</td><td>$regimen_desc</td><td>$weight</td><td>$source</td></tr>";
+			$overall_total++;
+		}
+
+	} else {
+			//$row_string .= "<tr><td colspan='8'>No Data Available</td></tr>";
+	}
+	$row_string .= "</tbody></table>";
+	$data['from'] = date('d-M-Y', strtotime($from));
+	$data['to'] = date('d-M-Y', strtotime($to));
+	$data['dyn_table'] = $row_string;
+	$data['all_count'] = $overall_total;
+	$data['title'] = "webADT | Reports";
+	$data['hide_side_menu'] = 1;
+	$data['banner_text'] = "Facility Reports";
+	$data['selected_report_type_link'] = "differentiated_care_report_row";
+	$data['selected_report_type'] = "Differentiated Care";
+	$data['report_title'] = "Listing of Differentiated Care Patients Who Started";
 	$data['facility_name'] = $this -> session -> userdata('facility_name');
 	$data['content_view'] = 'reports/patients_started_on_date_v';
 	$this -> load -> view('template', $data);

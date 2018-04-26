@@ -79,6 +79,7 @@ if ($access_level == "nascop_staff") {
 				<ul class="nav nav-tabs nav-pills">  
 					<li id="standard_report" class="active reports_tabs"><a  href="#">Standard Reports</a> </li>   
 					<li id="visiting_patient" class="reports_tabs"><a  href="#">Visiting Patients</a></li> 
+					<li id="differentiated_care" class="reports_tabs"><a  href="#">Differentiated Care</a></li> 
 					<li id="early_warning_indicators" class="reports_tabs"><a  href="#">Early Warning Indicators</a> </li>   
 					<li id="drug_inventory" class="reports_tabs"><a  href="#">Drug Inventory</a></li>   
 					<li id="moh_forms" class="reports_tabs"><a  href="#">MOH Forms</a></li> 
