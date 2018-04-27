@@ -3388,6 +3388,74 @@ public function getScheduledPatients($from = "", $to = "", $filter_from = NULL, 
 	$data['content_view'] = 'reports/patients_scheduled_v';
 	$this -> load -> view('template', $data);
 }
+public function getPatientsOnDiffCare($from = "", $to = "", $filter_from = NULL, $filter_to = NULL, $appointment_description = NULL) {
+		//Variables
+	$row_string = "";
+	$overall_total = 0;
+	$today = date('Y-m-d');
+	$facility_code = $this -> session -> userdata("facility");
+	$from = date('Y-m-d', strtotime($from));
+	$to = date('Y-m-d', strtotime($to));
+
+	$sql = "SELECT ccc_number ,concat(first_name	,' ',other_name	,' ',last_name) as name, concat(phone_number )as contact,age,gender,current_regimen,service,nextappointment,current_status
+		FROM vw_patient_list 
+		WHERE differentiated_care_status = 'differentiated' ";
+
+	$query = $this -> db -> query($sql);
+	$results = $query -> result_array();
+	// echo "<pre>"; var_dump($results);die;
+	$row_string = "
+	<table border='1' class='dataTables'>
+	<thead >
+	<tr>
+	<th> Patient CCC </th>
+	<th> Patient Name </th>
+	<th> Contact</th>
+	<th> Age</th>
+	<th> Sex </th>
+	<th> Current Regimen </th>
+	<th> Service </th>
+	<th> Next Appointment</th>
+	<th> Status</th>
+	</tr>
+	</thead>
+	<tbody>";
+
+		foreach ($results as $result) {
+		
+				$row_string .= "<tr>
+				<td>".$result['ccc_number']."</td>
+				<td>".$result['name']."</td>
+				<td>".$result['contact']."</td>
+				<td>".$result['age']."</td>
+				<td>".$result['gender']."</td>
+				<td>".$result['current_regimen']."</td>
+				<td>".$result['service']."</td>
+				<td>".$result['nextappointment']."</td>
+				<td>".$result['current_status']."</td
+
+
+				</tr>";
+				$overall_total++;
+			}	 
+
+	$row_string .= "</tbody></table>";
+	$data['from'] = date('d-M-Y', strtotime($from));
+	$data['to'] = date('d-M-Y', strtotime($to));
+	$data['dyn_table'] = $row_string;
+
+	$data['all_count'] = $overall_total;
+	$data['title'] = "webADT | Reports";
+	$data['hide_side_menu'] = 1;
+	$data['banner_text'] = "Facility Reports";
+	$data['selected_report_type_link'] = "differentiated_care_report_row";
+	$data['selected_report_type'] = "Differentiated Care";
+	$data['report_title'] = "List of Patients on Differentiated Care";
+	$data['facility_name'] = $this -> session -> userdata('facility_name');
+	$data['content_view'] = 'reports/patients_on_diff_care_v';
+	$this -> load -> view('template', $data);
+}
+
 public function getScheduledPatientsDiffCare($from = "", $to = "", $filter_from = NULL, $filter_to = NULL, $appointment_description = NULL) {
 		//Variables
 	$visited = 0;
