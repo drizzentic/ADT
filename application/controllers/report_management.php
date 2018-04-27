@@ -3388,14 +3388,12 @@ public function getScheduledPatients($from = "", $to = "", $filter_from = NULL, 
 	$data['content_view'] = 'reports/patients_scheduled_v';
 	$this -> load -> view('template', $data);
 }
-public function getPatientsOnDiffCare($from = "", $to = "", $filter_from = NULL, $filter_to = NULL, $appointment_description = NULL) {
+public function getPatientsOnDiffCare() {
 		//Variables
 	$row_string = "";
 	$overall_total = 0;
 	$today = date('Y-m-d');
 	$facility_code = $this -> session -> userdata("facility");
-	$from = date('Y-m-d', strtotime($from));
-	$to = date('Y-m-d', strtotime($to));
 
 	$sql = "SELECT ccc_number ,concat(first_name	,' ',other_name	,' ',last_name) as name, concat(phone_number )as contact,age,gender,current_regimen,service,nextappointment,current_status
 		FROM vw_patient_list 
