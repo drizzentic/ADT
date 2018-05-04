@@ -770,7 +770,7 @@ class Api extends MX_Controller {
 
 		$fp = fopen('IL-api.log', (file_exists('IL-api.log')) ? 'a' : 'w');
 
-		fwrite($fp, date('H:i:s'). ' '.$logtype.' : '. $msg."\r\n");
+		fwrite($fp, date('Y-m-d H:i:s'). ' '.$logtype.' : '. $msg."\r\n");
 		// fwrite($fp,'\n');
 
 		fclose($fp);
