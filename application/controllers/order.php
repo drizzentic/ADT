@@ -2299,7 +2299,7 @@ public function getPeriodRegimenPatients($from, $to) {
 
 
 		$row['beginning_balance']=$this->getBeginningBalance($param);
-		$row['pack_size']=$pack_size;
+		$row['pack_size']=intval($pack_size);
 
 		$row=$this->getOtherTransactions($param,$row);
 
@@ -2374,11 +2374,20 @@ public function getPeriodRegimenPatients($from, $to) {
 				}
 			} 
 		}
+
+		//Convert all items from units to packs
+        $exempted_columns = array('expiry_month','beginning_balance','pack_size');
+		foreach ($row as $i => $v) {
+			if (!in_array($i,$exempted_columns)) {
+				$row[$i] = round(@$v / @$pack_size);
+			}
+		}
+
 		// Changes made on DCDRR
 		if ($code == "D-CDRR") 
 		{	
 			foreach ($row as $i => $v) {
-				$exempted_columns = array('expiry_month','beginning_balance','reported_consumed','reported_physical_stock');
+				$exempted_columns = array('expiry_month','beginning_balance','reported_consumed','reported_physical_stock', 'pack_size');
 				if (!in_array($i,$exempted_columns)) {
 					$row[$i] = round(@$v / @$pack_size);
 				}
@@ -2395,13 +2404,6 @@ public function getPeriodRegimenPatients($from, $to) {
 			$row['resupply'] = ($row['dispensed_to_patients'] * 3) - $row['physical_stock'];
 		}
 		
-        //Convert all items from units to packs
-		foreach ($row as $i => $v) {
-			if ($i != "expiry_month" && $i !="beginning_balance") {
-				$row[$i] = round(@$v / @$pack_size);
-			}
-		}
-
 		if($code == "F-CDRR_packs"){
 			$row['dispensed_packs']=0;
 			if($row['dispensed_to_patients'] >0){
@@ -2410,13 +2412,13 @@ public function getPeriodRegimenPatients($from, $to) {
 		}
 
 		//Fix for physical count
-		if($row['physical_stock'] < 0){
+		/*if($row['physical_stock'] < 0){
 			$row['physical_stock'] = 0;
 		}
 		//Fix for resupply
 		if($row['resupply'] < 0){
 			$row['resupply'] = 0;
-		}
+		}*/
 		echo json_encode($row);
 	}
 
@@ -2442,7 +2444,7 @@ public function getPeriodRegimenPatients($from, $to) {
 			$balance = 0;
 		}
 
-		return $balance;
+		return intval($balance);
 
 	}
 
