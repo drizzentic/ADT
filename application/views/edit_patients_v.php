@@ -344,12 +344,9 @@ foreach($results as $result){
 
 	    $("#iso_start_date").change(function() {
 	    	var endDate = new Date($("#iso_start_date").val());
-
-	        //changed the isonizid date to 180  by vicliz 
-	        //var numberOfDaysToAdd = 168;
-	        var numberOfDaysToAdd = 180;
+	        var numberOfDaysToAdd = 168;
 	        endDate.setDate(endDate.getDate() + numberOfDaysToAdd);
-	        var end_date = (endDate.getFullYear() + '-' + ("0" + (endDate.getMonth() + 1)).slice(-2) + '-' + endDate.getDate());
+	        var end_date = (endDate.getFullYear() + '-' + ("0" + (endDate.getMonth() + 1)).slice(-2) + '-' + ("0" + (endDate.getDate())).slice(-2));
 	        $("#iso_end_date").val(end_date);
 
 	    });

@@ -182,7 +182,7 @@ class Patient extends Doctrine_Record {
 	}
 	
 	public function get_patient_details($id){
-		$query = Doctrine_Query::create() -> select("p.Patient_Number_CCC,CONCAT_WS(' ',first_name,last_name,other_name) as names,Height,Weight,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as Dob,p.clinicalappointment,Pregnant,Tb") -> from("Patient p") -> where( "p.id = $id");
+		$query = Doctrine_Query::create() -> select("p.Patient_Number_CCC,CONCAT_WS(' ',first_name,last_name,other_name) as names,Height,Weight,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as Dob,p.clinicalappointment,Pregnant,Tb,isoniazid_start_date,isoniazid_end_date") -> from("Patient p") -> where( "p.id = $id");
 		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return @$patients[0];
 	}

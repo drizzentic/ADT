@@ -481,7 +481,7 @@
 				var endDate =new  Date($("#iso_start_date").val());
 				var numberOfDaysToAdd = 168;
 				endDate.setDate(endDate.getDate() + numberOfDaysToAdd); 
-				var end_date = (endDate.getFullYear()+'-'+("0" + (endDate.getMonth() + 1)).slice(-2)+'-'+endDate.getDate());
+				var end_date = (endDate.getFullYear() + '-' + ("0" + (endDate.getMonth() + 1)).slice(-2) + '-' + ("0" + (endDate.getDate())).slice(-2));
 				$("#iso_end_date").val(end_date);
 				
 			});

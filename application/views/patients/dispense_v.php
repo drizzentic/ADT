@@ -1164,7 +1164,12 @@
                     request.done(function(datas){
                         var age = datas.Dob;
                         var weight=$("#weight").val();
-                        var drug_id =selected_drug ;
+                        var drug_id = selected_drug;
+                        //Show alert when dispensing date is after ipt_end_date and drug is isoniazid
+                        var ipt_end_date = datas.isoniazid_end_date;
+                        if($("#dispensing_date").val() > ipt_end_date && ipt_end_date != '' && drug_name.indexOf('ISONIAZID') > -1){
+                            bootbox.alert("<h4>IPT Alert!</h4> The patient has already been dispensed to the maximum number of IPT pills, treatement should have ended on: "+ipt_end_date);
+                        }
                         //get facility adult age
                         var link ="<?php echo base_url();?>dispensement_management/getFacililtyAge";
                         var request = $.ajax({
