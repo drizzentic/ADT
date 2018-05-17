@@ -132,7 +132,7 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 			<td>
 			<select id="differentiated_care_report_select" class="input-xlarge select_report">
 				<option value="0" class="none">-- Select a Report  --</option>
-				<option class="no_filter" value="getPatientsOnDiffCare">List of Patients on Differentiated Care</option>
+				<option id="PatientsOnDiffCare" class="annual_report" value="getPatientsOnDiffCare">List of Patients on Differentiated Care</option>
 				<option class="date_range_report" value="getScheduledPatientsDiffCare">List of Patients Scheduled to Visit</option>
 				<option class="date_range_report" value="getPatientsStartedonDateDiffCare">List of Patients Started (on a Particular Date)</option>
 				<option class="date_range_report" value="getPatientsforRefillDiffCare">List of Patients Visited For Refill</option>
