@@ -57,6 +57,7 @@ $("#sms_map").val("<?php echo $facility['map'];?>");
 $("#autobackup").val("<?php echo $facility['autobackup'];?>");
 $("#pill_count").val("<?php echo $facility['pill_count'];?>");
 $("#medical_number").val("<?php echo $facility['medical_number'];?>");
+$("#facility_dhis").val("<?php echo $facility['facility_dhis'];?>");
 
 });
 </script>
@@ -179,6 +180,15 @@ $("#medical_number").val("<?php echo $facility['medical_number'];?>");
 								    <td><strong class="label">Do you want to enable Medical Number?</strong></td>
 									<td>
 									<select name="medical_number" id="medical_number">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+									</select>
+									</td>
+								</tr>
+									<tr>
+								    <td><strong class="label">Do you want to enable DHIS?</strong></td>
+									<td>
+									<select name="facility_dhis" id="facility_dhis">
                                         <option value="0">No</option>
                                         <option value="1">Yes</option>
 									</select>

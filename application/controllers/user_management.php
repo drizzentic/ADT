@@ -353,6 +353,7 @@ class User_management extends MY_Controller {
 						             'lost_to_follow_up'=> ((@$facility_details[0]['lost_to_follow_up'])!== null) ? @$facility_details[0]['lost_to_follow_up'] : 90 ,
 						             'pill_count'=> ((@$facility_details[0]['pill_count'])!== null) ? @$facility_details[0]['pill_count'] : 0 ,
 						             'medical_number'=> ((@$facility_details[0]['medical_number'])!== null) ? @$facility_details[0]['medical_number'] : 0 ,
+						             'facility_dhis'=> ((@$facility_details[0]['facility_dhis'])!== null) ? @$facility_details[0]['facility_dhis'] : 0 ,
 						             'autobackup'=> ((@$facility_details[0]['autobackup'])!== null) ? @$facility_details[0]['autobackup'] : 0 
 						             );
 

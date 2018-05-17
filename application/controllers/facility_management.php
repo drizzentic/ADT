@@ -108,6 +108,7 @@ class Facility_Management extends MY_Controller {
 				      'map'=>$this->input->post("sms_map", TRUE),
 				      'pill_count' => $this -> input -> post('pill_count'),
 				      'medical_number' => $this -> input -> post('medical_number'),
+				      'facility_dhis' => $this -> input -> post('facility_dhis'),
 				      'autobackup' => $this -> input -> post('autobackup')
 				    );
 
