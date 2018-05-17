@@ -830,6 +830,7 @@ class Report_management extends MY_Controller {
 		$moh_731[] = $this -> art_retention($period);
 		$moh_731[] = $this -> on_ctx($period);
 		$moh_731[] = $this -> started_ipt($period);
+		$moh_731[] = $this -> screening($period);
 		$moh_731[] = $this -> hiv_prep($period);
 		$moh_731[] = $this -> hiv_pep($period);
 		$moh_731[] = $this -> form_user_details();
@@ -842,12 +843,12 @@ class Report_management extends MY_Controller {
 		$period_start = date('Y-m-01', strtotime($period));
 		$period_end = date('Y-m-t', strtotime($period));
 		$data = array();
-		$enrolled_1_9	 = 0;
+		$enrolled_1	 = 0;
 		$enrolled_1_9 = 0;
-		$enrolled_10_14 = 0;
-		$enrolled_15_19 = 0;
-		$enrolled_20_24 = 0;
-		$enrolled_25 = 0;
+		$enrolled_m_10_14 = 0;
+		$enrolled_m_15_19 = 0;
+		$enrolled_m_20_24 = 0;
+		$enrolled_m_25 = 0;
 		$enrolled_f_10_14 = 0;
 		$enrolled_f_15_19 = 0;
 		$enrolled_f_20_24 = 0;
@@ -856,17 +857,17 @@ class Report_management extends MY_Controller {
 
 		$sql = "
 		SELECT 
-		COUNT(IF(age <= 1 , 1, NULL)) as enrolled_1,
-		COUNT(IF(age > 1 AND age < 9 , 1, NULL)) as enrolled_1_9,
-		COUNT(IF(age > 10 AND age < 14 AND LOWER(gender) = 'male' , 1, NULL)) as enrolled_10_14,
-		COUNT(IF(age > 15 AND age < 19  AND LOWER(gender) = 'male' , 1, NULL)) as enrolled_15_19,
-		COUNT(IF(age > 20 AND age < 24  AND LOWER(gender) = 'male' , 1, NULL)) as enrolled_20_24,
-		COUNT(IF(age > 25  AND LOWER(gender) = 'male' , 1, NULL)) as enrolled_25,
+		COUNT(IF(age < 1 , 1, NULL)) as enrolled_1,
+		COUNT(IF(age >= 1 AND age <= 9 , 1, NULL)) as enrolled_1_9,
+		COUNT(IF(age >= 10 AND age <= 14 AND LOWER(gender) = 'male' , 1, NULL)) as enrolled_m_10_14,
+		COUNT(IF(age >= 15 AND age <= 19  AND LOWER(gender) = 'male' , 1, NULL)) as enrolled_m_15_19,
+		COUNT(IF(age >= 20 AND age <= 24  AND LOWER(gender) = 'male' , 1, NULL)) as enrolled_m_20_24,
+		COUNT(IF(age >= 25  AND LOWER(gender) = 'male' , 1, NULL)) as enrolled_m_25,
 
-		COUNT(IF(age > 10 AND age < 14 AND LOWER(gender) = 'female' , 1, NULL)) as enrolled_f_10_14,
-		COUNT(IF(age > 15 AND age < 19  AND LOWER(gender) = 'female' , 1, NULL)) as enrolled_f_15_19,
-		COUNT(IF(age > 20 AND age < 24  AND LOWER(gender) = 'female' , 1, NULL)) as enrolled_f_20_24,
-		COUNT(IF(age > 25  AND LOWER(gender) = 'female' , 1, NULL)) as enrolled_f_25
+		COUNT(IF(age >= 10 AND age <= 14 AND LOWER(gender) = 'female' , 1, NULL)) as enrolled_f_10_14,
+		COUNT(IF(age >= 15 AND age <= 19  AND LOWER(gender) = 'female' , 1, NULL)) as enrolled_f_15_19,
+		COUNT(IF(age >= 20 AND age <= 24  AND LOWER(gender) = 'female' , 1, NULL)) as enrolled_f_20_24,
+		COUNT(IF(age >= 25  AND LOWER(gender) = 'female' , 1, NULL)) as enrolled_f_25
 		FROM vw_patient_list
 		WHERE current_status LIKE '%active%'
 		AND 	date_enrolled >= '$period_start'
@@ -877,10 +878,10 @@ class Report_management extends MY_Controller {
 
 		$enrolled_1 = $results['enrolled_1'];
 		$enrolled_1_9 = $results['enrolled_1_9'];
-		$enrolled_10_14 = $results['enrolled_10_14'];
-		$enrolled_15_19 = $results['enrolled_15_19'];
-		$enrolled_20_24 = $results['enrolled_20_24'];
-		$enrolled_25 = $results['enrolled_25'];
+		$enrolled_m_10_14 = $results['enrolled_m_10_14'];
+		$enrolled_m_15_19 = $results['enrolled_m_15_19'];
+		$enrolled_m_20_24 = $results['enrolled_m_20_24'];
+		$enrolled_m_25 = $results['enrolled_m_25'];
 		$enrolled_f_10_14 = $results['enrolled_f_10_14'];
 		$enrolled_f_15_19 = $results['enrolled_f_15_19'];
 		$enrolled_f_20_24 = $results['enrolled_f_20_24'];
@@ -888,10 +889,10 @@ class Report_management extends MY_Controller {
 
 		$data['D50'] = $enrolled_1;
 		$data['D51'] = $enrolled_1_9;
-		$data['D52'] = $enrolled_10_14;
-		$data['D53'] = $enrolled_15_19;
-		$data['D54'] = $enrolled_20_24;
-		$data['D55'] = $enrolled_25;
+		$data['D52'] = $enrolled_m_10_14;
+		$data['D53'] = $enrolled_m_15_19;
+		$data['D54'] = $enrolled_m_20_24;
+		$data['D55'] = $enrolled_m_25;
 		$data['F52'] = $enrolled_f_10_14;
 		$data['F53'] = $enrolled_f_15_19;
 		$data['F54'] = $enrolled_f_20_24;
@@ -934,10 +935,10 @@ class Report_management extends MY_Controller {
 
 		$art_1        = 0;
 		$art_1_9      = 0;
-		$art_10_14    = 0;
-		$art_15_19    = 0;
-		$art_20_24    = 0;
-		$art_25       = 0;
+		$art_m_10_14    = 0;
+		$art_m_15_19    = 0;
+		$art_m_20_24    = 0;
+		$art_m_25       = 0;
 
 		$art_f_10_14  = 0;
 		$art_f_15_19  = 0;
@@ -948,17 +949,17 @@ class Report_management extends MY_Controller {
 
 		$sql = "
 		SELECT 
-		COUNT(IF(age <= 1 , 1, NULL)) as art_1,
-		COUNT(IF(age > 1 AND age < 9 , 1, NULL)) as art_1_9,
-		COUNT(IF(age > 10 AND age < 14 AND LOWER(gender) = 'male' , 1, NULL)) as art_10_14,
-		COUNT(IF(age > 15 AND age < 19  AND LOWER(gender) = 'male' , 1, NULL)) as art_15_19,
-		COUNT(IF(age > 20 AND age < 24  AND LOWER(gender) = 'male' , 1, NULL)) as art_20_24,
-		COUNT(IF(age > 25  AND LOWER(gender) = 'male' , 1, NULL)) as art_25,
+		COUNT(IF(age < 1 , 1, NULL)) as art_1,
+		COUNT(IF(age >= 1 AND age <= 9 , 1, NULL)) as art_1_9,
+		COUNT(IF(age >= 10 AND age <= 14 AND LOWER(gender) = 'male' , 1, NULL)) as art_m_10_14,
+		COUNT(IF(age >= 15 AND age <= 19  AND LOWER(gender) = 'male' , 1, NULL)) as art_m_15_19,
+		COUNT(IF(age >= 20 AND age <= 24  AND LOWER(gender) = 'male' , 1, NULL)) as art_m_20_24,
+		COUNT(IF(age >= 25  AND LOWER(gender) = 'male' , 1, NULL)) as art_m_25,
 
-		COUNT(IF(age > 10 AND age < 14 AND LOWER(gender) = 'female' , 1, NULL)) as art_f_10_14,
-		COUNT(IF(age > 15 AND age < 19  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_15_19,
-		COUNT(IF(age > 20 AND age < 24  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_20_24,
-		COUNT(IF(age > 25  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_25
+		COUNT(IF(age >= 10 AND age <= 14 AND LOWER(gender) = 'female' , 1, NULL)) as art_f_10_14,
+		COUNT(IF(age >= 15 AND age <= 19  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_15_19,
+		COUNT(IF(age >= 20 AND age <= 24  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_20_24,
+		COUNT(IF(age >= 25  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_25
 		FROM vw_patient_list
 		WHERE current_status LIKE '%active%'
 		AND 	start_regimen_date >= '$period_start'
@@ -969,10 +970,10 @@ class Report_management extends MY_Controller {
 
 		$art_1 = $results['art_1'];
 		$art_1_9 = $results['art_1_9'];
-		$art_10_14 = $results['art_10_14'];
-		$art_15_19 = $results['art_15_19'];
-		$art_20_24 = $results['art_20_24'];
-		$art_25 = $results['art_25'];
+		$art_m_10_14 = $results['art_m_10_14'];
+		$art_m_15_19 = $results['art_m_15_19'];
+		$art_m_20_24 = $results['art_m_20_24'];
+		$art_m_25 = $results['art_m_25'];
 		$art_f_10_14 = $results['art_f_10_14'];
 		$art_f_15_19 = $results['art_f_15_19'];
 		$art_f_20_24 = $results['art_f_20_24'];
@@ -980,10 +981,10 @@ class Report_management extends MY_Controller {
 
 		$data['D63'] = $art_1;
 		$data['D64'] = $art_1_9;
-		$data['D65'] = $art_10_14;
-		$data['D66'] = $art_15_19;
-		$data['D67'] = $art_20_24;
-		$data['D68'] = $art_25;
+		$data['D65'] = $art_m_10_14;
+		$data['D66'] = $art_m_15_19;
+		$data['D67'] = $art_m_20_24;
+		$data['D68'] = $art_m_25;
 		$data['F65'] = $art_f_10_14;
 		$data['F66'] = $art_f_15_19;
 		$data['F67'] = $art_f_20_24;
@@ -999,10 +1000,10 @@ class Report_management extends MY_Controller {
 
 		$art_1        = 0;
 		$art_1_9      = 0;
-		$art_10_14    = 0;
-		$art_15_19    = 0;
-		$art_20_24    = 0;
-		$art_25       = 0;
+		$art_m_10_14    = 0;
+		$art_m_15_19    = 0;
+		$art_m_20_24    = 0;
+		$art_m_25       = 0;
 
 		$art_f_10_14  = 0;
 		$art_f_15_19  = 0;
@@ -1016,10 +1017,10 @@ class Report_management extends MY_Controller {
 		COUNT(*) as total,
 		COUNT(IF(age < 1 , 1, NULL)) as art_1,
 		COUNT(IF(age >= 1 AND age <= 9 , 1, NULL)) as art_1_9,
-		COUNT(IF(age >= 10 AND age <= 14 AND LOWER(gender) = 'male' , 1, NULL)) as art_10_14,
-		COUNT(IF(age >= 15 AND age <= 19  AND LOWER(gender) = 'male' , 1, NULL)) as art_15_19,
-		COUNT(IF(age >= 20 AND age <= 24  AND LOWER(gender) = 'male' , 1, NULL)) as art_20_24,
-		COUNT(IF(age >= 25  AND LOWER(gender) = 'male' , 1, NULL)) as art_25,
+		COUNT(IF(age >= 10 AND age <= 14 AND LOWER(gender) = 'male' , 1, NULL)) as art_m_10_14,
+		COUNT(IF(age >= 15 AND age <= 19  AND LOWER(gender) = 'male' , 1, NULL)) as art_m_15_19,
+		COUNT(IF(age >= 20 AND age <= 24  AND LOWER(gender) = 'male' , 1, NULL)) as art_m_20_24,
+		COUNT(IF(age >= 25  AND LOWER(gender) = 'male' , 1, NULL)) as art_m_25,
 
 		COUNT(IF(age >= 10 AND age <= 14 AND LOWER(gender) = 'female' , 1, NULL)) as art_f_10_14,
 		COUNT(IF(age >= 15 AND age <= 19  AND LOWER(gender) = 'female' , 1, NULL)) as art_f_15_19,
@@ -1035,10 +1036,10 @@ class Report_management extends MY_Controller {
 
 		$art_1 = $results['art_1'];
 		$art_1_9 = $results['art_1_9'];
-		$art_10_14 = $results['art_10_14'];
-		$art_15_19 = $results['art_15_19'];
-		$art_20_24 = $results['art_20_24'];
-		$art_25 = $results['art_25'];
+		$art_m_10_14 = $results['art_m_10_14'];
+		$art_m_15_19 = $results['art_m_15_19'];
+		$art_m_20_24 = $results['art_m_20_24'];
+		$art_m_25 = $results['art_m_25'];
 		$art_f_10_14 = $results['art_f_10_14'];
 		$art_f_15_19 = $results['art_f_15_19'];
 		$art_f_20_24 = $results['art_f_20_24'];
@@ -1046,10 +1047,10 @@ class Report_management extends MY_Controller {
 
 		$data['D72'] = $art_1;
 		$data['D73'] = $art_1_9;
-		$data['D74'] = $art_10_14;
-		$data['D75'] = $art_15_19;
-		$data['D76'] = $art_20_24;
-		$data['D77'] = $art_25;
+		$data['D74'] = $art_m_10_14;
+		$data['D75'] = $art_m_15_19;
+		$data['D76'] = $art_m_20_24;
+		$data['D77'] = $art_m_25;
 		$data['F74'] = $art_f_10_14;
 		$data['F75'] = $art_f_15_19;
 		$data['F76'] = $art_f_20_24;
@@ -1096,10 +1097,11 @@ class Report_management extends MY_Controller {
 
 
 		$sql = "SELECT 
-		COUNT(*) as viral_load_1000_12mths FROM patient_viral_load
-		WHERE result <= '1000'	OR `result` = '< LDL copies/ml'
-		AND 	test_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
-		AND 	test_date  <= '$period_end'
+		COUNT(*) as viral_load_1000_12mths FROM patient_viral_load ppl
+        INNER JOIN patient p ON p.patient_number_ccc=ppl.patient_ccc_number
+		WHERE (result <= '1000' OR result = '< LDL copies/ml')
+		AND 	p.date_enrolled >= '$period_start'
+		AND 	p.date_enrolled  <= '$period_end'
 		";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array()[0];
@@ -1108,9 +1110,12 @@ class Report_management extends MY_Controller {
 
 
 
-		$sql = "SELECT COUNT(*) as viral_load_result_12mths FROM patient_viral_load
-		WHERE  	test_date >= (DATE_SUB('$period_end', INTERVAL 12 MONTH))
-		AND 	test_date  <= '$period_end'";
+		$sql = "SELECT 
+		COUNT(*) as viral_load_result_12mths FROM patient_viral_load ppl
+        INNER JOIN patient p ON p.patient_number_ccc=ppl.patient_ccc_number
+		AND 	p.date_enrolled >= '$period_start'
+		AND 	p.date_enrolled  <= '$period_end'
+		";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array()[0];
 
@@ -1150,8 +1155,8 @@ class Report_management extends MY_Controller {
 
 		FROM vw_patient_list
 		WHERE current_status LIKE '%active%'
-		AND prophylaxis LIKE '%dap%'
-		OR prophylaxis LIKE '%cotri%'
+		AND (prophylaxis LIKE '%dap%'
+		OR prophylaxis LIKE '%cotri%')
 		AND 	start_regimen_date <= '$period_end'";
 
 		$query = $this -> db -> query($sql);
@@ -1191,7 +1196,7 @@ class Report_management extends MY_Controller {
 
 		$sql = "
 		SELECT 
-		COUNT(IF(age <= 1 , 1, NULL)) as start_ipt_1,
+		COUNT(IF(age < 1 , 1, NULL)) as start_ipt_1,
 		COUNT(IF(age >= 1 AND age <= 9 , 1, NULL)) as start_ipt_1_9,
 		COUNT(IF(age >= 10 AND age <= 14 , 1, NULL)) as start_ipt_10_14,
 		COUNT(IF(age >= 15 AND age <= 19 , 1, NULL)) as start_ipt_15_19,
@@ -1818,44 +1823,50 @@ class Report_management extends MY_Controller {
 		return $data;
 	}
 
-	public function screening($selected_period = "") {
-		//Variables
-		$from = date('Y-m-01', strtotime($selected_period));
-		$to = date('Y-m-t', strtotime($selected_period));
+	public function screening($period) {
+		$period_end = date('Y-m-t', strtotime($period));
 
-		$below_one_year = 0;
-		$male_below_fifteen_years = 0;
-		$female_below_fifteen_years = 0;
-		$male_above_fifteen_years = 0;
-		$female_above_fifteen_years = 0;
-
-		$sql = "SELECT DATEDIFF('$to',p.dob) as age,g.name as gender
-		FROM patient p 
-		LEFT JOIN gender g ON g.id=p.gender
-		WHERE p.date_enrolled <='$to'
-		AND p.tb_test='1'
-		AND p.active='1'
-		GROUP BY p.id";
-		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
-		if ($results) {
-			foreach ($results as $result) {
-				if (strtolower($result['gender']) == "female" && $result['age'] >= (365 * 15)) {
-					$female_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (365 * 15)) {
-					$male_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "female" && $result['age'] < (365 * 15)) {
-					$female_below_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] < (365 * 15)) {
-					$male_below_fifteen_years++;
-				}
-			}
-		}
+		$period_start = date('Y-m-01', strtotime($period));
+		$period_end = date('Y-m-t', strtotime($period));
 		$data = array();
-		$data['J57'] = $male_below_fifteen_years;
-		$data['L57'] = $female_below_fifteen_years;
-		$data['J58'] = $male_above_fifteen_years;
-		$data['L58'] = $female_above_fifteen_years;
+
+		$TB_1 = 0;
+		$TB_1_9 = 0;
+		$TB_10_14 = 0;
+		$TB_15_19 = 0;
+		$TB_20_24 = 0;
+		$TB_25 = 0;
+
+		$sql = "
+		SELECT 
+		COUNT(IF(age < 1 , 1, NULL)) as TB_1,
+		COUNT(IF(age >= 1 AND age <= 9 , 1, NULL)) as TB_1_9,
+		COUNT(IF(age >= 10 AND age <= 14 , 1, NULL)) as TB_10_14,
+		COUNT(IF(age >= 15 AND age <= 19 , 1, NULL)) as TB_15_19,
+		COUNT(IF(age >= 20 AND age <= 24 , 1, NULL)) as TB_20_24,
+		COUNT(IF(age >= 25 , 1, NULL)) as TB_25
+
+		FROM vw_patient_list
+		WHERE current_status LIKE '%active%'
+		AND tb LIKE '%YES%'";
+
+		$query = $this -> db -> query($sql);
+		$results = $query -> result_array()[0];
+		
+		$TB_1 = $results['TB_1'];
+		$TB_1_9 = $results['TB_1_9'];
+		$TB_10_14 = $results['TB_10_14'];
+		$TB_15_19 = $results['TB_15_19'];
+		$TB_20_24 = $results['TB_20_24'];
+		$TB_25 = $results['TB_25'];
+
+		$data['K58'] = $TB_1;
+		$data['K59'] = $TB_1_9;
+		$data['K60'] = $TB_10_14;
+		$data['K61'] = $TB_15_19;
+		$data['K62'] = $TB_20_24;
+		$data['K63'] = $TB_25;
+
 		return $data;
 	}
 
