@@ -105,12 +105,13 @@ class Api extends MX_Controller {
 // 		}
 // internal identification is an array of objects
 		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
+		$ccc_no = $this->parseCCC($ccc_no,$SENDING_FACILITY);
 
 		$FIRST_NAME = $patient->PATIENT_IDENTIFICATION->PATIENT_NAME->FIRST_NAME;
 		$MIDDLE_NAME = $patient->PATIENT_IDENTIFICATION->PATIENT_NAME->MIDDLE_NAME;
 		$LAST_NAME = $patient->PATIENT_IDENTIFICATION->PATIENT_NAME->LAST_NAME;
 
-		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
 
 		$MOTHER_NAME = $patient->PATIENT_IDENTIFICATION->MOTHER_NAME; 
 		$DATE_OF_BIRTH = $patient->PATIENT_IDENTIFICATION->DATE_OF_BIRTH; 
@@ -172,7 +173,7 @@ class Api extends MX_Controller {
 			'external_id'=>	$patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID,
 			'identifier_type'=>	$patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->IDENTIFIER_TYPE,
 			'assigning_authority'=> $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ASSIGNING_AUTHORITY
-		 );
+		);
 		$this->api_model->savePatientMatching($patient_matching);
 	}
 	function testjs (){
@@ -191,6 +192,8 @@ class Api extends MX_Controller {
 
 	function processPatientUpdate($patient){
 		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+		$ccc_no = $this->parseCCC($ccc_no,$$ccc_no);
+
 
 		$internal_patient = $this->api_model->getPatient($ccc_no);
 		if (!$internal_patient){
@@ -276,6 +279,7 @@ class Api extends MX_Controller {
 
 // internal identification is an array of objects
 		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+		$ccc_no = $this->parseCCC($ccc_no,$SENDING_FACILITY);
 
 
  // Observation Result(s) - Array of Objects
@@ -382,14 +386,15 @@ class Api extends MX_Controller {
 	}
 	function processDrugOrder($order){
 		$internal_patient_ccc = $order->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
-
-		// $internal_patient = $this->api_model->getPatient($ccc_no);
+		$SENDING_FACILITY = $order->MESSAGE_HEADER->SENDING_FACILITY;
 		$internal_patient_ccc = $this->api_model->getPatient($internal_patient_ccc);
+		
+		$internal_patient_ccc = $this->parseCCC($internal_patient_ccc,$SENDING_FACILITY);
+
 		if (!$internal_patient_ccc){$this->writeLog('Patient not found ',$internal_patient_ccc);die;}
 
 
 		$SENDING_APPLICATION = $order->MESSAGE_HEADER->SENDING_APPLICATION;
-		$SENDING_FACILITY = $order->MESSAGE_HEADER->SENDING_FACILITY;
 		$RECEIVING_APPLICATION = $order->MESSAGE_HEADER->RECEIVING_APPLICATION;
 		$RECEIVING_FACILITY = $order->MESSAGE_HEADER->RECEIVING_FACILITY;
 		$MESSAGE_DATETIME = $order->MESSAGE_HEADER->MESSAGE_DATETIME;
@@ -476,7 +481,7 @@ class Api extends MX_Controller {
 		$appoint['PATIENT_IDENTIFICATION'] = array(
 			'EXTERNAL_PATIENT_ID' => array('ID'=>$pat->external_id, 'IDENTIFIER_TYPE' =>"GODS_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
 			'INTERNAL_PATIENT_ID' => [
-				array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
+				array('ID'=>$this->constructCCC($pat->patient_number_ccc,$pat->facility_code,true), 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
 			],
 			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->last_name,'LAST_NAME' =>$pat->other_name)
 		);
@@ -520,7 +525,7 @@ class Api extends MX_Controller {
 			// fetch external identifications
 			'INTERNAL_PATIENT_ID' => [
 				array('ID'=>$pat->id, 'IDENTIFIER_TYPE' =>"SOURCE_SYSTEM_ID",'ASSIGNING_AUTHORITY' =>"ADT"),
-				array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
+				array('ID'=>$this->constructCCC($pat->patient_number_ccc,$pat->facility_code,true), 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
 			],
 			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->other_name,'LAST_NAME' =>$pat->last_name),
 			'DATE_OF_BIRTH' => date('Ymd',strtotime($pat->dob)),
@@ -572,7 +577,7 @@ class Api extends MX_Controller {
 			// fetch external identifications
 			'INTERNAL_PATIENT_ID' => [
 				array('ID'=>$pat->id, 'IDENTIFIER_TYPE' =>"SOURCE_SYSTEM_ID",'ASSIGNING_AUTHORITY' =>"ADT"),
-				array('ID'=>$pat->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
+				array('ID'=>$this->constructCCC($pat->patient_number_ccc,$pat->facility_code,true), 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
 			],
 			'PATIENT_NAME' => array('FIRST_NAME'=>$pat->first_name, 'MIDDLE_NAME' =>$pat->last_name,'LAST_NAME' =>$pat->other_name)
 		);
@@ -682,7 +687,7 @@ class Api extends MX_Controller {
 		$dispense['PATIENT_IDENTIFICATION'] = array(
 			'EXTERNAL_PATIENT_ID' => array('ID'=>$pats[0]->external_id, 'IDENTIFIER_TYPE' =>"GODS_NUMBER",'ASSIGNING_AUTHORITY' =>"MPI"),
 			'INTERNAL_PATIENT_ID' => [
-				array('ID'=>$pats[0]->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
+				array('ID'=> $pats[0]->facility_code.'-'.$pats[0]->patient_number_ccc, 'IDENTIFIER_TYPE' =>"CCC_NUMBER",'ASSIGNING_AUTHORITY' =>"CCC")
 			],
 			'PATIENT_NAME' => array('FIRST_NAME'=>$pats[0]->first_name, 'MIDDLE_NAME' =>$pats[0]->other_name,'LAST_NAME' =>$pats[0]->last_name)
 		);
@@ -802,26 +807,50 @@ class Api extends MX_Controller {
 		return $api_config;
 	}
 
-	public function settings(){
-		if ($_POST){
-			if ($this->api_model->saveAPIConfig($_POST)){
-				$data['message'] = 'Settings Saved successfully';
+	public function parseCCC($ccc,$mfl_code = false){
+
+		/*
+			Strip CCC of any apprearance of mfl code & special characters and return padded ccc number
+		*/
+			$ccc = str_replace($mfl_code,"", $ccc);
+			$ccc = str_replace(" ","", $ccc);
+			$ccc = str_replace("-","", $ccc);
+
+			return  $ccc;
+		}
+		public function constructCCC($ccc,$mfl_code = false,$hyphen = false){
+			$hyphen = ($hyphen) ? '-' : '' ;
+
+			for ($i=strlen($ccc); $i < 5 ; $i++) { 
+				$ccc='0'.$ccc;
+			}
+			for ($i=strlen($mfl_code); $i < 5 ; $i++) { 
+				$ccc='0'.$mfl_code;
 			}
 
+			return ($mfl_code.$hyphen.$ccc);
 		}
 
-		$data['api_config'] = $this->init_api_values();
-		$data['active_menu'] = 8;
-		$data['content_view'] = "api/settings_view";
-		$data['title'] = "Dashboard | API Settings";
-		$this -> template($data);
-	}
+		public function settings(){
+			if ($_POST){
+				if ($this->api_model->saveAPIConfig($_POST)){
+					$data['message'] = 'Settings Saved successfully';
+				}
 
-	public function template($data) {
-		$data['show_menu'] = 0;
-		$data['show_sidemenu'] = 0;
-		$this -> load -> module('template');
-		$this -> template -> index($data);
-	}
+			}
 
-}
+			$data['api_config'] = $this->init_api_values();
+			$data['active_menu'] = 8;
+			$data['content_view'] = "api/settings_view";
+			$data['title'] = "Dashboard | API Settings";
+			$this -> template($data);
+		}
+
+		public function template($data) {
+			$data['show_menu'] = 0;
+			$data['show_sidemenu'] = 0;
+			$this -> load -> module('template');
+			$this -> template -> index($data);
+		}
+
+	}
