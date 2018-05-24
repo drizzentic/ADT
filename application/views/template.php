@@ -132,7 +132,8 @@ if (isset($styles)) {
 	    $('#span1').load('<?php echo base_url() . 'notification_management/error_notification';?>');
 		$('#span2').load('<?php echo base_url() . 'notification_management/reporting_notification';?>');
 		$('#span3').load('<?php echo base_url() . 'notification_management/followup_notification';?>');
-		$('#span4').load('<?php echo base_url() . 'notification_management/update_notification';?>');
+		$('#span4').load('<?php echo base_url() . 'notification_management/prescriptions_notification_view';?>');
+		$('#span5').load('<?php echo base_url() . 'notification_management/update_notification';?>');
 		
 	    <?php
 		}
@@ -433,6 +434,7 @@ if (isset($styles)) {
 			<li id="span2"></li>
 			<li id="span3"></li>
 			<li id="span4"></li>
+			<li id="span5"></li>
 			<?php
 			}
 			?>

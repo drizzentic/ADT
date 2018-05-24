@@ -1112,7 +1112,7 @@ AND  r.regimen_code LIKE '%oi%'
 
 	public function getPrescriptions($patient_ccc = nuull){
 		$prescription = array();
-		$sql="SELECT * FROM drug_prescription WHERE patient = '$patient_ccc' ORDER BY id DESC LIMIT 1";
+		$sql="SELECT * FROM drug_prescription WHERE patient_ccc = '$patient_ccc' ORDER BY id DESC LIMIT 1";
 		$query=$this->db->query($sql);
 		$results=$query->result_array();
 		if($results){

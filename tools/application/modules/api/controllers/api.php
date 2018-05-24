@@ -440,7 +440,7 @@ class Api extends MX_Controller {
 		$pe = array(
 			'order_number' => $PLACER_ORDER_NUMBER,
 			'order_status' => $ORDER_STATUS,
-			'patient' => $internal_patient_ccc->patient_number_ccc,
+			'patient_ccc' => $internal_patient_ccc->patient_number_ccc,
 			'order_physician' => $OP_FIRST_NAME.' '.$OP_MIDDLE_NAME.' '.$OP_LAST_NAME,
 			'notes' => $NOTES
 		);

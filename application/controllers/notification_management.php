@@ -478,6 +478,38 @@ class Notification_management extends MY_Controller {
 		}
 	}
 
+	public function prescriptions_notification_view($display_array=false){
+		//get lost to followup patients whose appointment is 90 days from today
+           
+           
+		$sql="SELECT a.id, UPPER(CONCAT_WS(' ',CONCAT_WS(' ',a.first_name,a.other_name),a.last_name)) as patient_name,b.id as drug_prescriptionid,
+		b.order_number,b.order_physician,b.notes,b.timecreated
+		 from patient a
+		 INNER JOIN
+		(SELECT dp.* FROM drug_prescription dp ,drug_prescription_details dpd 
+				left join drug_prescription_details_visit  dpdv on dpdv.drug_prescription_details_id  = dpd.id
+				left join patient_visit pv on pv.id= dpdv.visit_id
+		                left join patient p on p.patient_number_ccc =  pv.patient_id 
+				WHERE  dp.id = dpd.drug_prescriptionid
+		and p.id  is null
+				GROUP BY patient_ccc, order_number 
+				ORDER BY timecreated DESC 
+		) b on a.patient_number_ccc = b.patient_ccc 
+		group by order_number
+";
+		
+		$query=$this->db->query($sql);
+		$results=$query->result_array();
+
+		if($display_array==true){
+            return $results;
+		}else{
+			$total=$this -> db -> affected_rows();
+			echo "<li><a href='".base_url()."notification_management/load_prescriptions_view'><i class='icon-th'></i>Pending Prescriptions<div class='badge badge-important'>" . $total . "</div></a></li>";
+		}
+	}
+
+
 	public function load_followup_view(){
 		$patients=$this->followup_notification(true);
 		//columns for dataTables
@@ -505,6 +537,37 @@ class Notification_management extends MY_Controller {
 		$data['content_view'] = "followup_listing_v";
 		$this -> base_params($data);
 	}
+
+	public function load_prescriptions_view(){
+		$patients=$this->prescriptions_notification_view(true);
+		//columns for dataTables
+		$columns=array("#","patient","order_number",	"order_physician","notes","timecreated" ,'action');
+		//if patients is null create empty array
+        if(!$patients){
+        	$patients=array();
+        }
+        //use table library to generate table
+		$this -> load -> library('table');
+		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped dataTables" >');
+		$this -> table -> set_template($tmpl);
+		$this -> table -> set_heading($columns);
+
+		//loop  through patients adding the rows
+        foreach($patients as $patient){
+        	// http://localhost:81/ADT/dispensement_management/dispense/2821?pid=1255
+        	$dispense_link="<a href='".base_url()."dispensement_management/dispense/".$patient['id']."?pid=".$patient['drug_prescriptionid']."'>Dispense</a>";
+        	$edit_link="<a href='".base_url()."patient_management/edit/".$patient['id']."'>Edit</a>";
+        	// $disable_link="<a href='".base_url()."patient_management/disable/".$patient['id']."' class='red'>Disable</a>";
+            $patient['links']= $dispense_link;
+        	unset($patient['id']);
+        	unset($patient['drug_prescriptionid']);
+        	$this -> table -> add_row($patient);
+        }
+		$data['followup_patients']=$this -> table -> generate();
+		$data['content_view'] = "followup_listing_v";
+		$this -> base_params($data);
+	}
+
 
 	public function base_params($data) {
 		$data['title'] = "webADT | Notifications";
