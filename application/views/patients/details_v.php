@@ -653,7 +653,7 @@
 	<!-- Prescriptions Modal -->
 	<div id="patient_prescriptions" title="Patient Prescriptions">
 		<div class="table-responsive">
-			<table id="viral_load_data" class="table table-hover table-bordered table-striped table-condensed">
+			<table id="prescriptions_data" class="table table-hover table-bordered table-striped table-condensed">
 				<thead>
 					<tr>						
 						<th>Drug Name</th>	
