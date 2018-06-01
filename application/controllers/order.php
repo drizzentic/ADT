@@ -4,25 +4,79 @@ class Order extends MY_Controller {
 	var $facility_code = '';
 	var $facility_type = '';
 	var $user_id = '';
+	var $facility_dhis = '';
+	var $dhis_url = '';
 	function __construct() {
 		parent::__construct();
+
+		$this -> load -> library('Curl');
+
 		$this->facility_code = $this -> session -> userdata('facility');
 		$this->facility_type = Facilities::getType($this->facility_code);
 		$this->user_id = $this -> session -> userdata('user_id');
+		$this->facility_dhis = $this->session->userdata('facility_dhis');
+		$this->dhis_url = 'https://hiskenya.org/';
 	}
 
 	public function index() {
-		$data['cdrr_buttons'] = $this -> get_buttons("cdrr");
-		$data['cdrr_filter'] = $this -> get_filter("cdrr");
-		$data['fmap_buttons'] = $this -> get_buttons("maps");
-		$data['maps_filter'] = $this -> get_filter("maps");
-		$data['cdrr_table'] = $this -> get_orders("cdrr");
-		$data['map_table'] = $this -> get_orders("maps");
-		$data['facilities'] = Facilities::getSatellites($this->facility_code);
-		$data['page_title'] = "my Orders";
-		$data['banner_text'] = "Facility Orders";
-		$data['content_view'] = "orders/order_v";
+		if ($this->session->userdata("facility_dhis")){
+			$data['page_title'] = "DHiS Login";
+			$data['banner_text'] = "DHIS Login";
+			$data['content_view'] = "orders/dhis_login_v";
+		}else{
+			$data['cdrr_buttons'] = $this -> get_buttons("cdrr");
+			$data['cdrr_filter'] = $this -> get_filter("cdrr");
+			$data['fmap_buttons'] = $this -> get_buttons("maps");
+			$data['maps_filter'] = $this -> get_filter("maps");
+			$data['cdrr_table'] = $this -> get_orders("cdrr");
+			$data['map_table'] = $this -> get_orders("maps");
+			$data['facilities'] = Facilities::getSatellites($this->facility_code);
+			$data['page_title'] = "my Orders";
+			$data['banner_text'] = "Facility Orders";
+			$data['content_view'] = "orders/order_v";
+		}
 		$this -> base_params($data);
+	}
+
+	public function authenticate_user() {
+		$curl = new Curl();
+		$username = $this -> input -> post("username");
+		$password = $this -> input -> post("password");
+		$curl -> setBasicAuthentication($username, $password);
+		$curl -> setOpt(CURLOPT_RETURNTRANSFER, TRUE);
+		$curl -> setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
+		$auth_url = $this -> dhis_url . 'api/me';
+		$curl -> get($auth_url);
+
+		//Check for error(s)
+		if ($curl -> error) {
+			if ($curl -> error_code == 6 || $curl -> error_code == 7) {//Internet Connection error
+				$this -> session -> set_flashdata('login_message', "<span class='error'>Problem while connecting to the Server! ".$curl -> error_message."</span>");
+			} else {
+				$this -> session -> set_flashdata('login_message', "<span class='error'>Error " . $curl -> error_code . ": Login Failed! Incorrect credentials</span>");
+			}
+			redirect("order");
+		}else{
+			$auth_response = json_decode($curl -> response, TRUE);
+			//Save user data
+			$sync_user = array(
+				'username' => $username,
+				'password' => md5($password),
+				'email' => $auth_response['email'],
+				'name' => $auth_response['name'],
+				'role' => $auth_response['employer'],
+				'status' => 'A',
+				'user_id' => $this->session->userdata('user_id'),
+				'profile_id' => $auth_response['id'],
+				'organization_id' => 'JgBnZEcsqDR'
+				//'organization_id' => $auth_response['organisationUnits'][0]['id']
+			);
+			$this->db->replace('sync_user', $sync_user);
+			$data['page_title'] = "DHiS Orders";
+			$data['banner_text'] = "DHIS Orders";
+			$data['content_view'] = "orders/dhis_order_v";
+			$this -> base_params($data);
+		}
 	}
 
 	public function verify_user_access(){

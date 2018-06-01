@@ -116,6 +116,7 @@ class Facility_Management extends MY_Controller {
 			$this -> db -> update('facilities', $data);
 			$this->session->set_userdata("facility_sms_consent",$this->input->post("sms_map", TRUE));
 			$this->session->set_userdata("autobackup",$this->input->post("autobackup", TRUE));
+			$this->session->set_userdata("facility_dhis",$this->input->post("facility_dhis", TRUE));
 			$this -> session -> set_userdata('msg_success', $this -> input -> post('facility_name') . ' \'s details were successfully Updated!');
 		} else {
 			$this -> session -> set_userdata('msg_error', 'Facility details could not be updated!');
