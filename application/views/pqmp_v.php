@@ -41,8 +41,8 @@
         <table border="1" style="">
             <tr>
                 <td colspan="2">Name of Facility : <input type="text" name="facility_name" id="facility_name" class="form-control" value="<?= $pqmp_data[0]['facility_name']; ?>"> </td>
-                <td colspan="3">District Name: <input type="text" name="district_name" id="district_name" class="form-control" value="<?= $pqmp_data[0]['district_name'] ?>" ></td>
-                <td colspan="3">Province Name: <input type="text" name="province_name" id="province_name" class="form-control" value="<?= $pqmp_data[0]['province_name'] ?>" ></td>
+                <td colspan="3">County: <input type="text" name="district_name" id="county_id" class="form-control" value="<?= $pqmp_data[0]['county_id'] ?>" ></td>
+                <td colspan="3">Sub County: <input type="text" name="province_name" id="sub_county_id" class="form-control" value="<?= $pqmp_data[0]['sub_county_id'] ?>" ></td>
             </tr>
             <tr>
                 <td colspan="2">Facility Address: <input type="text" name="facility_address" id="facility_address" class="form-control" value="<?= $pqmp_data[0]['facility_address']; ?>"></td>
@@ -59,7 +59,7 @@
             </tr>
             <tr>
                 <td>Batch/Lot Number</td>
-                <td><input type="text" name="batch_no" id="batch_no" value="<?= $pqmp_data[0]['batch_no']; ?>" class="form-control"></td>
+                <td><input type="text" name="batch_no" id="batch_no" value="<?= $pqmp_data[0]['batch_number']; ?>" class="form-control"></td>
                 <td>Date of Manufacture</td>
                 <td><input type="text" name="manufacture_date" value="<?= $pqmp_data[0]['manufacture_date']; ?>" id="manufacture_date" class=""></td>
                 <td>Date of Expiry</td>
@@ -69,9 +69,9 @@
             </tr>
             <tr>
                 <td>Name of Manufacturer</td>
-                <td colspan="3"><input type="text" name="manufacturer_name" value="<?= $pqmp_data[0]['manufacturer_name']; ?>" id="manufacturer_name" class="form-control"> </td>
+                <td colspan="3"><input type="text" name="manufacturer_name" value="<?= $pqmp_data[0]['name_of_manufacturer']; ?>" id="manufacturer_name" class="form-control"> </td>
                 <td>Country of Origin</td>
-                <td colspan="3"><input type="text" name="origin_county" value="<?= $pqmp_data[0]['origin_county']; ?>" id="origin_county" class="form-control"> </td>
+                <td colspan="3"><input type="text" name="origin_county" value="<?= $pqmp_data[0]['country_of_origin']; ?>" id="origin_county" class="form-control"> </td>
             </tr>
             <tr>
                 <td>Name of Distributor/Supplier</td>
@@ -95,7 +95,7 @@
                     <input type="checkbox" name="formulation_nebuliser" value="nebuliser"> Nebuliser solution <br />
                     <input type="checkbox" name="formulation_cream" value="cream"> Cream/ Ointment/Liniment/ Paste <br />
                     <input type="checkbox" name="other_formulation" value="other"> Other
-                    <input type="text" name="formulation_other" id="formulation_other" value="<?= $pqmp_data[0]['formulation_other'] ?>">
+                    <input type="text" name="formulation_other" id="formulation_other" value="<?= $pqmp_data[0]['product_formulation_specify'] ?>">
 
                 </td>
                 <td colspan="4" align="">
@@ -146,11 +146,11 @@
             </tr>
             <tr>
                 <td colspan="4">Name of reporter : <input type="text" name="reporter_name" id="reporter_name" value="<?= $pqmp_data[0]['reporter_name'] ?>" class="form-control"> </td>
-                <td colspan="4">Contact Number : <input type="text" name="reporter_phone" id="reporter_phone" value="<?= $pqmp_data[0]['reporter_phone'] ?>" class="form-control"> </td>
+                <td colspan="4">Contact Number : <input type="text" name="reporter_phone" id="reporter_phone" value="<?= $pqmp_data[0]['contact_number'] ?>" class="form-control"> </td>
             </tr>
             <tr>
-                <td colspan="4">Cadre Job Title : <input type="text" name="reporter_title" id="reporter_title" value="<?= $pqmp_data[0]['reporter_title'] ?>" class="form-control"> </td>
-                <td colspan="4">Signature : <input type="text" name="reporter_signature" id="reporter_signature" value="<?= $pqmp_data[0]['reporter_signature'] ?>" class="form-control"> </td>
+                <td colspan="4">Cadre Job Title : <input type="text" name="reporter_title" id="reporter_title" value="<?= $pqmp_data[0]['designation_id'] ?>" class="form-control"> </td>
+                <td colspan="4">Signature : <input type="text" name="reporter_signature" id="reporter_signature" value="<?= $pqmp_data[0]['reporter_name'] ?>" class="form-control"> </td>
             </tr>
             <tr>
                 <td colspan="8" align="center" style="background-color: lightblue;"><h5>Once completed one copy of this form should be emailed or posted to:</h5></td>
@@ -173,7 +173,7 @@
 
         </table>
         <div class="mid-row" id="submit-container" style="display: none;">
-            <button type="submit" form="adr_form" value="Submit">Submit</button>
+            <input type="submit"  value="Submit"/>
             <button>cancel</button>
         </div>
     </form>

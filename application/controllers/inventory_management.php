@@ -454,61 +454,53 @@ class Inventory_management extends MY_Controller {
 
         if ($this->input->post("facility_name")) {
             $pqmp_data = array(
+                'county_id' => $this->input->post('county_id'),
+                'sub_county_id' => $this->input->post('sub_county_id'),
+                'country_id' => $this->input->post('country_id'),
+                'designation_id' => $this->input->post('designation_id'),
                 'facility_name' => $this->input->post('facility_name'),
-                'district_name' => $this->input->post('district_name'),
-                'province_name' => $this->input->post('province_name'),
+                'facility_code' => $this->input->post('facility_code'),
                 'facility_address' => $this->input->post('facility_address'),
                 'facility_phone' => $this->input->post('facility_phone'),
                 'brand_name' => $this->input->post('brand_name'),
                 'generic_name' => $this->input->post('generic_name'),
-                'batch_no' => $this->input->post('batch_no'),
+                'batch_number' => $this->input->post('batch_no'),
                 'manufacture_date' => date('Y-m-d', strtotime($this->input->post('manufacture_date'))),
                 'expiry_date' => date('Y-m-d', strtotime($this->input->post('expiry_date'))),
                 'receipt_date' => date('Y-m-d', strtotime($this->input->post('receipt_date'))),
-                'manufacturer_name' => $this->input->post('manufacturer_name'),
-                'origin_county' => $this->input->post('origin_county'),
+                'name_of_manufacturer' => $this->input->post('manufacturer_name'),
+                'country_of_origin' => $this->input->post('country_id'),
                 'supplier_name' => $this->input->post('supplier_name'),
                 'supplier_address' => $this->input->post('supplier_address'),
-                'formulation_oral' => $this->input->post('formulation_oral'),
-                'formulation_injection' => $this->input->post('formulation_injection'),
-                'formulation_diluent' => $this->input->post('formulation_diluent'),
-                'formulation_powdersuspension' => $this->input->post('formulation_powdersuspension'),
-                'formulation_powderinjection' => $this->input->post('formulation_powderinjection'),
-                'formulation_eyedrops' => $this->input->post('formulation_eyedrops'),
-                'formulation_eardrops' => $this->input->post('formulation_eardrops'),
-                'formulation_nebuliser' => $this->input->post('formulation_nebuliser'),
-                'formulation_cream' => $this->input->post('formulation_cream'),
-                'other_formulation' => $this->input->post('other_formulation'),
-                'formulation_other' => $this->input->post('formulation_other'),
-                'complaint_colour' => $this->input->post('complaint_colour'),
-                'complaint_separating' => $this->input->post('complaint_separating'),
-                'complaint_powdering' => $this->input->post('complaint_powdering'),
-                'complaint_caking' => $this->input->post('complaint_caking'),
-                'complaint_moulding' => $this->input->post('complaint_moulding'),
-                'complaint_change' => $this->input->post('complaint_change'),
-                'complaint_mislabeilng' => $this->input->post('complaint_mislabeilng'),
-                'complaint_incomplete' => $this->input->post('complaint_incomplete'),
-                'other_complaint' => $this->input->post('other_complaint'),
+                'product_formulation' => $this->input->post('product_formulation'),
+                'product_formulation_specify' => $this->input->post('formulation_other'),
+                'colour_change' => $this->input->post('colour_change'),
+                'separating' => $this->input->post('separating'),
+                'powdering' => $this->input->post('powdering'),
+                'caking' => $this->input->post('caking'),
+                'moulding' => $this->input->post('moulding'),
+                'odour_change' => $this->input->post('odour_change'),
+                'mislabeling' => $this->input->post('mislabeling'),
+                'incomplete_pack' => $this->input->post('incomplete_pack'),
                 'complaint_other' => $this->input->post('complaint_other'),
-                'description' => $this->input->post('description'),
+                'complaint_other_specify' => $this->input->post('complaint_other_specify'),
+                'complaint_description' => $this->input->post('description'),
+                'require_refrigeration' => $this->input->post('product_refrigiration'),
+                'product_at_facility' => $this->input->post('product_availability'),
+                'returned_by_client' => $this->input->post('product_returned'),
+                'stored_to_recommendations' => $this->input->post('product_storage'),
+                'other_details' => $this->input->post(''),
                 'comments' => $this->input->post('comments'),
-                'product_refrigiration' => $this->input->post('product_refrigiration'),
-                'product_availability' => $this->input->post('product_availability'),
-                'product_returned' => $this->input->post('product_returned'),
-                'product_returned' => $this->input->post('product_returned'),
-                'product_storage' => $this->input->post('product_storage'),
-                'product_storage' => $this->input->post('product_storage'),
                 'reporter_name' => $this->input->post('reporter_name'),
-                'reporter_phone' => $this->input->post('reporter_phone'),
-                'reporter_title' => $this->input->post('reporter_title'),
-                'reporter_signature' => $this->input->post('reporter_signature')
+                'reporter_email' => $this->input->post(''),
+                'contact_number' => $this->input->post('reporter_phone'),
             );
             $this->db->where('id', $record_no);
             $this->db->update('pqmp', $pqmp_data);
             $this->session->set_flashdata('pqmp_saved', 'Pharmacovigilance form was saved successfully!');
 
-            redirect("inventory_management/pqmp/" . $record_no);
-            die;
+           // redirect("inventory_management/pqmp/" . $record_no);
+      
         }
 
         $data = array();
@@ -530,7 +522,7 @@ class Inventory_management extends MY_Controller {
 
         if ($action == 'delete') {
             $this->db->query('delete from pqmp where id = ' . $record_no);
-            redirect('inventory_management/pqmp');
+           // redirect('inventory_management/pqmp');
             die;
         }
 
@@ -650,64 +642,64 @@ class Inventory_management extends MY_Controller {
     function save_pqm_for_synch() {
         error_reporting(E_ALL);
         $pmpq = array(
-          'user_id' => $this -> session -> userdata("user_id"),
-          'county_id' => $this->input->post('county_id'),
-          'sub_county_id' => $this->input->post('sub_county_id'),
-          'country_id' => $this->input->post('country_id'),
-          'designation_id' => $this->input->post('designation_id'),
-          'facility_name' => $this->input->post('facility_name'),
-          'facility_code' => $this->input->post('facility_code'),
-          'facility_address' => $this->input->post('facility_address'),
-          'facility_phone' => $this->input->post('facility_phone'),
-          'brand_name' => $this->input->post('brand_name'),
-          'generic_name' => $this->input->post('generic_name'),
-          'batch_number' => $this->input->post('batch_no'),
-          'manufacture_date' => date('Y-m-d', strtotime($this->input->post('manufacture_date'))),
-          'expiry_date' => date('Y-m-d', strtotime($this->input->post('expiry_date'))),
-          'receipt_date' => date('Y-m-d', strtotime($this->input->post('receipt_date'))),
-          'name_of_manufacturer' => $this->input->post('manufacturer_name'),
-          'country_of_origin' => $this->input->post('country_id'),
-          'supplier_name' => $this->input->post('supplier_name'),
-          'supplier_address' => $this->input->post('supplier_address'),
-          'product_formulation' => $this->input->post('product_formulation'),
-          'product_formulation_specify' => $this->input->post('formulation_other'),
-          'colour_change' => $this->input->post('colour_change'),
-          'separating' => $this->input->post('separating'),
-          'powdering' => $this->input->post('powdering'),
-          'caking' => $this->input->post('caking'),
-          'moulding' => $this->input->post('moulding'),
-          'odour_change' => $this->input->post('odour_change'),
-          'mislabeling' => $this->input->post('mislabeling'),
-          'incomplete_pack' => $this->input->post('incomplete_pack'),
-          'complaint_other' => $this->input->post('complaint_other'),
-          'complaint_other_specify' => $this->input->post('complaint_other_specify'),
-          'complaint_description' => $this->input->post('description'),
-          'require_refrigeration' => $this->input->post('product_refrigiration'),
-          'product_at_facility' => $this->input->post('product_availability'),
-          'returned_by_client' => $this->input->post('product_returned'),
-          'stored_to_recommendations' => $this->input->post('product_storage'),
-          'other_details' => $this->input->post(''),
-          'comments' => $this->input->post('comments'),
-          'reporter_name' => $this->input->post('reporter_name'),
-          'reporter_email' => $this->input->post(''),
-          'contact_number' => $this->input->post('reporter_phone'),
-          'emails' => $this->input->post(''),
-          'submitted' => 1,
-          'active' => 1,
-          'device' =>1,
-          'notified' => 1,
-          'created' => date('Y-m-d'),
-          'modified' => date('Y-m-d')
+            'user_id' => $this->session->userdata("user_id"),
+            'county_id' => $this->input->post('county_id'),
+            'sub_county_id' => $this->input->post('sub_county_id'),
+            'country_id' => $this->input->post('country_id'),
+            'designation_id' => $this->input->post('designation_id'),
+            'facility_name' => $this->input->post('facility_name'),
+            'facility_code' => $this->input->post('facility_code'),
+            'facility_address' => $this->input->post('facility_address'),
+            'facility_phone' => $this->input->post('facility_phone'),
+            'brand_name' => $this->input->post('brand_name'),
+            'generic_name' => $this->input->post('generic_name'),
+            'batch_number' => $this->input->post('batch_no'),
+            'manufacture_date' => date('Y-m-d', strtotime($this->input->post('manufacture_date'))),
+            'expiry_date' => date('Y-m-d', strtotime($this->input->post('expiry_date'))),
+            'receipt_date' => date('Y-m-d', strtotime($this->input->post('receipt_date'))),
+            'name_of_manufacturer' => $this->input->post('manufacturer_name'),
+            'country_of_origin' => $this->input->post('country_id'),
+            'supplier_name' => $this->input->post('supplier_name'),
+            'supplier_address' => $this->input->post('supplier_address'),
+            'product_formulation' => $this->input->post('product_formulation'),
+            'product_formulation_specify' => $this->input->post('formulation_other'),
+            'colour_change' => $this->input->post('colour_change'),
+            'separating' => $this->input->post('separating'),
+            'powdering' => $this->input->post('powdering'),
+            'caking' => $this->input->post('caking'),
+            'moulding' => $this->input->post('moulding'),
+            'odour_change' => $this->input->post('odour_change'),
+            'mislabeling' => $this->input->post('mislabeling'),
+            'incomplete_pack' => $this->input->post('incomplete_pack'),
+            'complaint_other' => $this->input->post('complaint_other'),
+            'complaint_other_specify' => $this->input->post('complaint_other_specify'),
+            'complaint_description' => $this->input->post('description'),
+            'require_refrigeration' => $this->input->post('product_refrigiration'),
+            'product_at_facility' => $this->input->post('product_availability'),
+            'returned_by_client' => $this->input->post('product_returned'),
+            'stored_to_recommendations' => $this->input->post('product_storage'),
+            'other_details' => $this->input->post(''),
+            'comments' => $this->input->post('comments'),
+            'reporter_name' => $this->input->post('reporter_name'),
+            'reporter_email' => $this->input->post(''),
+            'contact_number' => $this->input->post('reporter_phone'),
+            'emails' => $this->input->post(''),
+            'submitted' => 1,
+            'active' => 1,
+            'device' => 1,
+            'notified' => 1,
+            'created' => date('Y-m-d'),
+            'modified' => date('Y-m-d')
         );
-      
 
-      
+
+
         $this->db->insert('pqms', $pmpq);
-       // $this->output->enable_profiler(TRUE);
-      
-         $this->session->set_flashdata('pqmp_saved', 'Pharmacovigilance SPQMs was saved successfully!');
+        // $this->output->enable_profiler(TRUE);
 
-       redirect("inventory_management/pqmp");
+        $this->session->set_flashdata('pqmp_saved', 'Pharmacovigilance SPQMs was saved successfully!');
+
+        redirect("inventory_management/pqmp");
     }
 
     public function adr($record_no = null, $action = null) {
