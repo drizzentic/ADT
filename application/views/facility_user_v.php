@@ -186,11 +186,11 @@ $("#facility_dhis").val("<?php echo $facility['facility_dhis'];?>");
 									</td>
 								</tr>
 									<tr>
-								    <td><strong class="label">Do you want to enable DHIS?</strong></td>
+								    <td><strong class="label">How do you want to Order?</strong></td>
 									<td>
 									<select name="facility_dhis" id="facility_dhis">
-                                        <option value="0">No</option>
-                                        <option value="1">Yes</option>
+                                        <option value="0">Offline</option>
+                                        <option value="1">DHIS</option>
 									</select>
 									</td>
 								</tr>
