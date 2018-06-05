@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS adr_form//
 CREATE TABLE adr_form (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   institution_name varchar(50) DEFAULT NULL,
@@ -29,6 +28,6 @@ CREATE TABLE adr_form (
   office_phone varchar(20) DEFAULT NULL,
   designation varchar(20) DEFAULT NULL,
   signature varchar(50) DEFAULT NULL,
-  datecreated datetime NULL DEFAULT current_timestamp,
+  datecreated datetime NULL,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1//
+)//
