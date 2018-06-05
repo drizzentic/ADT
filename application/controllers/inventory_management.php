@@ -450,6 +450,7 @@ class Inventory_management extends MY_Controller {
     }
 
     public function pqmp($record_no = null, $action = null) {
+        $record_no = $this->uri->segment(3);
 
         if ($this->input->post("facility_name")) {
             $pqmp_data = array(

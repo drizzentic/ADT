@@ -33,6 +33,7 @@ RCS
 RCSLOG
 SCCS
 _$*
+nbproject
 application/views/sections/link.php
 application/config/db_conf.php
 

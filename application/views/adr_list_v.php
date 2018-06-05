@@ -6,9 +6,16 @@
     table{
         width:100%;
     }
-
+    #pv_form{
+        zoom:0.8 !important;
+    }
 </style>
-<div class="row">
+<?php
+function ellipsis($string, $max_length) {
+    return (strlen($string) > $max_length) ? substr($string, 0, strrpos(substr($string, 0, $max_length), ' ')) . "…" : $string;
+}
+?>
+<div class="row" id="pv_form">
     <div class="span11" style="background: #fdfdfd;">
         <a class="button disabled" href="<?php echo base_url() . 'inventory_management/pqmp/'; ?>">PQMP</a>
         <a class="button info" href="<?php echo base_url() . 'inventory_management/adr'; ?>">ADR</a>
@@ -16,7 +23,7 @@
     </div>
     <div class="span11">
         <h5>Patient ADR Reports</h5>
-        <a href="#synchdata" class="btn btn-default" id="SYNDATA" > Synch ADR </a>
+        <a href="#synchdata" class="btn btn-warning pull-right" id="SYNDATA" ><i class="icon icon-refresh"></i> Synch with PPB  </a>
         <span id="NOCOM" style="display:none">Synch disabled, connection to the SADR server could not be established...</span>
 
         <span id="SYNCHLOADER" style="display:none;">
@@ -45,7 +52,8 @@
     <div class="span11">
         <table border="1" class="table" >
             <thead>
-            <th></th>
+            <th>Synch<br><input type="checkbox" id="CHECKALL"/>
+                <input type="checkbox" checked="checked" name="adrid" style="display:none;" value="1010101010101010"/></th>
             <th>#</th>
             <th>Patient</th>
             <th>diagnosis</th>
@@ -53,7 +61,7 @@
             <th>Outcome</th>
             <th>Date</th>
             <th>Action Taken</th>  
-            <th>Status</th>  
+          
             </thead>
             <tbody>
                 <?php foreach ($adr_data as $key => $adr) { ?>
@@ -62,26 +70,21 @@
 
                             <?php if ($adr['synch'] == '0') { ?>
                                 <input type="checkbox" name="adrid" value="<?= $adr['id']; ?>"
+                                      
                             <?php } else { ?>
-                                       <span class=""><i class="fa fa-check-circle-o"></i>ok</span> 
+                                       <span class="">&#9989;</span> 
                                    <?php }
                                    ?></td>
                         <td> <?= $adr['id']; ?></td>
                         <td>
-                            <a href="<?= base_url(); ?>inventory_management/adr/<?= $adr_data[0]['id']; ?> "> <?= $adr['patient_name']; ?> </a>
+                            <a href="<?= base_url(); ?>inventory_management/adr/<?= $adr_data[0]['id']; ?> "> <?= ellipsis($adr['patient_name'],10); ?> </a>
                         </td>
-                        <td> <?= $adr['diagnosis']; ?></td>
-                        <td> <?= $adr['severity']; ?></td>
-                        <td> <?= $adr['outcome']; ?></td>
-                        <td> <?= $adr['datecreated']; ?></td>
-                        <td> <?= $adr['action_taken']; ?></td>
-                        <td> <?php if ($adr['synch'] == '0') { ?>
-                                <a href="<?= base_url(); ?>inventory_management/getpvdata/pqms/pqm/<?= $adr['id']; ?> " title="Data synchronization has not occured" class="badge badge-warning">Not Synched</a>
-                            <?php } else if ($adr['synch'] == '1') { ?>
-                                <span class="badge badge-success" title="Data synched to remote server">&uArr;Synch(U)</span> 
-                            <?php } else { ?>
-                                <span class="badge badge-info" title="Data synched from remote server">&dArr;Synch(D)</span> 
-                            <?php } ?></td>
+                        <td> <?= ellipsis($adr['diagnosis'],10); ?></td>
+                        <td> <?= ellipsis($adr['severity'],10); ?></td>
+                        <td> <?= ellipsis($adr['outcome'],10); ?></td>
+                        <td> <?= ellipsis($adr['datecreated'],10); ?></td>
+                        <td> <?= ellipsis($adr['action_taken'],10); ?></td>
+                      
 
                     </tr>    
                 <?php } ?>
@@ -91,37 +94,18 @@
     </div>
 </div>
 <script type="text/javascript">
-    (function ($, window, undefined) {
-        //is onprogress supported by browser?
-        var hasOnProgress = ("onprogress" in $.ajaxSettings.xhr());
 
-        //If not supported, do nothing
-        if (!hasOnProgress) {
-            return;
-        }
-
-        //patch ajax settings to call a progress callback
-        var oldXHR = $.ajaxSettings.xhr;
-        $.ajaxSettings.xhr = function () {
-            var xhr = oldXHR.apply(this, arguments);
-            if (xhr instanceof window.XMLHttpRequest) {
-                xhr.addEventListener('progress', this.progress, false);
-            }
-
-            if (xhr.upload) {
-                xhr.upload.addEventListener('progress', this.progress, false);
-            }
-
-            return xhr;
-        };
-    })(jQuery, window);
 
     $(document).ready(function () {
+        
+  $("#CHECKALL").click(function () {
+            $("input[name='adrid']:checkbox").not(this).prop('checked', this.checked);
+        });
 
 
         $('#SYNDATA').click(function () {
 
-            if ($("input[name='adrid']:checked").length > 0) {
+           // if ($("input[name='adrid']:checked").length > 0) {
                 $('#SYNDATA').prop('disabled', true);
                 $('#NEWAD').prop('disabled', true);
                 $('#SYNCHLOADER').show();
@@ -168,9 +152,9 @@
 
 
 
-            } else {
-                alert("synch Error: No data selected to synch..");
-            }
+          //  } else {
+              //  alert("synch Error: No data selected to synch..");
+            //}
         });
 
         setInterval(function () {
@@ -183,18 +167,20 @@
                     $('#SYNDATA').show();
                 }
             });
-        }, 5000);
+        }, 25000);
 
         var storeTable = $('table').dataTable({
             "bJQueryUI": true,
             "sPaginationType": "full_numbers",
             "sDom": '<"H"Tfr>t<"F"ip>',
+            "aoColumnDefs": [{ "bSortable": false, "aTargets": [0]}],
             "oTableTools": {
                 "sSwfPath": base_url + "scripts/datatable/copy_csv_xls_pdf.swf",
                 "aButtons": ["copy", "print", "xls", "pdf"]
             },
             "bProcessing": true,
             "bServerSide": false,
+            
         });
         $("#manufacture_date,#expiry_date,#receipt_date").datepicker();
     });

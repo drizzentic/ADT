@@ -80,15 +80,7 @@ if ($access_level == "system_administrator") {
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title><?php echo $title; ?></title>
 
-        <script type="text/javascript">
-            $(document).ready(function(){
-               alert(1) 
-            });
-            
-            setTimeout(function () {
-                $(".message").fadeOut("2000");
-            }, 5000)
-        </script>
+    
         <?php
         $this->load->view('sections/head');
         if ($user_is_pharmacist || $user_is_facility_administrator || $user_is_administrator) {
@@ -117,10 +109,14 @@ if ($access_level == "system_administrator") {
             }
         }
         ?> 
-
+  
         <script>
-
+  
             $(document).ready(function () {
+               
+                  setTimeout(function () {
+                $(".message").fadeOut("2000");
+            }, 5000)
 
 <?php
 $message = $this->session->flashdata('message');
