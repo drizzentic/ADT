@@ -3168,6 +3168,7 @@ public function get_differentiated_care_appointments($from = "", $to = ""){
 	patient_id, dispensing_date visit_date
 	FROM patient_visit
 	WHERE dispensing_date BETWEEN ? AND ?
+	AND differentiated_care = '1'
 	GROUP BY patient_id, visit_date
 	) pv ON pv.patient_id = pa.patient AND pa.appointment > visit_date
 	GROUP BY patient_id,visit_date
@@ -3399,8 +3400,10 @@ public function getScheduledPatients($from = "", $to = "", $filter_from = NULL, 
 	$data['content_view'] = 'reports/patients_scheduled_v';
 	$this -> load -> view('template', $data);
 }
-public function getPatientsOnDiffCare() {
-		//Variables
+public function getPatientsOnDiffCare($from = "", $to = ""){
+	$start_date = date('Y-m-d', strtotime($from));
+	$end_date = date('Y-m-d', strtotime($to));
+
 	$row_string = "";
 	$overall_total = 0;
 	$today = date('Y-m-d');
@@ -3408,7 +3411,8 @@ public function getPatientsOnDiffCare() {
 
 	$sql = "SELECT ccc_number ,concat(first_name	,' ',other_name	,' ',last_name) as name, concat(phone_number )as contact,age,gender,current_regimen,service,nextappointment,current_status
 		FROM vw_patient_list 
-		WHERE differentiated_care_status = 'differentiated' ";
+		WHERE differentiated_care_status = 'differentiated'
+		and date_enrolled  BETWEEN '$start_date' AND '$end_date' ";
 
 	$query = $this -> db -> query($sql);
 	$results = $query -> result_array();
