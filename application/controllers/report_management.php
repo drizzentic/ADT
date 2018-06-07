@@ -3409,11 +3409,14 @@ public function getPatientsOnDiffCare($from = "", $to = ""){
 	$today = date('Y-m-d');
 	$facility_code = $this -> session -> userdata("facility");
 
-	$sql = "SELECT ccc_number ,concat(first_name	,' ',other_name	,' ',last_name) as name, concat(phone_number )as contact,age,gender,current_regimen,service,nextappointment,current_status
-		FROM vw_patient_list 
+	$sql = "SELECT ccc_number ,concat(first_name	,' ',other_name	,' ',last_name) as name, concat(phone_number )as contact,age,gender,current_regimen,service,nextappointment,current_status,viral_load_test_results, pv.adherence as adherence
+		FROM vw_patient_list pvl
+		left join patient_visit pv on(pv.patient_id=pvl.ccc_number)
 		WHERE differentiated_care_status = 'differentiated'
-		and date_enrolled  BETWEEN '$start_date' AND '$end_date' ";
-
+		and date_enrolled  BETWEEN '$start_date' AND '$end_date' 
+		GROUP BY ccc_number
+		";
+		
 	$query = $this -> db -> query($sql);
 	$results = $query -> result_array();
 	// echo "<pre>"; var_dump($results);die;
@@ -3429,6 +3432,8 @@ public function getPatientsOnDiffCare($from = "", $to = ""){
 	<th> Current Regimen </th>
 	<th> Service </th>
 	<th> Next Appointment</th>
+	<th> Adherence</th>
+	<th> VL Results</th>
 	<th> Status</th>
 	</tr>
 	</thead>
@@ -3445,9 +3450,9 @@ public function getPatientsOnDiffCare($from = "", $to = ""){
 				<td>".$result['current_regimen']."</td>
 				<td>".$result['service']."</td>
 				<td>".$result['nextappointment']."</td>
+				<td>".$result['adherence']."</td>
+				<td>".$result['viral_load_test_results']."</td>
 				<td>".$result['current_status']."</td
-
-
 				</tr>";
 				$overall_total++;
 			}	 
