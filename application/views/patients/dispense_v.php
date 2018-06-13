@@ -809,7 +809,7 @@
             var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
              var one_day = 1000 * 60 * 60 * 24;
 
-             if ( $("#next_clinical_appointment_date") ==""){
+             if ( $("#next_clinical_appointment_date").val() ==""){
                  $("#next_clinical_appointment_date").val(Date.now);
              }             var clinical_appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
              
