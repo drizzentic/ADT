@@ -218,7 +218,6 @@
 
 <!-- Login for escm -->
 
-
 <script type="text/javascript">
 	var sitesURL = "<?php echo base_url().'order_settings/fetch/sync_facility';?>"
 	var storesURL = "<?php echo base_url().'user_management/get_stores';?>"

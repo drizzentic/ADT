@@ -20,7 +20,7 @@
     <div class="span11">
         <a href="<?= base_url(); ?>inventory_management/new_pqmp" class="btn btn-default" > New PQMQ </a>
         <?php 
-        if($this->session->flashdata('pqmp_saved')!==' '){?>
+        if(!empty($this->session->flashdata('pqmp_saved'))){?>
         <div class="alert alert-success">
             <?= $this->session->flashdata('pqmp_saved');?>
         </div> 

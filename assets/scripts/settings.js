@@ -1,6 +1,18 @@
 // ----------------------- Search system -----------------------------------------------
 $(document).ready(function(){
 	base_url =getbaseurl();
+        
+        setInterval(function(){
+            $.get(base_url+'home_controller/ping/197.248.7.226/80/10', function(resp){
+             if(resp > 0){
+                 console.log('Live!');
+             }else{
+                 console.log('Destination server is not reachable at the moment');
+             }
+               
+            })
+        },5000)
+        
 	
 	$(document).on("keydown", function (e) { if (e.keyCode == 70 && e.ctrlKey) { 
 			event.preventDefault();
