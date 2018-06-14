@@ -48,3 +48,4 @@ tools/backup_db/*
 !tools/backup_db/downloads/
 !tools/backup_db/testadt_new_site.sql.zip
 !tools/backup_db/testadt_access_editt.sql.zip
+/nbproject/private/
