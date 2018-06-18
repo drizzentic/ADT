@@ -76,17 +76,15 @@ class Regimen_drug_management extends MY_Controller {
 		$query = $this -> db -> query("UPDATE regimen_drug SET active='1'WHERE drugcode='$regimen_drug_id'");
 		$results = Drugcode::getDrugCode($regimen_drug_id);
 		//$this -> session -> set_userdata('message_counter', '1');
-		$this -> session -> set_userdata('msg_success', $results -> Drug . ' was enabled!');
-		redirect('settings_management');
-	}
+		echo   $results -> Drug . ' was enabled!';
+		}
 
 	public function disable($regimen_drug_id) {
 		$this -> load -> database();
 		$query = $this -> db -> query("UPDATE regimen_drug SET active='0'WHERE drugcode='$regimen_drug_id'");
 		$results = Drugcode::getDrugCode($regimen_drug_id);
 		//$this -> session -> set_userdata('message_counter', '2');
-		$this -> session -> set_userdata('msg_error', $results -> Drug . ' was disabled!');
-		redirect('settings_management');
+		echo $results -> Drug . ' was disabled!';
 	}
 
 	public function check_duplicate($regimen_id, $drug_id) {

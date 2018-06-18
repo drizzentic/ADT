@@ -26,9 +26,35 @@
 		z-index:10000; 
 		text-align: left 
 	}
+	.enabled{
+		color: green;
+	}
+	.disabled{
+		color: red;
+	}
 
 </style>
 <script type="text/javascript">
+	// regimen_drug_management/disable
+
+	function toggleDrugRegimen(regimen_drug){
+
+		if ($('.reg_drug_name_'+regimen_drug).hasClass('enabled')){
+			// disable drug
+			$.get(base_url+"regimen_drug_management/disable/"+regimen_drug, function(data, status){
+				$('.reg_drug_name_'+regimen_drug).removeClass('enabled');
+				$('.reg_drug_name_'+regimen_drug).addClass('disabled');
+			});
+		}else{
+			// enable drug
+			$.get(base_url+"regimen_drug_management/enable/"+regimen_drug, function(data, status){
+				$('.reg_drug_name_'+regimen_drug).removeClass('disabled');
+				$('.reg_drug_name_'+regimen_drug).addClass('enabled');
+				// alert(data);
+			});
+		}
+	}
+
 	$(document).ready(function(){
 		$("#drugid").multiselect().multiselectfilter();
 		/*Prevent Double Click*/
@@ -82,6 +108,7 @@
 								   <h3>Drug List for Regimen <?php echo $regimen -> Regimen_Code; ?></h3>
 								</div>
 								<div class="modal-body">
+								<small><span style="color: red;">red = disabled</span>; <span style="color: green;">green = enabled</span></small>
 									<div class="row-fluid">
 											<div class="span8 reg_drug_name f_left"><strong>Drug</strong></div>
 											<div class="span4 reg_drug_name f_right"><strong>Option</strong></div>
@@ -92,15 +119,18 @@
 								        		?>
 								        		<div class="row-fluid">
 								        		<?php
+								        		$drug_id = $drug -> Drug -> id;
 								        		if($drug -> Drug ->id !=""){
+								        			$class = ( $drug -> Active == 1) ? 'enabled' : 'disabled' ;
+
 												?>
-													<div class="span8 reg_drug_name f_left"><?php echo $drug -> Drug -> Drug; ?></div>
-													<div class="span4 reg_drug_name f_right">
-													<?php 
+										<div class="span8 reg_drug_name_<?=$drug_id.' '.$class;?> f_left"><?php echo $drug -> Drug -> Drug; ?></div>
+										<div class="span4 reg_drug_name f_right"><?php 
 								        			if ($drug -> Active == 1) {
-														echo anchor("regimen_drug_management/disable/" . $drug -> Drug -> id ,'Disable',array('class'=>'disable_user actual')) ;
+								        				echo "<input type='checkbox' onClick='toggleDrugRegimen($drug_id)' checked>";
 													} else {
-														echo anchor("regimen_drug_management/enable/" . $drug -> Drug -> id ,'Enable',array('class'=>'enable_user actual')) ;
+								        				$drug_id = $drug -> Drug -> id;
+								        				echo "<input type='checkbox' onClick='toggleDrugRegimen($drug_id)'>";
 													}
 													?>
 													</div>
