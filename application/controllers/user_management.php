@@ -56,9 +56,8 @@ class User_management extends MY_Controller {
 			return true;
 			die;
 		}else{
-			$port2 = ($port == '3306') ? '3307' : '3306' ;
-			$connection2 = mysqli_connect($hostname,$username,$password,$current_db,$port2);
-
+			$port = ($port == '3306') ? '3307' : '3306' ;
+			$connection2 = mysqli_connect($hostname,$username,$password,$current_db,$port);
 			if ($connection2) {
 				$file = fopen(APPPATH.'config/db_conf.php',"w");
 				fwrite($file,"". "\r\n");
@@ -67,7 +66,7 @@ class User_management extends MY_Controller {
 				fwrite($file,"\$db['default']['username'] = '$username';". "\r\n");
 				fwrite($file,"\$db['default']['password'] = '$password';". "\r\n");
 				fwrite($file,"\$db['default']['database'] = '$current_db';". "\r\n");
-				fwrite($file,"\$db['default']['port'] = $port2;". "\r\n");
+				fwrite($file,"\$db['default']['port'] = $port;". "\r\n");
 				fclose($file);
 			}
 			else {
