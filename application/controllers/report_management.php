@@ -3409,12 +3409,24 @@ public function getPatientsOnDiffCare($from = "", $to = ""){
 	$today = date('Y-m-d');
 	$facility_code = $this -> session -> userdata("facility");
 
-	$sql = "SELECT ccc_number ,concat(first_name	,' ',other_name	,' ',last_name) as name, concat(phone_number )as contact,age,gender,current_regimen,service,nextappointment,current_status,viral_load_test_results, pv.adherence as adherence
-		FROM vw_patient_list pvl
-		left join patient_visit pv on(pv.patient_id=pvl.ccc_number)
-		WHERE differentiated_care_status = 'differentiated'
-		and date_enrolled  BETWEEN '$start_date' AND '$end_date' 
-		GROUP BY ccc_number
+	$sql = "SELECT 
+	ccc_number,
+	CONCAT(first_name	,' ',other_name	,' ', last_name) as patient_name, 
+	concat(phone_number) as contact,
+	age,
+	gender,
+	current_regimen,
+	service,
+	nextappointment,
+	current_status,
+	viral_load_test_results, 
+	adherence, 
+	MAX(dispensing_date) last_dispensed_date
+	FROM patient_visit pv
+	INNER JOIN vw_patient_list p ON p.ccc_number= pv.patient_id
+	WHERE pv.dispensing_date >='$start_date'  AND pv.dispensing_date < '$end_date' 
+	AND pv.differentiated_care = '1'
+	GROUP BY pv.patient_id
 		";
 		
 	$query = $this -> db -> query($sql);
