@@ -36,6 +36,17 @@
 	  	</div>
 	</div>
 	<!--row for tabs-->
+	<?php if($this->session->userdata('facility_dhis')){ ?>
+	<div class="row-fluid">
+		<div class="span3">
+			<button id="get_dhis_data" class="btn btn-lg btn-warning"><i class="icon-download-alt"></i> GET DATA FROM DHIS</button>
+		</div>
+		<div class="span3 offset6">
+			Welcome <b><?php echo $this->session->userdata('dhis_name'); ?></b>, 
+			<a href="<?php echo base_url().'order/logout'; ?>"><i class="icon-off"></i>Logout</a>
+		</div>
+	</div>
+	<?php } ?>
 	<div class="row-fluid">
 		<div class="span12">
 		  <ul class="nav nav-tabs">
@@ -270,6 +281,18 @@
 
 	$(document).ready(function() {
 	  var base_url="<?php echo base_url();?>";
+
+		//Get data from dhis
+		$('#get_dhis_data').click(function(){
+			$.blockUI({ 
+				message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Downloading...</h3>' 
+			}); 
+			var dataURL = 'Order/get_dhis_data'
+			$.getJSON(dataURL, function(data){
+				$.unblockUI();
+				alert(data)
+			});
+		});
 	  
 	  /*Delete order event*/  
 	  $(".delete_order").live('click',function(event){

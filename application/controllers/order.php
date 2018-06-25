@@ -117,6 +117,10 @@ class Order extends MY_Controller {
 		redirect("order");
 	}
 
+	public function get_dhis_data(){
+		echo json_encode(1);
+	}
+
 	public function verify_user_access(){
 		$has_access = FALSE;
 		$sync_facility = Sync_Facility::getId($this->facility_code, $this->facility_type);
