@@ -22,7 +22,7 @@
 		var table=$('.vl_results').dataTable( {
 			"bProcessing": true,
 			"bServerSide": true,
-			"sAjaxSource": "<?= $base_url;?>ADT/report_management/get_viral_load_results/<?=$start_date ?>/<?=$start_date ?>/json",
+			"sAjaxSource": "<?= base_url();?>report_management/get_viral_load_results/<?=$start_date ?>/<?=$start_date ?>/json",
 	        "bJQueryUI": true,
 	        "sPaginationType": "full_numbers",
 	        "bStateSave" : true,

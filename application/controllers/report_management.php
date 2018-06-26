@@ -9358,12 +9358,10 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			$count = 0;
 
 			// Paging
-
-			$sLimit = "";
-			if (isset($iDisplayStart) && $iDisplayLength != '-1') {
-			$sLimit = "LIMIT " . intval($iDisplayStart) . ", " . intval($iDisplayLength);
-			}
-
+		// Paging
+		if (isset($iDisplayStart) && $iDisplayLength != '-1') {
+			$this -> db -> limit($this -> db -> escape_str($iDisplayLength), $this -> db -> escape_str($iDisplayStart));
+		}
 
 					// Ordering
 			if (isset($iSortCol_0)) {
@@ -9394,15 +9392,16 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			}
 			}
 
-			
+
 
 		// Select Data
 		// $sql = "select patient_ccc_number,test_date,result,justification from patient_viral_load where test_date >= '$start_date' and  test_date <= '$end_date'
 		// $sFilter $sLimit";
 
 		$this->db->select('patient_ccc_number,test_date,result,justification');
-		$this->db->where('test_date >=', '$start_date');
-		$this->db->where('test_date <=', '$end_date');
+		// $this->db->where("test_date >= $start_date AND test_date <= $end_date");
+		$this->db->where('test_date >=', $start_date);
+		$this->db->where('test_date <=', $end_date);
 		$q = $this->db->get('patient_viral_load');
 		$rResult = $q;
 		//echo $iDisplayLength;die();
