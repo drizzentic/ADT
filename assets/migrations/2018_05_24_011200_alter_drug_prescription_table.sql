@@ -1,2 +1,2 @@
 ALTER TABLE drug_prescription
-CHANGE patient patient_ccc int(10) NOT NULL AFTER id;
+CHANGE patient patient int(10) NOT NULL AFTER id;
