@@ -367,7 +367,7 @@ echo $file_path;die;
 
 
 		$file_name = (isset($file_name)) ? $file_name : $_POST['file_name'] ;
-		if (strpos($file_name, 'BETA') !== false) {
+		if (strpos(strtolower($file_name), 'beta') !== false) {
 			echo "Cannot upload Backup for BETA version of ADT. Please install latest releases";
 			die;
 		}
