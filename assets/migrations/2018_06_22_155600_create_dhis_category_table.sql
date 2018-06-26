@@ -15,4 +15,5 @@ INSERT INTO dhis_category (dhiscode, name) VALUES
 ('r9aTy1gRXUC', 'expiry_quant'),
 ('hOMc7AVsdRk', 'expiry_date'),
 ('aDZLiIaG8gC', 'out_of_stock'),
-('R4B7KIT1mch', 'resupply')//
+('R4B7KIT1mch', 'resupply'),
+('NhSoXUMPK2K', 'total')//
