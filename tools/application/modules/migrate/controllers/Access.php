@@ -401,6 +401,7 @@ class Access extends MX_Controller {
 				'source'=>'tblARTPatientMasterInformation',
 				'source_columns'=>array(
 					'artid',
+					'opipno',
 					'firstname',
 					'surname',
 					'IF(UCASE(sex)="MALE","1","2")',
@@ -442,6 +443,7 @@ class Access extends MX_Controller {
 				'destination'=>'patient',
 				'destination_columns'=>array(
 					'patient_number_ccc',
+					'medical_record_number',
 					'first_name',
 					'last_name',
 					'gender',
