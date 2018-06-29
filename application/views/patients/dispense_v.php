@@ -988,13 +988,9 @@
                 },
                 callback: function(res){
                     if(res){
-                        var patient_id = "<?php echo $patient_id;?>";
-                        var newwindow = window.open("<?= base_url() ?>dispensement_management/adr/"+patient_id, '', 'height=800,width=800');
-
-                        newwindow.focus();
-
-
-                    }
+                      
+                        window.open("<?= base_url()."dispensement_management/adr/".$patient_id ?>");
+ }
                 }
             });
         }

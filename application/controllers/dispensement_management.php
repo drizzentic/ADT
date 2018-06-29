@@ -198,8 +198,11 @@ class Dispensement_management extends MY_Controller {
     }
 
     public function adr($record_no) {
+        $id = $this->db->select_max('id')->get('adr_form')->result();
+        $newid =(int) $id[0]->id + 1;
         if ($_POST) {
             $adr = array(
+                'id'=>$newid,
                 'report_title' => $this->_p('report_title'),
                 'institution_name' => $this->_p('institution'),
                 'institution_code' => $this->_p('institutioncode'),
@@ -235,12 +238,12 @@ class Dispensement_management extends MY_Controller {
             );
 
             $this->db->insert('adr_form', $adr);
-            $adr_id = $this->db->insert_id();
+            //$adr_id = $this->db->insert_id();
             if (count($_POST['drug_name']) > 0) {
 
                 foreach ($_POST['drug_name'] as $key => $drug) {
                     $adr_details = array(
-                        'adr_id' => $adr_id,
+                        'adr_id' => $newid,
                         'drug' => $_POST['drug_name'][$key],
                         'brand' => $_POST['brand_name'][$key],
                         'dose_id' => $_POST['dose_id'][$key],
@@ -256,7 +259,7 @@ class Dispensement_management extends MY_Controller {
                     $this->db->insert('adr_form_details', $adr_details);
                 }
                 echo "adr form saved successfully";
-                die;
+                
             } else {
                 echo "No drugs selected";
                 // no drugs selected

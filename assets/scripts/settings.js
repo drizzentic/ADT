@@ -2,7 +2,7 @@
 $(document).ready(function(){
 	base_url =getbaseurl();
         
-        setInterval(function(){
+       /* setInterval(function(){
             $.get(base_url+'home_controller/ping/197.248.7.226/80/10', function(resp){
              if(resp > 0){
                  console.log('Live!');
@@ -11,7 +11,7 @@ $(document).ready(function(){
              }
                
             })
-        },5000)
+        },5000)*/
         
 	
 	$(document).on("keydown", function (e) { if (e.keyCode == 70 && e.ctrlKey) { 

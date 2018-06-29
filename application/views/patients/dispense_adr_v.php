@@ -741,11 +741,11 @@
                 Causes a congenital anomaly<br />
                 <input  type="radio"  name="outcome" id="outcome" value="Requires intervention to prevent permanent damage">
                 Requires intervention to prevent permanent damage<br />
-                <input type="radio" name="outcome" value="recovered/resolved with sequelae" />Recovered/resolved with sequelae
-                <input type="radio" name="outcome"  value="not recovered/not resolved" />Not recovered/not resolved
-                <input type="radio" name="outcome"  value="fatal - unrelated to reaction" />Fatal - unrelated to reaction
-               <input type="radio" name="outcome"  value="fatal - reaction may be contributory" />Fatal - reaction may be contributory
-              <input type="radio" name="outcome" value="fatal - due to reaction" />Fatal - due to reaction
+                <input type="radio" name="outcome" value="recovered/resolved with sequela" />Recovered/resolved with sequela<br />
+                <input type="radio" name="outcome"  value="not recovered/not resolved" />Not recovered/not resolved<br />
+                <input type="radio" name="outcome"  value="fatal - unrelated to reaction" />Fatal - unrelated to reaction<br />
+               <input type="radio" name="outcome"  value="fatal - reaction may be contributory" />Fatal - reaction may be contributory<br />
+              <input type="radio" name="outcome" value="fatal - due to reaction" />Fatal - due to reaction<br />
                 <input  type="radio"  name="outcome" id="outcome" value="Unknown">
                 Unknown
             </div>
@@ -868,7 +868,7 @@
                 data: data,
                 success: (function (data) {
                     alert(data);
-                    window.close();
+                 window.top.close();
 
                 })
             });
