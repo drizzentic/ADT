@@ -285,7 +285,7 @@ class Notification_management extends MY_Controller {
 
 	public function load_error_view() {
 		$data['errors'] = $this -> error_notification(true);
-
+		$data['report_title'] = 'error_report';
 		foreach ($data['errors'] as $error => $error_array) {
 			$data['first_error'] = $error;
 			break;
