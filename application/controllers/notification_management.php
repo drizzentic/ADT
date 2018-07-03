@@ -285,7 +285,7 @@ class Notification_management extends MY_Controller {
 
 	public function load_error_view() {
 		$data['errors'] = $this -> error_notification(true);
-
+		$data['report_title'] = 'error_report';
 		foreach ($data['errors'] as $error => $error_array) {
 			$data['first_error'] = $error;
 			break;
@@ -548,7 +548,7 @@ class Notification_management extends MY_Controller {
         }
         //use table library to generate table
 		$this -> load -> library('table');
-		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped dataTables" >');
+		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped defaulter_table" >');
 		$this -> table -> set_template($tmpl);
 		$this -> table -> set_heading($columns);
 
@@ -562,6 +562,7 @@ class Notification_management extends MY_Controller {
         	$this -> table -> add_row($patient);
         }
 		$data['followup_patients']=$this -> table -> generate();
+		$data['report_title'] = 'defaulter_notification';
 		$data['content_view'] = "followup_listing_v";
 		$this -> base_params($data);
 	}
