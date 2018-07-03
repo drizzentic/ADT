@@ -1167,4 +1167,3 @@ AND  r.regimen_code LIKE '%oi%'
 }
 
 ob_get_clean();
-?>

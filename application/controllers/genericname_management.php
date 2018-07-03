@@ -59,7 +59,7 @@ class Genericname_management extends MY_Controller {
 			$this -> base_params($data);
 		} else {
 			$drugname = $this -> input -> post("generic_name");
-			$this->db->replace('generic_name', array($drugname));
+			$this->db->replace('generic_name', array('name'=>$drugname));
 			$this -> session -> set_userdata('msg_success', $this -> input -> post('generic_name') . ' was Added');
 			$this -> session -> set_flashdata('filter_datatable',$this -> input -> post('generic_name'));//Filter datatable
 			redirect("settings_management");

@@ -4,7 +4,7 @@ if (!defined('BASEPATH'))
 class User_management extends MY_Controller {
 	function __construct() {
 		parent::__construct();
-                
+
 		$this -> session -> set_userdata("link_id", "index");
 		$this -> session -> set_userdata("linkSub", "user_management");
 		$this -> session -> set_userdata("linkTitle", "Users Management");
@@ -22,7 +22,10 @@ class User_management extends MY_Controller {
 	}
 
 	public function login() {
+		$this->check_db_port();
 		//if seesion variable user_id is not present
+
+		// test database connection
 		if (!$this -> session -> userdata("user_id")) {
 			$this -> session -> set_flashdata('message', 0);
 			$data = array();
@@ -34,8 +37,41 @@ class User_management extends MY_Controller {
 			 * check actual page cookie
 			 * redirect to actual page which is the last page accessed
 			 */
-		    $actual_page = $this -> input -> cookie("actual_page");
+			$actual_page = $this -> input -> cookie("actual_page");
 			redirect($actual_page);
+		}
+
+	}
+
+	public function check_db_port(){
+		include (APPPATH.'config/db_conf.php');
+
+		$hostname = $db['default']['hostname'];
+		$username = $db['default']['username'];
+		$password = $db['default']['password'];
+		$current_db = $db['default']['database'];
+		$port = $db['default']['port'];
+		$connection = mysqli_connect($hostname,$username,$password,$current_db,$port);
+		if ($connection){
+			return true;
+			die;
+		}else{
+			$port = ($port == '3306') ? '3307' : '3306' ;
+			$connection2 = mysqli_connect($hostname,$username,$password,$current_db,$port);
+			if ($connection2) {
+				$file = fopen(APPPATH.'config/db_conf.php',"w");
+				fwrite($file,"". "\r\n");
+				fwrite($file,"<?php ". "\r\n");
+				fwrite($file,"\$db['default']['hostname'] = '$hostname';". "\r\n");
+				fwrite($file,"\$db['default']['username'] = '$username';". "\r\n");
+				fwrite($file,"\$db['default']['password'] = '$password';". "\r\n");
+				fwrite($file,"\$db['default']['database'] = '$current_db';". "\r\n");
+				fwrite($file,"\$db['default']['port'] = $port;". "\r\n");
+				fclose($file);
+			}
+			else {
+				echo " could not connect to database please check configurations";
+			}
 		}
 
 	}
@@ -107,7 +143,7 @@ class User_management extends MY_Controller {
 	}
 
 	public function activation() {
-            $activation_code = $_POST['activation_code'];
+		$activation_code = $_POST['activation_code'];
 		$user_id = $this -> session -> userdata('user_id');
 		$this -> load -> database();
 		$query = $this -> db -> query("select * from users where Signature='$activation_code' and Active='1'");
@@ -123,8 +159,8 @@ class User_management extends MY_Controller {
 			$this -> load -> view("login_v",$data);
 			//redirect("user_management/login");
 		}
-        
-        }
+
+	}
 
 	public function save_new_password($type=2) {
 		$old_password = $this -> input -> post("old_password");
@@ -138,12 +174,12 @@ class User_management extends MY_Controller {
 
 		//check if password matches last three passwords for this user
 		$sql="SELECT * 
-			  FROM (SELECT password 
-				    FROM password_log 
-				    WHERE user_id='$user_id' 
-				    ORDER BY id DESC 
-				    LIMIT 3) as pl 
-			  WHERE pl.password='$encrypted_password'";
+		FROM (SELECT password 
+		FROM password_log 
+		WHERE user_id='$user_id' 
+		ORDER BY id DESC 
+		LIMIT 3) as pl 
+		WHERE pl.password='$encrypted_password'";
 		$checkpassword_query = $this -> db -> query($sql);
 		$check_results = $checkpassword_query -> result_array();
 
@@ -163,8 +199,8 @@ class User_management extends MY_Controller {
 		} else {	
 			//update new password
 			$sql="UPDATE users 
-			      SET Password='$encrypted_password',Time_Created='$timestamp' 
-			      WHERE id='$user_id'";
+			SET Password='$encrypted_password',Time_Created='$timestamp' 
+			WHERE id='$user_id'";
 			$query = $this -> db -> query($sql);
 
 			//add new password in log
@@ -172,7 +208,7 @@ class User_management extends MY_Controller {
 			$new_password_log -> user_id = $user_id;
 			$new_password_log -> password = $encrypted_password;
 			$new_password_log -> save();
-	
+
 			if ($type == 2) {
 				$response = array('msg_password_change' => 'password_changed');
 			} else {
@@ -180,7 +216,7 @@ class User_management extends MY_Controller {
 			}
 		}
 
-        delete_cookie("actual_page");
+		delete_cookie("actual_page");
 		if ($type == 2) {
 			echo json_encode($response);
 		}else{
@@ -334,28 +370,28 @@ class User_management extends MY_Controller {
 					$phone = str_replace('+254', '', $phone);
 
 					$session_data = array(
-						             'user_id' => $logged_in -> id, 
-						             'user_indicator' => $logged_in -> Access -> Indicator, 
-						             'facility_name' => $logged_in -> Facility -> name, 
-						             'adult_age' => $logged_in -> Facility -> adult_age, 
-						             'access_level' => $logged_in -> Access_Level, 
-						             'username' => $logged_in -> Username, 
-						             'full_name' => $logged_in -> Name, 
-						             'Email_Address' => $logged_in -> Email_Address, 
-						             'Phone_Number' => $phone, 
-						             'facility' => $logged_in -> Facility_Code, 
-						             'ccc_store' => $logged_in -> ccc_store_sp, 
-						             'ccc_store_id' => $logged_in -> ccc_store_sp, 
-						             'facility_id' => $facility_details[0]['id'],
-						             'county' => $facility_details[0]['county'],
-						             'facility_phone' => $facility_details[0]['phone'],
-						             'facility_sms_consent'=>$facility_details[0]['map'],
-						             'lost_to_follow_up'=> ((@$facility_details[0]['lost_to_follow_up'])!== null) ? @$facility_details[0]['lost_to_follow_up'] : 90 ,
-						             'pill_count'=> ((@$facility_details[0]['pill_count'])!== null) ? @$facility_details[0]['pill_count'] : 0 ,
-						             'medical_number'=> ((@$facility_details[0]['medical_number'])!== null) ? @$facility_details[0]['medical_number'] : 0 ,
-						             'facility_dhis'=> ((@$facility_details[0]['facility_dhis'])!== null) ? @$facility_details[0]['facility_dhis'] : 0 ,
-						             'autobackup'=> ((@$facility_details[0]['autobackup'])!== null) ? @$facility_details[0]['autobackup'] : 0 
-						             );
+						'user_id' => $logged_in -> id, 
+						'user_indicator' => $logged_in -> Access -> Indicator, 
+						'facility_name' => $logged_in -> Facility -> name, 
+						'adult_age' => $logged_in -> Facility -> adult_age, 
+						'access_level' => $logged_in -> Access_Level, 
+						'username' => $logged_in -> Username, 
+						'full_name' => $logged_in -> Name, 
+						'Email_Address' => $logged_in -> Email_Address, 
+						'Phone_Number' => $phone, 
+						'facility' => $logged_in -> Facility_Code, 
+						'ccc_store' => $logged_in -> ccc_store_sp, 
+						'ccc_store_id' => $logged_in -> ccc_store_sp, 
+						'facility_id' => $facility_details[0]['id'],
+						'county' => $facility_details[0]['county'],
+						'facility_phone' => $facility_details[0]['phone'],
+						'facility_sms_consent'=>$facility_details[0]['map'],
+						'lost_to_follow_up'=> ((@$facility_details[0]['lost_to_follow_up'])!== null) ? @$facility_details[0]['lost_to_follow_up'] : 90 ,
+						'pill_count'=> ((@$facility_details[0]['pill_count'])!== null) ? @$facility_details[0]['pill_count'] : 0 ,
+						'medical_number'=> ((@$facility_details[0]['medical_number'])!== null) ? @$facility_details[0]['medical_number'] : 0 ,
+						'facility_dhis'=> ((@$facility_details[0]['facility_dhis'])!== null) ? @$facility_details[0]['facility_dhis'] : 0 ,
+						'autobackup'=> ((@$facility_details[0]['autobackup'])!== null) ? @$facility_details[0]['autobackup'] : 0 
+					);
 
 					$this -> session -> set_userdata($session_data);
 
@@ -411,18 +447,18 @@ class User_management extends MY_Controller {
 		$default_password='123456';
 
 		$user_data=array(
-					'Name' => $this -> input -> post('fullname',TRUE),
-					'Username' => $this -> input -> post('username',TRUE),
-					'Password' => md5($this -> encrypt -> get_key(). $default_password),
-					'Access_Level' => $this -> input -> post('access_level',TRUE),
-					'Facility_Code' => $this -> input -> post('facility',TRUE),
-					'Created_By' => $this -> session -> userdata('user_id'),
-					'Time_Created' => date('Y-m-d,h:i:s A'),
-					'Phone_Number' => $this -> input -> post('phone',TRUE),
-					'Email_Address' => $this -> input -> post('email',TRUE),
-					'Active' => 1,
-					'Signature' => 1
-					);
+			'Name' => $this -> input -> post('fullname',TRUE),
+			'Username' => $this -> input -> post('username',TRUE),
+			'Password' => md5($this -> encrypt -> get_key(). $default_password),
+			'Access_Level' => $this -> input -> post('access_level',TRUE),
+			'Facility_Code' => $this -> input -> post('facility',TRUE),
+			'Created_By' => $this -> session -> userdata('user_id'),
+			'Time_Created' => date('Y-m-d,h:i:s A'),
+			'Phone_Number' => $this -> input -> post('phone',TRUE),
+			'Email_Address' => $this -> input -> post('email',TRUE),
+			'Active' => 1,
+			'Signature' => 1
+		);
 
 		$this->db->insert("users",$user_data);
 
@@ -495,12 +531,12 @@ class User_management extends MY_Controller {
 	}
 
 	public function logout($param = "1") {
-                $machine_code = $this -> session -> userdata("machine_code_id");
+		$machine_code = $this -> session -> userdata("machine_code_id");
 		$last_id = Access_Log::getLastUser($this -> session -> userdata('user_id'));
 		$this -> db -> where('id', $last_id);
 		$this -> db -> update("access_log", array('access_type' => "Logout", 'end_time' => date("Y-m-d H:i:s")));
 		$this -> session -> sess_destroy();
-                
+
 		if ($param == "2") {
 			delete_cookie("actual_page");
 		}
@@ -540,14 +576,14 @@ class User_management extends MY_Controller {
 			$this -> email -> to("$email");
 			$this -> email -> subject("Account Activation");
 			$this -> email -> message("Dear $username,<p> You account has been created and your password is <b>$password</b></p>Please click the following link to activate your account.
-			<form action='" . base_url() . "user_management/activation' method='post'>
-			<input type='submit' value='Activate account' id='btn_activate_account'>
-			<input type='hidden' name='activation_code' id='activation_code' value='" . $code . "'>
-			</form>
-			<br>
-			Regards, <br>
-			Web ADT Team.
-			");
+				<form action='" . base_url() . "user_management/activation' method='post'>
+				<input type='submit' value='Activate account' id='btn_activate_account'>
+				<input type='hidden' name='activation_code' id='activation_code' value='" . $code . "'>
+				</form>
+				<br>
+				Regards, <br>
+				Web ADT Team.
+				");
 
 			//success message else show the error
 			if ($this -> email -> send()) {
@@ -661,10 +697,10 @@ class User_management extends MY_Controller {
 			$this -> email -> to("$email");
 			$this -> email -> subject("Account Activation");
 			$this -> email -> message("Dear $contact, This is your new password:<b> $code </b><br>
-										<br>
-										Regards,<br>
-										Web ADT Team
-										");
+				<br>
+				Regards,<br>
+				Web ADT Team
+				");
 
 			//success message else show the error
 			if ($this -> email -> send()) {
@@ -755,28 +791,28 @@ class User_management extends MY_Controller {
 
 	public function resend_password()
 	{
-	    $email_address = $this->input->post("email_address",TRUE);
-	    $default_password='123456';
-	    $user=Users::get_email_account($email_address);
-	    if($user){
-            $this->db->where('id', $user[0]['id']);
-            $user[0]['Password']=md5($this -> encrypt -> get_key(). $default_password);
-		    $this->db->update('users', $user[0]); 
-		    $notification='<div class="alert alert-block alert-success">
-							  <button type="button" class="close" data-dismiss="alert">&times;</button>
-							  <h4>RESET!</h4>
-							  Account password was reset to the default password '.$default_password.'
-							</div>';
-	    }
-	    else{
-            $notification='<div class="alert alert-block alert-danger">
-							  <button type="button" class="close" data-dismiss="alert">&times;</button>
-							  <h4>FAILED!</h4>
-							  Account does not exist
-							</div>';
-	    }
-	    $this->session->set_flashdata("notification",$notification);
-	    redirect("user_management/resetPassword");
+		$email_address = $this->input->post("email_address",TRUE);
+		$default_password='123456';
+		$user=Users::get_email_account($email_address);
+		if($user){
+			$this->db->where('id', $user[0]['id']);
+			$user[0]['Password']=md5($this -> encrypt -> get_key(). $default_password);
+			$this->db->update('users', $user[0]); 
+			$notification='<div class="alert alert-block alert-success">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<h4>RESET!</h4>
+			Account password was reset to the default password '.$default_password.'
+			</div>';
+		}
+		else{
+			$notification='<div class="alert alert-block alert-danger">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<h4>FAILED!</h4>
+			Account does not exist
+			</div>';
+		}
+		$this->session->set_flashdata("notification",$notification);
+		redirect("user_management/resetPassword");
 	}
 
 	public function save_user_facilities($user_id = '', $user_facilites = ''){
@@ -804,7 +840,7 @@ class User_management extends MY_Controller {
 		echo $data;
 	}
 
-		public function get_stores(){
+	public function get_stores(){
 		$store_results = CCC_store_service_point::getActive();
 		echo json_encode($store_results);
 

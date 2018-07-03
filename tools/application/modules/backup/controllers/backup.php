@@ -367,6 +367,11 @@ echo $file_path;die;
 
 
 		$file_name = (isset($file_name)) ? $file_name : $_POST['file_name'] ;
+		if (strpos(strtolower($file_name), 'beta') !== false) {
+			echo "Cannot upload Backup for BETA version of ADT. Please install latest releases";
+			die;
+		}
+
 		$file_path =  FCPATH.'backup_db/'.$file_name;
 
 		// ============ deactivated backup encryption-decryption

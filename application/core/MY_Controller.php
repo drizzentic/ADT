@@ -77,7 +77,7 @@ class MY_Controller extends CI_Controller {
                 redirect('inventory_management/adr/');
             }
         }
-    }
+    } 
 
     //push and synchronize data to remote ppb pv database
 

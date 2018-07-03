@@ -96,7 +96,7 @@ class Notification_management extends MY_Controller {
 										   OR p.gender='null' 
 										   OR p.gender is null)
 										   AND p.active='1'
-										   -- AND p.current_status = '1'
+										   AND p.current_status = '1'
 										   GROUP BY p.patient_number_ccc;";
 
 		/*Patients without DOB*/
@@ -109,6 +109,7 @@ class Notification_management extends MY_Controller {
 										OR p.dob='null' 
 										OR p.dob is null)
 										AND p.active='1'
+										   AND p.current_status = '1'
 										GROUP BY p.patient_number_ccc;";
 
 		/*Patients without Appointment*/
@@ -125,6 +126,7 @@ class Notification_management extends MY_Controller {
 											    AND p.active = '1'
 											    AND ps.Name LIKE '%active%'
 											    AND p.active='1'
+										   AND p.current_status = '1'
 											    GROUP BY p.patient_number_ccc;";
 		/*Patients without Current Regimen*/
 		$sql['Patients without Current Regimen'] = "SELECT  p.patient_number_ccc,
@@ -140,6 +142,7 @@ class Notification_management extends MY_Controller {
 													OR p.current_regimen is null
 													OR p.current_regimen='null')
 													AND p.active='1'
+												   AND p.current_status = '1'
 													AND rs.name NOT LIKE '%pmtct%'
 													AND ps.Name NOT LIKE '%transit%' 
 													GROUP BY p.patient_number_ccc;";
@@ -155,6 +158,7 @@ class Notification_management extends MY_Controller {
 													OR p.start_regimen IS NULL 
 													OR p.start_regimen =  'null')
 													AND p.active='1'
+												   AND p.current_status = '1'
 													GROUP BY p.patient_number_ccc;";
 		/*Patients without Current Status*/
 		$sql['Patients without Current Status'] =  "SELECT p.patient_number_ccc,
@@ -168,6 +172,7 @@ class Notification_management extends MY_Controller {
 													OR p.current_status is null
 													OR p.current_status='null')
 													AND p.active='1'
+												   AND p.current_status = '1'
 													GROUP BY p.patient_number_ccc;";
 
 		/*Patients without Service Line*/
@@ -182,6 +187,7 @@ class Notification_management extends MY_Controller {
 													OR p.service is null
 													OR p.service='null')
 													AND p.active='1'
+												   AND p.current_status = '1'
 													GROUP BY p.patient_number_ccc;";
 
 		/*Duplicate Patient Numbers*/
@@ -306,7 +312,7 @@ class Notification_management extends MY_Controller {
 		         FROM patient p 
 		         LEFT JOIN regimen r ON r.id=p.current_regimen
 		         LEFT JOIN patient_status ps ON ps.id=p.current_status
-		         WHERE p.id IN($id_list)
+		         WHERE p.id IN($id_list) and p.current_status = '1' and p.active='1' 
 		         GROUP BY p.patient_number_ccc";
 			$q = $this -> db -> query($stmt);
 			$rs = $q -> result_array();
@@ -345,15 +351,14 @@ class Notification_management extends MY_Controller {
 	}
 
 	public function startRegimen_Error() {
-		$sql = $this -> db -> query("SELECT p.patient_number_ccc, p.start_regimen, CONCAT_WS(  ' | ', r.regimen_code, r.regimen_desc ) AS regimen,p.id
-												FROM patient p
-												LEFT JOIN regimen r ON r.id = p.start_regimen
-												WHERE (p.start_regimen =  ' '
-												OR p.start_regimen =  ''
-												OR p.start_regimen IS NULL 
-												OR p.start_regimen =  'null')
-												AND p.active='1'
-												GROUP BY p.patient_number_ccc;");
+		$sql = $this -> db -> query("SELECT p.patient_number_ccc, p.start_regimen, CONCAT_WS(  ' | ', r.regimen_code, r.regimen_desc ) AS regimen,p.id FROM patient p
+			LEFT JOIN regimen r ON r.id = p.start_regimen
+			WHERE (p.start_regimen =  ' '
+			OR p.start_regimen =  ''
+			OR p.start_regimen IS NULL 
+			OR p.start_regimen =  'null')
+			AND p.active='1'
+			GROUP BY p.patient_number_ccc;");
 
 		if ($sql -> num_rows() > 0) {
 			foreach ($sql->result() as $rows) {
@@ -520,8 +525,7 @@ class Notification_management extends MY_Controller {
 				GROUP BY patient_ccc, order_number 
 				ORDER BY timecreated DESC 
 		) b on a.patient_number_ccc = b.patient_ccc 
-		group by order_number
-";
+		group by order_number";
 		
 		$query=$this->db->query($sql);
 		$results=$query->result_array();
@@ -562,7 +566,6 @@ class Notification_management extends MY_Controller {
 		$this -> base_params($data);
 	}
 
-
 	public function load_followup_view(){
 		$patients=$this->followup_notification(true);
 		//columns for dataTables
@@ -586,6 +589,7 @@ class Notification_management extends MY_Controller {
         	unset($patient['id']);
         	$this -> table -> add_row($patient);
         }
+
 		$data['followup_patients']=$this -> table -> generate();
 		$data['content_view'] = "followup_listing_v";
 		$this -> base_params($data);

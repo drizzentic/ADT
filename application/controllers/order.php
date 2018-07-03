@@ -19,7 +19,7 @@ class Order extends MY_Controller {
 	}
 
 	public function index() {
-		if ($this->session->userdata("facility_dhis")){
+		if ($this->session->userdata("facility_dhis") && !$this->session->userdata("dhis_id")){
 			$data['page_title'] = "DHiS Login";
 			$data['banner_text'] = "DHIS Login";
 			$data['content_view'] = "orders/dhis_login_v";
@@ -55,28 +55,70 @@ class Order extends MY_Controller {
 			} else {
 				$this -> session -> set_flashdata('login_message', "<span class='error'>Error " . $curl -> error_code . ": Login Failed! Incorrect credentials</span>");
 			}
-			redirect("order");
 		}else{
 			$auth_response = json_decode($curl -> response, TRUE);
-			//Save user data
-			$sync_user = array(
-				'username' => $username,
-				'password' => md5($password),
-				'email' => $auth_response['email'],
-				'name' => $auth_response['name'],
-				'role' => $auth_response['employer'],
-				'status' => 'A',
-				'user_id' => $this->session->userdata('user_id'),
-				'profile_id' => $auth_response['id'],
-				'organization_id' => 'JgBnZEcsqDR'
-				//'organization_id' => $auth_response['organisationUnits'][0]['id']
+
+			//Get user organization_units 
+			$dhis_orgs = array();
+			foreach ($auth_response['organisationUnits'] as $orgs) {
+				$dhis_orgs[] = $orgs['id'];
+			}
+
+			//Ensure user has access to facility dhis data
+			$user_dhis_orgs = array();
+			$query = $this->db->get_where('sync_facility', array(
+				'parent_id' => Sync_Facility::getId($this->facility_code, $this->facility_type)['id'])
 			);
-			$this->db->replace('sync_user', $sync_user);
-			$data['page_title'] = "DHiS Orders";
-			$data['banner_text'] = "DHIS Orders";
-			$data['content_view'] = "orders/dhis_order_v";
-			$this -> base_params($data);
+			foreach ($query->result_array() as $facility) {
+				$user_dhis_orgs[] = $facility['dhiscode'];
+			};
+			$user_dhis_orgs = array_unique($user_dhis_orgs);
+			if(!empty(array_intersect($user_dhis_orgs, $dhis_orgs))){
+				//Save user data
+				$sync_user = array(
+					'username' => $username,
+					'password' => md5($password),
+					'email' => (isset($auth_response['email'])) ? $auth_response['email'] : '',
+					'name' => $auth_response['name'],
+					'role' => (isset($auth_response['employer'])) ? $auth_response['employer'] : '',
+					'status' => 'A',
+					'user_id' => $this->session->userdata('user_id'),
+					'profile_id' => $auth_response['id'],
+					'organization_id' => json_encode($dhis_orgs)
+				);
+
+				//Link User to facilities
+				$conditions = array('user_id' => $this->session->userdata('user_id'),'profile_id' => $auth_response['id']);
+				$users = $this->db->get_where('sync_user', $conditions)->num_rows();
+				if($users > 0){
+					$this->db->update('sync_user', $sync_user, $conditions);
+				}else{
+					$this->db->insert('sync_user', $sync_user);
+				}
+				//Set session
+				$this->session->set_userdata("dhis_id", $auth_response['id']);
+				$this->session->set_userdata("dhis_name",  $auth_response['name']);
+				$this->session->set_userdata("dhis_user", $username);
+				$this->session->set_userdata("dhis_pass", $password);
+				$this->session->set_userdata("dhis_orgs", $dhis_orgs);
+			}else{
+				$this -> session -> set_flashdata('login_message', "<span class='error'>You are not authorized in this Facility!</span>");
+			}
 		}
+		redirect("order");
+	}
+
+	public function logout() {
+		$this -> session -> unset_userdata("dhis_id");
+		$this -> session -> unset_userdata("dhis_name");
+		$this -> session -> unset_userdata("dhis_user");
+		$this -> session -> unset_userdata("dhis_pass");
+		$this -> session -> unset_userdata("dhis_orgs");
+		redirect("order");
+	}
+
+	public function get_dhis_data(){
+		echo json_encode(1);
 	}
 
 	public function verify_user_access(){

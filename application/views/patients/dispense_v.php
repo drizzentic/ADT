@@ -967,7 +967,7 @@
         var regimen = $("#current_regimen option:selected").attr("value");
         var last_regimen = $("#last_regimen").attr("value");
 
-        if (last_regimen !== 0) {
+        if (last_regimen !== "0" ) {
             if (regimen !== last_regimen){
                 $("#regimen_change_reason_container").show();
                 $("#regimen_change_reason").addClass("validate[required]");
