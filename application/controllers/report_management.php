@@ -5606,6 +5606,16 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		echo json_encode($output);
 	}
 
+	public function setConsumption(){
+		$facility_code=$this->session->userdata("facility");
+		//truncate drug_consumption_balance
+		$sql="TRUNCATE drug_cons_balance";
+		$this->db->query($sql);
+	    $sql="INSERT INTO drug_cons_balance(drug_id,stock_type,period,facility,amount)SELECT dsm.drug,dsm.ccc_store_sp,DATE_FORMAT(dsm.transaction_date,'%Y-%m-01') as period, $facility_code facility_code,SUM(dsm.quantity_out) AS total FROM  drug_stock_movement dsm LEFT JOIN transaction_type t ON t.id=dsm.transaction_type WHERE dsm.drug > 0 AND t.name LIKE '%dispense%' GROUP BY dsm.drug,dsm.ccc_store_sp,period ORDER BY  dsm.drug";
+	    $this->db->query($sql);
+	    return $this->db->affected_rows();
+	}
+
 	public function stock_report($report_type, $stock_type = "", $start_date = "", $end_date = "") {
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
 		$data['base_url'] = base_url();
@@ -5625,7 +5635,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 
 			// run drug_consumption
 			// drug_stock_balance_sync/setConsumption
-			$update_drug_consumption = file_get_contents(base_url().'drug_stock_balance_sync/setConsumption');
+			$this->setConsumption();
 			//Get actual page
 			if ($this -> uri -> segment(4) != "") {
 				$data['year'] = $this -> uri -> segment(4);

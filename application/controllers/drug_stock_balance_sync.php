@@ -191,7 +191,7 @@ class Drug_stock_balance_sync extends MY_Controller {
 		//old using patient visit
 		//$sql="INSERT INTO drug_cons_balance(drug_id,stock_type,period,facility,amount)SELECT drug_id,ccc_store_sp,DATE_FORMAT(dispensing_date,'%Y-%m-01') as period,'$facility_code', SUM( quantity ) AS total FROM  patient_visit WHERE drug_id > 0 GROUP BY drug_id,period ORDER BY  patient_visit.drug_id";
 	    //new using drug_stock_movement
-	    $sql="INSERT INTO drug_cons_balance(drug_id,stock_type,period,facility,amount)SELECT dsm.drug,dsm.ccc_store_sp,DATE_FORMAT(dsm.transaction_date,'%Y-%m-01') as period,'$facility_code',SUM(dsm.quantity_out) AS total FROM  drug_stock_movement dsm LEFT JOIN transaction_type t ON t.id=dsm.transaction_type WHERE dsm.drug > 0 AND t.name LIKE '%dispense%' GROUP BY dsm.drug,dsm.ccc_store_sp,period ORDER BY  dsm.drug";
+	    $sql="INSERT INTO drug_cons_balance(drug_id,stock_type,period,facility,amount)SELECT dsm.drug,dsm.ccc_store_sp,DATE_FORMAT(dsm.transaction_date,'%Y-%m-01') as period, $facility_code facility_code,SUM(dsm.quantity_out) AS total FROM  drug_stock_movement dsm LEFT JOIN transaction_type t ON t.id=dsm.transaction_type WHERE dsm.drug > 0 AND t.name LIKE '%dispense%' GROUP BY dsm.drug,dsm.ccc_store_sp,period ORDER BY  dsm.drug";
 	    $this->db->query($sql);
 	    echo "<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>&times;</button><strong>(".$this->db->affected_rows().")</strong> rows updated for drug consumption</div>";
 	}
