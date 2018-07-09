@@ -92,12 +92,11 @@ pa_vi.merged_from AS merged_from,
 pa_vi.regimen_merged_from AS regimen_merged_from,
 pa_vi.last_regimen_merged_from AS last_regimen_merged_from,
 p_app.appointment AS appointment,
-c_app.differentiated_care AS differentiated_care,
+pa_vi.differentiated_care AS differentiated_care,
 pa_vi.active AS pv_active 
 from ((((((patient_visit pa_vi left join patient pa on((pa.patient_number_ccc = pa_vi.patient_id)))
  left join gender g on((g.id = pa.gender))) 
 left join regimen_service_type rst on((pa.service = rst.id))) 
 left join visit_purpose vp on((vp.id = pa_vi.visit_purpose))) 
 left join patient_appointment p_app on(((p_app.patient = pa_vi.patient_id) and (p_app.appointment = pa_vi.dispensing_date)))) 
-left join clinic_appointment c_app on p_app.clinical_appointment = c_app.id 
 left join dose on((convert(pa_vi.dose using utf8) = dose.Name)))

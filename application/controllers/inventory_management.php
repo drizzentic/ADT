@@ -519,7 +519,7 @@ class Inventory_management extends MY_Controller {
             $data['hide_side_menu'] = 0;
         }
 
-        $pqmp_data = $this->db->get('pqms');
+        $pqmp_data = $this->db->get('pqmp');
 
         $data['pqmp_data'] = $pqmp_data->result_array();
 
