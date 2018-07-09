@@ -514,6 +514,7 @@
 								<th>Pill Count</th>
 								<th>Adherence</th>
 								<th>Operator</th>
+								<th>Diff Care</th>
 								<th>Reasons For Change</th>
 							</tr>
 						</thead>
@@ -534,6 +535,7 @@
 								<th>Pill Count</th>
 								<th>Adherence</th>
 								<th>Operator</th>
+								<th>Diff Care</th>
 								<th>Reasons For Change</th>
 							</tr>
 						</tfoot>
