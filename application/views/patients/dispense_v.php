@@ -61,6 +61,9 @@
                             ?>
                         </div>
                     </div>
+                    <div class="span6 dispensing-field" style="padding-top: 17px;">
+                        Age: <?= $age;?> Years
+                    </div>
                 </div>
                 <div class="row-fluid">
                     <div class="span6 dispensing-field">
