@@ -184,6 +184,15 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="span6 dispensing-field">
+                        <div class="control-group" style="display:none" id="adr_popupcheckbox_container">
+                             <div class="control-group">
+                            <label>Fill ADR form</label>
+                            <input  type="checkbox" name="adr_popupcheckbox" id="adr_popupcheckbox"  class="">
+                        </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="row-fluid">
                     <div class="span6 dispensing-field">
@@ -970,29 +979,12 @@
         if (last_regimen !== "0" ) {
             if (regimen !== last_regimen){
                 $("#regimen_change_reason_container").show();
+                $("#adr_popupcheckbox_container").show();
+
                 $("#regimen_change_reason").addClass("validate[required]");
 
                 var adr = $("#regimen_change_reason option:selected").text().toLowerCase();
-            // show ADR POPUP
-            bootbox.confirm({
-                message: "<h4>ADR?</h4>\n\<hr/><center>Did patient experience adverse drug reaction(s)?</center>",
-                buttons: {
-                    confirm: {
-                        label: 'Yes',
-                        className: 'btn-success'
-                    },
-                    cancel: {
-                        label: 'No',
-                        className: 'btn-danger'
-                    }
-                },
-                callback: function(res){
-                    if(res){
-                      
-                        window.open("<?= base_url()."dispensement_management/adr/".$patient_id ?>");
- }
-                }
-            });
+        
         }
 
         else {
@@ -1056,7 +1048,10 @@
             });
         });
     });
-
+    $('#adr_popupcheckbox').change(function(){
+        window.open("<?= base_url()."dispensement_management/adr/".$patient_id ?>");
+         $('#adr_popupcheckbox').attr('disabled','disabled')
+    });
     
     //drug change event
     $(".drug").change(function() {

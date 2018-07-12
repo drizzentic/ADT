@@ -858,6 +858,7 @@ AND  r.regimen_code LIKE '%oi%'
         $patient = @$_POST['patient'];
         $expiry_date = @$_POST['expiry'];
         $ccc_id = @$_POST["ccc_id"];
+        $differentiated_care = ($_POST["differentiated_care"] =='on') ? 1 : 0 ;
 
         //Define source and destination
         $source = $facility;
@@ -909,7 +910,6 @@ AND  r.regimen_code LIKE '%oi%'
                 } else {
 
                     $sql = "INSERT INTO drug_stock_balance (balance,dug_id,batch_number,expiry_date,stock_type,facility_code) VALUES('" . @$_POST["qty_disp"] . "','" . @$_POST["original_drug"] . "','" . @$_POST["batch"] . "','" . @$_POST["original_expiry_date"] . "','$ccc_id','$facility')";
-                    //echo $sql;die();
                     $this->db->query($sql);
                 }
             }
@@ -932,7 +932,7 @@ AND  r.regimen_code LIKE '%oi%'
             $this->session->set_userdata('dispense_deleted', 'success');
         } else {//If record is edited
             $period = date('Y-m-01');
-            $sql = "UPDATE patient_visit SET dispensing_date = '" . @$_POST["dispensing_date"] . "', visit_purpose = '" . @$_POST["purpose"] . "', current_weight='" . @$_POST["weight"] . "', current_height='" . @$_POST["height"] . "', regimen='" . @$_POST["current_regimen"] . "', drug_id='" . @$_POST["drug"] . "', batch_number='" . @$_POST["batch"] . "', dose='" . @$_POST["dose"] . "', duration='" . @$_POST["duration"] . "', quantity='" . @$_POST["qty_disp"] . "', brand='" . @$_POST["brand"] . "', indication='" . @$_POST["indication"] . "', pill_count='" . @$_POST["pill_count"] . "', missed_pills='" . @$_POST["missed_pills"] . "', comment='" . @$_POST["comment"] . "',non_adherence_reason='" . @$_POST["non_adherence_reasons"] . "',adherence='" . @$_POST["adherence"] . "' WHERE id='" . @$_POST["dispensing_id"] . "';";
+            $sql = "UPDATE patient_visit SET dispensing_date = '" . @$_POST["dispensing_date"] . "', visit_purpose = '" . @$_POST["purpose"] . "', current_weight='" . @$_POST["weight"] . "', current_height='" . @$_POST["height"] . "', regimen='" . @$_POST["current_regimen"] . "', drug_id='" . @$_POST["drug"] . "', batch_number='" . @$_POST["batch"] . "', dose='" . @$_POST["dose"] . "', duration='" . @$_POST["duration"] . "', quantity='" . @$_POST["qty_disp"] . "', brand='" . @$_POST["brand"] . "', indication='" . @$_POST["indication"] . "', pill_count='" . @$_POST["pill_count"] . "', missed_pills='" . @$_POST["missed_pills"] . "', comment='" . @$_POST["comment"] . "',non_adherence_reason='" . @$_POST["non_adherence_reasons"] . "',adherence='" . @$_POST["adherence"] . "',differentiated_care='" . @$differentiated_care . "' WHERE id='" . @$_POST["dispensing_id"] . "';";
             $this->db->query($sql);
             if (@$_POST["batch"] != @$_POST["batch_hidden"] || @$_POST["qty_disp"] != @$_POST["qty_hidden"]) {
                 //Update drug_stock_balance
