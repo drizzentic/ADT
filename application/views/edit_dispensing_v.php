@@ -22,8 +22,13 @@ foreach ($expiries as $expiry) {
 				var other_name="<?php echo strtoupper($result['other_name']); ?>";
 				var last_name="<?php echo strtoupper($result['last_name']); ?>";
 				$("#ccc_id").val("<?php echo $ccc_id; ?>");
-				$("#patient_details").val(first_name+" "+other_name+" "+last_name);
-				 
+				$("#patient_details").val(first_name+" "+other_name+" "+last_name);	 
+				$('#differentiated_care').each(function(e){
+					if(<?= $result['differentiated_care'];?> == '1'){
+						$(this).attr("checked", "checked");
+					}
+				});
+
 				$("#dispensing_date").val("<?php echo @$result['dispensing_date'];?>"); 
 				$("#original_dispensing_date").val("<?php echo @$result['dispensing_date'];?>"); 
 				$("#original_drug").val("<?php echo @$result['drug_id']; ?>");
@@ -481,6 +486,10 @@ foreach ($expiries as $expiry) {
 									       }
 									     ?>
 							</select>
+						</div>
+						<div class="mid-row">
+                            <label>Differentiated care?</label>
+                            <input  type="checkbox" name="differentiated_care" id="differentiated_care"  class="">
 						</div>
 					</div>
 			</fieldset>

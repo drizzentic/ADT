@@ -62,7 +62,10 @@ class Access extends MX_Controller {
 	public function mapping($facility_code=null,$ccc_pharmacy=null,$source_database=null,$table=null){
 		$key = $this -> encrypt -> get_key();
 		$timestamp=date('Y-m-d H:i:s');
+		file_get_contents(str_replace("tools/","", base_url()).'auto_management/do_procs') ;
 		//migration table mapping
+		$tbl_name = 'tblartpatientmasterinformation';
+		$column_name = 'datestartipt';
 		$tables = array(
 			'Drug Source'=>array(
 				'source'=>'tblarvstocktransourceordestination',
@@ -486,7 +489,7 @@ class Access extends MX_Controller {
 				LEFT JOIN '.$source_database.'.tbltypeofservice ps ON ps.typeofserviceid=p.typeofservice 
 				LEFT JOIN '.$source_database.'.tblcurrentstatus cs ON cs.currentstatusid=p.currentstatus 
 				LEFT JOIN '.$source_database.'.tblsourceofclient s ON s.sourceid=p.sourceofclient',
-				'before'=>array('ALTER TABLE tempadt.tblartpatientmasterinformation ADD IF NOT EXISTS datestartipt date NULL'),
+				'before'=>array('call AddCol("'.$source_database.'","'.$tbl_name.'","'.$column_name.'","date");'),
 				'update'=>array(
 					'0'=>'UPDATE patient 
 					SET start_regimen_date=date_enrolled 
@@ -760,6 +763,7 @@ class Access extends MX_Controller {
 	    //run before statements that affect source table
 		if(!empty($befores)){
 			foreach($befores as $before){
+				echo "before ".$before;
 				try{
 					$this->db->query($before);
 				}catch(Exception $e){

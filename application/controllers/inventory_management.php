@@ -535,7 +535,9 @@ INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->resul
             $data['hide_side_menu'] = 0;
         }
 
-        $pqmp_data = $this->db->order_by('id', 'desc')->get('pqms');
+
+        $pqmp_data = $this->db->order_by('id', 'desc')->get('pqms');     
+
 
         $data['pqmp_data'] = $pqmp_data->result_array();
 
