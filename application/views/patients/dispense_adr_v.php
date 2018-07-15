@@ -101,7 +101,7 @@
                     <option value="44">Migori</option>
                     <option value="1">Mombasa</option>
                     <option value="21">Murang'a</option>
-                    <option value="47" selected="selected">Nairobi City</option>
+                    <option value="47" selected="selected">Nairobi </option>
                     <option value="32">Nakuru</option>
                     <option value="29">Nandi</option>
                     <option value="33">Narok</option>
@@ -690,14 +690,14 @@
                         <td  title="Frequency *"><div class="control-group required">
                                 <select class="fil" name="frequency_id[]" style="width:180px !important;">
                                     <option value="<?=  $frequency  ?>"><?=  $frequency  ?></option>
-                                    <option value="OD (once daily)">OD (once daily)</option>
-                                    <option value="BD (twice daily)">BD (twice daily)</option>
-                                    <option value="TID. (three times a day)">TID. (three times a day)</option>
-                                    <option value="QID|QDS (four times a day)"></option>
-                                    <option value="PRN PRN (as needed)"></option>
-                                    <option value="MANE (in the morning)"></option>
-                                    <option value="NOCTE (at night)"></option>
-                                    <option value="STAT (immediately)"></option>
+                                     <option value="2">OD (once daily)</option>
+                                    <option value="3">BD (twice daily)</option>
+                                    <option value="4">TID. (three times a day)</option>
+                                    <option value="5">QID|QDS (four times a day)</option>
+                                    <option value="6">PRN PRN (as needed)</option>
+                                    <option value="7">MANE (in the morning)</option>
+                                    <option value="8">NOCTE (at night)</option>
+                                    <option value="9">STAT (immediately)</option>
                                 </select></div></td>
                         <td title="Date Started (dd-mm-yyyy) *">
                             <div class="control-group required"><input name="dispensing_date[]" class="ddate" type="text" value="<?= $pv['dispensing_date'] ?>" /></div>					</td>
