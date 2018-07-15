@@ -449,8 +449,33 @@ class Inventory_management extends MY_Controller {
         }
     }
 
+    function loadRecord($id, $action = '') {
+        $data = [];
+        if ($action == 'export') {
+            $this->export_pqmp($id);
+           
+        }
+
+        if ($action == 'delete') {
+            $this->db->query('delete from pqmp where id = ' . $id);
+            // redirect('inventory_management/pqmp');
+            die;
+        }
+        $data['content_view'] = 'pqmp_v';
+        $data['record_no'] = $id;
+        $data['patient_id'] = $id;
+        $data['hide_side_menu'] = 0;
+        $data['pqmp_data'] = $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation , cou.name country
+FROM pqms p 
+INNER JOIN counties co ON p.county_id = co.id 
+INNER JOIN countries cou ON cou.id = p.country_of_origin
+INNER JOIN sub_counties su ON p.sub_county_id = su.id 
+INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
+        $this->base_params($data);
+    }
+
     public function pqmp($record_no = null, $action = null) {
-        $record_no = $this->uri->segment(3);
+       
 
         if ($this->input->post("facility_name")) {
             $pqmp_data = array(
@@ -496,34 +521,31 @@ class Inventory_management extends MY_Controller {
                 'contact_number' => $this->input->post('reporter_phone'),
             );
             $this->db->where('id', $record_no);
-            $this->db->update('pqmp', $pqmp_data);
+            $this->db->update('pqms', $pqmp_data);
             $this->session->set_flashdata('pqmp_saved', 'Pharmacovigilance form was saved successfully!');
 
-           // redirect("inventory_management/pqmp/" . $record_no);
-      
+            redirect("inventory_management/loadRecord/" . $record_no);
         }
 
         $data = array();
         $content_view = 'pqmp_list_v';
         if ($record_no + 0 > 0) {
-            $this->db->where('id', $record_no);
+            $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation FROM pqms p INNER JOIN counties co ON p.county_id = co.id INNER JOIN sub_counties su ON p.sub_county_id = su.id INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$record_no' ");
             $content_view = 'pqmp_v';
             $data['hide_side_menu'] = 0;
         }
 
-        $pqmp_data = $this->db->get('pqms');
+        $pqmp_data = $this->db->order_by('id', 'desc')->get('pqms');
 
         $data['pqmp_data'] = $pqmp_data->result_array();
 
         if ($action == 'export') {
-            $this->export_adr($data['pqmp_data'], 'pqmp');
-            die;
+            $this->export_pqmp($record_no);
         }
 
         if ($action == 'delete') {
-            $this->db->query('delete from pqmp where id = ' . $record_no);
-           // redirect('inventory_management/pqmp');
-            die;
+            $this->db->query('delete from pqms where id = ' . $record_no);
+            redirect('inventory_management/pqmp');
         }
 
         $data['facility_code'] = $this->session->userdata('facility');
@@ -611,8 +633,10 @@ class Inventory_management extends MY_Controller {
 
         $data = array();
         $data['facility_code'] = $this->session->userdata('facility');
+        $data['facility_address'] = $this->session->userdata('email');
         $data['facility_name'] = $this->session->userdata('facility_name');
         $data['facility_phone'] = $this->session->userdata('facility_phone');
+        $data['drug_data'] = $this->getGenericName();
 
 
         $data['user_full_name'] = $this->session->userdata('full_name');
@@ -635,6 +659,10 @@ class Inventory_management extends MY_Controller {
         $data['content_view'] = "pqmp_form_v";
         // var_dump($data);
         $this->base_params($data);
+    }
+
+    function getGenericName() {
+        return $this->db->get('drugcode')->result();
     }
 
     /* -----------------SAVE NEW PQM TO SYNCH WITH DATABASE PPB*------------------- */
@@ -816,6 +844,98 @@ class Inventory_management extends MY_Controller {
         $data['service_name'] = $service_name;
         $data['content_view'] = $content_view;
         $this->base_params($data);
+    }
+
+    public function export_pqmp($id) {
+
+        $adr = $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation , cou.name country
+                    FROM pqms p 
+                    INNER JOIN counties co ON p.county_id = co.id 
+                    INNER JOIN countries cou ON cou.id = p.country_of_origin
+                    INNER JOIN sub_counties su ON p.sub_county_id = su.id 
+                    INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
+        
+        print_r($adr);
+        
+
+                            
+
+        $this->load->library('PHPExcel');
+        $dir = "assets/download";
+
+        $inputFileType = 'Excel5';
+        $inputFileName = 'assets/templates/moh_forms/PQMP_form.xls';
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objPHPExcel = $objReader->load($inputFileName);
+
+       
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('D7', $adr[0]['facility_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('J7', $adr[0]['county_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('Q7', $adr[0]['sub_county_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('D8', $adr[0]['facility_address']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('J8', $adr[0]['facility_phone']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('F10', $adr[0]['brand_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('F11', $adr[0]['batch_number']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('F12', $adr[0]['name_of_manufacturer']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('F13', $adr[0]['supplier_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('P10', $adr[0]['generic_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('L11', $adr[0]['manufacture_date']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('P11', $adr[0]['expiry_date']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('T11', $adr[0]['receipt_date']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('P12', $adr[0]['country']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('L13', $adr[0]['supplier_address']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('F15', ($adr[0]['product_formulation'] == 'Oral tablets / capsules') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F16', ($adr[0]['product_formulation'] == 'Oral suspension / syrup') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F17', ($adr[0]['product_formulation'] == 'Injection') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F18', ($adr[0]['product_formulation'] == 'Diluent') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F19', ($adr[0]['product_formulation'] == 'Powder for Reconstitution of Suspension') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F20', ($adr[0]['product_formulation'] == 'Powder for Reconstitution of Injection') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F21', ($adr[0]['product_formulation'] == 'Eye drops') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F22', ($adr[0]['product_formulation'] == 'Ear drops') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F23', ($adr[0]['product_formulation'] == 'Nebuliser solution') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F24', ($adr[0]['product_formulation'] == 'Cream / Ointment / Liniment / Paste') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F24', ($adr[0]['product_formulation'] == 'Cream / Ointment / Liniment / Paste') ? 'Yes' : 'No');
+        // $objPHPExcel -> getActiveSheet() -> SetCellValue('B10', $adr[0]['other_formulation']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('P15', ($adr[0]['colour_change'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P16', ($adr[0]['separating'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P17', ($adr[0]['powdering'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P18', ($adr[0]['caking'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P19', ($adr[0]['moulding'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P20', ($adr[0]['odour_change'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P21', ($adr[0]['mislabeling'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P22', ($adr[0]['incomplete_pack'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P23', ($adr[0]['complaint_other'] == '1') ? 'Yes' : 'No');
+        //$objPHPExcel->getActiveSheet()->SetCellValue('P24', ($adr[0]['complaint_other'] == '1') ? 'Yes' : 'No');
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('D26', $adr[0]['complaint_description']);
+        
+        $objPHPExcel->getActiveSheet()->SetCellValue('I28', ($adr[0]['require_refrigeration'] == 'No') ? 'No' : 'Yes');
+        $objPHPExcel->getActiveSheet()->SetCellValue('I29', ($adr[0]['product_at_facility'] == 'No') ? 'No' : 'Yes');
+        $objPHPExcel->getActiveSheet()->SetCellValue('I30', ($adr[0]['returned_by_client'] == 'No') ? 'No' : 'Yes');
+        $objPHPExcel->getActiveSheet()->SetCellValue('I31', ($adr[0]['stored_to_recommendations'] == 'No') ? 'no' : 'Yes');
+        
+        $objPHPExcel->getActiveSheet()->SetCellValue('Z33', $adr[0]['comments']);
+        
+       $objPHPExcel->getActiveSheet()->SetCellValue('D35', $adr[0]['reporter_name']);
+       $objPHPExcel->getActiveSheet()->SetCellValue('D36', $adr[0]['designation']);
+
+        ob_start();
+
+        $original_filename = strtoupper('pqmp') ."_".$id.".xls";
+
+        $filename = $dir . "/" . urldecode($original_filename);
+        $objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
+        $objWriter->save($filename);
+        $objPHPExcel->disconnectWorksheets();
+        unset($objPHPExcel);
+        if (file_exists($filename)) {
+            $filename = str_replace("#", "%23", $filename);
+            redirect($filename);
+        }
     }
 
     public function export_adr($adr, $type) {

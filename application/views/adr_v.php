@@ -16,13 +16,13 @@
 <div class="container" style="background-color: #fffacc;border: solid thick #0000ff;padding: 30px; margin-top: 130px; margin-bottom: 130px;">
 
     <a href="<?= base_url(); ?>inventory_management/adr" class="btn btn-default" > Back </a>
-    <?php if (\is_null($adr_data[0]['ppid'])) { ?>
+    <?php if (!\is_null($adr_data[0]['ppid']) || $adr_data[0]['synch'] === '1') { ?>
+
+    <?php } else { ?>
         <a href="javascript:;;" class="btn btn-default" id="edit-btn" > Edit </a>
-        <a  href="<?= base_url(); ?>inventory_management/adr/<?= $record_no; ?>/delete" class="btn btn-danger delete-form" > Delete </a>
-    <?php } else {
-        
-    }
-    ?>
+        <a href="<?= base_url(); ?>inventory_management/pqmp/<?= $record_no; ?>/delete" class="btn btn-danger delete-form" > Delete  </a>  
+    <?php } ?>
+
     <a href="<?= base_url(); ?>inventory_management/adr/<?= $record_no; ?>/export" class="btn btn-default" > Export(.xls) </a>
     <form name="adr_form" id="adr_form">
         <div class="container">
@@ -168,7 +168,7 @@
                 </tr>
             </thead>
             <tbody>
-<?php foreach ($adr_data as $key => $pv) { ?>
+                <?php foreach ($adr_data as $key => $pv) { ?>
                     <tr>
                         <td> <?= $key; ?></td>
                         <?php
@@ -188,7 +188,7 @@
                 <td><input type="text" name="indication[]" value="<?= $pv['indication'] ?>" class="form-control f-input"></td>
                 <td><input type="checkbox" name="suspecteddrug[]" <?php if ($pv['suspecteddrug'] == 'on') { ?>checked=""<?php } ?>></td>
                 </tr>
-<?php } ?>
+            <?php } ?>
 
             </tbody>
         </table>
@@ -304,6 +304,70 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+
+        $("#adr_form").validate({
+            rules: {
+                facility_name: "required",
+                county_id: "required",
+                sub_county_id: "required",
+                facility_address: "required",
+                facility_phone: "required",
+                facility_code: "required",
+                brand_name: "required",
+                genname: "required",
+                batch_no: "required",
+                manufacture_date: "required",
+                expiry_date: "required",
+                receipt_date: "required",
+                manufacturer_name: "required",
+                country_id: "required",
+                supplier_name: "required",
+                supplier_address: "required",
+                product_formulation: {required: true, minlength: 1},
+                spam: "required",
+                description: "required",
+                product_refrigiration: "required",
+                product_availability: "required",
+                product_returned: "required",
+                product_storage: "required",
+                reporter_name: "required",
+                reporter_phone: "required",
+                reporter_signature: "required"
+
+            },
+            messages: {
+                facility_name: "Please enter facility name",
+                county_id: "Please select county",
+                sub_county_id: "Please select sub county",
+                facility_address: "Please enter facility address",
+                facility_phone: "Please enter facility phone",
+                facility_code: "Please enter facility code",
+                brand_name: "Please enter  brand name",
+                genname: "Please enter  generic name",
+                batch_no: "Please enter  batch no",
+                manufacture_date: "Please enter mfg date",
+                expiry_date: "Please enter expiry date",
+                receipt_date: "Please enter receipt date",
+                country_id: "Please select country",
+                manufacturer_name: "Please enter Manufacturer",
+                supplier_name: "Please enter supplier name",
+                supplier_address: "Please enter supplier address",
+                product_formulation: "Please select atleast 1",
+                PqmpComplaint: "Please select atleast 1",
+                spam: "Please select atleast 1",
+                description: "Please enter description",
+                product_refrigiration: "Please select one",
+                product_availability: "Please select one",
+                product_returned: "Please select one",
+                product_storage: "Please select one",
+                reporter_name: "Please enter name",
+                reporter_phone: "Please enter phone",
+                reporter_signature: "Please signature",
+            }
+        });
+
+
+
         $("input[name=outcome][value=<?= $adr_data[0]['outcome'] ?>]").attr('checked', 'checked');
         $("input[name=casuality][value=<?= $adr_data[0]['reaction_casualty'] ?>]").attr('checked', 'checked');
         $("input[name=gender][value=<?= $adr_data[0]['gender'] ?>]").attr('checked', 'checked');
@@ -350,25 +414,7 @@
                 e.preventDefault();
             }
         });
-        $('#adr_form').submit(function (e) {
-            // console.log('form submitted');
-            // console.log($('form').serializeArray());
-            var data = $('#adr_form').serializeArray();
-            $.ajax({
-                type: "POST",
-                url: "",
-                data: data,
-                success: (function (data) {
-                    alert(data);
-                    window.close();
-                    window.location = "";
 
-                })
-            });
-
-
-            e.preventDefault();
-        });
 
 
         $(".adrdate").datepicker();

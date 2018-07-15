@@ -12,6 +12,17 @@ class MY_Controller extends CI_Controller {
         date_default_timezone_set('Africa/Nairobi');
     }
 
+    function getDrugData($id) {
+        $data = $this->db
+                ->where('drug', $id)
+                ->where('transaction_type', '5')
+                ->order_by('id', 'desc')
+                ->limit(1)
+                ->get('drug_stock_movement')
+                ->result();
+        echo json_encode($data);
+    }
+
     //shorten field input
     function _p($field) {
         return $this->input->post($field);
@@ -77,7 +88,7 @@ class MY_Controller extends CI_Controller {
                 redirect('inventory_management/adr/');
             }
         }
-    } 
+    }
 
     //push and synchronize data to remote ppb pv database
 

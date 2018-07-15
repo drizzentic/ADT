@@ -13,9 +13,9 @@
     }
 </style>
 
-<div class="container" style="background-color: #fffacc;border: solid thick #0000ff;padding: 30px; margin-top: 130px; margin-bottom: 130px;">
+<div class="container" style="background-color: #fffacc;border: solid thick #2b597e;padding: 30px; margin-top: 130px; margin-bottom: 130px; border-radius:20px;">
 
-    <form name="adr_form" id="adr_form">
+    <form name="adr_form" id="adr_form" method="post" action="<?= base_url();?>dispensement_management/adr/<?= $patient_id ?>">
         <div class="container">
             <div class="row">
                 <div class="text-center">
@@ -36,7 +36,7 @@
         <div class="max-row">
             <div class="mid-row">
                 <label><span class='astericks'>*</span>REPORT TITLE </label>
-                <input type="text" name="report_title" id="report_title" >
+                <input type="text" name="report_title" id="report_title" value="<?= str_replace('%20', ' ',$this->uri->segment(4));?>">
             </div>
 
 
@@ -70,11 +70,11 @@
             <div class="mid-row">
 
                 <label ><span class='astericks'>*</span>COUNTY:</label>
-                <select name="county_id" class="" id="SadrCountyId">
+                <select class="fil" class="fil" name="county_id"  id="county_id">
                     <option value=""></option>
                     <option value="30">Baringo</option>
                     <option value="36">Bomet</option>
-                    <option value="39">Bung&#039;oma</option>
+                    <option value="39">Bung'oma</option>
                     <option value="40">Busia</option>
                     <option value="28">Elgeyo/Marakwet</option>
                     <option value="14">Embu</option>
@@ -100,7 +100,7 @@
                     <option value="12">Meru</option>
                     <option value="44">Migori</option>
                     <option value="1">Mombasa</option>
-                    <option value="21">Murang&#039;a</option>
+                    <option value="21">Murang'a</option>
                     <option value="47" selected="selected">Nairobi City</option>
                     <option value="32">Nakuru</option>
                     <option value="29">Nandi</option>
@@ -125,7 +125,7 @@
             <div class="mid-row">
 
                 <label ><span class='astericks'>*</span>SUB-COUNTY</label>
-                <select name="sub_county_id" class="" id="SadrSubCountyId">
+                <select class="fil" name="sub_county_id" id="sub_county_id"  class="" id="SadrSubCountyId">
                     <option value=""></option>
                     <option value="143">AINABKOI</option>
                     <option value="189">AINAMOI</option>
@@ -159,7 +159,7 @@
                     <option value="194">CHEPALUNGU</option>
                     <option value="139">CHERANGANY</option>
                     <option value="153">CHESUMEI</option>
-                    <option value="290">CHUKA/IGAMBANG&#039;OMBE</option>
+                    <option value="290">CHUKA/IGAMBANG'OMBE</option>
                     <option value="30">DADAAB</option>
                     <option value="274">DAGORETTI NORTH</option>
                     <option value="275">DAGORETTI SOUTH</option>
@@ -271,7 +271,7 @@
                     <option value="48">LAISAMIS</option>
                     <option value="21">LAMU EAST</option>
                     <option value="22">LAMU WEST</option>
-                    <option value="276" selected="selected">LANGATA</option>
+                    <option value="276" >LANGATA</option>
                     <option value="121">LARI</option>
                     <option value="5">LIKONI</option>
                     <option value="199">LIKUYANI</option>
@@ -414,7 +414,7 @@
                     <option value="220">WEBUYE EAST</option>
                     <option value="221">WEBUYE WEST</option>
                     <option value="270">WEST MUGIRANGO</option>
-                    <option value="273">WESTLANDS</option>
+                    <option value="273" selected="selected">WESTLANDS</option>
                     <option value="24">WUNDANYI</option>
                     <option value="75">YATTA</option>
                 </select>
@@ -430,8 +430,16 @@
 
             <table border="0" style="width: 100%;">
                 <tr>
-                    <td> <label><span class='astericks'>*</span>PATIENT’S NAME/ INITIAL </label>
-                        <input type="text" name="patientname" id="patientname" value="<?= $patient_details['first_name'] . ' ' . $patient_details['last_name']; ?>" class="validate[required] f-input">
+                    <td> <label><span class='astericks'>*</span>PATIENT’S NAME/ INITIALS </label>
+                        <?php
+                        $patient = $patient_details['first_name'] . ' ' . $patient_details['last_name'];
+                        $expl = explode(' ',$patient);
+                        $new_patient = '';
+                        foreach ($expl as $e){
+                            $new_patient .= $e[0].'.';
+                        }
+                        ?>
+                        <input type="text" name="patientname" id="patientname" value="<?= rtrim($new_patient,'.'); ?>" class="validate[required] f-input">
                     </td>
                     <td> <label ><span class='astericks'>*</span>IP/OP. NO</label>
                         <input  type="text" name="ip_no" id="ip_no" value="<?= $patient_details['ccc_number'] ?>" class="validate[required] f-input">
@@ -444,7 +452,7 @@
                     <td>  <label><span class='astericks'>*</span>PATIENT’S ADDRESS </label>
                         <input type="text" name="patientaddress" id="patientaddress"  value="<?= $patient_details['physical_address'] ?>" class="validate[required] f-input"></td>
                     <td> <label ><span class='astericks'>*</span>WARD/CLINIC</label>
-                        <input  type="text" name="clinic" id="clinic"  value="" class="validate[required] f-input">
+                        <input  type="text" name="clinic" id="clinic"  value="CCC" class="validate[required] f-input">
                     </td>
                     <td>
                         <label id="dcs" >GENDER</label>
@@ -491,12 +499,18 @@
                 <tr>
                     <td colspan="3">
                         <label><span class='astericks'>*</span>DIAGNOSIS: (What was the patient treated for): </label>
-                        <textarea name="diagnosis" id="diagnosis" class="" ><?= $patient_details['current_regimen'] ?></textarea>
+                        <select class="fil" name='diagnosis' id='diagnosis' style="width:150px;">
+                            <option value="">-Select-</option>
+                            <?php foreach($diagnosis as $d){;?>
+                            <option value="<?= str_replace(['Anti','Family Planning medicine','Essential drug'],'',$d->name);?>"><?= str_replace(['Anti','Family Planning medicine','Essential drug'],'',$d->name);?></option>
+                            <?php };?>
+                        </select>
+                        <!--textarea name="diagnosis" id="diagnosis" class="" ><?= $patient_details['current_regimen'] ?></textarea-->
                     </td>
                 </tr>
                 <tr>
                     <td colspan="3">
-                        <label ><span class='astericks'>*</span>BRIEF DESCRIPTION OF REACTION:</label>
+                        <label ><span class='astericks'>*</span>BRIEF DESCRIPTION OF REACTION (<?= str_replace('%20', ' ',$this->uri->segment(4));?>):</label>
                         <textarea name="reaction" id="reaction" class=""></textarea>         
                     </td>
                 </tr>
@@ -556,10 +570,16 @@
                         <td title="Brand Name">
                             <div class="control-group"><input name="brand_name[]" maxlength="100" style="width:50px !important;" type="text"/></div></td>
                         <td  title="Dose *">
-                            <div class="control-group required"><input name="dose[]" maxlength="100" value="<?= $pv['dose'] ?>"  style="width:40px !important;" type="text" /></div></div></td>
+                            <?php 
+                            $pre_dose = $pv['dose'];
+                            $splitter = explode(' ',$pre_dose);
+                            $_dose = $splitter[0];
+                            $frequency = $splitter[1];
+                            ?>
+                            <div class="control-group required"><input name="dose[]" maxlength="100" value="<?= $_dose ?>"  style="width:40px !important;" type="text" /></div></div></td>
                         <td>
                             <div class="control-group required">
-                                <select name="dose_id[]"  style="width:100px !important;">
+                                <select class="fil" name="dose_id[]"  style="width:100px !important;">
                                     <option value=""></option>
                                     <option value="2">mg</option>
                                     <option value="3">ml</option>
@@ -595,7 +615,8 @@
                                     <option value="33">pg</option>
                                 </select></div>	</td>
                         <td title="Route *"><div class="control-group required">
-                                <select name="route_id[]" style="width:150px !important;" >
+                                <select class="fil" name="route_id[]" style="width:150px !important;" >
+                                    
                                     <option value=""></option>
                                     <option value="2">oral</option>
                                     <option value="3">intravenous drip</option>
@@ -667,21 +688,21 @@
                                 </select></div>				
                         </td>
                         <td  title="Frequency *"><div class="control-group required">
-                                <select name="frequency_id[]" style="width:180px !important;">
-                                    <option value="<?= $pv['frequency'] ?>"><?= $pv['frequency'] ?></option>
-                                    <option value="2">OD (once daily)</option>
-                                    <option value="3">BD (twice daily)</option>
-                                    <option value="4">TID. (three times a day)</option>
-                                    <option value="5">QID|QDS (four times a day)</option>
-                                    <option value="6">PRN PRN (as needed)</option>
-                                    <option value="7">MANE (in the morning)</option>
-                                    <option value="8">NOCTE (at night)</option>
-                                    <option value="9">STAT (immediately)</option>
+                                <select class="fil" name="frequency_id[]" style="width:180px !important;">
+                                    <option value="<?=  $frequency  ?>"><?=  $frequency  ?></option>
+                                    <option value="OD (once daily)">OD (once daily)</option>
+                                    <option value="BD (twice daily)">BD (twice daily)</option>
+                                    <option value="TID. (three times a day)">TID. (three times a day)</option>
+                                    <option value="QID|QDS (four times a day)"></option>
+                                    <option value="PRN PRN (as needed)"></option>
+                                    <option value="MANE (in the morning)"></option>
+                                    <option value="NOCTE (at night)"></option>
+                                    <option value="STAT (immediately)"></option>
                                 </select></div></td>
                         <td title="Date Started (dd-mm-yyyy) *">
-                            <div class="control-group required"><input name="dispensing_date[]" type="text" value="<?= $pv['dispensing_date'] ?>" /></div>					</td>
+                            <div class="control-group required"><input name="dispensing_date[]" class="ddate" type="text" value="<?= $pv['dispensing_date'] ?>" /></div>					</td>
                         <td title="Date Stopped (dd-mm-yyyy)">
-                            <div class="control-group"><input name="date_stopped[]" type="text" value="<?= $ds; ?>"/></div></td>
+                            <div class="control-group"><input name="date_stopped[]" type="text" class="sdate" value="<?= $ds; ?>"/></div></td>
                         <td title="Indication">
                             <div class="control-group"><input name="indication[]" maxlength="100" type="text" value="<?= $pv['indication'] ?>" /></div></td>
                         <td title="Suspected Drug?">
@@ -691,8 +712,10 @@
 
                     </tr>
 
-                    <?php $i++;
-                } ?>
+                    <?php
+                    $i++;
+                }
+                ?>
 
             </tbody>
         </table>
@@ -744,8 +767,8 @@
                 <input type="radio" name="outcome" value="recovered/resolved with sequela" />Recovered/resolved with sequela<br />
                 <input type="radio" name="outcome"  value="not recovered/not resolved" />Not recovered/not resolved<br />
                 <input type="radio" name="outcome"  value="fatal - unrelated to reaction" />Fatal - unrelated to reaction<br />
-               <input type="radio" name="outcome"  value="fatal - reaction may be contributory" />Fatal - reaction may be contributory<br />
-              <input type="radio" name="outcome" value="fatal - due to reaction" />Fatal - due to reaction<br />
+                <input type="radio" name="outcome"  value="fatal - reaction may be contributory" />Fatal - reaction may be contributory<br />
+                <input type="radio" name="outcome" value="fatal - due to reaction" />Fatal - due to reaction<br />
                 <input  type="radio"  name="outcome" id="outcome" value="Unknown">
                 Unknown
             </div>
@@ -796,12 +819,12 @@
             </div>
             <div class="mid-row">
                 <label><span class='astericks'>*</span>Designation</label>
-                <select name="designation_id" class="" id="SadrDesignationId">
-                <option value=""></option>
-                <option value="1">physician</option>
-                <option value="2">pharmacist</option>
-                <option value="3" selected="selected">other professional</option>
-                <option value="5">consumer or other non health professional</option>
+                <select name="designation_id" class="fil" id="designation_id">
+                    <option value=""></option>
+                    <option value="1">physician</option>
+                    <option value="2">pharmacist</option>
+                    <option value="3" selected="selected">other professional</option>
+                    <option value="5">consumer or other non health professional</option>
                 </select>
             </div>
             <div class="mid-row">
@@ -810,7 +833,7 @@
             </div>
 
             <div class="mid-row">
-                <button type="submit"  value="Submit">Submit</button>
+                <button type="submit" class="btn btn-primary" value="Submit">Submit</button>
                 <button>cancel</button>
             </div>
 
@@ -823,6 +846,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        $('.fil').select2();
 
         $("input[name=gender][value=<?= $patient_details['gender'] ?>]").attr('checked', 'checked');
         var pregnant = '<?= $patient_details['pregnant'] ?>';
@@ -858,27 +882,94 @@
             }
         });
 
-        $('#adr_form').submit(function (e) {
-            // console.log('form submitted');
-            // console.log($('form').serializeArray());
-            var data = $('#adr_form').serialize();
-            $.ajax({
-                type: "POST",
-                url: "",
-                data: data,
-                success: (function (data) {
-                    alert(data);
-                 window.top.close();
+        $("#adr_form").validate({
+            rules: {
+                report_title: "required",
+                institution: "required",
+                institutioncode: "required",
+                contact: "required",
+                address: "required",
+                county_id: "required",
+                sub_county_id: "required",
+                patientname: "required",
+                ip_no: "required",
+                dob: "required",
+                patientaddress: "required",
+                clinic: "required",
+                gender: "required",
+                patientweight: "required",
+                patientheight: "required",
+                diagnosis: "required",
+                reaction: "required",
+                "brand_name[]": "required",
+                "dose[]": "required",
+                "drug_name[]": "required",
+                "dose_id[]": "required",
+                "route_id[]": "required",
+                "frequency_id[]": "required",
+                "dispensing_date[]": "required",
+                "date_stopped[]": "required",
+                "indication[]": "required",
+                "suspecteddrug[]": "required",
+                severity: "required",
+                action: "required",
+                outcome: "required",
+                casuality: "required",
+                officername: "required",
+                reportingdate: "required",
+                officeremail: {required:true,email:true},
+                officerphone: "required",
+                designation_id: "required",
+                officersignature: "required",
 
-                })
-            });
+            },
+            messages: {
+                report_title: "Please enter reporting title",
+                institution: "Please enter institution",
+                institutioncode: "Please enter institution code",
+                address: "Please enter address",
+                contact: "Please enter contact person",
+                sub_county_id: "Please select sub county",
+                county_id: "Please eselect county",
+                patientname: "Please patient no",
+                ip_no: "Please enter IP no",
+                dob: "Please enter date of birth",
+                patientaddress: "Please enter patient address",
+                clinic: "Please enter clinic",
+                gender: "Please enter IP gender",
+                patientweight: "Please enter IP gender",
+                patientheight: "Please enter IP gender",
+                diagnosis: "Please select diagnosis",
+                reaction: "Please select reaction",
+                severity: "Please welect serveritt",
+                action: "Please eselect action taken",
+                outcome: "Please select outcome",
+                casuality: "Please select casuality",
+                officername: "Please enter name",
+                reportingdate: "Please enter date",
+                officeremail: "Please enter email",
+                officerphone: "Please enter phone",
+                designation_id: "Please select designation",
+                officersignature: "Please enter signature",
+                "brand_name[]": "Please enter brand name",
+                "dose[]": "Please select dosage",
+                "drug_name[]": "Please enter Generic name",
+                "dose_id[]": "Please select doosage unit",
+                "route_id[]": "Please select route",
+                "frequency_id[]": "Please select frequency",
+                "dispensing_date[]": "Please select date",
+                "date_stopped[]": "Please select date stopped",
+                "indication[]": "Please state indication",
+                "suspecteddrug[]": "Please select suspected",
 
-
-            e.preventDefault();
+            }
         });
 
 
-        $(".adrdate").datepicker();
+
+        $(".adrdate,#dob,.ddate,.sdate").datepicker({
+            dateFormat:'yy-dd-mm'
+        });
 
         $('.drugs').change(function (e) {
             var row_id = $(this).parent().parent().attr('rowid');
