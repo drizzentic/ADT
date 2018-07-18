@@ -279,7 +279,7 @@ class Dispensement_management extends MY_Controller {
         $data['last_regimens'] = "";
         $data['visits'] = "";
         $data['appointments'] = "";
-
+        $data['uniqueid']=$newid;
         $data['user_full_name'] = $this->session->userdata('full_name');
         $data['user_email'] = $this->session->userdata('Email_Address');
         $data['user_phone'] = $this->session->userdata('Phone_Number');

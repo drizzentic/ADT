@@ -496,7 +496,8 @@ INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->resul
     }
 
     public function pqmp($record_no = null, $action = null) {
-
+ $id = $this->db->select_max('id')->get('pqms')->result();
+        $newid =(int) $id[0]->id + 1;
 
         if ($this->input->post("facility_name")) {
             $pqmp_data = array(
@@ -594,6 +595,8 @@ INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->resul
 
     // pqmp view list, view one, edit one
     public function new_pqmp($record_no = NULL) {
+        $id = $this->db->select_max('id')->get('pqms')->result();
+        $newid =(int) $id[0]->id + 1;
         if ($this->input->post("facility_name")) {
             $pqmp_data = array(
                 'facility_name' => $this->input->post('facility_name'),
@@ -670,6 +673,7 @@ INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->resul
         $dispensing_date = "";
         $data['last_regimens'] = "";
         $data['visits'] = "";
+        $data['uniqueid'] = $newid;
         $data['appointments'] = "";
         $dispensing_date = date('Y-m-d');
 
@@ -692,6 +696,7 @@ INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->resul
 
     function save_pqm_for_synch() {
         error_reporting(E_ALL);
+        
         $pmpq = array(
             'user_id' => $this->session->userdata("user_id"),
             'county_id' => $this->input->post('county_id'),

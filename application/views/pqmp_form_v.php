@@ -29,8 +29,10 @@
                 <h3 style="color:#3b8476;">FORM FOR REPORTING POOR QUALITY MEDICINAL PRODUCTS</h3>
             </div>
         </div>
+        
     </div>
     <form name="pqmp-form" id="PQMS" method="POST"   action="<?= base_url(); ?>inventory_management/save_pqm_for_synch">
+        <center>UNIQUE ID: <input type="text" name="uniqueid" id="uniqueid" readonly class="form-control" value="<?= $uniqueid; ?>"></center>
         <table border="1" style="">
             <tr>
                 <td colspan="2">Name of Facility : <input type="text" name="facility_name" id="facility_name" class="form-control" value="<?= $facility_name; ?>"> </td>

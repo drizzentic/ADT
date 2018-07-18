@@ -38,7 +38,10 @@
                 <label><span class='astericks'>*</span>REPORT TITLE </label>
                 <input type="text" name="report_title" id="report_title" value="<?= str_replace('%20', ' ',$this->uri->segment(4));?>">
             </div>
-
+              <div class="mid-row">
+                <label ><span class='astericks'>*</span>UNIQUE ID:</label>
+                <input  type="text" name="uniqueid"  value="<?= $uniqueid; ?>" readonly class="">
+            </div>
 
         </div>
         <div class="max-row">
