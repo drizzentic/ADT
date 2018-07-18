@@ -15,7 +15,7 @@
         max-width: 150px !important;
     }
 </style>
-<div class="container" style="background-color: #fde8e7;border: solid thick #0000ff;padding: 30px; margin-top: 130px; margin-bottom: 130px;">
+<div class="container" style="background-color: #fde8e7;border: solid thick #2b597e;padding: 30px; margin-top: 130px; margin-bottom: 130px; border-radius: 20px;">
     <a href="<?= base_url(); ?>inventory_management/pqmp" class="btn btn-default" > Back </a>
     <div class="container">
         <div class="row">
@@ -29,13 +29,15 @@
                 <h3 style="color:#3b8476;">FORM FOR REPORTING POOR QUALITY MEDICINAL PRODUCTS</h3>
             </div>
         </div>
+        
     </div>
-    <form name="pqmp-form" id="PQMS" method="POST" action="<?= base_url(); ?>inventory_management/save_pqm_for_synch">
+    <form name="pqmp-form" id="PQMS" method="POST"   action="<?= base_url(); ?>inventory_management/save_pqm_for_synch">
+        <center>UNIQUE ID: <input type="text" name="uniqueid" id="uniqueid" readonly class="form-control" value="<?= $uniqueid; ?>"></center>
         <table border="1" style="">
             <tr>
                 <td colspan="2">Name of Facility : <input type="text" name="facility_name" id="facility_name" class="form-control" value="<?= $facility_name; ?>"> </td>
                 <td colspan="3">County: <!--input type="text" name="district_name" id="district_name" class="form-control"-->
-                    <select name="county_id" class="" id="PqmpCountyId">
+                    <select name="county_id" id="county_id" class="fil" id="PqmpCountyId">
                         <option value=""></option>
                         <option value="1">Mombasa</option>
                         <option value="2">Kwale</option>
@@ -57,7 +59,7 @@
                         <option value="18">Nyandarua</option>
                         <option value="19">Nyeri</option>
                         <option value="20">Kirinyaga</option>
-                        <option value="21">Murang&#039;a</option>
+                        <option value="21">Murang'a</option>
                         <option value="22">Kiambu</option>
                         <option value="23">Turkana</option>
                         <option value="24">West Pokot</option>
@@ -75,7 +77,7 @@
                         <option value="36">Bomet</option>
                         <option value="37">Kakamega</option>
                         <option value="38">Vihiga</option>
-                        <option value="39">Bung&#039;oma</option>
+                        <option value="39">Bung'oma</option>
                         <option value="40">Busia</option>
                         <option value="41">Siaya</option>
                         <option value="42">Kisumu</option>
@@ -87,8 +89,9 @@
                     </select>
                 </td>
                 <td colspan="3">Sub County: <!--input type="text" name="province_name" id="province_name" class="form-control"-->
-                    <select name="sub_county_id" class="" id="PqmpSubCountyId">
+                    <select name="sub_county_id" id="sub_county_id" class="fil" id="PqmpSubCountyId">
                         <option value=""></option>
+                        <option value="273" selected="selected">WESTLANDS</option>
                         <option value="143">AINABKOI</option>
                         <option value="189">AINAMOI</option>
                         <option value="151">ALDAI</option>
@@ -121,7 +124,7 @@
                         <option value="194">CHEPALUNGU</option>
                         <option value="139">CHERANGANY</option>
                         <option value="153">CHESUMEI</option>
-                        <option value="290">CHUKA/IGAMBANG&#039;OMBE</option>
+                        <option value="290">CHUKA/IGAMBANG'OMBE</option>
                         <option value="30">DADAAB</option>
                         <option value="274">DAGORETTI NORTH</option>
                         <option value="275">DAGORETTI SOUTH</option>
@@ -233,7 +236,7 @@
                         <option value="48">LAISAMIS</option>
                         <option value="21">LAMU EAST</option>
                         <option value="22">LAMU WEST</option>
-                        <option value="276" selected="selected">LANGATA</option>
+                        <option value="276" >LANGATA</option>
                         <option value="121">LARI</option>
                         <option value="5">LIKONI</option>
                         <option value="199">LIKUYANI</option>
@@ -376,7 +379,7 @@
                         <option value="220">WEBUYE EAST</option>
                         <option value="221">WEBUYE WEST</option>
                         <option value="270">WEST MUGIRANGO</option>
-                        <option value="273">WESTLANDS</option>
+
                         <option value="24">WUNDANYI</option>
                         <option value="75">YATTA</option>
                     </select>
@@ -384,9 +387,9 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="2">Facility Address: <input type="text" name="facility_address" id="facility_address" class="form-control" value="325 Nairobi"></td>
+                <td colspan="2">Facility Address: <input type="text" name="facility_address" id="facility_address" class="form-control" value="<?= $facility_address; ?>"></td>
                 <td colspan="3">Facility Telephone: <input type="text" name="facility_phone" id="facility_phone" class="form-control" value="<?= $facility_phone; ?>"></td>
-                <td colspan="3">Facility Code: <input type="text" name="facility_code" id="facility_phone" class="form-control" value="3258"></td>
+                <td colspan="3">Facility Code: <input type="text" name="facility_code" id="facility_code" class="form-control" value="<?= $facility_code; ?>"></td>
             </tr>
             <tr>
                 <td colspan="8" align="center" style="background-color: lightblue;"><h3>PRODUCT IDENTITY</h3></td>
@@ -395,7 +398,16 @@
                 <td>Brand Name</td>
                 <td colspan="3"><input type="text" name="brand_name" id="brand_name" class="form-control"> </td>
                 <td>Generic Name</td>
-                <td colspan="3"><input type="text" name="generic_name" id="generic_name" class="form-control"> </td>
+
+                <td colspan="3">
+                    <input type="hidden" name="generic_name" id="GenName"/>
+                    <select name="" class="fil" id="genname" id="genname">
+                        <option value="">-Select Name-</option>
+                        <?php foreach ($drug_data as $d) { ?>
+                            <option value="<?php echo $d->id; ?>"><?php echo $d->drug; ?></option>
+                        <?php } ?>
+                    </select> 
+                </td>
             </tr>
             <tr>
                 <td>Batch/Lot Number</td>
@@ -413,7 +425,7 @@
                 <td>Country of Origin</td>
                 <td colspan="3"><!--input type="text" name="origin_county" id="origin_county" class="form-control"-->
 
-                    <select name="country_id" class="" id="PqmpCountryId">
+                    <select name="country_id" id="country_id" class="fil" id="PqmpCountryId">
                         <option value=""></option>
                         <option value="1">Andorra</option>
                         <option value="2">United Arab Emirates</option>
@@ -678,7 +690,7 @@
             </tr>
             <tr>
                 <td colspan="4" align="">
-                    
+                    <div>
                         <input name="product_formulation"  value="Oral tablets / capsules" type="radio">Oral tablets / capsules<br>
                         <input name="product_formulation"  value="Oral suspension / syrup" type="radio">Oral suspension / syrup<br>
                         <input name="product_formulation"  value="Injection" type="radio">Injection<br>
@@ -691,22 +703,24 @@
                         <input name="product_formulation"  value="Cream / Ointment / Liniment / Paste" type="radio">Cream / Ointment / Liniment / Paste<br>
                         <input name="product_formulation"  value="Cream / Ointment / Liniment / Paste" type="radio">Other<br>
                         <input type="text" name="formulation_other" id="formulation_other">
+                    </div>
 
-                        </td>
-                        <td colspan="4" align="">
-                            <input type="checkbox" name="colour_change" value="1"   id="PqmpColourChange"/>Colour change <br>
-                           <input type="checkbox" name="separating" value="1"   id="PqmpSeparating"/>Separating	<br>
-                           <input type="checkbox" name="powdering1" value="1"    id="PqmpPowdering"/>Powdering / crumbling <br>
-                           <input type="checkbox" name="caking" value="1"   id="PqmpCaking"/>Caking<br>
-                           <input type="checkbox" name="moulding"   value="1"  id="PqmpMoulding"/>Moulding <br>
-                           <input type="checkbox" name="odour_change" value="1"   id="PqmpOdourChange"/>Change of odour<br>
-                           <input type="checkbox" name="mislabeling"  value="1"   id="PqmpMislabeling"/>Mislabeling <br>
-                           <input type="checkbox" name="incomplete_pack" value="1"    id="PqmpIncompletePack"/>Incomplete pack<br>
-                           <input type="checkbox" name="complaint_other"  value="1"   id="PqmpComplaintOther"/>Other<br>
-                            <input type="text" name="complaint_other_specify" value="1"  id="complaint_other">
+                </td>
+                <td colspan="4" align="">
+                    <input type="text" name="spam" id="spam" style="background: #fde8e7; border-color: #fde8e7; width: 1px; height: 1px;"/><br>
+                    <input type="checkbox" class="checkbox" name="colour_change" value="1"   id="PqmpComplaint" data-parsley-mincheck="2"/>Colour change <br>
+                    <input type="checkbox"  class="checkbox"  name="separating" value="1"   id="PqmpComplaint"/>Separating	<br>
+                    <input type="checkbox"  class="checkbox" name="powdering" value="1"    id="PqmpComplaint"/>Powdering / crumbling <br>
+                    <input type="checkbox"  class="checkbox" name="caking" value="1"   id="PqmpComplaint"/>Caking<br>
+                    <input type="checkbox"  class="checkbox" name="moulding"   value="1"  id="PqmpComplaint"/>Moulding <br>
+                    <input type="checkbox"  class="checkbox" name="odour_change" value="1"   id="PqmpComplaint"/>Change of odour<br>
+                    <input type="checkbox"  class="checkbox" name="mislabeling"  value="1"   id="PqmpComplaint"/>Mislabeling <br>
+                    <input type="checkbox"  class="checkbox" name="incomplete_pack" value="1"    id="PqmpComplaint"/>Incomplete pack<br>
+                    <input type="checkbox"  class="checkbox" name="complaint_other"  value="1"   id="PqmpComplaint"/>Other<br>
+                    <input type="text" name="complaint_other_specify" value=""  id="complaint_other">
 
 
-                        </td>
+                </td>
             </tr>
             <tr>
                 <td colspan="8">Describe in detail
@@ -747,7 +761,7 @@
             <tr>
                 <td colspan="4">Cadre Job Title : <!--input type="text" name="reporter_title" id="reporter_title" class="form-control"--> 
 
-                    <select name="designation_id" class="" id="PqmpDesignationId">
+                    <select name="designation_id" class="fil" id="designation_id">
                         <option value="1">physician</option>
                         <option value="2">pharmacist</option>
                         <option value="3" selected="selected">other professional</option>
@@ -777,7 +791,7 @@
 
         </table>
         <div class="mid-row">
-            <input type="submit" id="SUBMITDATA"  value="Submit">
+            <input type="submit" class="btn btn-primary btn-sm" id="SUBMITDATA"  value="Submit">
             <button>cancel</button>
         </div>
     </form>
@@ -785,9 +799,96 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-     
-        $("#manufacture_date,#expiry_date,#receipt_date").datepicker();
 
+$("#manufacture_date,#expiry_date,#receipt_date").datepicker();
+
+        $('.fil').select2();
+        $('#genname').change(function () {
+            var val = $(this).val();
+            $('#GenName').val($('#genname option:selected').text());
+            $.getJSON("<?= base_url(); ?>inventory_management/getDrugData/" + val, function (resp) {
+                $('#batch_no').val(resp[0].batch_number);
+                $('#expiry_date').val(resp[0].expiry_date);
+                $('#receipt_date').val(resp[0].transaction_date);
+            });
+        });
+        $("#PQMS").validate({
+            rules: {
+                facility_name: "required",
+                county_id: "required",
+                sub_county_id: "required",
+                facility_address: "required",
+                facility_phone: "required",
+                facility_code: "required",
+                brand_name: "required",
+                genname: "required",
+                batch_no: "required",
+                manufacture_date: "required",
+                expiry_date: "required",
+                receipt_date: "required",
+                manufacturer_name: "required",
+                country_id: "required",
+                supplier_name: "required",
+                supplier_address: "required",
+                product_formulation: {required: true, minlength: 1},
+                spam: "required",
+                description: "required",
+                product_refrigiration: "required",
+                product_availability: "required",
+                product_returned: "required",
+                product_storage: "required",
+                reporter_name: "required",
+                reporter_phone: "required",
+                reporter_signature: "required"
+
+            },
+            messages: {
+                facility_name: "Please enter facility name",
+                county_id: "Please select county",
+                sub_county_id: "Please select sub county",
+                facility_address: "Please enter facility address",
+                facility_phone: "Please enter facility phone",
+                facility_code: "Please enter facility code",
+                brand_name: "Please enter  brand name",
+                genname: "Please enter  generic name",
+                batch_no: "Please enter  batch no",
+                manufacture_date: "Please enter mfg date",
+                expiry_date: "Please enter expiry date",
+                receipt_date: "Please enter receipt date",
+                country_id: "Please select country",
+                manufacturer_name: "Please enter Manufacturer",
+                supplier_name: "Please enter supplier name",
+                supplier_address: "Please enter supplier address",
+                product_formulation: "Please select atleast 1",
+                PqmpComplaint: "Please select atleast 1",
+                spam: "Please select atleast 1",
+                description: "Please enter description",
+                product_refrigiration: "Please select one",
+                product_availability: "Please select one",
+                product_returned: "Please select one",
+                product_storage: "Please select one",
+                reporter_name: "Please enter name",
+                reporter_phone: "Please enter phone",
+                reporter_signature: "Please signature",
+            }
+        });
+        $('#spam').val("");
+        $('.checkbox').click(function () {
+            if ($('.checkbox:checked').length < 1) {
+                $('#spam').val("");
+            } else {
+                $('#spam').val("1");
+            }
+
+        });
+
+        $.validator.setDefaults({
+            submitHandler: function () {
+                alert("submitted!");
+            }
+        });
     });
+
+
 
 </script>

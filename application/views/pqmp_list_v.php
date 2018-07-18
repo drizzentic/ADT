@@ -61,7 +61,7 @@ function ellipsis($string, $max_length) {
                 <input type="checkbox" checked="checked" name="pmpqid" style="display:none;" value="1010101010101010"/>
             </th>
 
-            <th>Reporter Name</th>
+            <th>Action</th>
             <th>Brand Name</th>
             <th>Generic Name</th>
             <th>Batch No</th>
@@ -81,7 +81,7 @@ function ellipsis($string, $max_length) {
                             <?php }
                             ?>
                         </td>
-                        <td><a href="<?= base_url(); ?>inventory_management/pqmp/<?= $pqmp['id']; ?> "> <?= ellipsis($pqmp['reporter_name'], 10); ?> </a></td>
+                        <td><a href="<?= base_url(); ?>inventory_management/loadRecord/<?= $pqmp['id']; ?> "> View</a></td>
                         <td> <?= ellipsis($pqmp['brand_name'], 20); ?></td>
                         <td> <?= ellipsis($pqmp['generic_name'], 20); ?></td>
                         <td> <?= ellipsis($pqmp['batch_number'], 20); ?></td>

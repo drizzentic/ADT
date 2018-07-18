@@ -80,11 +80,13 @@ if ($access_level == "system_administrator") {
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title><?php echo $title; ?></title>
 
+
         <?php
         $this->load->view('sections/head');
         if ($user_is_pharmacist || $user_is_facility_administrator || $user_is_administrator) {
             //echo "<script src=\"" . base_url() . "Scripts/offline_database.js\" type=\"text/javascript\"></script>";
         }
+        
         /**
          * Load View with Head Section
          */
@@ -108,7 +110,7 @@ if ($access_level == "system_administrator") {
             }
         }
         ?> 
-  
+        <script type="text/javascript" src="<?= base_url();?>assets/scripts/parsely.js"></script>
         <script>
   
             $(document).ready(function () {

@@ -398,7 +398,7 @@
 
     <script type="text/javascript">
         $(document).ready(function(){
-
+          val='';
             <?php  if(count($prescription)>0 && $api){?>
                 $('#current_regimen').val($("#current_regimen option:contains($prescription[0]['drug_name'])").val());
                 <?php } ?>
@@ -868,6 +868,9 @@
     //Add listener to check purpose
     $("#purpose").change(function() {
         //Ensure dispensing point is selected
+      val = $('#purpose option:selected').text();
+       
+       
         if($("#ccc_store_id").val() == ""){
             bootbox.alert("<h4>Dispensing point</h4>\n\<hr/>\n\<center>Please select a dispensing point first! </center>" );
             $("#ccc_store_id").css('border','solid 3px red');
@@ -987,7 +990,28 @@
                 $("#regimen_change_reason").addClass("validate[required]");
 
                 var adr = $("#regimen_change_reason option:selected").text().toLowerCase();
-        
+
+            // show ADR POPUP
+            bootbox.confirm({
+                message: "<h4>ADR?</h4>\n\<hr/><center>Did patient experience adverse drug reaction(s)?</center>",
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function(res){
+                    if(res){
+                      
+                        window.open("<?= base_url()."dispensement_management/adr/".$patient_id ?>/"+val);
+ }
+                }
+            });
+
         }
 
         else {

@@ -449,89 +449,127 @@ class Inventory_management extends MY_Controller {
         }
     }
 
+    function loadRecord($id, $action = '') {
+        $data = [];
+        if ($action == 'export') {
+            $this->export_pqmp($id);
+        }
+
+        if ($action == 'delete') {
+            $this->db->query('delete from pqmp where id = ' . $id);
+            // redirect('inventory_management/pqmp');
+            die;
+        }
+        $data['content_view'] = 'pqmp_v';
+        $data['record_no'] = $id;
+        $data['patient_id'] = $id;
+        $data['hide_side_menu'] = 0;
+        $data['pqmp_data'] = $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation , cou.name country
+FROM pqms p 
+INNER JOIN counties co ON p.county_id = co.id 
+INNER JOIN countries cou ON cou.id = p.country_of_origin
+INNER JOIN sub_counties su ON p.sub_county_id = su.id 
+INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
+        $this->base_params($data);
+    }
+
+    function loadAdrRecord($id, $action = '') {
+        $data = [];
+        if ($action == 'export') {
+            $this->export_adr($id);
+        }
+
+        if ($action == 'delete') {
+            $this->db->query('delete from adr_form where id = ' . $id);
+            $this->db->query('delete from adr_form_details where adr_id = ' . $id);
+            // redirect('inventory_management/pqmp');
+            die;
+        }
+        $data['content_view'] = 'adr_v';
+        $data['record_no'] = $id;
+        $data['patient_id'] = $id;
+        $data['hide_side_menu'] = 0;
+        $data['diagnosis'] = $this->db->get('drug_classification')->result();
+        $data['adr_data'] = $this->db->query("SELECT p.*,co.county_name county_name,su.sub_county_name sub_county_name,de.name designation_d FROM adr_form p LEFT JOIN counties co ON p.county = co.id LEFT JOIN sub_counties su ON p.sub_county = su.id LEFT JOIN designations de ON p.designation = de.id WHERE p.id='$id'")->result_array();
+        $data['adr_details'] = $this->db->query("SELECT afd.id,afd.dose_id, afd.route_freq, afd.adr_id,afd.visitid,afd.dose,afd.route,d.value dose_unit, r.name route_name, f.name freq_name, afd.drug, afd.brand,afd.date_started,afd.date_stopped,afd.indication, afd.suspecteddrug FROM adr_form_details afd LEFT JOIN doses d ON d.id = afd.dose_id LEFT JOIN frequencies f ON f.id = afd.route_freq LEFT JOIN routes r ON r.id = afd.route WHERE afd.adr_id='$id'")->result_array();
+        $this->base_params($data);
+    }
+
     public function pqmp($record_no = null, $action = null) {
-        $record_no = $this->uri->segment(3);
+ $id = $this->db->select_max('id')->get('pqms')->result();
+        $newid =(int) $id[0]->id + 1;
 
         if ($this->input->post("facility_name")) {
             $pqmp_data = array(
+                'county_id' => $this->input->post('county_id'),
+                'sub_county_id' => $this->input->post('sub_county_id'),
+                'country_id' => $this->input->post('country_id'),
+                'designation_id' => $this->input->post('designation_id'),
                 'facility_name' => $this->input->post('facility_name'),
-                'district_name' => $this->input->post('district_name'),
-                'province_name' => $this->input->post('province_name'),
+                'facility_code' => $this->input->post('facility_code'),
                 'facility_address' => $this->input->post('facility_address'),
                 'facility_phone' => $this->input->post('facility_phone'),
                 'brand_name' => $this->input->post('brand_name'),
                 'generic_name' => $this->input->post('generic_name'),
-                'batch_no' => $this->input->post('batch_no'),
+                'batch_number' => $this->input->post('batch_no'),
                 'manufacture_date' => date('Y-m-d', strtotime($this->input->post('manufacture_date'))),
                 'expiry_date' => date('Y-m-d', strtotime($this->input->post('expiry_date'))),
                 'receipt_date' => date('Y-m-d', strtotime($this->input->post('receipt_date'))),
-                'manufacturer_name' => $this->input->post('manufacturer_name'),
-                'origin_county' => $this->input->post('origin_county'),
+                'name_of_manufacturer' => $this->input->post('manufacturer_name'),
+                'country_of_origin' => $this->input->post('country_id'),
                 'supplier_name' => $this->input->post('supplier_name'),
                 'supplier_address' => $this->input->post('supplier_address'),
-                'formulation_oral' => $this->input->post('formulation_oral'),
-                'formulation_injection' => $this->input->post('formulation_injection'),
-                'formulation_diluent' => $this->input->post('formulation_diluent'),
-                'formulation_powdersuspension' => $this->input->post('formulation_powdersuspension'),
-                'formulation_powderinjection' => $this->input->post('formulation_powderinjection'),
-                'formulation_eyedrops' => $this->input->post('formulation_eyedrops'),
-                'formulation_eardrops' => $this->input->post('formulation_eardrops'),
-                'formulation_nebuliser' => $this->input->post('formulation_nebuliser'),
-                'formulation_cream' => $this->input->post('formulation_cream'),
-                'other_formulation' => $this->input->post('other_formulation'),
-                'formulation_other' => $this->input->post('formulation_other'),
-                'complaint_colour' => $this->input->post('complaint_colour'),
-                'complaint_separating' => $this->input->post('complaint_separating'),
-                'complaint_powdering' => $this->input->post('complaint_powdering'),
-                'complaint_caking' => $this->input->post('complaint_caking'),
-                'complaint_moulding' => $this->input->post('complaint_moulding'),
-                'complaint_change' => $this->input->post('complaint_change'),
-                'complaint_mislabeilng' => $this->input->post('complaint_mislabeilng'),
-                'complaint_incomplete' => $this->input->post('complaint_incomplete'),
-                'other_complaint' => $this->input->post('other_complaint'),
+                'product_formulation' => $this->input->post('product_formulation'),
+                'product_formulation_specify' => $this->input->post('formulation_other'),
+                'colour_change' => $this->input->post('colour_change'),
+                'separating' => $this->input->post('separating'),
+                'powdering' => $this->input->post('powdering'),
+                'caking' => $this->input->post('caking'),
+                'moulding' => $this->input->post('moulding'),
+                'odour_change' => $this->input->post('odour_change'),
+                'mislabeling' => $this->input->post('mislabeling'),
+                'incomplete_pack' => $this->input->post('incomplete_pack'),
                 'complaint_other' => $this->input->post('complaint_other'),
-                'description' => $this->input->post('description'),
+                'complaint_other_specify' => $this->input->post('complaint_other_specify'),
+                'complaint_description' => $this->input->post('description'),
+                'require_refrigeration' => $this->input->post('product_refrigiration'),
+                'product_at_facility' => $this->input->post('product_availability'),
+                'returned_by_client' => $this->input->post('product_returned'),
+                'stored_to_recommendations' => $this->input->post('product_storage'),
+                'other_details' => $this->input->post(''),
                 'comments' => $this->input->post('comments'),
-                'product_refrigiration' => $this->input->post('product_refrigiration'),
-                'product_availability' => $this->input->post('product_availability'),
-                'product_returned' => $this->input->post('product_returned'),
-                'product_returned' => $this->input->post('product_returned'),
-                'product_storage' => $this->input->post('product_storage'),
-                'product_storage' => $this->input->post('product_storage'),
                 'reporter_name' => $this->input->post('reporter_name'),
-                'reporter_phone' => $this->input->post('reporter_phone'),
-                'reporter_title' => $this->input->post('reporter_title'),
-                'reporter_signature' => $this->input->post('reporter_signature')
+                'reporter_email' => $this->input->post(''),
+                'contact_number' => $this->input->post('reporter_phone'),
             );
             $this->db->where('id', $record_no);
-            $this->db->update('pqmp', $pqmp_data);
+            $this->db->update('pqms', $pqmp_data);
             $this->session->set_flashdata('pqmp_saved', 'Pharmacovigilance form was saved successfully!');
 
-            redirect("inventory_management/pqmp/" . $record_no);
-            die;
+            redirect("inventory_management/loadRecord/" . $record_no);
         }
 
         $data = array();
         $content_view = 'pqmp_list_v';
         if ($record_no + 0 > 0) {
-            $this->db->where('id', $record_no);
+            $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation FROM pqms p INNER JOIN counties co ON p.county_id = co.id INNER JOIN sub_counties su ON p.sub_county_id = su.id INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$record_no' ");
             $content_view = 'pqmp_v';
             $data['hide_side_menu'] = 0;
         }
 
-        $pqmp_data = $this->db->get('pqmp');
+
+        $pqmp_data = $this->db->order_by('id', 'desc')->get('pqms');
+
 
         $data['pqmp_data'] = $pqmp_data->result_array();
 
         if ($action == 'export') {
-            $this->export_adr($data['pqmp_data'], 'pqmp');
-            die;
+            $this->export_pqmp($record_no);
         }
 
         if ($action == 'delete') {
-            $this->db->query('delete from pqmp where id = ' . $record_no);
+            $this->db->query('delete from pqms where id = ' . $record_no);
             redirect('inventory_management/pqmp');
-            die;
         }
 
         $data['facility_code'] = $this->session->userdata('facility');
@@ -557,6 +595,8 @@ class Inventory_management extends MY_Controller {
 
     // pqmp view list, view one, edit one
     public function new_pqmp($record_no = NULL) {
+        $id = $this->db->select_max('id')->get('pqms')->result();
+        $newid =(int) $id[0]->id + 1;
         if ($this->input->post("facility_name")) {
             $pqmp_data = array(
                 'facility_name' => $this->input->post('facility_name'),
@@ -619,8 +659,10 @@ class Inventory_management extends MY_Controller {
 
         $data = array();
         $data['facility_code'] = $this->session->userdata('facility');
+        $data['facility_address'] = $this->session->userdata('email');
         $data['facility_name'] = $this->session->userdata('facility_name');
         $data['facility_phone'] = $this->session->userdata('facility_phone');
+        $data['drug_data'] = $this->getGenericName();
 
 
         $data['user_full_name'] = $this->session->userdata('full_name');
@@ -631,6 +673,7 @@ class Inventory_management extends MY_Controller {
         $dispensing_date = "";
         $data['last_regimens'] = "";
         $data['visits'] = "";
+        $data['uniqueid'] = $newid;
         $data['appointments'] = "";
         $dispensing_date = date('Y-m-d');
 
@@ -645,69 +688,74 @@ class Inventory_management extends MY_Controller {
         $this->base_params($data);
     }
 
+    function getGenericName() {
+        return $this->db->get('drugcode')->result();
+    }
+
     /* -----------------SAVE NEW PQM TO SYNCH WITH DATABASE PPB*------------------- */
 
     function save_pqm_for_synch() {
         error_reporting(E_ALL);
+        
         $pmpq = array(
-          'user_id' => $this -> session -> userdata("user_id"),
-          'county_id' => $this->input->post('county_id'),
-          'sub_county_id' => $this->input->post('sub_county_id'),
-          'country_id' => $this->input->post('country_id'),
-          'designation_id' => $this->input->post('designation_id'),
-          'facility_name' => $this->input->post('facility_name'),
-          'facility_code' => $this->input->post('facility_code'),
-          'facility_address' => $this->input->post('facility_address'),
-          'facility_phone' => $this->input->post('facility_phone'),
-          'brand_name' => $this->input->post('brand_name'),
-          'generic_name' => $this->input->post('generic_name'),
-          'batch_number' => $this->input->post('batch_no'),
-          'manufacture_date' => date('Y-m-d', strtotime($this->input->post('manufacture_date'))),
-          'expiry_date' => date('Y-m-d', strtotime($this->input->post('expiry_date'))),
-          'receipt_date' => date('Y-m-d', strtotime($this->input->post('receipt_date'))),
-          'name_of_manufacturer' => $this->input->post('manufacturer_name'),
-          'country_of_origin' => $this->input->post('country_id'),
-          'supplier_name' => $this->input->post('supplier_name'),
-          'supplier_address' => $this->input->post('supplier_address'),
-          'product_formulation' => $this->input->post('product_formulation'),
-          'product_formulation_specify' => $this->input->post('formulation_other'),
-          'colour_change' => $this->input->post('colour_change'),
-          'separating' => $this->input->post('separating'),
-          'powdering' => $this->input->post('powdering'),
-          'caking' => $this->input->post('caking'),
-          'moulding' => $this->input->post('moulding'),
-          'odour_change' => $this->input->post('odour_change'),
-          'mislabeling' => $this->input->post('mislabeling'),
-          'incomplete_pack' => $this->input->post('incomplete_pack'),
-          'complaint_other' => $this->input->post('complaint_other'),
-          'complaint_other_specify' => $this->input->post('complaint_other_specify'),
-          'complaint_description' => $this->input->post('description'),
-          'require_refrigeration' => $this->input->post('product_refrigiration'),
-          'product_at_facility' => $this->input->post('product_availability'),
-          'returned_by_client' => $this->input->post('product_returned'),
-          'stored_to_recommendations' => $this->input->post('product_storage'),
-          'other_details' => $this->input->post(''),
-          'comments' => $this->input->post('comments'),
-          'reporter_name' => $this->input->post('reporter_name'),
-          'reporter_email' => $this->input->post(''),
-          'contact_number' => $this->input->post('reporter_phone'),
-          'emails' => $this->input->post(''),
-          'submitted' => 1,
-          'active' => 1,
-          'device' =>1,
-          'notified' => 1,
-          'created' => date('Y-m-d'),
-          'modified' => date('Y-m-d')
+            'user_id' => $this->session->userdata("user_id"),
+            'county_id' => $this->input->post('county_id'),
+            'sub_county_id' => $this->input->post('sub_county_id'),
+            'country_id' => $this->input->post('country_id'),
+            'designation_id' => $this->input->post('designation_id'),
+            'facility_name' => $this->input->post('facility_name'),
+            'facility_code' => $this->input->post('facility_code'),
+            'facility_address' => $this->input->post('facility_address'),
+            'facility_phone' => $this->input->post('facility_phone'),
+            'brand_name' => $this->input->post('brand_name'),
+            'generic_name' => $this->input->post('generic_name'),
+            'batch_number' => $this->input->post('batch_no'),
+            'manufacture_date' => date('Y-m-d', strtotime($this->input->post('manufacture_date'))),
+            'expiry_date' => date('Y-m-d', strtotime($this->input->post('expiry_date'))),
+            'receipt_date' => date('Y-m-d', strtotime($this->input->post('receipt_date'))),
+            'name_of_manufacturer' => $this->input->post('manufacturer_name'),
+            'country_of_origin' => $this->input->post('country_id'),
+            'supplier_name' => $this->input->post('supplier_name'),
+            'supplier_address' => $this->input->post('supplier_address'),
+            'product_formulation' => $this->input->post('product_formulation'),
+            'product_formulation_specify' => $this->input->post('formulation_other'),
+            'colour_change' => $this->input->post('colour_change'),
+            'separating' => $this->input->post('separating'),
+            'powdering' => $this->input->post('powdering'),
+            'caking' => $this->input->post('caking'),
+            'moulding' => $this->input->post('moulding'),
+            'odour_change' => $this->input->post('odour_change'),
+            'mislabeling' => $this->input->post('mislabeling'),
+            'incomplete_pack' => $this->input->post('incomplete_pack'),
+            'complaint_other' => $this->input->post('complaint_other'),
+            'complaint_other_specify' => $this->input->post('complaint_other_specify'),
+            'complaint_description' => $this->input->post('description'),
+            'require_refrigeration' => $this->input->post('product_refrigiration'),
+            'product_at_facility' => $this->input->post('product_availability'),
+            'returned_by_client' => $this->input->post('product_returned'),
+            'stored_to_recommendations' => $this->input->post('product_storage'),
+            'other_details' => $this->input->post(''),
+            'comments' => $this->input->post('comments'),
+            'reporter_name' => $this->input->post('reporter_name'),
+            'reporter_email' => $this->input->post(''),
+            'contact_number' => $this->input->post('reporter_phone'),
+            'emails' => $this->input->post(''),
+            'submitted' => 1,
+            'active' => 1,
+            'device' => 1,
+            'notified' => 1,
+            'created' => date('Y-m-d'),
+            'modified' => date('Y-m-d')
         );
-      
 
-      
+
+
         $this->db->insert('pqms', $pmpq);
-       // $this->output->enable_profiler(TRUE);
-      
-         $this->session->set_flashdata('pqmp_saved', 'Pharmacovigilance SPQMs was saved successfully!');
+        // $this->output->enable_profiler(TRUE);
 
-       redirect("inventory_management/pqmp");
+        $this->session->set_flashdata('pqmp_saved', 'Pharmacovigilance SPQMs was saved successfully!');
+
+        redirect("inventory_management/pqmp");
     }
 
     public function adr($record_no = null, $action = null) {
@@ -717,58 +765,66 @@ class Inventory_management extends MY_Controller {
             // adr_form
 
             $adr = array(
-                'institution_name' => $_POST['institution'],
-                'institution_code' => $_POST['institutioncode'],
-                'address' => $_POST['address'],
-                'contact' => $_POST['contact'],
-                'patient_name' => $_POST['patientname'],
-                'ip_no' => $_POST['ip_no'],
-                'dob' => $_POST['dob'],
-                'patient_address' => $_POST['patientaddress'],
-                'ward_clinic' => $_POST['clinic'],
-                'gender' => $_POST['gender'],
-                'is_alergy' => $_POST['allergy'],
-                'alergy_desc' => $_POST['allergydesc'],
-                'is_pregnant' => $_POST['pregnancystatus'],
-                'weight' => $_POST['patientweight'],
-                'height' => $_POST['patientheight'],
-                'diagnosis' => $_POST['diagnosis'],
-                'reaction_description' => $_POST['reaction'],
-                'severity' => (isset($_POST['severity'])) ? $_POST['severity'] : false,
-                'action_taken' => (isset($_POST['action'])) ? $_POST['action'] : false,
-                'outcome' => (isset($_POST['outcome'])) ? $_POST['outcome'] : false,
-                'reaction_casualty' => (isset($_POST['casuality'])) ? $_POST['casuality'] : false,
-                'other_comment' => $_POST['othercomment'],
-                'reporting_officer' => $_POST['officername'],
-                'reporting_officer' => $_POST['reportingdate'],
-                'email_address' => $_POST['officeremail'],
-                'office_phone' => $_POST['officerphone'],
-                'designation' => $_POST['officerdesignation'],
-                'signature' => $_POST['officersignature']
+                'report_title' => $this->_p('report_title'),
+                'institution_name' => $this->_p('institution'),
+                'institution_code' => $this->_p('institutioncode'),
+                'county' => $this->_p('county_id'),
+                'sub_county' => $this->_p('sub_county_id'),
+                'address' => $this->_p('address'),
+                'contact' => $this->_p('contact'),
+                'patient_name' => $this->_p('patientname'),
+                'ip_no' => $this->_p('ip_no'),
+                'dob' => $this->_p('dob'),
+                'patient_address' => $this->_p('patientaddress'),
+                'ward_clinic' => $this->_p('clinic'),
+                'gender' => $this->_p('gender'),
+                'is_alergy' => $this->_p('allergy'),
+                'alergy_desc' => $this->_p('allergydesc'),
+                'is_pregnant' => $this->_p('pregnancystatus'),
+                'weight' => $this->_p('patientweight'),
+                'height' => $this->_p('patientheight'),
+                'diagnosis' => $this->_p('diagnosis'),
+                'reaction_description' => $this->_p('reaction'),
+                'severity' => $this->_p('severity'),
+                'action_taken' => $this->_p('action'),
+                'outcome' => $this->_p('outcome'),
+                'reaction_casualty' => $this->_p('casuality'),
+                'other_comment' => $this->_p('othercomment'),
+                'reporting_officer' => $this->_p('officername'),
+                'reporting_date' => $this->_p('reportingdate'),
+                'email_address' => $this->_p('officeremail'),
+                'office_phone' => $this->_p('officerphone'),
+                'designation' => $this->_p('officerdesignation'),
+                'signature' => $this->_p('officersignature')
             );
+
 
             $this->db->where('id', $record_no);
             $this->db->update('adr_form', $adr);
-            $adr_id = $record_no;
 
-            if (count($_POST['drug']) > 0) {
-                foreach ($_POST['drug'] as $key => $drug) {
+
+            if (count($_POST['drug_name']) > 0) {
+                foreach ($_POST['drug_name'] as $key => $drug) {
                     $adr_details = array(
-                        'adr_id' => $adr_id,
-                        'drug' => $_POST['drug'][$key],
+                        'id' => $_POST['adr_id'][$key],
+                        'drug' => $_POST['drug_name'][$key],
+                        'brand' => $_POST['brand_name'][$key],
+                        'dose_id' => $_POST['dose_id'][$key],
+                        'route' => $_POST['route_id'][$key],
                         'dose' => $_POST['dose'][$key],
-                        'route_freq' => $_POST['frequency'][$key],
+                        'route_freq' => $_POST['frequency_id'][$key],
                         'date_started' => $_POST['dispensing_date'][$key],
                         'date_stopped' => $_POST['date_stopped'][$key],
                         'indication' => $_POST['indication'][$key],
-                        'suspecteddrug' => (isset($_POST['suspecteddrug'][$key])) ? $_POST['suspecteddrug'][$key] : false,
-                        'visitid' => $_POST['visitid'][$key]
+                        'suspecteddrug' => $this->_p('suspecteddrug')[$key],
                     );
-                    $this->db->where('id', $_POST['adr_detail_id'][$key]);
+
+                    $this->db->where('id', $_POST['adr_id'][$key]);
                     $this->db->update('adr_form_details', $adr_details);
                 }
-                echo "adr form updated successfully";
-                die;
+
+
+                redirect('inventory_management/loadAdrRecord/' . $record_no);
             } else {
                 echo "No drugs selected";
                 // no drugs selected
@@ -815,7 +871,7 @@ class Inventory_management extends MY_Controller {
         $data['visits'] = "";
         $data['appointments'] = "";
         $dispensing_date = date('Y-m-d');
-
+        $data['diagnosis'] = $this->db->get('drug_classification')->result();
         $dated = NULL;
         $service_name = NULL;
 
@@ -826,148 +882,160 @@ class Inventory_management extends MY_Controller {
         $this->base_params($data);
     }
 
-    public function export_adr($adr, $type) {
+    public function export_pqmp($id) {
+
+        $adr = $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation , cou.name country
+                    FROM pqms p 
+                    INNER JOIN counties co ON p.county_id = co.id 
+                    INNER JOIN countries cou ON cou.id = p.country_of_origin
+                    INNER JOIN sub_counties su ON p.sub_county_id = su.id 
+                    INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
+
+
+
+
 
         $this->load->library('PHPExcel');
         $dir = "assets/download";
-        if ($type == "adr") {
-            $template = "ADR_form";
-        } else if ($type == "pqmp") {
-            $template = "PQMP_form";
-        }
 
         $inputFileType = 'Excel5';
-        $inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/templates/moh_forms/' . $template . '.xls';
+        $inputFileName = 'assets/templates/moh_forms/PQMP_form.xls';
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
         $objPHPExcel = $objReader->load($inputFileName);
 
-        /* Delete all files in export folder */
-        if (is_dir($dir)) {
-            $files = scandir($dir);
-            foreach ($files as $object) {
-                if (!in_array($object, array('.', '..', '.gitkeep'))) {
-                    unlink($dir . "/" . $object);
-                }
-            }
-        } else {
-            mkdir($dir);
+
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('D7', $adr[0]['facility_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('J7', $adr[0]['county_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('Q7', $adr[0]['sub_county_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('D8', $adr[0]['facility_address']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('J8', $adr[0]['facility_phone']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('F10', $adr[0]['brand_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('F11', $adr[0]['batch_number']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('F12', $adr[0]['name_of_manufacturer']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('F13', $adr[0]['supplier_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('P10', $adr[0]['generic_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('L11', $adr[0]['manufacture_date']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('P11', $adr[0]['expiry_date']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('T11', $adr[0]['receipt_date']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('P12', $adr[0]['country']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('L13', $adr[0]['supplier_address']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('F15', ($adr[0]['product_formulation'] == 'Oral tablets / capsules') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F16', ($adr[0]['product_formulation'] == 'Oral suspension / syrup') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F17', ($adr[0]['product_formulation'] == 'Injection') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F18', ($adr[0]['product_formulation'] == 'Diluent') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F19', ($adr[0]['product_formulation'] == 'Powder for Reconstitution of Suspension') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F20', ($adr[0]['product_formulation'] == 'Powder for Reconstitution of Injection') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F21', ($adr[0]['product_formulation'] == 'Eye drops') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F22', ($adr[0]['product_formulation'] == 'Ear drops') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F23', ($adr[0]['product_formulation'] == 'Nebuliser solution') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F24', ($adr[0]['product_formulation'] == 'Cream / Ointment / Liniment / Paste') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F24', ($adr[0]['product_formulation'] == 'Cream / Ointment / Liniment / Paste') ? 'Yes' : 'No');
+        // $objPHPExcel -> getActiveSheet() -> SetCellValue('B10', $adr[0]['other_formulation']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('P15', ($adr[0]['colour_change'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P16', ($adr[0]['separating'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P17', ($adr[0]['powdering'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P18', ($adr[0]['caking'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P19', ($adr[0]['moulding'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P20', ($adr[0]['odour_change'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P21', ($adr[0]['mislabeling'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P22', ($adr[0]['incomplete_pack'] == '1') ? 'Yes' : 'No');
+        $objPHPExcel->getActiveSheet()->SetCellValue('P23', ($adr[0]['complaint_other'] == '1') ? 'Yes' : 'No');
+        //$objPHPExcel->getActiveSheet()->SetCellValue('P24', ($adr[0]['complaint_other'] == '1') ? 'Yes' : 'No');
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('D26', $adr[0]['complaint_description']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('I28', ($adr[0]['require_refrigeration'] == 'No') ? 'No' : 'Yes');
+        $objPHPExcel->getActiveSheet()->SetCellValue('I29', ($adr[0]['product_at_facility'] == 'No') ? 'No' : 'Yes');
+        $objPHPExcel->getActiveSheet()->SetCellValue('I30', ($adr[0]['returned_by_client'] == 'No') ? 'No' : 'Yes');
+        $objPHPExcel->getActiveSheet()->SetCellValue('I31', ($adr[0]['stored_to_recommendations'] == 'No') ? 'no' : 'Yes');
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('Z33', $adr[0]['comments']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('D35', $adr[0]['reporter_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('D36', $adr[0]['designation']);
+
+        ob_start();
+
+        $original_filename = strtoupper('pqmp') . "_" . $id . ".xls";
+
+        $filename = $dir . "/" . urldecode($original_filename);
+        $objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
+        $objWriter->save($filename);
+        $objPHPExcel->disconnectWorksheets();
+        unset($objPHPExcel);
+        if (file_exists($filename)) {
+            $filename = str_replace("#", "%23", $filename);
+            redirect($filename);
         }
-        // echo "<pre>";		var_dump($adr);die;
-        //Facility Info
-        $year = date('Y', strtotime($period_start));
-        $facility = Facilities::getCodeFacility($this->session->userdata("facility"));
+    }
 
-        if ($type == "adr") {
-            // $month = date('F', strtotime($period_start));
-            $objPHPExcel->getActiveSheet()->SetCellValue('B10', $adr[0]['institution_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('I10', $adr[0]['institution_code']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('B12', $adr[0]['address']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('I12', $adr[0]['contact']);
+    public function export_adr($id) {
 
-            $objPHPExcel->getActiveSheet()->SetCellValue('B15', $adr[0]['patient_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('I15', $adr[0]['ip_no']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('O15', $adr[0]['dob']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('B17', $adr[0]['patient_address']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('I17', $adr[0]['ward_clinic']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('P16', $adr[0]['gender']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('E18', $adr[0]['is_alergy']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('B22', $adr[0]['alergy_desc']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('L18', $adr[0]['is_pregnant']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('O19', $adr[0]['weight']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('O21', $adr[0]['height']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('B24', $adr[0]['diagnosis']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('B28', $adr[0]['reaction_description']);
+        $adr = $this->db->query("SELECT p.*,co.county_name county_name,su.sub_county_name sub_county_name,de.name designation_d FROM adr_form p LEFT JOIN counties co ON p.county = co.id LEFT JOIN sub_counties su ON p.sub_county = su.id LEFT JOIN designations de ON p.designation = de.id WHERE p.id='$id'")->result_array();
+        $adr_details = $this->db->query("SELECT afd.id,afd.dose_id, afd.route_freq, afd.adr_id,afd.visitid,afd.dose,afd.route,d.value dose_unit, r.name route_name, f.name freq_name, afd.drug, afd.brand,afd.date_started,afd.date_stopped,afd.indication, afd.suspecteddrug FROM adr_form_details afd LEFT JOIN doses d ON d.id = afd.dose_id LEFT JOIN frequencies f ON f.id = afd.route_freq LEFT JOIN routes r ON r.id = afd.route WHERE afd.adr_id='$id'")->result_array();
 
-            $objPHPExcel->getActiveSheet()->SetCellValue('M39', $adr[0]['action_taken']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('G39', $adr[0]['severity']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('G45', $adr[0]['outcome']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('O45', $adr[0]['casuality']);
+        $this->load->library('PHPExcel');
+        $dir = "assets/download";
+        $inputFileType = 'Excel5';
+        $inputFileName = 'assets/templates/moh_forms/ADR_form.xls';
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objPHPExcel = $objReader->load($inputFileName);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('B10', $adr[0]['institution_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('I10', $adr[0]['institution_code']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B12', $adr[0]['address']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('I12', $adr[0]['contact']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('B15', $adr[0]['patient_name']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('I15', $adr[0]['ip_no']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('O15', $adr[0]['dob']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B17', $adr[0]['patient_address']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('I17', $adr[0]['ward_clinic']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('P16', $adr[0]['gender']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('E18', $adr[0]['is_alergy']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B22', $adr[0]['alergy_desc']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('L18', $adr[0]['is_pregnant']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('O19', $adr[0]['weight']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('O21', $adr[0]['height']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B24', $adr[0]['diagnosis']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B28', $adr[0]['reaction_description']);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('M39', $adr[0]['action_taken']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('G39', $adr[0]['severity']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('G45', $adr[0]['outcome']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('O45', $adr[0]['casuality']);
 
 
-            $objPHPExcel->getActiveSheet()->SetCellValue('B53', $adr[0]['other_comment']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('B58', $adr[0]['reporting_officer']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('J58', $adr[0]['datecreated']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('B60', $adr[0]['email_address']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('J60', $adr[0]['office_phone']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('B62', $adr[0]['designation']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('J62', $adr[0]['signature']);
-            // $objPHPExcel -> getActiveSheet() -> SetCellValue('I12', $adr[0]['severity']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B53', $adr[0]['other_comment']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B58', $adr[0]['reporting_officer']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('J58', $adr[0]['datecreated']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B60', $adr[0]['email_address']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('J60', $adr[0]['office_phone']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B62', $adr[0]['designation_d']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('J62', $adr[0]['signature']);
+        // $objPHPExcel -> getActiveSheet() -> SetCellValue('I12', $adr[0]['severity']);
 
-            $row = 33;
-            for ($i = 0; $i < count($adr); $i++) {
-                $objPHPExcel->getActiveSheet()->SetCellValue('C' . $row, $adr[$i]['drug']);
-                $objPHPExcel->getActiveSheet()->SetCellValue('E' . $row, $adr[$i]['dose']);
-                $objPHPExcel->getActiveSheet()->SetCellValue('F' . $row, $adr[$i]['route_freq']);
-                $objPHPExcel->getActiveSheet()->SetCellValue('I' . $row, $adr[$i]['date_started']);
-                $objPHPExcel->getActiveSheet()->SetCellValue('K' . $row, $adr[$i]['date_stopped']);
-                $objPHPExcel->getActiveSheet()->SetCellValue('M' . $row, $adr[$i]['indication']);
-                $objPHPExcel->getActiveSheet()->SetCellValue('O' . $row, ($adr[$i]['suspecteddrug'] == 'on') ? 'yes' : 'no');
-                $row = $row + 1;
-            }
-        } else if ($type == "pqmp") {
-            $objPHPExcel->getActiveSheet()->SetCellValue('D7', $adr[0]['facility_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('J7', $adr[0]['district_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('Q7', $adr[0]['province_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('D8', $adr[0]['facility_address']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('J8', $adr[0]['facility_phone']);
-
-            $objPHPExcel->getActiveSheet()->SetCellValue('F10', $adr[0]['brand_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('F11', $adr[0]['batch_no']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('F12', $adr[0]['manufacturer_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('F13', $adr[0]['supplier_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('P10', $adr[0]['generic_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('L11', $adr[0]['manufacture_date']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('P11', $adr[0]['expiry_date']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('T11', $adr[0]['receipt_date']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('P12', $adr[0]['origin_county']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('L13', $adr[0]['supplier_address']);
-
-            $objPHPExcel->getActiveSheet()->SetCellValue('B15', ($adr[0]['formulation_oral'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B16', ($adr[0]['formulation_injection'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B17', ($adr[0]['formulation_diluent'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B18', ($adr[0]['formulation_powdersuspension'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B19', ($adr[0]['formulation_powderinjection'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B20', ($adr[0]['formulation_eyedrops'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B21', ($adr[0]['formulation_eardrops'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B22', ($adr[0]['formulation_nebuliser'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B23', ($adr[0]['formulation_cream'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B24', ($adr[0]['formulation_other'] == '0') ? 'no' : 'yes');
-            // $objPHPExcel -> getActiveSheet() -> SetCellValue('B10', $adr[0]['other_formulation']);
-
-            $objPHPExcel->getActiveSheet()->SetCellValue('N15', ($adr[0]['complaint_colour'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('N16', ($adr[0]['complaint_separating'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('N17', ($adr[0]['complaint_powdering'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('N18', ($adr[0]['complaint_caking'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('N19', ($adr[0]['complaint_moulding'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('N20', ($adr[0]['complaint_change'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('N21', ($adr[0]['complaint_mislabeilng'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('N22', ($adr[0]['complaint_incomplete'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('N23', ($adr[0]['complaint_other'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('N24', ($adr[0]['other_complaint'] == '0') ? 'no' : 'yes');
-
-            $objPHPExcel->getActiveSheet()->SetCellValue('D25', ($adr[0]['description'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('J28', ($adr[0]['product_refrigiration'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('J29', ($adr[0]['product_availability'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('J30', ($adr[0]['product_returned'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('J31', ($adr[0]['product_storage'] == '0') ? 'no' : 'yes');
-            $objPHPExcel->getActiveSheet()->SetCellValue('B33', $adr[0]['comments']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('D35', $adr[0]['reporter_name']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('D36', $adr[0]['reporter_title']);
+        $row = 33;
+        for ($i = 0; $i < count($adr_details); $i++) {
+            $objPHPExcel->getActiveSheet()->SetCellValue('C' . $row, $adr_details[$i]['drug']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('E' . $row, $adr_details[$i]['dose'].$adr_details[$i]['dose_unit']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('F' . $row, $adr_details[$i]['route_name']. " ".$adr_details[$i]['freq_name']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('I' . $row, $adr_details[$i]['date_started']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('K' . $row, $adr_details[$i]['date_stopped']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('M' . $row, $adr_details[$i]['indication']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('O' . $row, ($adr_details[$i]['suspecteddrug'] == '1') ? 'yes' : 'no');
+            $row = $row + 1;
         }
 
-        foreach ($data_array as $mydata) {
-            foreach ($mydata as $column => $value) {
-                $objPHPExcel->getActiveSheet()->SetCellValue($column, $value);
-            }
-        }
-        //Generate file
         ob_start();
         // $period_start = date("F-Y", strtotime($period_start));
-        $original_filename = "" . strtoupper($type) . "-" . str_replace(' ', '-', $adr[0]['patient_name']) . "-" . $adr[0]['ip_no'] . ".xls";
+        $original_filename = "" . strtoupper('adr') . "-" . $adr[0]['id'] . ".xls";
 
-        if ($type == 'pqmp') {
-            $original_filename = strtoupper($type) . "-" . str_replace(' ', '-', $adr[0]['brand_name'] . '-' . $adr[0]['generic_name'] . '-' . $adr[0]['facility_name']) . $adr[0]['batch_no'] . ".xls";
-        }
+
         $filename = $dir . "/" . urldecode($original_filename);
         $objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
         $objWriter->save($filename);

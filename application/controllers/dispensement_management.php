@@ -238,6 +238,7 @@ class Dispensement_management extends MY_Controller {
                 'designation' => $this->_p('designation_id'),
                 'signature' => $this->_p('officersignature')
             );
+            
 
             $this->db->insert('adr_form', $adr);
             //$adr_id = $this->db->insert_id();
@@ -260,7 +261,7 @@ class Dispensement_management extends MY_Controller {
                     );
                     $this->db->insert('adr_form_details', $adr_details);
                 }
-                echo "adr form saved successfully";
+                redirect('inventory_management/adr/');
                 
             } else {
                 echo "No drugs selected";
@@ -280,7 +281,7 @@ class Dispensement_management extends MY_Controller {
         $data['last_regimens'] = "";
         $data['visits'] = "";
         $data['appointments'] = "";
-
+        $data['uniqueid']=$newid;
         $data['user_full_name'] = $this->session->userdata('full_name');
         $data['user_email'] = $this->session->userdata('Email_Address');
         $data['user_phone'] = $this->session->userdata('Phone_Number');
@@ -320,11 +321,13 @@ class Dispensement_management extends MY_Controller {
 		v_v.adherence, 
 		v_v.indication, 
 		v_v.frequency, 
-		v_v.user, 
+		v_v.user,
+                do.value,
 		v_v.regimen_change_reason AS regimen_change_reason 
 		from v_patient_visits as v_v
 		INNER JOIN regimen as R ON R.id = v_v.current_regimen
 		INNER JOIN drugcode as D ON D.id = v_v.drug_id
+                LEFT JOIN doses as do ON do.id = D.unit
 		WHERE v_v.id = $record_no
 		AND v_v.pv_active = 1
 		AND dispensing_date = '$dispense_date'
@@ -375,7 +378,7 @@ class Dispensement_management extends MY_Controller {
             $data['ccc_store'] = $store_results[0]['ccc_store_sp'];
             // $data['ccc_store'] = $this -> session -> userdata('ccc_store')[0]['id'];
         }
-
+        $data['diagnosis']= $this->db->get('drug_classification')->result();
         $data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
         $data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
         $data['purposes'] = Visit_Purpose::getAll();
