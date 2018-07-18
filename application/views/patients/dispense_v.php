@@ -360,7 +360,7 @@
                             <input type="text" name="comment[]" class="comment input-small" />
                         </td>
                         <td>
-                            <input type="text" name="missed_pills[]" class="missed_pills input-small" />
+                            <input type="number" name="missed_pills[]" class="missed_pills input-small" />
                         </td>
                         <td>
                             <a class="add btn-small">Add</a>|<a class="remove btn-small">Remove</a>
