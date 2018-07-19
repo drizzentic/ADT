@@ -929,7 +929,7 @@ class Report_management extends MY_Controller {
 		return $data;
 	}
 
-	public function starting_art($period ){
+	public function ar($period ){
 		$period_start = date('Y-m-01', strtotime($period));
 		$period_end = date('Y-m-t', strtotime($period));
 		$data = array();
@@ -965,6 +965,7 @@ class Report_management extends MY_Controller {
 		WHERE current_status LIKE '%active%'
 		AND 	start_regimen_date >= '$period_start'
 		AND 	start_regimen_date <= '$period_end'
+		AND (service LIKE '%pmtct%' OR service LIKE '%art%')
 		";
 		$query = $this -> db -> query($sql, array($patient, $facility_code, $today));
 		$results = $query -> result_array()[0];
