@@ -73,7 +73,8 @@ class Order extends MY_Controller {
 				$user_dhis_orgs[] = $facility['dhiscode'];
 			};
 			$user_dhis_orgs = array_unique($user_dhis_orgs);
-			if(!empty(array_intersect($user_dhis_orgs, $dhis_orgs))){
+			$array_intersect = array_intersect($user_dhis_orgs, $dhis_orgs);
+			if(!empty($array_intersect)){
 				//Save user data
 				$sync_user = array(
 					'username' => $username,

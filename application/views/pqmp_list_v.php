@@ -39,14 +39,18 @@ function ellipsis($string, $max_length) {
             Synchronization Successfully Completed. No New updates found...
         </div>
 
-        <?php if (!empty($this->session->flashdata('pqmp_saved'))) { ?>
+        <?php
+        $pqmp_saved = $this->session->flashdata('pqmp_saved');
+         if (!empty($pqmp_saved)) { ?>
             <div class="alert alert-success">
                 <?= $this->session->flashdata('pqmp_saved'); ?>
             </div> 
         <?php }
         ?>
 
-        <?php if (!empty($this->session->flashdata('pqmp_error'))) { ?>
+        <?php
+        $pqmp_error =  $this->session->flashdata('pqmp_error');
+         if (!empty($pqmp_error)) { ?>
             <div class="alert alert-danger">
                 <?= $this->session->flashdata('pqmp_error'); ?>
             </div> 
