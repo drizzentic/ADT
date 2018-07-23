@@ -70,12 +70,12 @@ class MY_Controller extends CI_Controller {
                 $data = json_encode($query);
                 $this->push($this->SERVER_URL . 'spqm/send', $data, $table, $final, $type);
             } else if ($type == 'adr') {
-                $query = $this->db->query("SELECT * FROM `$table` WHERE id IN($final)")->result();
+                $query = $this->db->query("SELECT * FROM `adr_form` WHERE id IN($final)")->result();
                 $query2 = $this->db->query("SELECT * FROM adr_form_details WHERE adr_id IN($final)")->result();
                 array_push($adr, $query);
                 array_push($adr, $query2);
                 $data = json_encode($adr);
-
+               // print_r($data);
                 $this->push($this->SERVER_URL . 'sadr/send', $data, $table, $final, $type);
             }
         } else {
@@ -104,6 +104,8 @@ class MY_Controller extends CI_Controller {
         $result = curl_exec($curl);
 
         $response = json_decode($result, TRUE);
+        
+      
 
         if ((int) $response['status'] === 1):
 

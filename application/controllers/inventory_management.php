@@ -456,7 +456,7 @@ class Inventory_management extends MY_Controller {
         }
 
         if ($action == 'delete') {
-            $this->db->query('delete from pqmp where id = ' . $id);
+            $this->db->query('delete from pqms where id = ' . $id);
             // redirect('inventory_management/pqmp');
             die;
         }
@@ -466,10 +466,10 @@ class Inventory_management extends MY_Controller {
         $data['hide_side_menu'] = 0;
         $data['pqmp_data'] = $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation , cou.name country
 FROM pqms p 
-INNER JOIN counties co ON p.county_id = co.id 
-INNER JOIN countries cou ON cou.id = p.country_of_origin
-INNER JOIN sub_counties su ON p.sub_county_id = su.id 
-INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
+LEFT JOIN pv_counties co ON p.county_id = co.id 
+LEFT JOIN pv_countries cou ON cou.id = p.country_of_origin
+LEFT JOIN pv_sub_counties su ON p.sub_county_id = su.id 
+LEFT JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
         $this->base_params($data);
     }
 
@@ -886,10 +886,10 @@ INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->resul
 
         $adr = $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation , cou.name country
                     FROM pqms p 
-                    INNER JOIN counties co ON p.county_id = co.id 
-                    INNER JOIN countries cou ON cou.id = p.country_of_origin
-                    INNER JOIN sub_counties su ON p.sub_county_id = su.id 
-                    INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
+                    INNER JOIN pv_counties co ON p.county_id = co.id 
+                    INNER JOIN pv_countries cou ON cou.id = p.country_of_origin
+                    INNER JOIN pv_sub_counties su ON p.sub_county_id = su.id 
+                    INNER JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
 
 
 
@@ -946,14 +946,14 @@ INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->resul
         $objPHPExcel->getActiveSheet()->SetCellValue('P23', ($adr[0]['complaint_other'] == '1') ? 'Yes' : 'No');
         //$objPHPExcel->getActiveSheet()->SetCellValue('P24', ($adr[0]['complaint_other'] == '1') ? 'Yes' : 'No');
 
-        $objPHPExcel->getActiveSheet()->SetCellValue('D26', $adr[0]['complaint_description']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B26', $adr[0]['complaint_description']);
 
         $objPHPExcel->getActiveSheet()->SetCellValue('I28', ($adr[0]['require_refrigeration'] == 'No') ? 'No' : 'Yes');
         $objPHPExcel->getActiveSheet()->SetCellValue('I29', ($adr[0]['product_at_facility'] == 'No') ? 'No' : 'Yes');
         $objPHPExcel->getActiveSheet()->SetCellValue('I30', ($adr[0]['returned_by_client'] == 'No') ? 'No' : 'Yes');
         $objPHPExcel->getActiveSheet()->SetCellValue('I31', ($adr[0]['stored_to_recommendations'] == 'No') ? 'no' : 'Yes');
 
-        $objPHPExcel->getActiveSheet()->SetCellValue('Z33', $adr[0]['comments']);
+        $objPHPExcel->getActiveSheet()->SetCellValue('B33', $adr[0]['comments']);
 
         $objPHPExcel->getActiveSheet()->SetCellValue('D35', $adr[0]['reporter_name']);
         $objPHPExcel->getActiveSheet()->SetCellValue('D36', $adr[0]['designation']);
@@ -975,8 +975,8 @@ INNER JOIN designations de ON p.designation_id = de.id WHERE p.id='$id'")->resul
 
     public function export_adr($id) {
 
-        $adr = $this->db->query("SELECT p.*,co.county_name county_name,su.sub_county_name sub_county_name,de.name designation_d FROM adr_form p LEFT JOIN counties co ON p.county = co.id LEFT JOIN sub_counties su ON p.sub_county = su.id LEFT JOIN designations de ON p.designation = de.id WHERE p.id='$id'")->result_array();
-        $adr_details = $this->db->query("SELECT afd.id,afd.dose_id, afd.route_freq, afd.adr_id,afd.visitid,afd.dose,afd.route,d.value dose_unit, r.name route_name, f.name freq_name, afd.drug, afd.brand,afd.date_started,afd.date_stopped,afd.indication, afd.suspecteddrug FROM adr_form_details afd LEFT JOIN doses d ON d.id = afd.dose_id LEFT JOIN frequencies f ON f.id = afd.route_freq LEFT JOIN routes r ON r.id = afd.route WHERE afd.adr_id='$id'")->result_array();
+        $adr = $this->db->query("SELECT p.*,co.county_name county_name,su.sub_county_name sub_county_name,de.name designation_d FROM adr_form p LEFT JOIN pv_counties co ON p.county = co.id LEFT JOIN pv_sub_counties su ON p.sub_county = su.id LEFT JOIN pv_designations de ON p.designation = de.id WHERE p.id='$id'")->result_array();
+        $adr_details = $this->db->query("SELECT afd.id,afd.dose_id, afd.route_freq, afd.adr_id,afd.visitid,afd.dose,afd.route,d.value dose_unit, r.name route_name, f.name freq_name, afd.drug, afd.brand,afd.date_started,afd.date_stopped,afd.indication, afd.suspecteddrug FROM adr_form_details afd LEFT JOIN pv_doses d ON d.id = afd.dose_id LEFT JOIN pv_frequencies f ON f.id = afd.route_freq LEFT JOIN pv_routes r ON r.id = afd.route WHERE afd.adr_id='$id'")->result_array();
 
         $this->load->library('PHPExcel');
         $dir = "assets/download";

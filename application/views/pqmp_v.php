@@ -23,7 +23,7 @@
     <?php if (!\is_null($pqmp_data[0]['ppid']) || $pqmp_data[0]['synch'] === '1') { ?>
 
     <?php } else { ?>
-<!--        <a href="javascript:;;" class="btn btn-default" id="edit-btn" > Edit </a>-->
+        <!--        <a href="javascript:;;" class="btn btn-default" id="edit-btn" > Edit </a>-->
         <a href="<?= base_url(); ?>inventory_management/pqmp/<?= $record_no; ?>/delete" class="btn btn-danger delete-form" > Delete  </a>  
     <?php } ?>
 
@@ -717,12 +717,12 @@
                     }
                     ?> type="radio">Diluent<br>
                     <input name="product_formulation"  value="Powder for Reconstitution of Suspension" <?php
-                           if ($pqmp_data[0]['product_formulation'] == 'Powder for Reconstitution of Suspension') {
-                               echo ' checked ';
-                           } else {
-                               
-                           }
-                           ?> type="radio">Powder for Reconstitution of Suspensions<br>
+                    if ($pqmp_data[0]['product_formulation'] == 'Powder for Reconstitution of Suspension') {
+                        echo ' checked ';
+                    } else {
+                        
+                    }
+                    ?> type="radio">Powder for Reconstitution of Suspensions<br>
                     <input name="product_formulation"  value="Powder for Reconstitution of Injection" <?php
                     if ($pqmp_data[0]['product_formulation'] == 'Powder for Reconstitution of Injection') {
                         echo ' checked ';
@@ -745,11 +745,11 @@
                     }
                     ?> type="radio">Ear drops<br>
                     <input name="product_formulation"  value="Nebuliser solution" <?php
-                           if ($pqmp_data[0]['product_formulation'] == 'Nebuliser solution') {
-                               echo ' checked ';
-                           } else {
-                               
-                           }
+                    if ($pqmp_data[0]['product_formulation'] == 'Nebuliser solution') {
+                        echo ' checked ';
+                    } else {
+                        
+                    }
                     ?> type="radio">Nebuliser solution<br>
                     <input name="product_formulation"  value="Cream / Ointment / Liniment / Paste" <?php
                     if ($pqmp_data[0]['product_formulation'] == 'Cream / Ointment / Liniment / Paste') {
@@ -791,19 +791,19 @@
                     }
                     ?>value="1">Powdering/crumbling<br />
                     <input type="checkbox" name="caking" <?php
-                           if ($pqmp_data[0]['caking'] == '1') {
-                               echo ' checked ';
-                           } else {
-                               
-                           }
-                           ?>value="1">Caking <br />
+                    if ($pqmp_data[0]['caking'] == '1') {
+                        echo ' checked ';
+                    } else {
+                        
+                    }
+                    ?>value="1">Caking <br />
                     <input type="checkbox" name="moulding" <?php
-                           if ($pqmp_data[0]['moulding'] == '1') {
-                               echo ' checked ';
-                           } else {
-                               
-                           }
-                           ?> value="1">Moulding <br />
+                    if ($pqmp_data[0]['moulding'] == '1') {
+                        echo ' checked ';
+                    } else {
+                        
+                    }
+                    ?> value="1">Moulding <br />
                     <input type="checkbox" name="odour_change" <?php
                     if ($pqmp_data[0]['odour_change'] == '1') {
                         echo ' checked ';
@@ -953,8 +953,11 @@
 
         </table>
         <div class="mid-row" >
-            <input type="submit" class="btn btn-primary" value="Submit"/>
-            
+            <?php if ($pqmp_data[0]['synch'] === '0') { ?>
+                <input type="submit" class="btn btn-primary" value="Submit"/>
+            <?php } ?>
+
+
         </div>
     </form>
 </div>
@@ -963,7 +966,7 @@
     $(document).ready(function () {
 
 
-        $("#manufacture_date,#expiry_date,#receipt_date").datepicker({dateFormat:"yy-mm-dd"});
+        $("#manufacture_date,#expiry_date,#receipt_date").datepicker({dateFormat: "yy-mm-dd"});
         $('.fil').select2();
 
 
