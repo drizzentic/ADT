@@ -929,7 +929,7 @@ class Report_management extends MY_Controller {
 		return $data;
 	}
 
-	public function ar($period ){
+	public function starting_art($period ){
 		$period_start = date('Y-m-01', strtotime($period));
 		$period_end = date('Y-m-t', strtotime($period));
 		$data = array();
@@ -6288,28 +6288,25 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		 * Get All active patients
 		 * Get Transactions of patients who visited in the selected period and changed regimens
 		 */
-		$sql = "SELECT CONCAT_WS(  ' | ', r2.regimen_code, r2.regimen_desc ) AS from_regimen, CONCAT_WS(  ' | ', r1.regimen_code, r1.regimen_desc ) AS to_regimen, p.patient_number_ccc AS art_no, CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name, pv.dispensing_date, rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason 
-		FROM patient p 
+		$sql = "SELECT CONCAT(r1.regimen_code,' | ',r1.regimen_desc) as from_regimen ,
+		CONCAT(r2.regimen_code,' | ',r2.regimen_desc )as to_regimen,
+		p.patient_number_ccc AS art_no,
+		CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name, 
+		pv.dispensing_date,
+
+		 rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason 
+
+		FROM patient_visit pv
+		left join regimen r1 on pv.last_regimen = r1.id
+		left join regimen r2 on pv.regimen = r2.id
+		left join patient p on p.patient_number_ccc = pv.patient_id
 		LEFT JOIN regimen_service_type rst ON rst.id = p.service 
-		LEFT JOIN patient_status ps ON ps.id = p.current_status 
-		LEFT JOIN (
-		SELECT * FROM patient_visit 
-		WHERE dispensing_date BETWEEN  '$start_date' AND  '$end_date' AND last_regimen != regimen AND last_regimen IS NOT NULL
-		ORDER BY id DESC
-		) AS pv ON pv.patient_id = p.patient_number_ccc 
-		LEFT JOIN regimen r1 ON r1.id = pv.regimen 
-		LEFT JOIN regimen r2 ON r2.id = pv.last_regimen 
-		LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason  
-		left join regimen_category rc1 on rc1.id = r1.category
-		left join regimen_category rc2 on rc2.id = r2.category
-		WHERE ps.Name LIKE  '%active%' 
-		AND r2.regimen_code IS NOT NULL 
-		AND r1.regimen_code IS NOT NULL 
-		AND pv.dispensing_date IS NOT NULL 
-		AND r2.regimen_code NOT LIKE '%oi%' 
-		and lower(rc1.name) like '%first%'
-		and lower(rc2.name) like '%second%'
-		GROUP BY pv.patient_id, pv.dispensing_date";
+				LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason  
+		where pv.last_regimen != pv.regimen
+		BETWEEN  '$start_date' AND  '$end_date'
+		and (r1.regimen_code like '%AF%' or r1.regimen_code like '%CF%')
+		and (r2.regimen_code like '%AS%' or r2.regimen_code like '%CS%')";
+		
 		$patient_sql = $this -> db -> query($sql);
 		$data['patients'] = $patient_sql -> result_array();
 		$data['total'] = count($data['patients']);
