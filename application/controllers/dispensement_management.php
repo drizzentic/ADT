@@ -128,9 +128,11 @@ class Dispensement_management extends MY_Controller {
         if ($results) {
             $patient_no = $results[0]['patient_number_ccc'];
             $age = @$results[0]['age'];
+            $data['age']  = @$results[0]['age'];
             $service_name = $results[0]['service_name'];
             $data['results'] = $results;
         }
+
 
         /*         * ********** */
         $sql1 = "SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '" . $patient_no . "' AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1";
