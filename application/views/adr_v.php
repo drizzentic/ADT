@@ -870,7 +870,9 @@
                 <input type="text" name="officersignature" id="officersignature" class="validate[required] f-input" value="<?= $adr_data[0]['signature']; ?>">
             </div>
             <div class="mid-row" id="submit-container" >
+                <?php if ($adr_data[0]['synch'] !== '1') { ?>
                 <button type="submit" class="btn btn-primary" value="Submit">Submit</button>
+                <?php } ?>
                
             </div>
         </div>

@@ -68,7 +68,7 @@ function ellipsis($string, $max_length) {
                     <tr>
                         <td>
 
-                            <?php if ($adr['synch'] == '0') { ?>
+                            <?php if ($adr['synch'] == '0' || is_null($adr['synch'])) { ?>
                                 <input type="checkbox" name="adrid" value="<?= $adr['id']; ?>"
                                       
                             <?php } else { ?>
@@ -77,7 +77,7 @@ function ellipsis($string, $max_length) {
                                    ?></td>
                         <td> <?= $adr['id']; ?></td>
                         <td>
-                            <a href="<?= base_url(); ?>inventory_management/adr/<?= $adr['id']; ?> "> <?= ellipsis($adr['patient_name'],10); ?> </a>
+                            <a href="<?= base_url(); ?>inventory_management/loadAdrRecord/<?= $adr['id']; ?> "> <?= ellipsis($adr['patient_name'],10); ?> </a>
                         </td>
                         <td> <?= ellipsis($adr['diagnosis'],10); ?></td>
                         <td> <?= ellipsis($adr['severity'],10); ?></td>
