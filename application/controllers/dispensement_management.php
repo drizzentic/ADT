@@ -327,7 +327,7 @@ class Dispensement_management extends MY_Controller {
 		from v_patient_visits as v_v
 		INNER JOIN regimen as R ON R.id = v_v.current_regimen
 		INNER JOIN drugcode as D ON D.id = v_v.drug_id
-                LEFT JOIN doses as do ON do.id = D.unit
+                LEFT JOIN dose as do ON do.id = D.unit
 		WHERE v_v.id = $record_no
 		AND v_v.pv_active = 1
 		AND dispensing_date = '$dispense_date'
@@ -832,8 +832,6 @@ AND  r.regimen_code LIKE '%oi%'
             $query = $this->db->query($q);
             $result = $query->result_array();
             $appointment_id = $result[0]['id'];
-
-
 
             file_get_contents(base_url() . 'tools/api/getdispensing/' . $prescription);
             file_get_contents(base_url() . 'tools/api/getappointment/' . $appointment_id);
