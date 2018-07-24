@@ -6306,7 +6306,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		BETWEEN  '$start_date' AND  '$end_date'
 		and (r1.regimen_code like '%AF%' or r1.regimen_code like '%CF%')
 		and (r2.regimen_code like '%AS%' or r2.regimen_code like '%CS%') 
-		AND rst.name like '%ART%'";
+		AND rst.name like '%ART%' group by pv.dispensing_date";
 
 		$patient_sql = $this -> db -> query($sql);
 		$data['patients'] = $patient_sql -> result_array();
