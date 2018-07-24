@@ -48,6 +48,8 @@ if($this->session->userdata("changed_password")){
 
 <script src="<?= base_url(); ?>assets/scripts/jquery-1.7.2.min.js"></script>
 <script src="<?= base_url(); ?>assets/scripts/jquery-ui.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/jquery.blockUI.js"></script>
+
 <script src="<?= base_url(); ?>assets/scripts/datatable/jquery.dataTables.min.js"></script>
 <script src="<?= base_url(); ?>assets/scripts/jquery.multiselect.js"></script>
 <script src="<?= base_url(); ?>assets/scripts/jquery.multiselect.filter.js"></script>
