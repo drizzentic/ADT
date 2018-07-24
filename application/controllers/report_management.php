@@ -872,6 +872,8 @@ class Report_management extends MY_Controller {
 		WHERE current_status LIKE '%active%'
 		AND 	date_enrolled >= '$period_start'
 		AND 	date_enrolled <= '$period_end'
+		AND (service LIKE '%pmtct%' OR service LIKE '%art%' OR service LIKE '%oi%')
+
 		";
 		$query = $this -> db -> query($sql, array($patient, $facility_code, $today));
 		$results = $query -> result_array()[0];
