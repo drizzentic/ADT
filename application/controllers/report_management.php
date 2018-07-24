@@ -5256,7 +5256,15 @@ public function cumulative_patients($from = "", $type = '1') {
 	$total_child_female_prep = 0;
 
 		//Get Total Count of all patients
-	$sql = "select count(*) as total from patient p,patient_status ps,regimen_service_type rst,gender g where(p.date_enrolled <= '$from' or p.date_enrolled='') and ps.id=p.current_status and p.service=rst.id and p.gender=g.id and facility_code='$facility_code' and p.active='1'";
+	$sql = "select count(p.id) as total,p.current_status,ps.name 
+				from patient p
+			left join patient_status ps on ps.id=p.current_status 
+			left join regimen_service_type rst on p.service=rst.id
+			left join gender g  on p.gender=g.id 
+				where(p.date_enrolled <= '$from') 
+			and facility_code='$facility_code'  
+			and current_status > 0
+			group by p.current_status";
 
 	$query = $this -> db -> query($sql);
 	$results = $query -> result_array();
