@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="span6 dispensing-field" style="padding-top: 17px;">
-                        Age: <?= $age;?> Years
+                            <input type="text" readonly="" id="patient" name="patient" class="validate[required] " value="<?= $age;?> Years" />
                     </div>
                 </div>
                 <div class="row-fluid">
