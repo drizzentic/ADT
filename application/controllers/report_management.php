@@ -3429,7 +3429,7 @@ public function getPatientsOnDiffCare($from = "", $to = ""){
 	FROM patient_visit pv
 	INNER JOIN vw_patient_list p ON p.ccc_number= pv.patient_id
 	WHERE pv.dispensing_date >='$start_date'  AND pv.dispensing_date < '$end_date' 
-	AND p.differentiated_care = '1'
+	AND p.differentiated_care_status = '1'
 	GROUP BY pv.patient_id
 	";
 
