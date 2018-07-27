@@ -5264,9 +5264,7 @@ public function cumulative_patients($from = "", $type = '1') {
 			left join regimen_service_type rst on p.service=rst.id
 			left join gender g  on p.gender=g.id 
 				where(p.date_enrolled <= '$from') 
-			and facility_code='$facility_code'  
-			and current_status > 0
-			group by p.current_status";
+			and facility_code='$facility_code'";
 
 	$query = $this -> db -> query($sql);
 	$results = $query -> result_array();

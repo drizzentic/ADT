@@ -1053,8 +1053,9 @@
         });
     });
     $('#adr_popupcheckbox').change(function(){
-        window.open("<?= base_url()."dispensement_management/adr/".$patient_id ?>");
-         // $('#adr_popupcheckbox').attr('disabled','disabled')
+        if(this.checked) {
+            window.open("<?= base_url()."dispensement_management/adr/".$patient_id ?>");
+         }
     });
     
     //drug change event

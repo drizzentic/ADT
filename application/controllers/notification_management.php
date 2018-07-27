@@ -91,12 +91,13 @@ class Notification_management extends MY_Controller {
 		                                          p.id
 										   FROM patient p 
 										   LEFT JOIN gender g on g.id=p.gender
+										   LEFT JOIN patient_status ps ON ps.id = p.current_status
 										   WHERE (p.gender=' ' 
 										   OR p.gender='' 
 										   OR p.gender='null' 
 										   OR p.gender is null)
 										   AND p.active='1'
-										   AND p.current_status = '1'
+										   AND ps.Name LIKE '%active%'
 										   GROUP BY p.patient_number_ccc;";
 
 		/*Patients without DOB*/
@@ -104,12 +105,13 @@ class Notification_management extends MY_Controller {
 											   p.dob,
 		                                       p.id
 										FROM patient p 
+										LEFT JOIN patient_status ps ON ps.id = p.current_status
 										WHERE (p.dob=' ' 
 										OR p.dob='' 
 										OR p.dob='null' 
 										OR p.dob is null)
 										AND p.active='1'
-										   AND p.current_status = '1'
+										AND ps.Name LIKE '%active%'
 										GROUP BY p.patient_number_ccc;";
 
 		/*Patients without Appointment*/
@@ -126,7 +128,6 @@ class Notification_management extends MY_Controller {
 											    AND p.active = '1'
 											    AND ps.Name LIKE '%active%'
 											    AND p.active='1'
-										   AND p.current_status = '1'
 											    GROUP BY p.patient_number_ccc;";
 		/*Patients without Current Regimen*/
 		$sql['Patients without Current Regimen'] = "SELECT  p.patient_number_ccc,
@@ -142,9 +143,9 @@ class Notification_management extends MY_Controller {
 													OR p.current_regimen is null
 													OR p.current_regimen='null')
 													AND p.active='1'
-												   AND p.current_status = '1'
+												   	AND p.current_status = '1'
 													AND rs.name NOT LIKE '%pmtct%'
-													AND ps.Name NOT LIKE '%transit%' 
+													AND ps.Name LIKE '%active%'
 													GROUP BY p.patient_number_ccc;";
 		/*Patients without Start Regimen*/
 		$sql['Patients without Start Regimen'] =   "SELECT p.patient_number_ccc, 
@@ -153,12 +154,13 @@ class Notification_management extends MY_Controller {
 														 p.id
 													FROM patient p
 													LEFT JOIN regimen r ON r.id = p.start_regimen
+													LEFT JOIN patient_status ps ON ps.id=p.current_status
 													WHERE (p.start_regimen =  ' '
 													OR p.start_regimen =  ''
 													OR p.start_regimen IS NULL 
 													OR p.start_regimen =  'null')
 													AND p.active='1'
-												   AND p.current_status = '1'
+												   	AND ps.Name LIKE '%active%'
 													GROUP BY p.patient_number_ccc;";
 		/*Patients without Current Status*/
 		$sql['Patients without Current Status'] =  "SELECT p.patient_number_ccc,
@@ -172,7 +174,7 @@ class Notification_management extends MY_Controller {
 													OR p.current_status is null
 													OR p.current_status='null')
 													AND p.active='1'
-												   AND p.current_status = '1'
+												   	AND ps.Name LIKE '%active%'
 													GROUP BY p.patient_number_ccc;";
 
 		/*Patients without Service Line*/
@@ -182,12 +184,13 @@ class Notification_management extends MY_Controller {
 		                                                  p.id
 													FROM patient p
 													LEFT JOIN regimen_service_type rst ON rst.id=p.service
+													LEFT JOIN patient_status ps ON ps.id=p.current_status
 													WHERE(p.service=' '
 													OR p.service=''
 													OR p.service is null
 													OR p.service='null')
 													AND p.active='1'
-												   AND p.current_status = '1'
+												   	AND ps.Name LIKE '%active%'
 													GROUP BY p.patient_number_ccc;";
 
 		/*Duplicate Patient Numbers*/
@@ -195,7 +198,9 @@ class Notification_management extends MY_Controller {
 		                                            count(p.patient_number_ccc) as total,
 		                                            p.id
 											FROM patient p
+											LEFT JOIN patient_status ps ON ps.id=p.current_status
 											WHERE p.active='1'
+											AND ps.Name LIKE '%active%'
 											GROUP by p.patient_number_ccc
 											HAVING(total >1);";
 
@@ -204,8 +209,10 @@ class Notification_management extends MY_Controller {
 		                                                   p.id,
 		                                                   p.date_enrolled
 													FROM patient p
+													LEFT JOIN patient_status ps ON ps.id=p.current_status
 													WHERE char_length(p.date_enrolled)<10
 													AND p.active='1'
+													AND ps.Name LIKE '%active%'
 													GROUP BY p.patient_number_ccc;";
 
 		/*Patients without Status Change date*/
@@ -219,8 +226,7 @@ class Notification_management extends MY_Controller {
 														WHERE char_length(p.status_change_date)<10
 														AND p.active='1'
 														AND rst.Name NOT LIKE '%pep%'
-														AND ps.Name NOT LIKE '%transit%' 
-														AND ps.Name NOT LIKE '%active%'
+														AND ps.Name LIKE '%active%'
 														AND ( r.regimen_desc NOT LIKE '%pmtct%' OR ROUND( DATEDIFF( curdate( ) , p.dob ) /360 ) >2)
 														GROUP BY p.patient_number_ccc;";
 
@@ -230,9 +236,11 @@ class Notification_management extends MY_Controller {
 					                                          p.start_regimen_date
 														FROM patient p
 		                                                LEFT JOIN regimen_service_type rst ON rst.id=p.service
+		                                                LEFT JOIN patient_status ps ON ps.id=p.current_status
 														WHERE char_length(p.start_regimen_date)<10
 														AND p.active='1'
 		                                                AND rst.name NOT LIKE '%oi%'
+		                                                AND ps.Name LIKE '%active%'
 														GROUP BY p.patient_number_ccc;";
 
 		/*Patients With Incorrect Current Regimens*/
@@ -249,9 +257,10 @@ class Notification_management extends MY_Controller {
 															LEFT JOIN regimen r ON r.id = p.current_regimen
 															LEFT JOIN regimen_service_type rst1 ON rst1.id = p.service
 															LEFT JOIN regimen_service_type rst2 ON rst2.id = r.type_of_service
+															LEFT JOIN patient_status ps ON ps.id=p.current_status
 															WHERE rst1.id != rst2.id
 															AND rst2.Name NOT LIKE '%oi%'
-															-- AND p.current_status = 1
+															AND ps.Name LIKE '%active%'
 															GROUP BY p.patient_number_ccc;";
 
 		if($display_array==true){
@@ -312,7 +321,7 @@ class Notification_management extends MY_Controller {
 		         FROM patient p 
 		         LEFT JOIN regimen r ON r.id=p.current_regimen
 		         LEFT JOIN patient_status ps ON ps.id=p.current_status
-		         WHERE p.id IN($id_list) and p.current_status = '1' and p.active='1' 
+		         WHERE p.id IN($id_list) and ps.Name LIKE '%active%' and p.active='1' 
 		         GROUP BY p.patient_number_ccc";
 			$q = $this -> db -> query($stmt);
 			$rs = $q -> result_array();

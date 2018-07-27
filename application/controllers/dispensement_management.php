@@ -200,6 +200,7 @@ class Dispensement_management extends MY_Controller {
     }
 
     public function adr($record_no) {
+        $dated = '';
         $id = $this->db->select_max('id')->get('adr_form')->result();
         $newid =(int) $id[0]->id + 1;
         if ($_POST) {
