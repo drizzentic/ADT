@@ -352,8 +352,7 @@ foreach($results as $result){
 	    });
 
 	    //Select Other Drug Allergies
-	    var other_drug_allergies = '<?php echo  $adr=str_replace(array("\n"," ","/"),array(" \ ","","-"),$result['
-	    adr ']);?>';
+	    var other_drug_allergies = '<?php echo $adr=str_replace(array("\n"," ","/"),array(" \ ","","-"),$result['adr']);?>';
 
 	    if (other_drug_allergies.indexOf(',') == -1) {
 	    	other_drug_allergies = other_drug_allergies + ",";

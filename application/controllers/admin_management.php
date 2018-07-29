@@ -8,7 +8,7 @@ class Admin_management extends MY_Controller {
 
 	public function addCounty() {
 		$results = Counties::getAll();
-		$dyn_table = "<table border='1' id='county_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='county_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>County Name</th><th> Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -30,7 +30,7 @@ class Admin_management extends MY_Controller {
 
 	public function addSatellite() {
 		$results = Facilities::getSatellites($this -> session -> userdata("facility"));
-		$dyn_table = "<table border='1' id='satellite_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='satellite_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Facility Code</th><th>Facility Name</th><th>Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -48,7 +48,7 @@ class Admin_management extends MY_Controller {
 
 	public function addFacility() {
 		$results = Facilities::getAll();
-		$dyn_table = "<table border='1' id='facility_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='facility_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Facility Code</th><th>Facility Name</th><th>Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -70,7 +70,7 @@ class Admin_management extends MY_Controller {
 
 	public function addDistrict() {
 		$results = District::getAll();
-		$dyn_table = "<table border='1' id='district_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='district_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>District Name</th><th> Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -92,7 +92,7 @@ class Admin_management extends MY_Controller {
 
 	public function addMenu() {
 		$results = Menu::getAll();
-		$dyn_table = "<table border='1' id='menu_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='menu_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Menu Name</th><th>Menu URL</th><th>Menu Description</th><th> Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -115,7 +115,7 @@ class Admin_management extends MY_Controller {
     
     public function addFAQ(){
         $results = Faq::getAll();
-		$dyn_table = "<table border='1' id='faq_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='faq_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Module</th><th>Question</th><th>Answer</th><th>Options</th></tr></thead><tbody>";
 		$option = "";
 		if ($results) {
@@ -138,7 +138,7 @@ class Admin_management extends MY_Controller {
 
     public function addAccessLevel(){
     	$results = $this->db->get('access_level')->result_array();
-		$dyn_table = "<table border='1' id='access_level_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='access_level_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Name</th><th>Indicator</th><th>Description</th><th> Options</th></tr></thead><tbody>";
 		$option = "";
 		if ($results) {
@@ -162,7 +162,7 @@ class Admin_management extends MY_Controller {
 
 	public function addUsers() {
 		$results = Users::getThem();
-		$dyn_table = "<table border='1' id='user_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='user_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Full Name</th><th>UserName</th><th>Access Level</th><th>Email Address</th><th>Phone Number</th><th>Account Creator</th><th> Options</th></tr></thead><tbody>";
 		$option = "";
 		if ($results) {
@@ -189,7 +189,7 @@ class Admin_management extends MY_Controller {
 	public function inactive() {
 		$facility_code = $this -> session -> userdata("facility");
 		$results = Users::getInactive($facility_code);
-		$dyn_table = "<table border='1' id='inactive_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='inactive_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Full Name</th><th>UserName</th><th>Access Level</th><th>Email Address</th><th>Phone Number</th><th>Account Creator</th><th> Options</th></tr></thead><tbody>";
 		$option = "";
 		if ($results) {
@@ -222,7 +222,7 @@ class Admin_management extends MY_Controller {
 				$user_id = $result['user_id'];
 				$activity=$this->dateDiff($result['time_log'],date('Y-m-d H:i:s'));
 				$results = Users::getSpecific($user_id);
-				$dyn_table = "<table border='1' id='online_listing'  cellpadding='5' class='dataTables'>";
+				$dyn_table = "<table border='1' width='100%' id='online_listing'  cellpadding='5' class='dataTables'>";
 				$dyn_table .= "<thead><tr><th>Full Name</th><th>UserName</th><th>Access Level</th><th>Email Address</th><th>Activity Duration</th></tr></thead><tbody>";
 				$option = "";
 				if ($results) {
@@ -232,7 +232,7 @@ class Admin_management extends MY_Controller {
 				}
 			}
 		} else {
-			$dyn_table = "<table border='1' id='online_listing'  cellpadding='5' class='dataTables'>";
+			$dyn_table = "<table border='1' width='100%' id='online_listing'  cellpadding='5' class='dataTables'>";
 			$dyn_table .= "<thead><tr><th>Full Name</th><th>UserName</th><th>Access Level</th><th>Email Address</th><th>Activity Duration</th></tr></thead><tbody>";
 		}
 		$dyn_table .= "</tbody></table>";
@@ -248,7 +248,7 @@ class Admin_management extends MY_Controller {
 		$sql = "select ur.id,al.level_name,m.menu_text,ur.active,ur.access_level as access_id,ur.menu as menu_id from user_right ur,menu m, access_level al where m.id=ur.menu and al.id=ur.access_level";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-		$dyn_table = "<table border='1' id='assign_rights_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='assign_rights_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>Access Level</th><th>Menu</th><th> Options</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -273,7 +273,7 @@ class Admin_management extends MY_Controller {
 		$sql = "select * from access_log al left join users u on u.id=al.user_id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-		$dyn_table = "<table border='1' id='access_log_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='access_log_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>User</th><th>Start Time</th><th>End Time</th><th>Session Duration</th><th>Status</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {
@@ -308,7 +308,7 @@ class Admin_management extends MY_Controller {
 		$sql = "select * from denied_log al left join users u on u.id=al.user_id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-		$dyn_table = "<table border='1' id='denied_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table = "<table border='1' width='100%' id='denied_listing'  cellpadding='5' class='dataTables'>";
 		$dyn_table .= "<thead><tr><th>User</th><th>Timestamp</th></tr></thead><tbody>";
 		if ($results) {
 			foreach ($results as $result) {

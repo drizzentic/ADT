@@ -383,6 +383,16 @@ class Auto_management extends MY_Controller {
 		SET p.other_drugs = TRIM(Replace(Replace(Replace(p.other_drugs,'\t',''),'\n',''),'\r','')),
 		p.other_illnesses = TRIM(Replace(Replace(Replace(p.other_illnesses,'\t',''),'\n',''),'\r','')),
 		p.adr = TRIM(Replace(Replace(Replace(p.adr,'\t',''),'\n',''),'\r',''))";
+		//Update status_change_date if blank and start_regimen_date exist
+		$fixes[] = "UPDATE patient p
+					SET p.status_change_date = p.start_regimen_date
+					WHERE p.status_change_date = ''";
+		//Update status to "lost_to_followup" if there is no appointment_date and start_regimen_date is over 180 days
+		$fixes[] = "UPDATE patient p
+					LEFT JOIN patient_status ps ON ps.id = p.current_status,
+					(SELECT id FROM patient_status WHERE name LIKE '%lost%' LIMIT 1) ps1
+					SET p.current_status = ps1.id
+					WHERE p.nextappointment = '' AND ps.Name LIKE '%active%' AND (p.start_regimen_date = '' OR  DATEDIFF(CURDATE(), p.start_regimen_date) >= 180)";
 		//Execute fixes
 		$total=0;
 		foreach ($fixes as $fix) {
