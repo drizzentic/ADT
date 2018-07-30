@@ -487,29 +487,29 @@ class Patient_management extends MY_Controller {
         $this->base_params($data);
     }
 
-    function requiredFields($ccid) {
+    function requiredFields($patient_id) {
         $required = '';
-         $status =0;
-        $result = $this->db->where('patient_number_ccc', $ccid)->get('patient')->result();
+        $status =0;
+        $patient_data = $this->db->where('id', $patient_id)->get('patient')->row_array();
         $mandatory = [
-            'patient_number_ccc', 'first_name', 'dob', 'gender', 'pregnant', 'bmi', 'sa',
-            'height', 'weight', 'date_enrolled', 'start_regimen', 'transfer_from', 'service'
+            'patient_number_ccc', 'first_name', 'dob', 'gender', 'date_enrolled', 'status_change_date', 'start_regimen_date', 'start_regimen', 'service'
         ];
-          $label = [
-            'Patient CCC No.', 'First Name', 'Date of Birth', 'Gender', 'Pregnancy Status', 'Body Mass Index(BMI)', 'Body Surface Area (MSQ)',
-            'Height', 'Weight', 'Enrollment Date', 'Date Regimen Started', 'Patient transfered from', 'Service'
+        $label = [
+            'Patient CCC No.', 'First Name', 'Date of Birth', 'Gender', 'Enrollment Date', 'Change of Status Date', 'Date Regimen Started', 'Regimen Started On', 'Service'
         ];
-          $i=0;
-        foreach ($mandatory as $r) {
-           // echo $r ." => ".$result[0]->$r ."<br>";
-            if (trim($result[0]->$r)=='') {
-                $required .= $label[$i].", ";
-                $status = 1;
+        
+        $i=0;
+        if(!empty($patient_data)){
+            foreach ($mandatory as $r) {
+                if (trim($patient_data[$r]) == '') {
+                    $required .= "<br/><b>".$label[$i]."</b>";
+                    $status = 1;
                 }
                 $i++;
+            } 
         }
-        
-        echo json_encode(['status'=>$status,'fields'=> rtrim($required,',')]);
+
+        echo json_encode(['status' => $status, 'fields' => rtrim($required,',')]);
     }
 
     public function save() {
@@ -2218,8 +2218,8 @@ class Patient_management extends MY_Controller {
         $max_days_to_LDL_test = 365;
         $max_days_for_greater_1000_test = 90;
         $sql = "SELECT p.patient_number_ccc,pv.result,pv.test_date,DATEDIFF(NOW(), test_date) AS test_date_diff, DATEDIFF(NOW(), start_regimen_date) AS start_regimen_date_diff FROM patient p left JOIN  patient_viral_load pv ON p.patient_number_ccc = pv.patient_ccc_number  and p.patient_number_ccc = '$patient_ccc' 
-            Where p.patient_number_ccc = '$patient_ccc' group by p.patient_number_ccc order by test_date desc";
-        $query = $this->db->query($sql);
+            Where p.patient_number_ccc = ? group by p.patient_number_ccc order by test_date desc";
+        $query = $this->db->query($sql, array($patient_ccc));
         $datas = $query->result_array();
         foreach ($datas as $data) {
             $viral_load_test_date = $data['test_date'];
@@ -2228,7 +2228,7 @@ class Patient_management extends MY_Controller {
                 $start_regimen_date_diff = $data['start_regimen_date_diff'];
                 //if patient is enrolled in care and there is  ten or less days to viral load test date
                 if ($start_regimen_date_diff < $max_days_from_enrolled && (($max_days_from_enrolled - $start_regimen_date_diff) <= $max_days_to_notification)) {
-                    $msg = "This patient needs to do viral Load test before " + $start_regimen_date_diff + " days from today";
+                    $msg = "This patient needs to do viral Load test before " . $start_regimen_date_diff . " days from today";
                 }
                 // no patient_viral load info and 180 days has passed.
                 else if ($start_regimen_date_diff > $max_days_from_enrolled) {

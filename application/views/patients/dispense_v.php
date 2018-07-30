@@ -411,8 +411,8 @@
             if (resp.status === 1) {
 
                 bootbox.confirm({
-                    title: "Missing data Notice!",
-                    message: "Integral required data missing :(" + resp.fields + ")",
+                    title: "Missing Patient Data!",
+                    message: "Please fill in the missing required information for this patient:" + resp.fields,
                     buttons: {
                         cancel: {
                             label: '<i class="icon icon-times"></i> Cancel'
@@ -425,7 +425,7 @@
                         if (result === true) {
                             window.location.href = "<?php echo base_url() . 'patient_management/edit/' . $patient_id ?>";
                         } else {
-                            window.location.href = "<?php echo base_url() . 'patient_management/' ?>";
+                            window.location.href = "<?php echo base_url() . 'patient_management' ?>";
                         }
                     }
                 });
