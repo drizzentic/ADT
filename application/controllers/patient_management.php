@@ -490,7 +490,7 @@ class Patient_management extends MY_Controller {
     function requiredFields($ccid) {
         $required = '';
         $status = 0;
-        $result = $this->db->where('patient_number_ccc', $ccid)->get('patient')->result();
+        $result = $this->db->where('id', $ccid)->get('patient')->result();
         $mandatory = [
             'patient_number_ccc', 'first_name', 'dob', 'gender', 'pregnant', 'bmi', 'sa',
             'height', 'weight', 'date_enrolled', 'start_regimen', 'transfer_from', 'service'
