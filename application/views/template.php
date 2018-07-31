@@ -469,6 +469,7 @@ if ($user_is_administrator) {
 
 
                 $('#ReportGenerator').click(function () {
+                    
                     bootbox.confirm({
                         title: "Destroy planet?",
                         message: "Do you want to activate the Deathstar now? This cannot be undone.",

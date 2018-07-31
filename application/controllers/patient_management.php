@@ -1512,9 +1512,9 @@ class Patient_management extends MY_Controller {
 
     function getReportReady() {
         $start = microtime(true);
-        ini_set("memory_limit", '2048M');
-        ini_set("max_execution_time ", '3600');
-        $this->db->query("DROP TABLE IF EXISTS tbl_mastelist ");
+        //ini_set("memory_limit", '2048M');
+        //ini_set("max_execution_time ", '3600');
+        $this->db->query("DROP TABLE IF EXISTS tbl_mastelist");
         $this->db->query("DROP TABLE IF EXISTS tbl_patient_prep_test");
         $this->db->query("CREATE TABLE tbl_patient_prep_test AS SELECT ppt.*,pr.name
 			FROM patient_prep_test ppt
@@ -1529,7 +1529,7 @@ class Patient_management extends MY_Controller {
         $this->db->query("CREATE TABLE tbl_mastelist AS SELECT ccc_number,first_name,other_name,last_name,date_of_birth,age,maturity,pob,gender,pregnant,current_weight,current_height,current_bsa,current_bmi,phone_number,physical_address,alternate_address,other_illnesses,other_drugs,drug_allergies,tb,smoke,alcohol,date_enrolled,patient_source,supported_by,service,start_regimen,start_regimen_date,current_status,sms_consent,family_planning,tbphase,startphase,endphase,partner_status,status_change_date,disclosure,support_group,current_regimen,nextappointment,days_to_nextappointment,clinicalappointment,start_height,start_weight,start_bsa,start_bmi,transfer_from,prophylaxis,isoniazid_start_date,isoniazid_end_date,pep_reason,differentiated_care_status,viral_load_test_results,
         CASE WHEN t.is_tested = 1 THEN 'YES'
         ELSE 'NO' END AS is_tested
-        ,test_date	as prep_test_date,
+        ,test_date as prep_test_date,
         CASE WHEN t.test_result = 1 THEN 'Positive'
         ELSE 'Negative' END AS  prep_test_result,
         name as prep_reason_name
@@ -1610,7 +1610,7 @@ class Patient_management extends MY_Controller {
         $raw = preg_replace('/AND/', '', $query, 1);
 
         if (!empty($query)) {
-            $results = $this->db->query("SELECT * FROM tbl_mastelist WHERE $raw");
+           // $results = $this->db->query("SELECT * FROM tbl_mastelist WHERE $raw");
           
             $this->getPatientMasterList($results);
         } else {
