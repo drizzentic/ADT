@@ -86,7 +86,7 @@ if ($access_level == "system_administrator") {
         if ($user_is_pharmacist || $user_is_facility_administrator || $user_is_administrator) {
             //echo "<script src=\"" . base_url() . "Scripts/offline_database.js\" type=\"text/javascript\"></script>";
         }
-        
+
         /**
          * Load View with Head Section
          */
@@ -110,14 +110,14 @@ if ($access_level == "system_administrator") {
             }
         }
         ?> 
-        <script type="text/javascript" src="<?= base_url();?>assets/scripts/parsely.js"></script>
+        <script type="text/javascript" src="<?= base_url(); ?>assets/scripts/parsely.js"></script>
         <script>
-  
+
             $(document).ready(function () {
-               
-                  setTimeout(function () {
-                $(".message").fadeOut("2000");
-            }, 5000)
+
+                setTimeout(function () {
+                    $(".message").fadeOut("2000");
+                }, 5000)
 
                 setTimeout(function () {
                     $(".message").fadeOut("2000");
@@ -189,10 +189,10 @@ if ($user_is_administrator) {
             });
 
         </script>
-<?php
+        <?php
 //Load tableTools for datatables printing and exporting
-if (isset($report_title)) {
-    ?>
+        if (isset($report_title)) {
+            ?>
             <style type="text/css" title="currentStyle">
                 @import "<?php echo base_url() . 'assets/styles/datatable/demo_page.css'; ?>";
                 @import "<?php echo base_url() . 'assets/styles/datatable/demo_table.css'; ?>";
@@ -202,9 +202,9 @@ if (isset($report_title)) {
             <script type="text/javascript" charset="utf-8" src="<?php echo base_url() . 'assets/Scripts/datatable/ZeroClipboard.js' ?>"></script>
             <script type="text/javascript" charset="utf-8"  src="<?php echo base_url() . 'assets/Scripts/datatable/TableTools.js' ?>"></script>
 
-    <?php
-}
-?>      
+            <?php
+        }
+        ?>      
         <style>
             .setting_table {
             font-size: 0.8em;
@@ -226,39 +226,43 @@ if (isset($report_title)) {
                     </button>
                     <div class="top_logo" style="background: url('<?php echo base_url(); ?>assets/images/top_logo.png') no-repeat;">
                         <div id="system_title">
-<?php
-$this->load->view('sections/banner');
-?>
+                            <?php
+                            $this->load->view('sections/banner');
+                            ?>
                             <div id="facility_name">
                                 <span><?php echo $this->session->userdata('facility_name'); ?></span>
                             </div>
                             <div class="banner_text">
-                            <?php echo $banner_text; ?>
+                                <?php echo $banner_text; ?>
                             </div>
                         </div>
                     </div>
                     <div class="nav-collapse collapse" style="float: right">
-                                <?php if ($menus) { ?>
+                        <?php if ($menus) { ?>
                             <ul class="nav nav_header" style="margin: 0 !important;">
-                                <li><a href="<?php echo site_url('home_controller'); ?>" class="top_menu_link  first_link <?php if ($current == "home_controller") {
-                                    echo " top_menu_active ";
-                                } ?>"><i class="icon-home"></i> HOME </a></li>
-                            <?php
-                            foreach ($menus as $menu) {
-                                if (strtoupper($menu['text']) == "UPDATE") {
-                                    $facility = $this->session->userdata("facility");
-                                    $update_link = base_url() . 'github/index/' . $facility;
-                                    $update_link = str_replace("ADT", "UPDATE", $update_link);
-                                    ?>
+                                <li><a href="<?php echo site_url('home_controller'); ?>" class="top_menu_link  first_link <?php
+                                    if ($current == "home_controller") {
+                                        echo " top_menu_active ";
+                                    }
+                                    ?>"><i class="icon-home"></i> HOME </a></li>
+                                       <?php
+                                       foreach ($menus as $menu) {
+                                           if (strtoupper($menu['text']) == "UPDATE") {
+                                               $facility = $this->session->userdata("facility");
+                                               $update_link = base_url() . 'github/index/' . $facility;
+                                               $update_link = str_replace("ADT", "UPDATE", $update_link);
+                                               ?>
                                         <li><a href ="<?php echo $update_link; ?>" target="_blank" class="top_menu_link"><?php echo strtoupper($menu['text']); ?></a></li>
                                         <?php
                                     } else {
                                         ?>
-                                        <li> <a href = "<?php echo site_url($menu['url']); ?>" class="top_menu_link <?php if ($current == $menu['url'] || $menu['url'] == $link) {
-                                echo " top_menu_active ";
-                            } ?>">
+                                        <li> <a href = "<?php echo site_url($menu['url']); ?>" class="top_menu_link <?php
+                                            if ($current == $menu['url'] || $menu['url'] == $link) {
+                                                echo " top_menu_active ";
+                                            }
+                                            ?>">
                                                 <?php echo strtoupper($menu['text']); ?></a></li>
-                                                <?php
+                                        <?php
                                         $counter++;
                                     }
                                 }
@@ -286,7 +290,7 @@ $this->load->view('sections/banner');
 
 
         <?php
-        //Load validation settings for reports
+//Load validation settings for reports
         if (isset($reports) || isset($report_title)) {
             ?>
             <style type="text/css">
@@ -303,21 +307,21 @@ $this->load->view('sections/banner');
                 }
             </style>
             <script type="text/javascript">
-                $(document).ready(function () {
-                    $("select,input").css("font-weight", "bold");
-                    $("select").css("width", "auto");
-                    $("select").css("height", "30px");
-                    $("input").css("height", "30px");
-                });
+            $(document).ready(function () {
+                $("select,input").css("font-weight", "bold");
+                $("select").css("width", "auto");
+                $("select").css("height", "30px");
+                $("input").css("height", "30px");
+            });
             </script>
             <?php
         }
         ?>
 
 
-<?php
-if ($this->session->userdata("message_user_update_success")) {
-    ?>
+        <?php
+        if ($this->session->userdata("message_user_update_success")) {
+            ?>
             <script type="text/javascript">
                 setTimeout(function () {
                     $("#msg_user_update").fadeOut("2000");
@@ -325,11 +329,11 @@ if ($this->session->userdata("message_user_update_success")) {
 
             </script>
             <div id="msg_user_update"><?php echo $this->session->userdata("message_user_update_success"); ?></div>
-    <?php
-    $this->session->unset_userdata('message_user_update_success');
-}
-if (!isset($hide_side_menu)) {
-    ?>
+            <?php
+            $this->session->unset_userdata('message_user_update_success');
+        }
+        if (!isset($hide_side_menu)) {
+            ?>
             <div class="container-fluid">
                 <div class="row-fluid" id="row_container" style="padding-top:10.5%">
                     <div class="span3">
@@ -337,21 +341,21 @@ if (!isset($hide_side_menu)) {
 
                             <h3>Quick Links</h3>
                             <ul class="nav nav-list well">
-    <?php
-    if ($user_is_pharmacist || $user_is_facility_administrator) {
-        ?>
+                                <?php
+                                if ($user_is_pharmacist || $user_is_facility_administrator) {
+                                    ?>
                                     <li><a href="<?php echo base_url() . 'patient_management/addpatient_show' ?>"><i class="icon-user"></i>Add Patients</a></li>
 
-        <?php
-        $count_ccc = count($ccc_stores);
-        if ($count_ccc > 0) {
-            ?>
+                                    <?php
+                                    $count_ccc = count($ccc_stores);
+                                    if ($count_ccc > 0) {
+                                        ?>
                                         <li class="dropdown-submenu">
                                             <a tabindex="-1" href="#"><i class="icon-plus"></i>Stock Transactions</a>
                                             <ul class="dropdown-menu">
-            <?php
-            foreach ($ccc_stores as $ccc_store) {
-                ?>
+                                                <?php
+                                                foreach ($ccc_stores as $ccc_store) {
+                                                    ?>
                                                     <li><a href="<?php echo base_url() . 'inventory_management/stock_transaction/' . $ccc_store['id']; ?>"><i class="icon-inbox"></i>Receive/Issue - <?php echo $ccc_store['Name']; ?></a></li>
                                                     <?php
                                                 }
@@ -363,9 +367,9 @@ if (!isset($hide_side_menu)) {
                                         <li>
                                             <a href="<?php echo base_url() . 'home_controller/get_faq'; ?>" target="_blank"><i class="icon-question-sign"></i>FAQ</a>
                                         </li>
-            <?php
-        } else {//If no Extra pharmacies, load main store and Main Pharmacy Only
-            ?>
+                                        <?php
+                                    } else {//If no Extra pharmacies, load main store and Main Pharmacy Only
+                                        ?>
                                         <li><a href="<?php echo base_url() . 'inventory_management/stock_transaction/1' ?>"><i class="icon-inbox"></i>Receive/Issue - Main Store</a></li>
                                         <li><a href="<?php echo base_url() . 'inventory_management/stock_transaction/2' ?>"><i class="icon-inbox"></i>Receive/Issue - Pharmacy</a></li>
                                         <?php
@@ -373,13 +377,13 @@ if (!isset($hide_side_menu)) {
                                     ?>
 
                                     <li class="divider"></li>
-                                    <li><a href="<?php echo base_url() . 'facilitydashboard_management/getPatientMasterList' ?>" target="_blank"><i class="icon-book"></i>Export Patient List</a></li>			
+                                    <li><a href="#reportGenerator" id="ReportGenerator"><i class="icon-book"></i>Generate Patient List</a></li>			
                                     <li><a href="<?php echo base_url() . 'assets/manuals/user_manual.pdf' ?>" target="_blank"><i class="icon-book"></i>User Manual</a></li>	
 
 
-        <?php
-    }if ($user_is_administrator) {
-        ?>
+                                    <?php
+                                }if ($user_is_administrator) {
+                                    ?>
                                     <li>
                                         <a  id="addCounty" class="admin_link"><i class="icon-eye-open icon-black"></i>View Counties</a>
                                     </li>
@@ -417,17 +421,17 @@ if (!isset($hide_side_menu)) {
                                     <li>
                                         <a href="<?php echo base_url() . 'assets/manuals/user_manual.pdf' ?>"><i class="icon-book"></i>User Manual</a>
                                     </li>	
-        <?php
-    }
-    ?>
+                                    <?php
+                                }
+                                ?>
 
 
                             </ul>
                             <h3>Notifications</h3>
                             <ul id="notification1" class="nav nav-list well">
-    <?php
-    if ($user_is_administrator) {
-        ?>
+                                <?php
+                                if ($user_is_administrator) {
+                                    ?>
                                     <li><a id='online' class='admin_link'><i class='icon-signal'></i>Online Users <div id="span2" class='badge badge-important'></div></a></li>
                                     <li><a id='inactive' class='admin_link'><i class='icon-th'></i>Deactivated Users <div id="span1" class='badge badge-important'></div></a></li>
                                     <li id="span3"></li>
@@ -440,20 +444,20 @@ if (!isset($hide_side_menu)) {
                                     <li id="span4"></li>
                                     <li id="span5"></li>
                                     <li id="span6"></li>
-        <?php
-    }
-    ?>
+                                    <?php
+                                }
+                                ?>
                             </ul>	
                         </div>
                     </div>
                     <div class="span9">
-    <?php
-}
-$this->load->view($content_view);
+                        <?php
+                    }
+                    $this->load->view($content_view);
 //Load modals view
-$this->load->view('sections/modals_v');
+                    $this->load->view('sections/modals_v');
 //Load modals view end
-?>
+                    ?>
                 </div>
             </div>
         </div>
@@ -461,19 +465,34 @@ $this->load->view('sections/modals_v');
         <!-- This sets css for display length in reports -->
         <script type="text/javascript">
             $(document).ready(function () {
-
-               
-                 
-            
-
                 $("div.dataTables_length select").css("width", "13%");
+
+
+                $('#ReportGenerator').click(function () {
+                    bootbox.confirm({
+                        title: "Destroy planet?",
+                        message: "Do you want to activate the Deathstar now? This cannot be undone.",
+                        buttons: {
+                            cancel: {
+                                label: '<i class="fa fa-times"></i> Cancel'
+                            },
+                            confirm: {
+                                label: '<i class="fa fa-check"></i> Confirm'
+                            }
+                        },
+                        callback: function (result) {
+                            console.log('This was logged in the callback: ' + result);
+                        }
+                    });
+                });
+
             })
         </script>   
         <div class="row-fluid">
             <footer id="bottom_ribbon">
                 <script>
-                     
-                    </script>
+
+                </script>
                 <div class="container-fluid">
                     <div class="row-fluid">
                         <div id="footer_text2" class="span12" style="text-align:center">
@@ -498,11 +517,11 @@ $this->load->view('sections/modals_v');
                         <div class="controls">
                             <select id="search_criteria" name="search_criteria" required  class="span3">
                                 <option data-cat='patient' value="0" data-dest="patient_management/load_view/details/">Search Patients</option>
-<?php
-foreach ($ccc_stores as $ccc_store) {
-    echo "<option data-cat='drugcode' value='" . $ccc_store['id'] . "' data-id ='" . $ccc_store['id'] . "' data-dest='inventory_management/getDrugBinCard/'>Search drugs (" . $ccc_store['Name'] . ")</option>";
-}
-?>
+                                <?php
+                                foreach ($ccc_stores as $ccc_store) {
+                                    echo "<option data-cat='drugcode' value='" . $ccc_store['id'] . "' data-id ='" . $ccc_store['id'] . "' data-dest='inventory_management/getDrugBinCard/'>Search drugs (" . $ccc_store['Name'] . ")</option>";
+                                }
+                                ?>
                             </select>
                         </div>
                         <p></p>
@@ -513,7 +532,7 @@ foreach ($ccc_stores as $ccc_store) {
                 <div class="modal-footer">
                     <input type="submit" class="btn btn-primary" value="Get details">
                 </div>
-<?php echo form_close(); ?>
+                <?php echo form_close(); ?>
         </div>
         <!--end Search modal-->
     </body>

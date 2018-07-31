@@ -11,6 +11,10 @@ class MY_Controller extends CI_Controller {
         parent::__construct();
         date_default_timezone_set('Africa/Nairobi');
     }
+    
+    function loadChoices($column){
+        return $this->db->select($column)->group_by($column)->get('tbl_mastelist')->result();
+    }
 
     function getDrugData($id) {
         $data = $this->db

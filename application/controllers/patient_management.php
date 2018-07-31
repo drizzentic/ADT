@@ -489,27 +489,41 @@ class Patient_management extends MY_Controller {
 
     function requiredFields($ccid) {
         $required = '';
-         $status =0;
+        $status = 0;
         $result = $this->db->where('patient_number_ccc', $ccid)->get('patient')->result();
         $mandatory = [
             'patient_number_ccc', 'first_name', 'dob', 'gender', 'pregnant', 'bmi', 'sa',
             'height', 'weight', 'date_enrolled', 'start_regimen', 'transfer_from', 'service'
         ];
-          $label = [
+        $label = [
             'Patient CCC No.', 'First Name', 'Date of Birth', 'Gender', 'Pregnancy Status', 'Body Mass Index(BMI)', 'Body Surface Area (MSQ)',
             'Height', 'Weight', 'Enrollment Date', 'Date Regimen Started', 'Patient transfered from', 'Service'
         ];
-          $i=0;
+        $i = 0;
         foreach ($mandatory as $r) {
-           // echo $r ." => ".$result[0]->$r ."<br>";
-            if (trim($result[0]->$r)=='') {
-                $required .= $label[$i].", ";
+            // echo $r ." => ".$result[0]->$r ."<br>";
+            if (trim($result[0]->$r) == '') {
+                $required .= $label[$i] . ", ";
                 $status = 1;
-                }
-                $i++;
+            }
+            $i++;
         }
-        
-        echo json_encode(['status'=>$status,'fields'=> rtrim($required,',')]);
+
+        echo json_encode(['status' => $status, 'fields' => rtrim($required, ',')]);
+    }
+
+    public function report() {
+
+        $content_view = 'patient_report_v';
+        $data['transfered'] = $this->loadChoices('patient_source');
+        $data['service'] = $this->loadChoices('service');
+        $data['startreg'] = $this->loadChoices('start_regimen');
+        $data['curreg'] = $this->loadChoices('current_regimen');
+        $data['currstat'] = $this->loadChoices('current_status');
+
+        //$data['hide_side_menu'] = 1;  
+        $data['content_view'] = $content_view;
+        $this->base_params($data);
     }
 
     public function save() {
@@ -1494,6 +1508,129 @@ class Patient_management extends MY_Controller {
         $sql = "UPDATE patient SET who_stage = '$who_stage' WHERE patient_number_ccc ='$patient_ccc'";
         $this->db->query($sql);
         $count = $this->db->affected_rows();
+    }
+
+    function getReportReady() {
+        $start = microtime(true);
+        ini_set("memory_limit", '2048M');
+        ini_set("max_execution_time ", '3600');
+        $this->db->query("DROP TABLE IF EXISTS tbl_mastelist ");
+        $this->db->query("DROP TABLE IF EXISTS tbl_patient_prep_test");
+        $this->db->query("CREATE TABLE tbl_patient_prep_test AS SELECT ppt.*,pr.name
+			FROM patient_prep_test ppt
+			INNER JOIN prep_reason pr ON pr.id = ppt.prep_reason_id
+			INNER JOIN (
+					SELECT patient_id, MAX(test_date) test_date
+					FROM patient_prep_test 
+					GROUP BY patient_id
+					) t ON t.patient_id = ppt.patient_id AND t.test_date = ppt.test_date
+			GROUP BY ppt.patient_id");
+
+        $this->db->query("CREATE TABLE tbl_mastelist AS SELECT ccc_number,first_name,other_name,last_name,date_of_birth,age,maturity,pob,gender,pregnant,current_weight,current_height,current_bsa,current_bmi,phone_number,physical_address,alternate_address,other_illnesses,other_drugs,drug_allergies,tb,smoke,alcohol,date_enrolled,patient_source,supported_by,service,start_regimen,start_regimen_date,current_status,sms_consent,family_planning,tbphase,startphase,endphase,partner_status,status_change_date,disclosure,support_group,current_regimen,nextappointment,days_to_nextappointment,clinicalappointment,start_height,start_weight,start_bsa,start_bmi,transfer_from,prophylaxis,isoniazid_start_date,isoniazid_end_date,pep_reason,differentiated_care_status,viral_load_test_results,
+        CASE WHEN t.is_tested = 1 THEN 'YES'
+        ELSE 'NO' END AS is_tested
+        ,test_date	as prep_test_date,
+        CASE WHEN t.test_result = 1 THEN 'Positive'
+        ELSE 'Negative' END AS  prep_test_result,
+        name as prep_reason_name
+        FROM vw_patient_list v1 
+		LEFT JOIN tbl_patient_prep_test t ON t.patient_id = v1.patient_id 
+		GROUP BY v1.patient_id;");
+        $time_elapsed_secs = microtime(true) - $start;
+        echo json_encode(['status' => 1, 'duration' => ($time_elapsed_secs / 60) . " Mins"]);
+    }
+
+    function generateReport() {
+
+        $query = "";
+        $from = $this->input->post('from');
+        $to = $this->input->post('to');
+        $dateEnrolled = $this->input->post('dateEnrolled');
+        $gender = $this->input->post('gender');
+        $trans = $this->input->post('transferedFrom');
+        $maturity = $this->input->post('agegroup');
+        $service = $this->input->post('service');
+        $startRegimen = $this->input->post('pregnant');
+        $currRegimen = $this->input->post('currentRegimen');
+        $currStatus = $this->input->post('currentStatus');
+        $smokes = $this->input->post('smokes');
+        $drink = $this->input->post('alcohol');
+        $pregnant = $this->input->post('pregnant');
+        $tb = $this->input->post('tb');
+        $disclosure = $this->input->post('disclosure');
+        $differentiated = $this->input->post('diffCare');
+
+        if (!empty($from) && empty($to)) {
+            $query .= " AND date_enrolled ='$from'";
+        }
+        if (!empty($to)) {
+            $query .= " AND date_enrolled BETWEEN '$from' AND '$to' ";
+        }
+        if (!empty($gender)) {
+            $query .= " AND gender ='$gender'";
+        }
+        if (!empty($maturity)) {
+            $query .= " AND maturity ='$maturity'";
+        }
+        if (!empty($service)) {
+            $query .= " AND service ='$service'";
+        }
+        if (!empty($startRegimen)) {
+            $query .= " AND start_regimen ='$startRegimen'";
+        }
+        if (!empty($currRegimen)) {
+            $query .= " AND current_regimen ='$currRegimen'";
+        }
+        if (!empty($smokes)) {
+            $query .= " AND smoke ='$smokes'";
+        }
+        if (!empty($drink)) {
+            $query .= " AND alcohol ='$drink'";
+        }
+        if (!empty($pregnant)) {
+            $query .= " AND pregnant ='$pregnant'";
+        }
+        if (!empty($tb)) {
+            $query .= " AND tb ='$tb'";
+        }
+        if (!empty($differentiated)) {
+            $query .= " AND differentiated_care_status ='$differentiated'";
+        }
+        if (!empty($currStatus)) {
+            $query .= " AND current_status ='$currStatus'";
+        }
+
+        if (!empty($disclosure)) {
+            $query .= " AND disclosure ='$disclosure'";
+        }
+        if (!empty($trans)) {
+            $query .= " AND patient_source ='$trans'";
+        }
+
+        $raw = preg_replace('/AND/', '', $query, 1);
+
+        if (!empty($query)) {
+            $results = $this->db->query("SELECT * FROM tbl_mastelist WHERE $raw");
+          
+            $this->getPatientMasterList($results);
+        } else {
+            $results = $this->db->query("SELECT * FROM `tbl_mastelist`");
+           // print_r($results);
+            $this->getPatientMasterList($results);
+        }
+    }
+
+    public function getPatientMasterList($results) {
+        ini_set("memory_limit", '2048M');
+        $this->load->dbutil();
+        $this->load->helper('file');
+        $this->load->helper('download');
+        $delimiter = ",";
+        $newline = "\r\n";
+        $filename = "patient_master_list.csv";
+        $data = $this->dbutil->csv_from_result($results, $delimiter, $newline);
+        ob_clean(); //Removes spaces
+        force_download($filename, $data);
     }
 
     public function getPatientMergeList() {
