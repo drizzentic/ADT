@@ -137,7 +137,7 @@
 
 <script>
     $(document).ready(function () {
-
+  
         $('#genForm1111111111').click(function () {
             $.post("<?php echo base_url(); ?>patient_management/generateReport", $('#reportForm').serialize(), function () {
 

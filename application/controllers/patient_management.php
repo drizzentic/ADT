@@ -1538,6 +1538,7 @@ class Patient_management extends MY_Controller {
 		GROUP BY v1.patient_id;");
         $time_elapsed_secs = microtime(true) - $start;
         echo json_encode(['status' => 1, 'duration' => ($time_elapsed_secs / 60) . " Mins"]);
+        redirect('patient_management/report');
     }
 
     function generateReport() {
@@ -1610,12 +1611,11 @@ class Patient_management extends MY_Controller {
         $raw = preg_replace('/AND/', '', $query, 1);
 
         if (!empty($query)) {
-           // $results = $this->db->query("SELECT * FROM tbl_mastelist WHERE $raw");
-          
+             $results = $this->db->query("SELECT * FROM tbl_mastelist WHERE $raw");
             $this->getPatientMasterList($results);
         } else {
             $results = $this->db->query("SELECT * FROM `tbl_mastelist`");
-           // print_r($results);
+            // print_r($results);
             $this->getPatientMasterList($results);
         }
     }

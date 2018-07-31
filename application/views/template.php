@@ -312,6 +312,42 @@ if ($user_is_administrator) {
                 $("select").css("width", "auto");
                 $("select").css("height", "30px");
                 $("input").css("height", "30px");
+
+                window.addEventListener("load", function () {
+
+                    // does the actual opening
+                    function openWindow(event) {
+                        event = event || window.event;
+
+                        // find the url and title to set
+                        var href = this.getAttribute("href");
+                        var newTitle = this.getAttribute("data-title");
+                        // or if you work the title out some other way...
+                        // var newTitle = "Some constant string";
+
+                        // open the window
+                        var newWin = window.open(href, "_blank");
+
+                        // add a load listener to the window so that the title gets changed on page load
+                        newWin.addEventListener("load", function () {
+                            newWin.document.title = newTitle;
+                        });
+
+                        // stop the default `a` link or you will get 2 new windows!
+                        event.returnValue = false;
+                    }
+
+                    // find all a tags opening in a new window
+                    var links = document.querySelectorAll("a[target=_blank][data-title]");
+                    // or this if you don't want to store custom titles with each link
+                    //var links = document.querySelectorAll("a[target=_blank]");
+
+                    // add a click event for each so we can do our own thing
+                    for (var i = 0; i < links.length; i++) {
+                        links[i].addEventListener("click", openWindow.bind(links[i]));
+                    }
+
+                });
             });
             </script>
             <?php
@@ -377,7 +413,7 @@ if ($user_is_administrator) {
                                     ?>
 
                                     <li class="divider"></li>
-                                    <li><a href="#reportGenerator" id="ReportGenerator"><i class="icon-book"></i>Generate Patient List</a></li>			
+                                    <li><a href="<?php echo base_url() . 'patient_management/getReportReady' ?>" target="_blank" id="ReportGenerator"><i class="icon-book"></i>Generate Patient List</a></li>			
                                     <li><a href="<?php echo base_url() . 'assets/manuals/user_manual.pdf' ?>" target="_blank"><i class="icon-book"></i>User Manual</a></li>	
 
 
@@ -468,24 +504,6 @@ if ($user_is_administrator) {
                 $("div.dataTables_length select").css("width", "13%");
 
 
-                $('#ReportGenerator').click(function () {
-                    
-                    bootbox.confirm({
-                        title: "Destroy planet?",
-                        message: "Do you want to activate the Deathstar now? This cannot be undone.",
-                        buttons: {
-                            cancel: {
-                                label: '<i class="fa fa-times"></i> Cancel'
-                            },
-                            confirm: {
-                                label: '<i class="fa fa-check"></i> Confirm'
-                            }
-                        },
-                        callback: function (result) {
-                            console.log('This was logged in the callback: ' + result);
-                        }
-                    });
-                });
 
             })
         </script>   
