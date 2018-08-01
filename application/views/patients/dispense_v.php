@@ -589,7 +589,7 @@
             }
         });
 
-        $('#days_to_next').keyup(function () {
+        $('#days_to_next').change(function () {
             $('.duration').val($(this).val())
             $('.duration').trigger('change');
 
