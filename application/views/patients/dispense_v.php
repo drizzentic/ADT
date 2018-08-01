@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <div class="span6 dispensing-field" style="padding-top: 17px;">
-                        <input type="text" readonly="" id="patient" name="patient" class="" value="<?= $age; ?> Years" />
+                        <input type="text" readonly="" id="age" name="age" class="" value="<?= $age; ?> Years" />
                     </div>
                 </div>
                 <div class="row-fluid">
