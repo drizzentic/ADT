@@ -591,6 +591,8 @@
 
         $('#days_to_next').keyup(function () {
             $('.duration').val($(this).val())
+            $('.duration').trigger('change');
+
         });
 
         //If facility has more than one dispensing point, use the selected dispensing point.
