@@ -602,7 +602,7 @@ public function missed_appointments_notification($display_array=false){
 		$this -> base_params($data);
 	}
 	public function load_missed_appointments_view(){
-		$patients=$this->defaulter_notification(true);
+		$patients=$this->missed_appointments_notification(true);
 		//columns for dataTables
 		$columns=array("#","CCC NO","Patient Name","Contact","Date Enrolled","Next Appointment","Current Regimen","Status","Action");
 		//if patients is null create empty array
