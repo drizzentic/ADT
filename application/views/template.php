@@ -136,9 +136,10 @@ if ($user_is_pharmacist || $user_is_facility_administrator) {
                     $('#span1').load('<?php echo base_url() . 'notification_management/error_notification'; ?>');
                     $('#span2').load('<?php echo base_url() . 'notification_management/reporting_notification'; ?>');
                     $('#span3').load('<?php echo base_url() . 'notification_management/defaulter_notification'; ?>');
-                    $('#span4').load('<?php echo base_url() . 'notification_management/followup_notification'; ?>');
-                    $('#span5').load('<?php echo base_url() . 'notification_management/prescriptions_notification_view'; ?>');
-                    $('#span6').load('<?php echo base_url() . 'notification_management/update_notification'; ?>');
+                    $('#span4').load('<?php echo base_url() . 'notification_management/missed_appointments_notification'; ?>');                    
+                    $('#span5').load('<?php echo base_url() . 'notification_management/followup_notification'; ?>');
+                    $('#span6').load('<?php echo base_url() . 'notification_management/prescriptions_notification_view'; ?>');
+                    $('#span7').load('<?php echo base_url() . 'notification_management/update_notification'; ?>');
 
     <?php
 }
@@ -413,8 +414,8 @@ if ($user_is_administrator) {
                                     ?>
 
                                     <li class="divider"></li>
-                                    <li><a href="<?php echo base_url() . 'patient_management/getReportReady' ?>" target="_blank" id="ReportGenerator"><i class="icon-book"></i>Generate Patient List</a></li>			
-                                    <li><a href="<?php echo base_url() . 'assets/manuals/user_manual.pdf' ?>" target="_blank"><i class="icon-book"></i>User Manual</a></li>	
+                                    <li><a href="<?php echo base_url() . 'patient_management/getReportReady' ?>" target="_blank" id="ReportGenerator"><i class="icon-book"></i>Generate Patient List</a></li>           
+                                    <li><a href="<?php echo base_url() . 'assets/manuals/user_manual.pdf' ?>" target="_blank"><i class="icon-book"></i>User Manual</a></li> 
 
 
                                     <?php
@@ -456,7 +457,7 @@ if ($user_is_administrator) {
                                     </li>
                                     <li>
                                         <a href="<?php echo base_url() . 'assets/manuals/user_manual.pdf' ?>"><i class="icon-book"></i>User Manual</a>
-                                    </li>	
+                                    </li>   
                                     <?php
                                 }
                                 ?>
@@ -483,7 +484,7 @@ if ($user_is_administrator) {
                                     <?php
                                 }
                                 ?>
-                            </ul>	
+                            </ul>   
                         </div>
                     </div>
                     <div class="span9">
@@ -518,7 +519,7 @@ if ($user_is_administrator) {
                             Government of Kenya &copy; <?php echo date('Y'); ?>.
                             All Rights Reserved . <strong>Web-ADT version <?= $this->config->item('adt_version'); ?></strong>
 
-                        </div>	
+                        </div>  
                     </div>
                 </div>
             </footer>
