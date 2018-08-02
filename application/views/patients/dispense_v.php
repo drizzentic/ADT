@@ -1146,7 +1146,7 @@
                         var prev_value = previous_dispensed_data[i]['value'];
                         var prev_frequency = previous_dispensed_data[i]['frequency'];
                         if (previous_dispensed_data[i]['pill_count'] != "") {
-                            var prev_pill_count = previous_dispensed_data[i]['pill_count'];//Previous pill count will be used to calculate expected pill count
+                            var prev_pill_count = previous_dispensed_data[i]['mos'];//Previous pill count will be used to calculate expected pill count
                         } else {
                             var prev_pill_count = 0;//Previous pill count will be used to calculate expected pill count 
                         }
