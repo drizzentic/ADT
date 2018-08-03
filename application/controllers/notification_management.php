@@ -528,9 +528,7 @@ public function missed_appointments_notification($display_array=false){
 		      LEFT JOIN patient_status ps ON ps.id=p.current_status
 		      LEFT JOIN regimen r ON r.id=p.current_regimen
 		      WHERE  p.active='1'
-		      and p.nextappointment  = '".$appointment_90."'
-		      AND ps.Name LIKE '%lost%'
-		        ";
+		      and p.nextappointment  = '".$appointment_90."'";
 		$query=$this->db->query($sql);
 		$results=$query->result_array();
 
