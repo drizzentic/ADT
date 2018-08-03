@@ -536,7 +536,7 @@ public function missed_appointments_notification($display_array=false){
             return $results;
 		}else{
 			$total=$this -> db -> affected_rows();
-			echo "<li><a href='".base_url()."notification_management/load_followup_view'><i class='icon-th'></i>Lost to Followup <div class='badge badge-important'>" . $total . "</div></a></li>";
+			echo "<li><a href='".base_url()."notification_management/load_followup_view'><i class='icon-th'></i>Lost to Followup (Last Day Alert)<div class='badge badge-important'>" . $total . "</div></a></li>";
 		}
 	}
 

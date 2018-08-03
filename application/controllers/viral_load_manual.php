@@ -24,7 +24,7 @@ class Viral_load_manual extends MY_Controller {
         $viral_results = $query -> result_array();
 		$tmpl = array('table_open' => '<table class="setting_table table table-bordered table-striped">');
 		$this -> table -> set_template($tmpl);
-		$this -> table -> set_heading('id','Patient CCC Number', 'Test Date', 'Result','Justification','Options');
+		$this -> table -> set_heading('id','Patient CCC Number','Date Collected', 'Test Date', 'Result','Justification','Options');
 		foreach ($viral_results as $viral_result) {
 			$links = "";
 			$array_param = array(
@@ -36,7 +36,7 @@ class Viral_load_manual extends MY_Controller {
 			);
 			$links .= anchor('#edit_form', 'Edit', $array_param);
 			$this -> table -> add_row(
-				$viral_result['id'],$viral_result['patient_ccc_number'],$viral_result['test_date'],$viral_result['result'],$viral_result['justification'], $links);
+				$viral_result['id'],$viral_result['patient_ccc_number'],$viral_result['date_collected'],$viral_result['test_date'],$viral_result['result'],$viral_result['justification'], $links);
 		}
 		$data['viral_result'] = $this -> table -> generate();
 		$this -> base_params($data);
