@@ -3693,11 +3693,14 @@ public function getPatientMissingAppointments($from = "", $to = "") {
 	$sql = "SELECT 
 	pa.patient,
 	pa.appointment 
-	FROM patient_appointment pa
-	WHERE pa.appointment >= '$from' 
+	FROM patient_appointment pa, patient p,patient_status ps
+	WHERE p.current_status  = ps.id
+	AND LOWER(ps.Name) like '%active%'
+	and  pa.patient = p.patient_number_ccc
+	AND pa.appointment >= '$from' 
 	AND pa.appointment <= '$to'
 	AND facility = '$facility_code' 
-	GROUP BY patient, appointment";
+	GROUP BY patient, appointmen";
 	$query = $this -> db -> query($sql);
 
 	$results = $query -> result_array();
