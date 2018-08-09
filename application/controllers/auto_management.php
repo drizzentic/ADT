@@ -532,8 +532,8 @@ class Auto_management extends MY_Controller {
 						$justification = $tests['Justification'];
 						$datecollected = $tests['datecollected'];
 						//An array to store patient viral Load data
-						$sql = "CALL proc_check_viralload(?, ?, ?, ?, ?)";
-						$parameters = array($id, $ccc_no, $date_tested, $result, $justification);
+						$sql = "CALL proc_check_viralload(?, ?, ?, ?, ?,?)";
+						$parameters = array($id, $ccc_no, $date_tested,$datecollected, $result, $justification);
 						$this->db->query($sql, $parameters);
 					}
 				}

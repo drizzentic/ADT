@@ -19,28 +19,99 @@ class Viral_load_manual extends MY_Controller {
 		$access_level = $this -> session -> userdata('user_indicator');
 		$data = array();
 		//get viral load from the database
-		$sql="select * from patient_viral_load";
+		$sql="select * from patient_viral_load limit 10";
         $query = $this -> db -> query($sql);
         $viral_results = $query -> result_array();
-		$tmpl = array('table_open' => '<table class="setting_table table table-bordered table-striped">');
+		$tmpl = array('table_open' => '<table class="vl_results table table-bordered table-striped">');
 		$this -> table -> set_template($tmpl);
 		$this -> table -> set_heading('id','Patient CCC Number','Date Collected', 'Test Date', 'Result','Justification','Options');
-		foreach ($viral_results as $viral_result) {
-			$links = "";
-			$array_param = array(
-				'id' => $viral_result['id'], 
-				'role' => 'button', 
-				'class' => 'edit_user', 
-				'data-toggle' => 'modal', 
-				'name' => $viral_result['patient_ccc_number']
-			);
-			$links .= anchor('#edit_form', 'Edit', $array_param);
-			$this -> table -> add_row(
-				$viral_result['id'],$viral_result['patient_ccc_number'],$viral_result['date_collected'],$viral_result['test_date'],$viral_result['result'],$viral_result['justification'], $links);
-		}
 		$data['viral_result'] = $this -> table -> generate();
 		$this -> base_params($data);
 	}
+
+	function get_viral_load(){
+
+
+				$aColumns = array('patient_ccc_number','date_collected','test_date','result','justification','id');
+				$iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
+				$iDisplayLength = $this -> input -> get_post('iDisplayLength', true);
+				$iSortCol_0 = $this -> input -> get_post('iSortCol_0', true);
+				$iSortingCols = $this -> input -> get_post('iSortingCols', true);
+				$sSearch = $this -> input -> get_post('sSearch', true);
+				$sEcho = $this -> input -> get_post('sEcho', true);
+
+				$count = 0;
+
+			// Paging
+				if (isset($iDisplayStart) && $iDisplayLength != '-1') {
+					$this -> db -> limit($this -> db -> escape_str($iDisplayLength), $this -> db -> escape_str($iDisplayStart));
+				}
+
+					// Ordering
+				if (isset($iSortCol_0)) {
+					for ($i = 0; $i < intval($iSortingCols); $i++) {
+						$iSortCol = $this -> input -> get_post('iSortCol_' . $i, true);
+						$bSortable = $this -> input -> get_post('bSortable_' . intval($iSortCol), true);
+						$sSortDir = $this -> input -> get_post('sSortDir_' . $i, true);
+
+						if ($bSortable == 'true') {
+							$this -> db -> order_by($aColumns[intval($this -> db -> escape_str($iSortCol))], $this -> db -> escape_str($sSortDir));
+						}
+					}
+				}
+			/*
+			* Filtering
+			* NOTE this does not match the built-in DataTables filtering which does it
+			* word by word on any field. It's possible to do here, but concerned about efficiency
+			* on very large tables, and MySQL's regex functionality is very limited
+			*/
+			if (isset($sSearch) && !empty($sSearch)) {
+				for ($i = 0; $i < count($aColumns); $i++) {
+					$bSearchable = $this -> input -> get_post('bSearchable_' . $i, true);
+
+				// Individual column filtering
+					if (isset($bSearchable) && $bSearchable == 'true') {
+						$this -> db -> or_like($aColumns[$i], $this -> db -> escape_like_str($sSearch));
+					}
+				}
+			}
+
+
+
+		// Select Data
+		// $sql = "select patient_ccc_number,test_date,result,justification from patient_viral_load where test_date >= '$start_date' and  test_date <= '$end_date'
+		// $sFilter $sLimit";
+
+			$this->db->select("patient_ccc_number,date_collected,test_date,result,justification, CONCAT('<a href=#edit_form id=',id,' role=button class = edit_user data-toggle=modal name=',patient_ccc_number,'>Edit<a/>') AS id",FALSE);
+				$q = $this->db->get('patient_viral_load');
+			$rResult = $q;
+		// Data set length after filtering
+			$iFilteredTotal =  count($rResult);
+		//Total number of drugs that are displayed
+			$iTotal = count($rResult);
+		//$iFilteredTotal = $iTotal;
+
+		// Output
+			$output = array('sEcho' => intval($sEcho), 'iTotalRecords' => $iTotal, 'iTotalDisplayRecords' => $iFilteredTotal, 'aaData' => array());
+
+			foreach ($rResult->result_array() as $aRow) {
+				$row = array();
+				$x = 0;
+				foreach ($aColumns as $col) {
+					$x++;
+				//Format soh
+					$row[] = $aRow[$col];
+				}
+				$id = $aRow['id'];
+				$output['aaData'][] = $row;
+			}
+
+			echo json_encode($output);
+
+		}
+
+
+
 	public function get_patient_ccc_number()
 	{
 		$sql="select patient_number_ccc as patient_ccc_number from patient";

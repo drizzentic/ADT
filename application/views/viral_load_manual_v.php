@@ -36,6 +36,20 @@
     				});
                 }
             });
+
+        		var table=$('.vl_results').dataTable( {
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?= base_url();?>viral_load_manual/get_viral_load",
+	        "bJQueryUI": true,
+	        "sPaginationType": "full_numbers",
+	        "bStateSave" : true,
+	        "bDestroy": true,
+	       "aoColumnDefs": [
+      		{ "bSearchable": false, "aTargets": [ 2 ] }
+    		] 
+		});
+
         
 	});
 
