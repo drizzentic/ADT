@@ -25,18 +25,18 @@ class Inventory_management extends MY_Controller {
     }
 
     public function stock_listing($stock_type = 1) {
-        $facility_code = $this->session->userdata('facility');
+        $facility_code = $this -> session -> userdata('facility');
         $data = array();
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
         $aColumns = array('drug', 'generic_name', 'stock_level', 'drug_unit', 'pack_size', 'supported_by', 'dose');
-        $iDisplayStart = $this->input->get_post('iDisplayStart', true);
-        $iDisplayLength = $this->input->get_post('iDisplayLength', true);
-        $iSortCol_0 = $this->input->get_post('iSortCol_0', true);
-        $iSortingCols = $this->input->get_post('iSortingCols', true);
-        $sSearch = $this->input->get_post('sSearch', true);
-        $sEcho = $this->input->get_post('sEcho', true);
+        $iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
+        $iDisplayLength = $this -> input -> get_post('iDisplayLength', true);
+        $iSortCol_0 = $this -> input -> get_post('iSortCol_0', true);
+        $iSortingCols = $this -> input -> get_post('iSortingCols', true);
+        $sSearch = $this -> input -> get_post('sSearch', true);
+        $sEcho = $this -> input -> get_post('sEcho', true);
         /*
          * Paging
          * */
@@ -52,7 +52,7 @@ class Inventory_management extends MY_Controller {
             $sOrder = "ORDER BY  ";
             for ($i = 0; $i < intval($_GET['iSortingCols']); $i++) {
                 if ($_GET['bSortable_' . intval($_GET['iSortCol_' . $i])] == "true") {
-                    $sOrder .= "'" . $aColumns[intval($_GET['iSortCol_' . $i])] . "' " . ($_GET['sSortDir_' . $i] === 'asc' ? 'asc' : 'desc') . ", ";
+                    $sOrder .= "`" . $aColumns[intval($_GET['iSortCol_' . $i])] . "` " . ($_GET['sSortDir_' . $i] === 'asc' ? 'asc' : 'desc') . ", ";
                 }
             }
 
@@ -73,7 +73,7 @@ class Inventory_management extends MY_Controller {
         if (isset($sSearch) && !empty($sSearch)) {
             $sFilter = "AND ( ";
             for ($i = 0; $i < count($aColumns); $i++) {
-                $bSearchable = $this->input->get_post('bSearchable_' . $i, true);
+                $bSearchable = $this -> input -> get_post('bSearchable_' . $i, true);
 
                 // Individual column filtering
                 if (isset($bSearchable) && $bSearchable == 'true') {
@@ -83,8 +83,9 @@ class Inventory_management extends MY_Controller {
                         }
                         $c = 1;
                         $sSearch = mysql_real_escape_string($sSearch);
-                        $sFilter .= "'" . $aColumns[$i] . "' LIKE '%" . $sSearch . "%'";
+                        $sFilter .= "`" . $aColumns[$i] . "` LIKE '%" . $sSearch . "%'";
                     }
+
                 }
             }
             $sFilter .= " )";
@@ -95,31 +96,32 @@ class Inventory_management extends MY_Controller {
 
         // Select Data
         $sql = "SELECT dc.id,UPPER( dc.drug ) AS drug, du.Name AS drug_unit,d.Name as dose, s.name AS supported_by, dc.pack_size, UPPER( g.Name ) AS generic_name, IF( SUM( balance ) >0, SUM( balance ) ,  '0' ) AS stock_level
-		FROM drugcode dc
-		LEFT OUTER JOIN generic_name g ON g.id = dc.generic_name
-		LEFT OUTER JOIN suppliers s ON s.id = dc.supported_by
-		LEFT OUTER JOIN dose d ON d.Name = dc.dose
-		LEFT OUTER JOIN drug_unit du ON du.id = dc.unit
-		LEFT OUTER JOIN (
-		SELECT * 
-		FROM drug_stock_balance
-		WHERE facility_code =  '$facility_code'
-		AND expiry_date > CURDATE()
-		AND stock_type =  '$stock_type'
-		) AS dsb ON dsb.drug_id = dc.id
-		WHERE dc.enabled =  '1' " . $sFilter . "
-		GROUP BY dc.id " . $sOrder . " " . $sLimit;
-        $q = $this->db->query($sql);
+        FROM drugcode dc
+        LEFT OUTER JOIN generic_name g ON g.id = dc.generic_name
+        LEFT OUTER JOIN suppliers s ON s.id = dc.supported_by
+        LEFT OUTER JOIN dose d ON d.Name = dc.dose
+        LEFT OUTER JOIN drug_unit du ON du.id = dc.unit
+        LEFT OUTER JOIN (
+        SELECT * 
+        FROM drug_stock_balance
+        WHERE facility_code =  '$facility_code'
+        AND expiry_date > CURDATE()
+        AND stock_type =  '$stock_type'
+        ) AS dsb ON dsb.drug_id = dc.id
+        WHERE dc.enabled =  '1' " . $sFilter . "
+        GROUP BY dc.id " . $sOrder . " " . $sLimit;
+        $q = $this -> db -> query($sql);
         $rResult = $q;
         //echo $iDisplayLength;die();
         // Data set length after filtering
-        $this->db->select('COUNT(id) AS found_rows from drugcode dc where dc.enabled=1 ' . $sFilter);
-        $iFilteredTotal = $this->db->get()->row()->found_rows;
+        $this -> db -> select('COUNT(id) AS found_rows from drugcode dc where dc.enabled=1 ' . $sFilter);
+        $iFilteredTotal = $this -> db -> get() -> row() -> found_rows;
 
         //Total number of drugs that are displayed
-        $this->db->select('COUNT(id) AS found_rows from drugcode dc where dc.enabled=1');
-        $iTotal = $this->db->get()->row()->found_rows;
+        $this -> db -> select('COUNT(id) AS found_rows from drugcode dc where dc.enabled=1');
+        $iTotal = $this -> db -> get() -> row() -> found_rows;
         //$iFilteredTotal = $iTotal;
+
         // Output
         $output = array('sEcho' => intval($sEcho), 'iTotalRecords' => $iTotal, 'iTotalDisplayRecords' => $iFilteredTotal, 'aaData' => array());
 
@@ -134,6 +136,7 @@ class Inventory_management extends MY_Controller {
                 } else {
                     $row[] = $aRow[$col];
                 }
+
             }
             $id = $aRow['id'];
             $row[] = "<a href='" . base_url() . "inventory_management/getDrugBinCard/" . $id . "/" . $stock_type . "'>View Bin Card</a>";
@@ -142,7 +145,7 @@ class Inventory_management extends MY_Controller {
         }
 
         echo json_encode($output);
-    }
+     }
 
     public function getDrugBinCard($drug_id = '', $ccc_id = '') {
 

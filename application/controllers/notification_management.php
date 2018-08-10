@@ -483,6 +483,32 @@ class Notification_management extends MY_Controller {
 		}
 	}
 
+public function missed_appointments_notification($display_array=false){
+		$sql = "SELECT 
+					p.id,
+					p.patient_number_ccc as ccc_no,
+					UPPER(CONCAT_WS(' ',CONCAT_WS(' ',p.first_name,p.other_name),p.last_name)) as patient_name,
+					p.phone as contact,
+					DATE_FORMAT(p.date_enrolled,'%d-%b-%Y') as enrollment_date,
+					DATE_FORMAT(p.nextappointment,'%d-%b-%Y') as next_appointment,
+					UPPER(r.regimen_desc) as regimen_name,
+					UPPER(ps.Name) as status_name
+				FROM patient p 
+				LEFT JOIN patient_status ps ON ps.id = p.current_status 
+				LEFT JOIN regimen r ON r.id=p.current_regimen
+				WHERE DATEDIFF(CURDATE(), p.nextappointment) > 2 AND DATEDIFF(CURDATE(), p.nextappointment) <= 14 
+				AND p.active = '1' 
+				AND p.nextappointment >= DATE_SUB(curdate(), INTERVAL 2 WEEK)
+				AND ps.Name LIKE '%active%'";
+		$results = $this->db->query($sql)->result_array();
+		if($display_array==true){
+            return $results;
+		}else{
+			$total=$this -> db -> affected_rows();
+			echo "<li><a href='".base_url()."notification_management/load_missed_appointments_view'><i class='icon-th'></i>Missed Appointments <div class='badge badge-important'>" . $total . "</div></a></li>";
+		}
+	}
+
 	public function followup_notification($display_array=false){
 		//get lost to followup patients whose appointment is 90 days from today
             
@@ -501,11 +527,8 @@ class Notification_management extends MY_Controller {
 		      FROM patient p
 		      LEFT JOIN patient_status ps ON ps.id=p.current_status
 		      LEFT JOIN regimen r ON r.id=p.current_regimen
-		      WHERE p.nextappointment
-		      BETWEEN '$from_sunday_90' 
-                      AND '$to_saturday_90'
-                       AND ps.Name LIKE '%lost%'
-		      AND p.active='1'";
+		      WHERE  p.active='1'
+		      and p.nextappointment  = '".$appointment_90."'";
 		$query=$this->db->query($sql);
 		$results=$query->result_array();
 
@@ -513,7 +536,7 @@ class Notification_management extends MY_Controller {
             return $results;
 		}else{
 			$total=$this -> db -> affected_rows();
-			echo "<li><a href='".base_url()."notification_management/load_followup_view'><i class='icon-th'></i>Lost to Followup <div class='badge badge-important'>" . $total . "</div></a></li>";
+			echo "<li><a href='".base_url()."notification_management/load_followup_view'><i class='icon-th'></i>Lost to Followup (Last Day Alert)<div class='badge badge-important'>" . $total . "</div></a></li>";
 		}
 	}
 
@@ -549,6 +572,34 @@ class Notification_management extends MY_Controller {
 
 	public function load_defaulter_view(){
 		$patients=$this->defaulter_notification(true);
+		//columns for dataTables
+		$columns=array("#","CCC NO","Patient Name","Contact","Date Enrolled","Next Appointment","Current Regimen","Status","Action");
+		//if patients is null create empty array
+        if(!$patients){
+        	$patients=array();
+        }
+        //use table library to generate table
+		$this -> load -> library('table');
+		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped defaulter_table" >');
+		$this -> table -> set_template($tmpl);
+		$this -> table -> set_heading($columns);
+
+		//loop  through patients adding the rows
+        foreach($patients as $patient){
+        	$detail_link="<a href='".base_url()."patient_management/viewDetails/".$patient['id']."'>Detail</a>";
+        	$edit_link="<a href='".base_url()."patient_management/edit/".$patient['id']."'>Edit</a>";
+        	$disable_link="<a href='".base_url()."patient_management/disable/".$patient['id']."' class='red'>Disable</a>";
+            $patient['links']=$detail_link." |  ".$edit_link." | ".$disable_link;
+        	unset($patient['id']);
+        	$this -> table -> add_row($patient);
+        }
+		$data['followup_patients']=$this -> table -> generate();
+		$data['report_title'] = 'defaulter_notification';
+		$data['content_view'] = "followup_listing_v";
+		$this -> base_params($data);
+	}
+	public function load_missed_appointments_view(){
+		$patients=$this->missed_appointments_notification(true);
 		//columns for dataTables
 		$columns=array("#","CCC NO","Patient Name","Contact","Date Enrolled","Next Appointment","Current Regimen","Status","Action");
 		//if patients is null create empty array

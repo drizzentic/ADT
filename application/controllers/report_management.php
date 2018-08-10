@@ -3429,7 +3429,7 @@ public function getPatientsOnDiffCare($from = "", $to = ""){
 	FROM patient_visit pv
 	INNER JOIN vw_patient_list p ON p.ccc_number= pv.patient_id
 	WHERE pv.dispensing_date >='$start_date'  AND pv.dispensing_date < '$end_date' 
-	AND p.differentiated_care_status = '1'
+	AND p.differentiated_care_status = 'differentiated'
 	GROUP BY pv.patient_id
 	";
 
@@ -3693,11 +3693,14 @@ public function getPatientMissingAppointments($from = "", $to = "") {
 	$sql = "SELECT 
 	pa.patient,
 	pa.appointment 
-	FROM patient_appointment pa
-	WHERE pa.appointment >= '$from' 
+	FROM patient_appointment pa, patient p,patient_status ps
+	WHERE p.current_status  = ps.id
+	AND LOWER(ps.Name) like '%active%'
+	and  pa.patient = p.patient_number_ccc
+	AND pa.appointment >= '$from' 
 	AND pa.appointment <= '$to'
 	AND facility = '$facility_code' 
-	GROUP BY patient, appointment";
+	GROUP BY patient, appointmen";
 	$query = $this -> db -> query($sql);
 
 	$results = $query -> result_array();
@@ -6301,10 +6304,17 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		p.patient_number_ccc AS art_no,
 		CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name, 
 		pv.dispensing_date,
-
-		 rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason 
-
-		FROM patient_visit pv
+		 rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason ,
+		 (SELECT 
+                patient_viral_load.result
+            FROM
+                patient_viral_load
+            WHERE
+                patient_ccc_number = p.patient_number_ccc
+            ORDER BY test_date DESC
+            LIMIT 1) AS viral_load_test_results,
+            pv.adherence
+            FROM patient_visit pv
 		left join regimen r1 on pv.last_regimen = r1.id
 		left join regimen r2 on pv.regimen = r2.id
 		left join patient p on p.patient_number_ccc = pv.patient_id
@@ -6314,7 +6324,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		BETWEEN  '$start_date' AND  '$end_date'
 		and (r1.regimen_code like '%AF%' or r1.regimen_code like '%CF%')
 		and (r2.regimen_code like '%AS%' or r2.regimen_code like '%CS%') 
-		AND rst.name like '%ART%' group by pv.dispensing_date";
+		AND rst.name like '%ART%' group by pv.dispensing_date,patient_id";
 
 		$patient_sql = $this -> db -> query($sql);
 		$data['patients'] = $patient_sql -> result_array();
@@ -9377,7 +9387,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			$data['hide_side_menu'] = 1;
 			$data['banner_text'] = "Facility Reports";
 			$data['selected_report_type_link'] = "visiting_patient_report_row";
-			$data['selected_report_type'] = "Visiting Patients";
+			$data['selected_report_type'] = "Differentiated Care";
 			$data['report_title'] = "Differenciated Package of care";
 			$data['facility_name'] = $this -> session -> userdata('facility_name');
 			$data['content_view'] = 'reports/differenciated_package_of_care_v';
@@ -9392,26 +9402,19 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			$overall_total = 0;
 
 			$row_string = "<table border='1' class='vl_results'>
-			<thead >
+			<thead>
 			<tr>
-			<th>patient_ccc_number</th>
-			<th>test_date</th>
+			<th>patient ccc number</th>
+			<th>Date Collected</th>
+			<th>Test Date</th>
 			<th>result</th>
 			<th>justification</th>
 			</tr>
 			</thead>
 			<tbody>";
-			// foreach ($results as $result) {
-			// 	$appointment_description = $result['appointment_description'];
-			// 	$app_desc = str_ireplace(array(' ','(s)'), array('_',''), $appointment_description);
-			// 	$total = $result['total'];
-			// 	$overall_total += $total;
-			// 	$action_link = anchor('report_management/getScheduledPatients/'.$result['from_date'].'/'.$result['to_date'].'/'.$from.'/'.$to.'/'.$app_desc, 'View Patients', array('target' => '_blank'));
-			// 	$row_string .= '<tr><td>'.$result['patient_ccc_number'].'</td> <td>'.$result['test_date'].'</td><td>'.$result['result'].'</td><td>'.$result['justification'].'</td></tr>';
-			// }
 			$row_string .= "</tbody></table>";
 			if($json!== FALSE){
-				$aColumns = array('patient_ccc_number','test_date','result','justification');
+				$aColumns = array('patient_ccc_number','date_collected','test_date','result','justification');
 				$iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
 				$iDisplayLength = $this -> input -> get_post('iDisplayLength', true);
 				$iSortCol_0 = $this -> input -> get_post('iSortCol_0', true);
@@ -9462,7 +9465,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		// $sql = "select patient_ccc_number,test_date,result,justification from patient_viral_load where test_date >= '$start_date' and  test_date <= '$end_date'
 		// $sFilter $sLimit";
 
-			$this->db->select('patient_ccc_number,test_date,result,justification');
+			$this->db->select('patient_ccc_number,date_collected, test_date,result,justification');
 		// $this->db->where("test_date >= $start_date AND test_date <= $end_date");
 			$this->db->where('test_date >=', $start_date);
 			$this->db->where('test_date <=', $end_date);

@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <div class="span6 dispensing-field" style="padding-top: 17px;">
-                        <input type="text" readonly="" id="patient" name="patient" class="validate[required] " value="<?= $age; ?> Years" />
+                        <input type="text" readonly="" id="age" name="age" class="" value="<?= $age; ?> Years" />
                     </div>
                 </div>
                 <div class="row-fluid">
@@ -588,8 +588,10 @@
             }
         });
 
-        $('#days_to_next').keyup(function () {
+        $('#days_to_next').change(function () {
             $('.duration').val($(this).val())
+            $('.duration').trigger('change');
+
         });
 
         //If facility has more than one dispensing point, use the selected dispensing point.
@@ -1143,7 +1145,7 @@
                         var prev_value = previous_dispensed_data[i]['value'];
                         var prev_frequency = previous_dispensed_data[i]['frequency'];
                         if (previous_dispensed_data[i]['pill_count'] != "") {
-                            var prev_pill_count = previous_dispensed_data[i]['pill_count'];//Previous pill count will be used to calculate expected pill count
+                            var prev_pill_count = previous_dispensed_data[i]['mos'];//Previous pill count will be used to calculate expected pill count
                         } else {
                             var prev_pill_count = 0;//Previous pill count will be used to calculate expected pill count 
                         }
