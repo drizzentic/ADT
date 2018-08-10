@@ -11,6 +11,7 @@
     }
 </style>
 <?php
+
 function ellipsis($string, $max_length) {
     return (strlen($string) > $max_length) ? substr($string, 0, strrpos(substr($string, 0, $max_length), ' ')) . "…" : $string;
 }
@@ -23,6 +24,7 @@ function ellipsis($string, $max_length) {
     </div>
     <div class="span11">
         <h5>Patient ADR Reports</h5>
+        <a href="<?php echo base_url().'inventory_management/pqmp_followup/';?>" class="btn btn-primary pull-right" id="followup" ><i class="icon icon-refresh"></i> ADR FOLLOWUP  </a>
         <a href="#synchdata" class="btn btn-warning pull-right" id="SYNDATA" ><i class="icon icon-refresh"></i> Synch with PPB  </a>
         <span id="NOCOM" style="display:none">Synch disabled, connection to the SADR server could not be established...</span>
 
@@ -35,16 +37,16 @@ function ellipsis($string, $max_length) {
             Synchronization Successfully Completed..
         </div>
 
-        <?php if (!empty($this->session->flashdata('pqmp_saved'))) { ?>
+            <?php if (!empty($this->session->flashdata('pqmp_saved'))) { ?>
             <div class="alert alert-success">
-                <?= $this->session->flashdata('pqmp_saved'); ?>
+            <?= $this->session->flashdata('pqmp_saved'); ?>
             </div> 
         <?php }
         ?>
 
-        <?php if (!empty($this->session->flashdata('adr_error'))) { ?>
+            <?php if (!empty($this->session->flashdata('adr_error'))) { ?>
             <div class="alert alert-danger">
-                <?= $this->session->flashdata('adr_error'); ?>
+            <?= $this->session->flashdata('adr_error'); ?>
             </div> 
         <?php }
         ?>
@@ -61,33 +63,33 @@ function ellipsis($string, $max_length) {
             <th>Outcome</th>
             <th>Date</th>
             <th>Action Taken</th>  
-          
+
             </thead>
             <tbody>
-                <?php foreach ($adr_data as $key => $adr) { ?>
+<?php foreach ($adr_data as $key => $adr) { ?>
                     <tr>
                         <td>
 
-                            <?php if ($adr['synch'] == '0' || is_null($adr['synch'])) { ?>
+    <?php if ($adr['synch'] == '0' || is_null($adr['synch'])) { ?>
                                 <input type="checkbox" name="adrid" value="<?= $adr['id']; ?>"
-                                      
-                            <?php } else { ?>
+
+                                   <?php } else { ?>
                                        <span class="">&#9989;</span> 
-                                   <?php }
-                                   ?></td>
+                            <?php }
+                            ?></td>
                         <td> <?= $adr['id']; ?></td>
                         <td>
-                            <a href="<?= base_url(); ?>inventory_management/loadAdrRecord/<?= $adr['id']; ?> "> <?= ellipsis($adr['patient_name'],10); ?> </a>
+                            <a href="<?= base_url(); ?>inventory_management/loadAdrRecord/<?= $adr['id']; ?> "> <?= ellipsis($adr['patient_name'], 10); ?> </a>
                         </td>
-                        <td> <?= ellipsis($adr['diagnosis'],10); ?></td>
-                        <td> <?= ellipsis($adr['severity'],10); ?></td>
-                        <td> <?= ellipsis($adr['outcome'],10); ?></td>
-                        <td> <?= ellipsis($adr['datecreated'],10); ?></td>
-                        <td> <?= ellipsis($adr['action_taken'],10); ?></td>
-                      
+                        <td> <?= ellipsis($adr['diagnosis'], 10); ?></td>
+                        <td> <?= ellipsis($adr['severity'], 10); ?></td>
+                        <td> <?= ellipsis($adr['outcome'], 10); ?></td>
+                        <td> <?= ellipsis($adr['datecreated'], 10); ?></td>
+                        <td> <?= ellipsis($adr['action_taken'], 10); ?></td>
+
 
                     </tr>    
-                <?php } ?>
+<?php } ?>
             </tbody>
 
         </table>
@@ -97,63 +99,63 @@ function ellipsis($string, $max_length) {
 
 
     $(document).ready(function () {
-        
-  $("#CHECKALL").click(function () {
+
+        $("#CHECKALL").click(function () {
             $("input[name='adrid']:checkbox").not(this).prop('checked', this.checked);
         });
 
 
         $('#SYNDATA').click(function () {
 
-           // if ($("input[name='adrid']:checked").length > 0) {
-                $('#SYNDATA').prop('disabled', true);
-                $('#NEWAD').prop('disabled', true);
-                $('#SYNCHLOADER').show();
-                var searchIDs = $("input[name='adrid']:checked:checked").map(function () {
-                    return $(this).val();
-                }).get();
+            // if ($("input[name='adrid']:checked").length > 0) {
+            $('#SYNDATA').prop('disabled', true);
+            $('#NEWAD').prop('disabled', true);
+            $('#SYNCHLOADER').show();
+            var searchIDs = $("input[name='adrid']:checked:checked").map(function () {
+                return $(this).val();
+            }).get();
 
-                $.ajax({
-                    type: 'post',
-                    url: "<?= base_url(); ?>inventory_management/getpvdata/adr_form/adr/",
-                    dataType: 'json',
-                    data: {ids: searchIDs},
-                    success: function (resp) {
-                        if (resp.status === 'success') {
+            $.ajax({
+                type: 'post',
+                url: "<?= base_url(); ?>inventory_management/getpvdata/adr_form/adr/",
+                dataType: 'json',
+                data: {ids: searchIDs},
+                success: function (resp) {
+                    if (resp.status === 'success') {
 
-                            $('#SYNCHLOADER').hide();
-                            $('#SYNCHMESSAGE').show();
-                            $('#SYNDATA').prop('disabled', false);
-                            $('#NEWPQ').prop('disabled', false);
-                            setInterval(function () {
-                                window.location.href = "<?= base_url(); ?>inventory_management/adr/";
-                            }, 2000);
-                        } else {
-                            alert("Something went Wrong, Synchronization could not be done");
-                        }
-
-                    },
-                    error: function () { },
-                    progress: function (e) {
-                        //make sure we can compute the length
-                        if (e.lengthComputable) {
-                            //calculate the percentage loaded
-                            var pct = (e.loaded / e.total) * 100;
-                            //log percentage loaded
-                            $('#SYNCHPERCENT').text(pct);
-                        }
-                        //this usually happens when Content-Length isn't set
-                        else {
-                            console.warn('Content Length not reported!');
-                        }
+                        $('#SYNCHLOADER').hide();
+                        $('#SYNCHMESSAGE').show();
+                        $('#SYNDATA').prop('disabled', false);
+                        $('#NEWPQ').prop('disabled', false);
+                        setInterval(function () {
+                            window.location.href = "<?= base_url(); ?>inventory_management/adr/";
+                        }, 2000);
+                    } else {
+                        alert("Something went Wrong, Synchronization could not be done");
                     }
 
-                });
+                },
+                error: function () { },
+                progress: function (e) {
+                    //make sure we can compute the length
+                    if (e.lengthComputable) {
+                        //calculate the percentage loaded
+                        var pct = (e.loaded / e.total) * 100;
+                        //log percentage loaded
+                        $('#SYNCHPERCENT').text(pct);
+                    }
+                    //this usually happens when Content-Length isn't set
+                    else {
+                        console.warn('Content Length not reported!');
+                    }
+                }
+
+            });
 
 
 
-          //  } else {
-              //  alert("synch Error: No data selected to synch..");
+            //  } else {
+            //  alert("synch Error: No data selected to synch..");
             //}
         });
 
@@ -173,14 +175,14 @@ function ellipsis($string, $max_length) {
             "bJQueryUI": true,
             "sPaginationType": "full_numbers",
             "sDom": '<"H"Tfr>t<"F"ip>',
-            "aoColumnDefs": [{ "bSortable": false, "aTargets": [0]}],
+            "aoColumnDefs": [{"bSortable": false, "aTargets": [0]}],
             "oTableTools": {
                 "sSwfPath": base_url + "scripts/datatable/copy_csv_xls_pdf.swf",
                 "aButtons": ["copy", "print", "xls", "pdf"]
             },
             "bProcessing": true,
             "bServerSide": false,
-            
+
         });
         $("#manufacture_date,#expiry_date,#receipt_date").datepicker();
     });

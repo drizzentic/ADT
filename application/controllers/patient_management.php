@@ -1614,8 +1614,7 @@ class Patient_management extends MY_Controller {
              $results = $this->db->query("SELECT * FROM tbl_mastelist WHERE $raw");
             $this->getPatientMasterList($results);
         } else {
-            $results = $this->db->query("SELECT * FROM `tbl_mastelist`");
-            // print_r($results);
+            $results = $this->db->query("SELECT * FROM `tbl_mastelist`");           
             $this->getPatientMasterList($results);
         }
     }

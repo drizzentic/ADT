@@ -409,7 +409,6 @@
 
         $.getJSON("<?php echo base_url() . 'patient_management/requiredFields/' . $patient_id; ?>", function (resp) {
             if (resp.status === 1) {
-
                 bootbox.confirm({
                     title: "Missing Patient Data!",
                     message: "Please fill in the missing required information for this patient:" + resp.fields,
