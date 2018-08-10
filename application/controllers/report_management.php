@@ -9387,7 +9387,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			$data['hide_side_menu'] = 1;
 			$data['banner_text'] = "Facility Reports";
 			$data['selected_report_type_link'] = "visiting_patient_report_row";
-			$data['selected_report_type'] = "Visiting Patients";
+			$data['selected_report_type'] = "Differentiated Care";
 			$data['report_title'] = "Differenciated Package of care";
 			$data['facility_name'] = $this -> session -> userdata('facility_name');
 			$data['content_view'] = 'reports/differenciated_package_of_care_v';
