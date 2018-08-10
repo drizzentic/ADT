@@ -9395,26 +9395,19 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 			$overall_total = 0;
 
 			$row_string = "<table border='1' class='vl_results'>
-			<thead >
+			<thead>
 			<tr>
-			<th>patient_ccc_number</th>
-			<th>test_date</th>
+			<th>patient ccc number</th>
+			<th>Date Collected</th>
+			<th>Test Date</th>
 			<th>result</th>
 			<th>justification</th>
 			</tr>
 			</thead>
 			<tbody>";
-			// foreach ($results as $result) {
-			// 	$appointment_description = $result['appointment_description'];
-			// 	$app_desc = str_ireplace(array(' ','(s)'), array('_',''), $appointment_description);
-			// 	$total = $result['total'];
-			// 	$overall_total += $total;
-			// 	$action_link = anchor('report_management/getScheduledPatients/'.$result['from_date'].'/'.$result['to_date'].'/'.$from.'/'.$to.'/'.$app_desc, 'View Patients', array('target' => '_blank'));
-			// 	$row_string .= '<tr><td>'.$result['patient_ccc_number'].'</td> <td>'.$result['test_date'].'</td><td>'.$result['result'].'</td><td>'.$result['justification'].'</td></tr>';
-			// }
 			$row_string .= "</tbody></table>";
 			if($json!== FALSE){
-				$aColumns = array('patient_ccc_number','test_date','result','justification');
+				$aColumns = array('patient_ccc_number','date_collected','test_date','result','justification');
 				$iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
 				$iDisplayLength = $this -> input -> get_post('iDisplayLength', true);
 				$iSortCol_0 = $this -> input -> get_post('iSortCol_0', true);
@@ -9465,7 +9458,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		// $sql = "select patient_ccc_number,test_date,result,justification from patient_viral_load where test_date >= '$start_date' and  test_date <= '$end_date'
 		// $sFilter $sLimit";
 
-			$this->db->select('patient_ccc_number,test_date,result,justification');
+			$this->db->select('patient_ccc_number,date_collected, test_date,result,justification');
 		// $this->db->where("test_date >= $start_date AND test_date <= $end_date");
 			$this->db->where('test_date >=', $start_date);
 			$this->db->where('test_date <=', $end_date);
