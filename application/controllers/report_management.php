@@ -6304,10 +6304,17 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		p.patient_number_ccc AS art_no,
 		CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name, 
 		pv.dispensing_date,
-
-		 rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason 
-
-		FROM patient_visit pv
+		 rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason ,
+		 (SELECT 
+                patient_viral_load.result
+            FROM
+                patient_viral_load
+            WHERE
+                patient_ccc_number = p.patient_number_ccc
+            ORDER BY test_date DESC
+            LIMIT 1) AS viral_load_test_results,
+            pv.adherence
+            FROM patient_visit pv
 		left join regimen r1 on pv.last_regimen = r1.id
 		left join regimen r2 on pv.regimen = r2.id
 		left join patient p on p.patient_number_ccc = pv.patient_id
@@ -6317,7 +6324,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		BETWEEN  '$start_date' AND  '$end_date'
 		and (r1.regimen_code like '%AF%' or r1.regimen_code like '%CF%')
 		and (r2.regimen_code like '%AS%' or r2.regimen_code like '%CS%') 
-		AND rst.name like '%ART%' group by pv.dispensing_date";
+		AND rst.name like '%ART%' group by pv.dispensing_date,patient_id";
 
 		$patient_sql = $this -> db -> query($sql);
 		$data['patients'] = $patient_sql -> result_array();
