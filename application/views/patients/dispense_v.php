@@ -448,7 +448,16 @@
             dataType: "json",
             success: function (data) {
                 if (data != 0) {
-                    bootbox.alert("<h4>ViralLoad Alert!</h4>" + data);
+
+                    $.getJSON("<?= base_url(); ?>inventory_management/serverStatus", function (resp) {
+                        if (resp.status === 404) {
+
+                        } else if (resp.status === 200) {
+                            bootbox.alert("<h4>ViralLoad Alert!</h4>" + data);
+                        }
+                    });
+
+
                 }
             }
         });
