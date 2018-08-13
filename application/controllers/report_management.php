@@ -3435,8 +3435,7 @@ public function getMissedAppointments0to3($from = "", $to = "", $filter_from = N
 		pa.patient,
 		MIN(pa.appointment) appointment, 
 		CASE 
-		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 0 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 3 THEN 'Within 3 Days'
-		
+		WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) >0 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 3 THEN 'Within 3 Days'		
 		ELSE 'N/A'
 		END AS appointment_description
 		FROM clinic_appointment pa 
@@ -3448,7 +3447,7 @@ public function getMissedAppointments0to3($from = "", $to = "", $filter_from = N
 		WHERE dispensing_date BETWEEN '$filter_from' AND '$filter_to'
 		GROUP BY patient_id, visit_date
 		) pv ON pv.patient_id = pa.patient 
-                WHERE DATEDIFF(MIN(pa.appointment), pv.visit_date) >= 0 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) <= 3
+                WHERE DATEDIFF(pa.appointment, pv.visit_date) > 0 AND DATEDIFF(pa.appointment, pv.visit_date) < 3
 		GROUP BY patient_id,visit_date
 		) tmp
 		WHERE tmp.appointment_description = '$app_desc'";
@@ -3506,7 +3505,7 @@ public function getMissedAppointments0to3($from = "", $to = "", $filter_from = N
 				$status = "<span style='color:green;'>Yes</span>";
 			} else if (!$results) {
 					//Check if visited later or not
-				$sql = "select DATEDIFF(dispensing_date,'$appointment')as late_by from patient_visit where patient_id='$patient' and dispensing_date>'$appointment' and facility='$facility_code' ORDER BY dispensing_date asc LIMIT 1";
+				$sql = "select DATEDIFF(dispensing_date,'$appointment')as late_by from patient_visit where patient_id='$patient' and  DATEDIFF(dispensing_date,'$appointment') > 1 and  DATEDIFF(dispensing_date,'$appointment') <3 and facility='$facility_code' ORDER BY dispensing_date asc LIMIT 1";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
