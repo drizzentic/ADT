@@ -409,7 +409,6 @@
 
         $.getJSON("<?php echo base_url() . 'patient_management/requiredFields/' . $patient_id; ?>", function (resp) {
             if (resp.status === 1) {
-
                 bootbox.confirm({
                     title: "Missing Patient Data!",
                     message: "Please fill in the missing required information for this patient:" + resp.fields,
@@ -449,7 +448,16 @@
             dataType: "json",
             success: function (data) {
                 if (data != 0) {
-                    bootbox.alert("<h4>ViralLoad Alert!</h4>" + data);
+
+                    $.getJSON("<?= base_url(); ?>inventory_management/serverStatus", function (resp) {
+                        if (resp.status === 404) {
+
+                        } else if (resp.status === 200) {
+                            bootbox.alert("<h4>ViralLoad Alert!</h4>" + data);
+                        }
+                    });
+
+
                 }
             }
         });
