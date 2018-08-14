@@ -135,21 +135,19 @@ if ($user_is_pharmacist || $user_is_facility_administrator) {
     ?>
                     $('#span1').load('<?php echo base_url() . 'notification_management/error_notification'; ?>');
                     $('#span2').load('<?php echo base_url() . 'notification_management/reporting_notification'; ?>');
-<<<<<<< HEAD
+
                     $('#span3').load('<?php echo base_url() . 'notification_management/defaulter_notification'; ?>');
                     $('#span4').load('<?php echo base_url() . 'notification_management/missed_appointments_notification'; ?>');
-                    //$('#span8').load('<?php echo base_url() . 'notification_management/ontime_appointments_notification'; ?>');
                     $('#span5').load('<?php echo base_url() . 'notification_management/followup_notification'; ?>');
                     $('#span6').load('<?php echo base_url() . 'notification_management/prescriptions_notification_view'; ?>');
                     $('#span7').load('<?php echo base_url() . 'notification_management/update_notification'; ?>');
-=======
+
                     $('#span3').load('<?php echo base_url() . 'notification_management/ontime_notification'; ?>');
                     $('#span4').load('<?php echo base_url() . 'notification_management/missed_appointments_notification'; ?>');
                     $('#span5').load('<?php echo base_url() . 'notification_management/defaulter_notification'; ?>');
                     $('#span6').load('<?php echo base_url() . 'notification_management/followup_notification'; ?>');
                     $('#span7').load('<?php echo base_url() . 'notification_management/prescriptions_notification_view'; ?>');
                     $('#span8').load('<?php echo base_url() . 'notification_management/update_notification'; ?>');
->>>>>>> 1a31827ab71514e08730f86759987ff1ed2a9346
 
     <?php
 }
