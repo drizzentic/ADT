@@ -136,7 +136,8 @@ if ($user_is_pharmacist || $user_is_facility_administrator) {
                     $('#span1').load('<?php echo base_url() . 'notification_management/error_notification'; ?>');
                     $('#span2').load('<?php echo base_url() . 'notification_management/reporting_notification'; ?>');
                     $('#span3').load('<?php echo base_url() . 'notification_management/defaulter_notification'; ?>');
-                    $('#span4').load('<?php echo base_url() . 'notification_management/missed_appointments_notification'; ?>');                    
+                    $('#span4').load('<?php echo base_url() . 'notification_management/missed_appointments_notification'; ?>');
+                    //$('#span8').load('<?php echo base_url() . 'notification_management/ontime_appointments_notification'; ?>');
                     $('#span5').load('<?php echo base_url() . 'notification_management/followup_notification'; ?>');
                     $('#span6').load('<?php echo base_url() . 'notification_management/prescriptions_notification_view'; ?>');
                     $('#span7').load('<?php echo base_url() . 'notification_management/update_notification'; ?>');
@@ -414,7 +415,7 @@ if ($user_is_administrator) {
                                     ?>
 
                                     <li class="divider"></li>
-                                    <li><a href="<?php echo base_url() . 'patient_management/getReportReady' ?>" target="_blank" id="ReportGenerator"><i class="icon-book"></i>Generate Patient List</a></li>           
+                                    <li><a href="<?php echo base_url() . 'patient_management/report' ?>"  id="ReportGenerator"><i class="icon-book"></i>Patients Report</a></li>           
                                     <li><a href="<?php echo base_url() . 'assets/manuals/user_manual.pdf' ?>" target="_blank"><i class="icon-book"></i>User Manual</a></li> 
 
 
@@ -476,11 +477,14 @@ if ($user_is_administrator) {
                                 } else {
                                     ?>
                                     <li id="span1"></li>
+                                    
                                     <li id="span2"></li>
+                                    <li id="span8"></li>
                                     <li id="span3"></li>
                                     <li id="span4"></li>
                                     <li id="span5"></li>
                                     <li id="span6"></li>
+
                                     <?php
                                 }
                                 ?>

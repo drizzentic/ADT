@@ -124,7 +124,7 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 				<option class="date_range_report" value="getPatientMissingAppointments">Patients Missing Appointments</option>
 				<option class="date_range_report" value="dispensingReport">Patients Visit Summary</option>
 				<option class="date_range_report" value="get_viral_load_results">List of Patient Viral Load Results</option>
-                                <option class="date_range_report" value="getMissedAppointments0to3">List of On-time Patients between 0 - 3 Days </option>
+                                <option class="date_range_report" value="getPatientList">List of Patients a given Drug (Selected) </option>
 			</select></td>
 		</tr>
 

@@ -508,6 +508,33 @@ public function missed_appointments_notification($display_array=false){
 			echo "<li><a href='".base_url()."notification_management/load_missed_appointments_view'><i class='icon-th'></i>Missed Appointments <div class='badge badge-important'>" . $total . "</div></a></li>";
 		}
 	}
+        
+        
+        
+        public function ontime_appointments_notification($display_array=false){
+		$sql = "SELECT 
+					p.id,
+					p.patient_number_ccc as ccc_no,
+					UPPER(CONCAT_WS(' ',CONCAT_WS(' ',p.first_name,p.other_name),p.last_name)) as patient_name,
+					p.phone as contact,
+					DATE_FORMAT(p.date_enrolled,'%d-%b-%Y') as enrollment_date,
+					DATE_FORMAT(p.nextappointment,'%d-%b-%Y') as next_appointment,
+					UPPER(r.regimen_desc) as regimen_name,
+					UPPER(ps.Name) as status_name
+				FROM patient p 
+				LEFT JOIN patient_status ps ON ps.id = p.current_status 
+				LEFT JOIN regimen r ON r.id=p.current_regimen
+				WHERE DATEDIFF(CURDATE(), p.nextappointment) > 14 AND DATEDIFF(CURDATE(), p.nextappointment) < 90 
+				AND p.active = '1' 
+				AND ps.Name LIKE '%active%'";
+		$results = $this->db->query($sql)->result_array();
+		if($display_array==true){
+            return $results;
+		}else{
+			$total=$this -> db -> affected_rows();
+			echo "<li><a href='".base_url()."notification_management/load_ontime_appointments_view'><i class='icon-th'></i>On-time Appointments <div class='badge badge-important'>" . $total . "</div></a></li>";
+		}
+	}
 
 	public function followup_notification($display_array=false){
 		//get lost to followup patients whose appointment is 90 days from today

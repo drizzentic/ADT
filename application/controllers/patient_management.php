@@ -1536,8 +1536,7 @@ class Patient_management extends MY_Controller {
         FROM vw_patient_list v1 
 		LEFT JOIN tbl_patient_prep_test t ON t.patient_id = v1.patient_id 
 		GROUP BY v1.patient_id;");
-        $time_elapsed_secs = microtime(true) - $start;
-        echo json_encode(['status' => 1, 'duration' => ($time_elapsed_secs / 60) . " Mins"]);
+
         redirect('patient_management/report');
     }
 
@@ -1611,12 +1610,36 @@ class Patient_management extends MY_Controller {
         $raw = preg_replace('/AND/', '', $query, 1);
 
         if (!empty($query)) {
-             $results = $this->db->query("SELECT * FROM tbl_mastelist WHERE $raw");
+            $results = $this->query(' WHERE '.$raw);
             $this->getPatientMasterList($results);
         } else {
-            $results = $this->db->query("SELECT * FROM `tbl_mastelist`");           
+            $results = $this->query();
             $this->getPatientMasterList($results);
         }
+    }
+
+    function query($raw='') {
+        return $this->db->query("SELECT ccc_number,first_name,other_name,last_name,date_of_birth,age,maturity,pob,gender,pregnant,current_weight,current_height,current_bsa,current_bmi,phone_number,physical_address,alternate_address,other_illnesses,other_drugs,drug_allergies,tb,smoke,alcohol,date_enrolled,patient_source,supported_by,service,start_regimen,start_regimen_date,current_status,sms_consent,family_planning,tbphase,startphase,endphase,partner_status,status_change_date,disclosure,support_group,current_regimen,nextappointment,days_to_nextappointment,clinicalappointment,start_height,start_weight,start_bsa,start_bmi,transfer_from,prophylaxis,isoniazid_start_date,isoniazid_end_date,pep_reason,differentiated_care_status,viral_load_test_results,
+        CASE WHEN t.is_tested = 1 THEN 'YES'
+        ELSE 'NO' END AS is_tested
+        ,test_date	as prep_test_date,
+        CASE WHEN t.test_result = 1 THEN 'Positive'
+        ELSE 'Negative' END AS  prep_test_result,
+        name as prep_reason_name
+        FROM vw_patient_list v1 
+		LEFT JOIN (
+			SELECT ppt.*,pr.name
+			FROM patient_prep_test ppt
+			INNER JOIN prep_reason pr ON pr.id = ppt.prep_reason_id
+			INNER JOIN (
+					SELECT patient_id, MAX(test_date) test_date
+					FROM patient_prep_test 
+					GROUP BY patient_id
+					) t ON t.patient_id = ppt.patient_id AND t.test_date = ppt.test_date
+			GROUP BY ppt.patient_id
+			) t ON t.patient_id = v1.patient_id 
+                        $raw 
+		GROUP BY v1.patient_id");
     }
 
     public function getPatientMasterList($results) {
