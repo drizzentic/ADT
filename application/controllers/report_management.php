@@ -3597,7 +3597,7 @@ public function getPatientsOnDiffCare($from = "", $to = ""){
 
 	$sql = "SELECT 
 	ccc_number,
-	CONCAT(first_name	,' ',other_name	,' ', last_name) as getname, 
+	CONCAT(first_name	,' ',other_name	,' ', last_name) as name, 
 	concat(phone_number) as contact,
 	age,
 	gender,
