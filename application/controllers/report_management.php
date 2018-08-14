@@ -3415,7 +3415,7 @@ public function getPatientsOnDiffCare($from = "", $to = ""){
 
 	$sql = "SELECT 
 	ccc_number,
-	CONCAT(first_name	,' ',other_name	,' ', last_name) as patient_name, 
+	CONCAT(first_name	,' ',other_name	,' ', last_name) as getname, 
 	concat(phone_number) as contact,
 	age,
 	gender,
@@ -6321,7 +6321,7 @@ public function drug_consumption($year = "",$pack_unit="unit") {
 		LEFT JOIN regimen_service_type rst ON rst.id = p.service 
 				LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason  
 		where pv.last_regimen != pv.regimen
-		BETWEEN  '$start_date' AND  '$end_date'
+		AND dispensing_date BETWEEN  '$start_date' AND  '$end_date'
 		and (r1.regimen_code like '%AF%' or r1.regimen_code like '%CF%')
 		and (r2.regimen_code like '%AS%' or r2.regimen_code like '%CS%') 
 		AND rst.name like '%ART%' group by pv.dispensing_date,patient_id";
