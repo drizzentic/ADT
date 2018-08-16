@@ -24,19 +24,31 @@ class Inventory_management extends MY_Controller {
         $this->base_params($data);
     }
 
+    function getIsoniazid($patientid) {
+        $ids = "";
+        $query = "SELECT id FROM `drugcode` WHERE `drug` LIKE '%ISONIAZID%'";
+        $res = $this->db->query($query)->result();
+        foreach ($res as $i):
+            $ids .= $i->id . ",";
+        endforeach;
+        $isoids = rtrim($ids, ",");
+        $isocount = $this->db->query("SELECT SUM(quantity) isototal FROM patient_visit WHERE patient_id='$patientid' AND drug_id IN ($isoids)")->result();
+        echo json_encode(['iso_count'=>$isocount[0]->isototal]);
+    }
+
     public function stock_listing($stock_type = 1) {
-        $facility_code = $this -> session -> userdata('facility');
+        $facility_code = $this->session->userdata('facility');
         $data = array();
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
         $aColumns = array('drug', 'generic_name', 'stock_level', 'drug_unit', 'pack_size', 'supported_by', 'dose');
-        $iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
-        $iDisplayLength = $this -> input -> get_post('iDisplayLength', true);
-        $iSortCol_0 = $this -> input -> get_post('iSortCol_0', true);
-        $iSortingCols = $this -> input -> get_post('iSortingCols', true);
-        $sSearch = $this -> input -> get_post('sSearch', true);
-        $sEcho = $this -> input -> get_post('sEcho', true);
+        $iDisplayStart = $this->input->get_post('iDisplayStart', true);
+        $iDisplayLength = $this->input->get_post('iDisplayLength', true);
+        $iSortCol_0 = $this->input->get_post('iSortCol_0', true);
+        $iSortingCols = $this->input->get_post('iSortingCols', true);
+        $sSearch = $this->input->get_post('sSearch', true);
+        $sEcho = $this->input->get_post('sEcho', true);
         /*
          * Paging
          * */
@@ -73,7 +85,7 @@ class Inventory_management extends MY_Controller {
         if (isset($sSearch) && !empty($sSearch)) {
             $sFilter = "AND ( ";
             for ($i = 0; $i < count($aColumns); $i++) {
-                $bSearchable = $this -> input -> get_post('bSearchable_' . $i, true);
+                $bSearchable = $this->input->get_post('bSearchable_' . $i, true);
 
                 // Individual column filtering
                 if (isset($bSearchable) && $bSearchable == 'true') {
@@ -85,7 +97,6 @@ class Inventory_management extends MY_Controller {
                         $sSearch = mysql_real_escape_string($sSearch);
                         $sFilter .= "`" . $aColumns[$i] . "` LIKE '%" . $sSearch . "%'";
                     }
-
                 }
             }
             $sFilter .= " )";
@@ -110,18 +121,17 @@ class Inventory_management extends MY_Controller {
         ) AS dsb ON dsb.drug_id = dc.id
         WHERE dc.enabled =  '1' " . $sFilter . "
         GROUP BY dc.id " . $sOrder . " " . $sLimit;
-        $q = $this -> db -> query($sql);
+        $q = $this->db->query($sql);
         $rResult = $q;
         //echo $iDisplayLength;die();
         // Data set length after filtering
-        $this -> db -> select('COUNT(id) AS found_rows from drugcode dc where dc.enabled=1 ' . $sFilter);
-        $iFilteredTotal = $this -> db -> get() -> row() -> found_rows;
+        $this->db->select('COUNT(id) AS found_rows from drugcode dc where dc.enabled=1 ' . $sFilter);
+        $iFilteredTotal = $this->db->get()->row()->found_rows;
 
         //Total number of drugs that are displayed
-        $this -> db -> select('COUNT(id) AS found_rows from drugcode dc where dc.enabled=1');
-        $iTotal = $this -> db -> get() -> row() -> found_rows;
+        $this->db->select('COUNT(id) AS found_rows from drugcode dc where dc.enabled=1');
+        $iTotal = $this->db->get()->row()->found_rows;
         //$iFilteredTotal = $iTotal;
-
         // Output
         $output = array('sEcho' => intval($sEcho), 'iTotalRecords' => $iTotal, 'iTotalDisplayRecords' => $iFilteredTotal, 'aaData' => array());
 
@@ -136,7 +146,6 @@ class Inventory_management extends MY_Controller {
                 } else {
                     $row[] = $aRow[$col];
                 }
-
             }
             $id = $aRow['id'];
             $row[] = "<a href='" . base_url() . "inventory_management/getDrugBinCard/" . $id . "/" . $stock_type . "'>View Bin Card</a>";
@@ -145,7 +154,7 @@ class Inventory_management extends MY_Controller {
         }
 
         echo json_encode($output);
-     }
+    }
 
     public function getDrugBinCard($drug_id = '', $ccc_id = '') {
 
@@ -499,8 +508,8 @@ LEFT JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->res
     }
 
     public function pqmp($record_no = null, $action = null) {
- $id = $this->db->select_max('id')->get('pqms')->result();
-        $newid =(int) $id[0]->id + 1;
+        $id = $this->db->select_max('id')->get('pqms')->result();
+        $newid = (int) $id[0]->id + 1;
 
         if ($this->input->post("facility_name")) {
             $pqmp_data = array(
@@ -599,7 +608,7 @@ LEFT JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->res
     // pqmp view list, view one, edit one
     public function new_pqmp($record_no = NULL) {
         $id = $this->db->select_max('id')->get('pqms')->result();
-        $newid =(int) $id[0]->id + 1;
+        $newid = (int) $id[0]->id + 1;
         if ($this->input->post("facility_name")) {
             $pqmp_data = array(
                 'facility_name' => $this->input->post('facility_name'),
@@ -699,7 +708,7 @@ LEFT JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->res
 
     function save_pqm_for_synch() {
         error_reporting(E_ALL);
-        
+
         $pmpq = array(
             'user_id' => $this->session->userdata("user_id"),
             'county_id' => $this->input->post('county_id'),
@@ -1025,8 +1034,8 @@ LEFT JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->res
         $row = 33;
         for ($i = 0; $i < count($adr_details); $i++) {
             $objPHPExcel->getActiveSheet()->SetCellValue('C' . $row, $adr_details[$i]['drug']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('E' . $row, $adr_details[$i]['dose'].$adr_details[$i]['dose_unit']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('F' . $row, $adr_details[$i]['route_name']. " ".$adr_details[$i]['freq_name']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('E' . $row, $adr_details[$i]['dose'] . $adr_details[$i]['dose_unit']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('F' . $row, $adr_details[$i]['route_name'] . " " . $adr_details[$i]['freq_name']);
             $objPHPExcel->getActiveSheet()->SetCellValue('I' . $row, $adr_details[$i]['date_started']);
             $objPHPExcel->getActiveSheet()->SetCellValue('K' . $row, $adr_details[$i]['date_stopped']);
             $objPHPExcel->getActiveSheet()->SetCellValue('M' . $row, $adr_details[$i]['indication']);
