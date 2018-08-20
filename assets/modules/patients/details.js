@@ -259,7 +259,7 @@ function getViralLoad(){
 		}
 
 		$.each(data, function(i, vldata){
-			table += '<tr><td>'+vldata.test_date+'</td><td>'+vldata.result+'</td><td>'+vldata.justification+'</td></tr>';
+			table += '<tr><td>'+vldata.date_collected +'</td><td>'+vldata.test_date+'</td><td>'+vldata.result+'</td><td>'+vldata.justification+'</td></tr>';
 		});
 		$("#viral_load_data tbody").empty();
 		$("#viral_load_data tbody").append(table);
