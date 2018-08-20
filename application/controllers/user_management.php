@@ -23,6 +23,8 @@ class User_management extends MY_Controller {
 
 	public function login() {
 		$this->check_db_port();
+		$users = Users::getAll();
+		(count($users)==1) ? redirect('tools/setup') : '' ;
 		//if seesion variable user_id is not present
 
 		// test database connection
