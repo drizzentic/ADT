@@ -135,7 +135,6 @@ if ($user_is_pharmacist || $user_is_facility_administrator) {
     ?>
                     $('#span1').load('<?php echo base_url() . 'notification_management/error_notification'; ?>');
                     $('#span2').load('<?php echo base_url() . 'notification_management/reporting_notification'; ?>');
-
                     $('#span3').load('<?php echo base_url() . 'notification_management/defaulter_notification'; ?>');
                     $('#span4').load('<?php echo base_url() . 'notification_management/missed_appointments_notification'; ?>');
                     $('#span5').load('<?php echo base_url() . 'notification_management/followup_notification'; ?>');
@@ -483,14 +482,14 @@ if ($user_is_administrator) {
                                     <?php
                                 } else {
                                     ?>
-                                    <li id="span1"></li>
-                                    
+                                    <li id="span1"></li>                                    
                                     <li id="span2"></li>
-                                    <li id="span8"></li>
                                     <li id="span3"></li>
                                     <li id="span4"></li>
                                     <li id="span5"></li>
                                     <li id="span6"></li>
+                                    <li id="span7"></li>
+                                    <li id="span8"></li>
 
                                     <?php
                                 }
