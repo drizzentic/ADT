@@ -406,7 +406,6 @@
     $(document).ready(function () {
         val = '';
         thedays = 0;
-
         $.getJSON("<?php echo base_url() . 'patient_management/requiredFields/' . $patient_id; ?>", function (resp) {
             if (resp.status === 1) {
                 bootbox.confirm({
@@ -431,7 +430,6 @@
             } else {
             }
         });
-
 <?php if (count($prescription) > 0 && $api) { ?>
             $('#current_regimen').val($("#current_regimen option:contains($prescription[0]['drug_name'])").val());
 <?php } ?>
@@ -456,12 +454,9 @@
                             bootbox.alert("<h4>ViralLoad Alert!</h4>" + data);
                         }
                     });
-
-
                 }
             }
         });
-
         //Check if 'PREP' patient has been tested
         checkIfTested(service, patient_id)
 
@@ -480,7 +475,7 @@
         $(document).on("change", "#dispensing_date", function () {
             var dispensing_date = $(this).val();
             var last_visit_date = $("#last_visit").val();
-            checkIfDispensed(last_visit_date, dispensing_date);//Check if already dispensed
+            checkIfDispensed(last_visit_date, dispensing_date); //Check if already dispensed
 
             //calculate adherence
             getAdherenceRate();
@@ -523,7 +518,6 @@
                 var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
                 var one_day = 1000 * 60 * 60 * 24;
                 var appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
-
                 var difference = appointment_timestamp - dispensing_date_timestamp;
                 var days_difference = difference / one_day;
                 $("#days_to_next_clinical").attr("value", Math.round(days_difference));
@@ -534,7 +528,6 @@
         $("#days_to_next, #dispensing_date").change(function () {
 
             var days = $("#days_to_next").attr("value");
-
             if (days > 0) {
                 validateAppointments();
                 var base_date = new Date();
@@ -542,12 +535,9 @@
                 var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
                 var today_timestamp = today.getTime();
                 var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
-
                 var appointment_timestamp = (1000 * 60 * 60 * 24 * days) + dispensing_date_timestamp;
                 appointment_date.datepicker("setDate", new Date(appointment_timestamp));
                 retrieveAppointedPatients();
-
-
             } else {
                 bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
             }
@@ -559,11 +549,9 @@
                 var dose_freq = row.closest("tr").find(".dose option:selected").attr("dose_freq");
             });
         });
-
         //Add listener to the 'days_to_next_clinical' field so that the date picker can reflect the correct number of days!
         $("#days_to_next_clinical").change(function () {
             validateAppointments();
-
             var days_to_next_clinical = $("#days_to_next_clinical").attr("value");
             if (days_to_next_clinical > 0) {
                 var base_date = new Date();
@@ -581,9 +569,9 @@
         // -------------------------- Dispensing date, date picker settings and checks end--------------------------
 
 
-        is_pregnant = '';//Check if patient is pregnant
-        has_tb = '';//Check if patient has tb
-        alert_qty_check = true;//Variable for qty error check
+        is_pregnant = ''; //Check if patient is pregnant
+        has_tb = ''; //Check if patient has tb
+        alert_qty_check = true; //Variable for qty error check
 
         //When pressing return/enter, tabulate
         $('form input,select,readonly').keydown(function (e) {
@@ -596,13 +584,10 @@
                 return false;
             }
         });
-
         $('#days_to_next').change(function () {
             $('.duration').val($(this).val())
             $('.duration').trigger('change');
-
         });
-
         //If facility has more than one dispensing point, use the selected dispensing point.
         if ($("#ccc_store_id ").is(":visible")) {
             stock_type = $("#ccc_store_id ").val();
@@ -628,7 +613,6 @@
                 $(".label_checker").val(0);
             }
         });
-
         //drug label modal settings
         $("#open_print_label").dialog({
             width: '1000',
@@ -858,7 +842,6 @@
             data: {"patient_id": patient_id},
             dataType: "json"
         });
-
         request.done(function (data) {
             $("#patient").val(data.Patient_Number_CCC);
             $("#patient_details").val(data.names);
@@ -874,12 +857,10 @@
                 var today_timestamp = today.getTime();
                 var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
                 var one_day = 1000 * 60 * 60 * 24;
-
                 if ($("#next_clinical_appointment_date").val() == "") {
                     $("#next_clinical_appointment_date").val(Date.now);
                 }
                 var clinical_appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
-
                 var difference = clinical_appointment_timestamp - dispensing_date_timestamp;
                 var days_difference = difference / one_day;
                 $("#days_to_next_clinical").attr("value", days_difference);
@@ -901,9 +882,7 @@
         request.fail(function (jqXHR, textStatus) {
             bootbox.alert("<h4>Patient Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve patient details : </center>" + textStatus);
         });
-
     });
-
     //-------------------------------- CHANGE EVENT --------------------------------------
     //store type change event
     /*$("#ccc_store_id").change(function() {
@@ -924,8 +903,6 @@
     $("#purpose").change(function () {
         //Ensure dispensing point is selected
         val = $('#purpose option:selected').text();
-
-
         if ($("#ccc_store_id").val() == "") {
             bootbox.alert("<h4>Dispensing point</h4>\n\<hr/>\n\<center>Please select a dispensing point first! </center>");
             $("#ccc_store_id").css('border', 'solid 3px red');
@@ -936,18 +913,15 @@
         var regimen = $("#current_regimen option:selected").attr("value");
         var last_regimen = $("#last_regimen").attr("value");
         purpose_visit = $("#purpose :selected").text().toLowerCase();
-
         //Check if visit != switch_regimen then current_regimen = last_regimen
         if (purpose_visit === 'switch regimen' || purpose_visit === '--select one--') {
             $("#current_regimen").val("0");
         } else {
             //Assign current_regimen = last_regimen
             $("#current_regimen").val(last_regimen);
-
             //Populate drugs by triggering change event
             $("#current_regimen").trigger("change");
             $("#purpose_refill_text").val('');
-
             //If purpose == Start ART, check if patient has WHO stage
             if (purpose_visit === 'start art') {
                 $("#current_regimen").val("0");
@@ -969,7 +943,6 @@
                             select_who += "<option value='" + data.who_stage[i]['id'] + "'>" + data.who_stage[i]['name'] + "</option>";
                             if (length_who == i) {
                                 select_who += '</select>';
-
                                 bootbox.confirm({
                                     title: "WHO Stage",
                                     message: "Patient does not have a WHO Stage, Please select one " + select_who,
@@ -1008,7 +981,6 @@
         //adherence rate
         getAdherenceRate();
     });
-
     //Dynamically change the list of drugs once a current regimen is selected
     $("#current_regimen").change(function () {
 
@@ -1036,13 +1008,10 @@
         });
         var regimen = $("#current_regimen option:selected").attr("value");
         var last_regimen = $("#last_regimen").attr("value");
-
         if (last_regimen !== "0") {
             if (regimen !== last_regimen) {
                 $("#regimen_change_reason_container").show();
-
                 $("#regimen_change_reason").addClass("validate[required]");
-
             } else {
                 $("#regimen_change_reason").removeClass("validate[required]");
                 $("#regimen_change_reason_container").hide();
@@ -1068,8 +1037,6 @@
         }
 
     });
-
-
     $('#differentiated_care').click(function (event) {
         if ($(this).is(":checked"))
         {
@@ -1080,16 +1047,13 @@
             $(".clinical_appointment_input").hide();
         }
     });
-
     // on change weight, sort doses.
     $('#weight').change(function () {
         var age = $("#age").val();
         var weight = $("#weight").val();
-
         $(".drug").each(function (index) {
             $(this).closest('');
             var row = $(this);
-
             var url_drug_dose = "<?php echo base_url() . 'dispensement_management/getDrugDose/'; ?>";
             var new_url_dose = url_drug_dose + $(this).val();
             var request_one_dose = $.ajax({
@@ -1109,7 +1073,6 @@
             window.open("<?= base_url() . "dispensement_management/adr/" . $patient_id ?>");
         }
     });
-
     //drug change event
     $(".drug").change(function () {
         var row = $(this);
@@ -1120,7 +1083,6 @@
         var row = $(this);
         var selected_drug = $(this).val();
         var patient_no = $("#patient").val();
-
         //Check if patient allergic to selected drug
         var _url = "<?php echo base_url() . 'dispensement_management/drugAllergies'; ?>";
         var request = $.ajax({
@@ -1154,9 +1116,9 @@
                         var prev_value = previous_dispensed_data[i]['value'];
                         var prev_frequency = previous_dispensed_data[i]['frequency'];
                         if (previous_dispensed_data[i]['pill_count'] != "") {
-                            var prev_pill_count = previous_dispensed_data[i]['mos'];//Previous pill count will be used to calculate expected pill count
+                            var prev_pill_count = previous_dispensed_data[i]['mos']; //Previous pill count will be used to calculate expected pill count
                         } else {
-                            var prev_pill_count = 0;//Previous pill count will be used to calculate expected pill count 
+                            var prev_pill_count = 0; //Previous pill count will be used to calculate expected pill count 
                         }
                         //If drug was previously dispensed
                         if (selected_drug == prev_drug_id) {
@@ -1208,7 +1170,6 @@
                         data: {"patient_id": patient_id},
                         dataType: "json"
                     });
-
                     request.done(function (datas) {
                         var age = datas.Dob;
                         var weight = $("#weight").val();
@@ -1225,7 +1186,6 @@
                             type: 'post',
                             dataType: "json"
                         });
-
                         request.done(function (datas) {
                             var adult_age = datas[0].adult_age;
                             var url_dose = "<?php echo base_url() . 'dispensement_management/getDoses'; ?>";
@@ -1238,7 +1198,6 @@
                             request_dose.done(function (data) {
                                 var url_drug_dose = "<?php echo base_url() . 'dispensement_management/getDrugDose/'; ?>";
                                 var new_url_dose = url_drug_dose + selected_drug;
-
                                 var request_one_dose = $.ajax({
                                     url: new_url_dose,
                                     data: {"weight": weight, "drug_id": drug_id, "age": age},
@@ -1256,10 +1215,7 @@
                                 });
                             });
                         });
-
                     });
-
-
                     // end of doses
                     row.closest("tr").find(".batch option").remove();
                     row.closest("tr").find(".batch").append($("<option value='0'>Select</option>"));
@@ -1281,7 +1237,6 @@
                         row.closest("tr").find(".comment").val(value.comment);
                         dose = value.dose;
                     });
-
                     //Get brands
                     var new_url = "<?php echo base_url() . 'dispensement_management/getBrands'; ?>";
                     var request_brand = $.ajax({
@@ -1322,13 +1277,11 @@
                 request.fail(function (jqXHR, textStatus) {
                     bootbox.alert("<h4>Indication Alert</h4>\n\<hr/><center>Could not retrieve the list of batches : </center>" + textStatus);
                 });
-
                 //trigger batch changes
                 row.closest("tr").find(".batch").trigger("change");
             }
         });
     });
-
     //batch change event
     $(".batch").change(function () {
         if ($(this).prop("selectedIndex") > 1) {
@@ -1359,23 +1312,17 @@
             });
         }
     });
-
-
     //check if quantity dispensed is greater than quantity available
     $(".qty_disp").change(function () {
         var row = $(this);
         var qty_disp = parseInt(row.closest("tr").find(".qty_disp").val());
         var soh = parseInt(row.closest("tr").find(".soh").val());
-
         if (qty_disp > soh) {
             alert('You cannot dispense more than ' + soh);
             row.closest("tr").find(".qty_disp").val(soh);
-
         }
 
     });
-
-
     //next pill count change event
     $(".next_pill").change(function () {
         var row = $(this);
@@ -1389,7 +1336,6 @@
     $(".dose").on('input', function () {
         duration_quantity($(this));
     });
-
     //function to change quantity based on the duration 
     function duration_quantity(row) {
         var duration = row.closest("tr").find(".duration").val();
@@ -1401,9 +1347,7 @@
             var dose_freq = row.closest("tr").find('.dose option').filter(function () {
                 return this.value == val;
             }).data('dose_freq');
-
             var qty_disp = parseFloat(duration) * parseFloat(dose_val) * parseFloat(dose_freq);
-
             if (!isNaN(qty_disp)) {
                 row.closest("tr").find(".qty_disp").val(qty_disp);
             }
@@ -1476,7 +1420,6 @@
             return false;
         }
     });
-
     function clearForm(form) {
         // iterate over all of the inputs for the form
         // element that was passed in
@@ -1534,7 +1477,6 @@
     });
     $("#reset").click(function (e) {
         e.preventDefault();
-
         bootbox.confirm({
             message: "<h4>Reset?</h4>\n\<hr/><center>Are you sure?</center>",
             buttons: {
@@ -1556,7 +1498,6 @@
             }
         });
     });
-
     //-------------------------------- ADD, REMOVE, RESET END ----------------------------
 
 
@@ -1590,15 +1531,56 @@
         return dump;
     }
 
+    $.getJSON("<?= base_url() . 'inventory_management/getIsoniazid/'; ?>" + $("#patient").val(), function (resp) {
+        amoundispensed = parseInt(resp.iso_count);
+        if(amoundispensed >= 180){
+             bootbox.alert("<h4>ISONIAZID MAX DISPENSE ALERT!</h4>\n\<hr/><center>This patient has already been dispensed the maximum quantity(180) of ISONIAZID</center>");
+        }
+
+    }, 'json');
+
+    /*$(document).on('click', '#tbl-dispensing-drugs tr', function () {
+     isoCount = 0;
+     amountToDispense = 0;
+     
+     var text = $(this).closest('tr').find('.drug option:selected').text();
+     if (text.indexOf('ISONIAZID') > -1) {
+     var dispensed = $(this).closest('tr').find('.qty_disp').val();
+     $(this).closest('tr').find('.qty_disp').on('focusout', function () {
+     $.getJSON("<?= base_url() . 'inventory_management/getIsoniazid/'; ?>" + $("#patient").val(), function (resp) {
+     amountToDispense = (180 - parseInt(resp.iso_count));
+     }, 'json');
+     if (amountToDispense === 0) {
+     $(this).closest('tr').find('.qty_disp').prop('disabled', true);
+     bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>This patient has already received maximum isoniazid quantity(180) dispensed</center>");
+     return false;
+     } else if (dispensed > amountToDispense) {
+     bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>This patient can only be dispensed a maximum of (" + amountToDispense + ") ISONIAZID</center>");
+     $(this).closest('tr').find('.qty_disp').val('');
+     return false;
+     } else {
+     return true;
+     }
+     })
+     
+     }
+     });*/
+
+
+
+
+
     //Function to validate required fields
     function processData(form) {
         var form_selector = "#" + form;
         var validated = $(form_selector).validationEngine('validate');
         if (!validated) {
             return false;
+
         } else {
             return saveData();
         }
+
     }
     //Function to post data to the server
     function saveData() {
@@ -1606,7 +1588,6 @@
         var timestamp = new Date().getTime();
         var all_rows = $('#tbl-dispensing-drugs>tbody>tr');
         var msg = '';
-
         //Loop through all rows to check values
         $.each(all_rows, function (i, v) {
 
@@ -1659,14 +1640,12 @@
             data: {"age": age},
             dataType: "json"
         });
-
         request.done(function (data) {
             //Remove appended options to reinitialize dropdown
             $('#current_regimen option')
                     .filter(function () {
                         return this.value || $.trim(this.value).length != 0;
                     }).remove();
-
             $(data).each(function (i, v) {
                 $("#current_regimen").append("<option value='" + v.id + "'>" + v.Regimen_Code + " | " + v.Regimen_Desc + "</option>");
             });
@@ -1685,7 +1664,6 @@
             data: {"patient_ccc": patient_ccc},
             dataType: "json"
         });
-
         request.done(function (data) {
             var non_adherence_reasons = data.non_adherence_reasons;
             var regimen_change_reason = data.regimen_changes;
@@ -1695,7 +1673,6 @@
                     .filter(function () {
                         return this.value || $.trim(this.value).length != 0;
                     }).remove();
-
             $(non_adherence_reasons).each(function (i, v) {
                 $("#non_adherence_reasons").append("<option value='" + v.id + "'>" + v.Name + "</option>");
             });
@@ -1704,15 +1681,13 @@
                     .filter(function () {
                         return this.value || $.trim(this.value).length != 0;
                     }).remove();
-
             $(regimen_change_reason).each(function (i, v) {
                 $("#regimen_change_reason").append("<option value='" + v.id + "'>" + v.Name + "</option>");
             });
-
             //Appointment date, If patient presiously visited,load previous appointment date
             if (patient_appointment.length > 0) {
                 appointment_date = patient_appointment[0].Appointment;
-                $("#last_appointment_date").val(appointment_date);//Latest appointment date
+                $("#last_appointment_date").val(appointment_date); //Latest appointment date
                 //loadMyPreviousDispensedDrugs();
                 //------------------------------- PREVIOUS VISIT DATA
                 var link = "<?php echo base_url(); ?>dispensement_management/getPreviouslyDispensedDrugs";
@@ -1722,7 +1697,6 @@
                     data: {"patient_ccc": patient_ccc, "ccc_store": $("#ccc_store_id").val()},
                     dataType: "json"
                 });
-
                 request.done(function (msg) {
                     $("#last_visit_data tbody").empty();
                     $(msg).each(function (i, v) {//Load last visit data
@@ -1741,8 +1715,6 @@
                 request.fail(function (jqXHR, textStatus) {
                     bootbox.alert("<h4>Previous Dispensing Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve previously dispensed details : </center>" + textStatus);
                 });
-
-
             }
 
             if (typeof appointment_date !== "undefined") {
@@ -1887,12 +1859,10 @@
             data: {"patient_ccc": patient_ccc},
             dataType: "json"
         });
-
         request.done(function (msg) {
             $("#last_visit_data tbody").empty();
             $(msg).each(function (i, v) {//Load last visit data
                 previous_dispensed_data = msg;
-
                 if (i == 0) {//Previous dispense details
                     previous_dispensing_date = v.dispensing_date;
                     $("#last_visit_date").val(previous_dispensing_date);
@@ -1913,7 +1883,6 @@
             if (last_visit_date == dispensing_date) {
                 //if equal ask for alert
                 bootbox.alert("<h4>Notice!</h4>\n\<center>You have dispensed drugs to this patient!</center>");
-
             }
         }
     }
@@ -2005,7 +1974,6 @@
         {
             var days = $("#days_to_next").val();
             $("#days_to_next").val();
-
         }
 
     }
@@ -2017,13 +1985,11 @@
         var day_percentage = 0;
         if (purpose_of_visit.toLowerCase().indexOf("routine") == -1 || purpose_of_visit.toLowerCase().indexOf("pmtct") == -1) {
             if (typeof previous_dispensing_date !== "undefined" && appointment_date !== "undefined") {
-                var dispensing_date = $.datepicker.parseDate('yy-mm-dd', $("#dispensing_date").val());//Current dispensing date
-                var prev_visit_date = $.datepicker.parseDate('yy-mm-dd', previous_dispensing_date);//Previous dispensing date
+                var dispensing_date = $.datepicker.parseDate('yy-mm-dd', $("#dispensing_date").val()); //Current dispensing date
+                var prev_visit_date = $.datepicker.parseDate('yy-mm-dd', previous_dispensing_date); //Previous dispensing date
                 appoint_date = $.datepicker.parseDate('yy-mm-dd', appointment_date);
-
                 var days_to_next_appointment = Math.floor((prev_visit_date.getTime() - appoint_date.getTime()) / (1000 * 3600 * 24));
                 var days_missed_appointment = Math.floor((appoint_date.getTime() - dispensing_date.getTime()) / (1000 * 3600 * 24));
-
                 //Formula
                 day_percentage = ((days_to_next_appointment - days_missed_appointment) / days_to_next_appointment) * 100;
                 if (day_percentage > 100) {
