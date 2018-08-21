@@ -107,6 +107,7 @@
     </div>
     <div id="display_content">
         <div class="tile" id="drugs-chart">
+            <input type="hidden" id="uservalue"/>
             <h3>System Usage Summary <br/>For the last
                 <select style="width:auto" class="period" id="usage_period">
                     <option value="7">7 Days</option>

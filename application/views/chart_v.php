@@ -89,7 +89,7 @@ if ($resultArraySize > 25) {
                     point: {
                         events: {
                             click: function () {
-
+                                user = ''
                                 period = $("#usage_period").val();
 
                                 if (this.category === 'System Administrator') {
@@ -107,11 +107,12 @@ if ($resultArraySize > 25) {
                                         $('#chart_area77').append(resp);
                                     });
                                 } else if (this.category === 'Dispensment') {
-                                    alert('Dispensement')
+                                    window.location.href = "<?php echo base_url(); ?>admin_management/dispensement/" + $('#uservalue').val() + '/' + period;
                                 } else if (this.category === 'Inventory') {
                                     alert('Inventory');
                                 } else {
-                                    $.post("<?php echo base_url() . 'admin_management/getdataByUser/'; ?>", {user: this.category, period: period}, function (resp) {
+                                    $('#uservalue').val(this.category);
+                                    $.post("<?php echo base_url() . 'admin_management/getdataByUser/'; ?>", {user: this.category, period: period}, function (resp) {                                        
                                         $('#chart_area77').append(resp);
                                     });
                                 }
