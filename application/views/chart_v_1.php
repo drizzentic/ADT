@@ -21,7 +21,7 @@ if ($resultArraySize > 25) {
 ?>
 
 <script>
-    $(function () {
+    $(function () {   
 
         $('<?php echo "#" . $container; ?>').highcharts({
             exporting: {
@@ -90,7 +90,6 @@ if ($resultArraySize > 25) {
                         events: {
                             click: function () {
 
-                                period = $("#usage_period").val();
 
                                 if (this.category === 'System Administrator') {
                                     $.post("<?php echo base_url() . 'admin_management/drillAccessLevel/'; ?>", {level: this.category, period: period}, function (resp) {
