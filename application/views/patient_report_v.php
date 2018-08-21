@@ -149,6 +149,6 @@
             changeYear: true,
             dateFormat: 'yy-mm-dd'
         });
-        $('.select2').select2();
+       // $('.select2').select2();
     });
 </script>
