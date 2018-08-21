@@ -515,11 +515,10 @@ class Patient_management extends MY_Controller {
     public function report() {
 
         $content_view = 'patient_report_v';
-        $data['transfered'] = $this->loadChoices('patient_source');
-        $data['service'] = $this->loadChoices('service');
-        $data['startreg'] = $this->loadChoices('start_regimen');
-        $data['curreg'] = $this->loadChoices('current_regimen');
-        $data['currstat'] = $this->loadChoices('current_status');
+        $data['transfered'] = $this->loadChoices('patient_source','name');
+        $data['service'] = $this->loadChoices('regimen_service_type','name');
+        $data['startreg'] = $this->loadChoices('regimen','regimen_desc');
+        $data['currstat'] = $this->loadChoices('patient_status','Name');
 
         //$data['hide_side_menu'] = 1;  
         $data['content_view'] = $content_view;
