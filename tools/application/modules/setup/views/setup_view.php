@@ -5,6 +5,11 @@
 			<li class="active">Initial Setup</li>
 		</ol>
 		<?php echo $this->session->flashdata('init_msg'); ?>
+		<div class="col-md-6 col-md-offset-3">
+		<?php  if ($usercount ==1){?>
+			<p style="color:red;">Blank Database installed: You must initialize facility!</p>
+			<?php } ?>
+		</div>
 		<form class="form-horizontal col-md-6 col-md-offset-3" method="POST" action="<?php echo base_url().'setup/initialize'; ?>">
 			<div class="form-group">
 				<label for="facility" class="col-sm-2 control-label">Facility</label>

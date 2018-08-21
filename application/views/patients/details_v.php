@@ -631,6 +631,7 @@
 			<table id="viral_load_data" class="table table-hover table-bordered table-striped table-condensed">
 				<thead>
 					<tr>
+						<th>Date Collected</th>
 						<th>Date Tested</th>
 						<th>Result</th>
 						<th>Justification</th>
@@ -643,6 +644,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
+						<th>Date Collected</th>
 						<th>Date Tested</th>
 						<th>Result</th>
 						<th>Justification</th>

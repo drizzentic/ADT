@@ -814,6 +814,7 @@ AND  r.regimen_code LIKE '%oi%'
             $sql .= "update drug_stock_balance SET balance=balance - '$quantity[$i]' WHERE drug_id='$drugs[$i]' AND batch_number='$batch[$i]' AND expiry_date='$expiry[$i]' AND stock_type='$ccc_id' AND facility_code='$facility';";
             $sql .= "INSERT INTO drug_cons_balance(drug_id,stock_type,period,facility,amount,ccc_store_sp) VALUES('$drugs[$i]','$ccc_id','$period','$facility','$quantity[$i]','$ccc_id') ON DUPLICATE KEY UPDATE amount=amount+'$quantity[$i]';";
             $sql .= "UPDATE patient p JOIN patient_visit pv on p.patient_number_ccc = pv.patient_id JOIN drugcode dc on  pv.drug_id = dc.id SET p.isoniazid_start_date  = pv.dispensing_date , p.isoniazid_end_date = pv.dispensing_date + INTERVAL 168 DAY, drug_prophylaxis = concat(drug_prophylaxis ,',',(select id from drug_prophylaxis where  name like '%iso%')) WHERE dc.drug LIKE '%iso%'  and p.isoniazid_start_date IS NULL AND pv.patient_id  = '$patient';";
+            $sql .="UPDATE patient p  JOIN patient_visit pv on p.patient_number_ccc = pv.patient_id  JOIN drugcode dc on  pv.drug_id = dc.id SET drug_prophylaxis = concat(drug_prophylaxis ,',',(select id from drug_prophylaxis where  lower(name) like '%cotri%')) WHERE lower(dc.drug) LIKE '%cotri%'   AND pv.patient_id  = '$patient';";
         }
 
         $queries = explode(";", $sql);
