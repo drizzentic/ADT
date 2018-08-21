@@ -9,7 +9,6 @@ class Home_controller extends MY_Controller {
         parent::__construct();
     }
 
-
     public function index() {
 
         $this->platform_home();
@@ -62,6 +61,54 @@ class Home_controller extends MY_Controller {
         $data['content_view'] = "home_v";
         $data['banner_text'] = "Home";
         $data['link'] = "home";
+        $data['user'] = $this->session->userdata['full_name'];
+        $this->load->view("template", $data);
+    }
+
+    public function dispensement($user, $period) {
+        $results = $this->db->query("SELECT * 
+                    FROM `patient_visit` 
+                    WHERE `user`='$user' AND DATEDIFF(CURDATE(),dispensing_date) <= '$period' ORDER BY id DESC")->result_array();
+        $dyn_table = "<table border='1' width='100%' id='menu_listing'  cellpadding='5' class='dataTables'>";
+        $dyn_table .= "<thead><tr><th>Patient ID</th><th>Batch Number</th><th>Date Dispensed</th></tr></thead><tbody>";
+        if ($results) {
+            foreach ($results as $result) {
+                $dyn_table .= "<tr><td>" . $result['patient_id'] . "</td><td>" . $result['batch_number'] . "</td><td>" . $result['dispensing_date'] . "</td></tr>";
+            }
+        }
+        $dyn_table .= "</tbody></table>";
+
+        $data['title'] = "webADT | Drug Dispensement";
+        $data['content_view'] = "user_dispensement_log";
+        $data['banner_text'] = "Home";
+        $data['link'] = "home";
+        $data['thetitle'] = ucfirst($user)."'s  Patient Drug Dispensment activity over last $period days";
+        $data['over'] = $period;
+        $data['user_'] = ucfirst($user);
+        $data['content'] = $dyn_table;
+        $data['user'] = $this->session->userdata['full_name'];
+        $this->load->view("template", $data);
+    }
+
+    public function inventory($user, $period) {
+        $results = $this->db->query("SELECT dsm.id,dru.drug, dsm.batch_number,dsm.transaction_date,dsm.source,dsm.destination FROM drug_stock_movement dsm LEFT JOIN drugcode dru ON dsm.drug = dru.id WHERE DATEDIFF(CURDATE(),dsm.transaction_date) <= '$period' AND operator='$user' ORDER BY dsm.id DESC")->result_array();
+        $dyn_table = "<table border='1' width='100%' id='menu_listing'  cellpadding='5' class='dataTables'>";
+        $dyn_table .= "<thead><tr><th>Drug</th><th>Batch Number</th><th>Transaction Date</th><th>From</th><th>To</th></tr></thead><tbody>";
+        if ($results) {
+            foreach ($results as $result) {
+                $dyn_table .= "<tr><td>" . $result['drug'] . "</td><td>" . $result['batch_number'] . "</td><td>" . $result['transaction_date'] . "</td><td>" . $result['source'] . "</td><td>" . $result['destination'] . "</td></tr>";
+            }
+        }
+        $dyn_table .= "</tbody></table>";
+
+        $data['title'] = "webADT | Drug Movement";
+        $data['content_view'] = "user_dispensement_log";
+        $data['banner_text'] = "Home";
+        $data['link'] = "home";
+        $data['over'] = $period;
+        $data['thetitle'] = ucfirst($user)."'s  Drug Stock Movement activity over last $period days";
+        $data['user_'] = ucfirst($user);
+        $data['content'] = $dyn_table;
         $data['user'] = $this->session->userdata['full_name'];
         $this->load->view("template", $data);
     }

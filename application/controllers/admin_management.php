@@ -715,7 +715,6 @@ class Admin_management extends MY_Controller {
         $this->getChartBuilder($query, $chartTitle, $yaxis);
     }
 
-   
     function getdataByUser() {
 
         $user = $this->input->post('user');
@@ -730,11 +729,18 @@ class Admin_management extends MY_Controller {
         $yaxis = 'No. of Times';
         $this->getChartBuilder($query, $chartTitle, $yaxis);
     }
-    
-     function dispensement($user, $period) {
-       $query = $this->db->query("SELECT dsm.id,dru.drug, dsm.batch_number,dsm.transaction_date,dsm.source,dsm.destination FROM drug_stock_movement dsm LEFT JOIN drugcode dru ON dsm.drug = dru.id WHERE DATEDIFF(CURDATE(),dsm.transaction_date) <= '$period' ORDER BY dsm.id DESC ")->result(); 
+
+  
+
+    function inventory($user, $period) {
+        $query = $this->db->query("SELECT dsm.id,dru.drug, dsm.batch_number,dsm.transaction_date,dsm.source,dsm.destination FROM drug_stock_movement dsm LEFT JOIN drugcode dru ON dsm.drug = dru.id WHERE DATEDIFF(CURDATE(),dsm.transaction_date) <= '$period' ORDER BY dsm.id DESC ")->result();
     }
 
+    function dispensement1($user, $period) {
+        $query = $this->db->query("SELECT * 
+                    FROM `patient_visit` 
+                    WHERE `user`='$user' AND DATEDIFF(CURDATE(),dispensing_date) <= '$period'")->result();
+    }
 
     function getChartBuilder($query, $chartTitle, $yaxis) {
 

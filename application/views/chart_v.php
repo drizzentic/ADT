@@ -107,12 +107,13 @@ if ($resultArraySize > 25) {
                                         $('#chart_area77').append(resp);
                                     });
                                 } else if (this.category === 'Dispensment') {
-                                   // window.location.href = "<?php echo base_url(); ?>admin_management/dispensement/" + $('#uservalue').val() + '/' + period;
+                                    window.location.href = "<?php echo base_url(); ?>home_controller/dispensement/" + $('#uservalue').val() + '/' + period;
                                 } else if (this.category === 'Inventory') {
-                                   // alert('Inventory');
+                                    window.location.href = "<?php echo base_url(); ?>home_controller/inventory/" + $('#uservalue').val() + '/' + period;
+
                                 } else {
                                     $('#uservalue').val(this.category);
-                                    $.post("<?php echo base_url() . 'admin_management/getdataByUser/'; ?>", {user: this.category, period: period}, function (resp) {                                        
+                                    $.post("<?php echo base_url() . 'admin_management/getdataByUser/'; ?>", {user: this.category, period: period}, function (resp) {
                                         $('#chart_area77').append(resp);
                                     });
                                 }
