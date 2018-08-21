@@ -107,7 +107,7 @@ if ($resultArraySize > 25) {
                                         $('#chart_area77').append(resp);
                                     });
                                 } else if (this.category === 'Dispensment') {
-                                    $('#exampleModalCenter').dialog('open');
+                                    alert('Dispensement')
                                 } else if (this.category === 'Inventory') {
                                     alert('Inventory');
                                 } else {
