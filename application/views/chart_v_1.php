@@ -21,8 +21,8 @@ if ($resultArraySize > 25) {
 ?>
 
 <script>
-    $(function () {   
-
+    $(function () {
+         period = $('#enrollment_start').val();
         $('<?php echo "#" . $container; ?>').highcharts({
             exporting: {
                 chartOptions: {// specific options for the exported image
@@ -89,35 +89,15 @@ if ($resultArraySize > 25) {
                     point: {
                         events: {
                             click: function () {
+                                $.post("<?php echo base_url() . 'admin_management/getWeeklySumaryPerUser/'; ?>", {day: this.category, start: period}, function (resp) {
+                                    $('#chart_area78').append(resp);
+                                });
 
-
-                                if (this.category === 'System Administrator') {
-                                    $.post("<?php echo base_url() . 'admin_management/drillAccessLevel/'; ?>", {level: this.category, period: period}, function (resp) {
-                                        $('#chart_area77').append(resp);
-                                    });
-                                } else
-                                if (this.category === 'Pharmacist') {
-                                    $.post("<?php echo base_url() . 'admin_management/drillAccessLevel/'; ?>", {level: this.category, period: period}, function (resp) {
-                                        $('#chart_area77').append(resp);
-                                    });
-                                } else
-                                if (this.category === 'Facility Administrator') {
-                                    $.post("<?php echo base_url() . 'admin_management/drillAccessLevel/'; ?>", {level: this.category, period: period}, function (resp) {
-                                        $('#chart_area77').append(resp);
-                                    });
-                                } else if (this.category === 'Dispensment') {
-                                    $('#exampleModalCenter').dialog('open');
-                                } else if (this.category === 'Inventory') {
-                                    alert('Inventory');
-                                } else {
-                                    $.post("<?php echo base_url() . 'admin_management/getdataByUser/'; ?>", {user: this.category, period: period}, function (resp) {
-                                        $('#chart_area77').append(resp);
-                                    });
-                                }
                             }
                         }
                     }
                 }
+
             },
             legend: {
                 layout: 'horizontal',

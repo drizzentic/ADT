@@ -730,8 +730,6 @@ class Admin_management extends MY_Controller {
         $this->getChartBuilder($query, $chartTitle, $yaxis);
     }
 
-  
-
     function inventory($user, $period) {
         $query = $this->db->query("SELECT dsm.id,dru.drug, dsm.batch_number,dsm.transaction_date,dsm.source,dsm.destination FROM drug_stock_movement dsm LEFT JOIN drugcode dru ON dsm.drug = dru.id WHERE DATEDIFF(CURDATE(),dsm.transaction_date) <= '$period' ORDER BY dsm.id DESC ")->result();
     }
@@ -848,13 +846,12 @@ class Admin_management extends MY_Controller {
     public function getWeeklySumaryPerUser() {
         $categories = [];
         $datas = [];
-        $period = $this->input->post('period');
-        $results = $this->query("SELECT CONCAT(u.Username,':',DATE_FORMAT(aclog.start_time, '%Y-%m-%d')) category, count(aclog.user_id) number
-                                FROM access_log aclog
-                                LEFT JOIN users u ON aclog.user_id = u.id
-                                WHERE DATE_FORMAT(start_time,'%Y-%m-%d')='2018-08-20'
-                                GROUP BY aclog.user_id
-                                ORDER BY number DESC ");
+        $period = $this->input->post('start');
+        $date = date_create($period);
+        $periodf = date_format($date, "Y-m-d"); 
+        $day = $this->input->post('day');
+       
+        $results = $this->query("SELECT u.Username category,count(aclog.user_id) number,aclog.user_id,aclog.access_level,aclog.start_time, DATE_FORMAT(aclog.start_time,'%d-%b-%Y') startdate, DAYNAME(aclog.start_time) day,TIMESTAMPDIFF(MINUTE, aclog.start_time, aclog.end_time) howlong FROM access_log aclog LEFT JOIN users u ON aclog.user_id = u.id WHERE aclog.start_time BETWEEN '$periodf' AND DATE_ADD('$periodf', INTERVAL 5 DAY) AND DAYNAME(aclog.start_time)='$day' GROUP BY aclog.user_id,day ORDER BY aclog.start_time ASC ");
 
         foreach ($results as $c):
             array_push($categories, $c->category);
@@ -869,12 +866,12 @@ class Admin_management extends MY_Controller {
         $data['container'] = 'chart_enrollment';
         $data['chartType'] = 'bar';
         $data['title'] = 'Chart';
-        $data['chartTitle'] = 'Weekly System Access Summary';
+        $data['chartTitle'] = 'System Access Summary for ' . $day;
         $data['categories'] = json_encode($categories);
         $data['yAxix'] = 'Access Total';
         $data['resultArray'] = json_encode($series_array);
         //print_r($data);
-        $this->load->view('chart_v', $data);
+        $this->load->view('chart_v_1', $data);
     }
 
     function dateDiff($time1, $time2, $precision = 6) {
