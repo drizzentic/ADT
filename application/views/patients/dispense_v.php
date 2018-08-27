@@ -1550,9 +1550,30 @@
 
         var text = $(this).closest('tr').find('.drug option:selected').text();
         if (text.indexOf('ISONIAZID') > -1) {
-            $(this).closest('tr').find('.qty_disp').on('focusout', function () {
+            $(this).closest('tr').find('.duration').on('change', function () {
                 var dispensed = $(this).closest('tr').find('.qty_disp').val();
-                if (parseInt(dispensed) > amountToDispense) {
+
+
+                if (parseInt(dispensed) > 180) {
+                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
+                    $(this).closest('tr').find('.qty_disp').val('');
+                } else if (parseInt(dispensed) > amountToDispense) {
+                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
+                    $(this).closest('tr').find('.qty_disp').val('');
+                    return false;
+                }
+
+            });
+            
+            
+               $(this).closest('tr').find('.qty_disp').on('change', function () {
+                var dispensed = $(this).closest('tr').find('.qty_disp').val();
+
+
+                if (parseInt(dispensed) > 180) {
+                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
+                    $(this).closest('tr').find('.qty_disp').val('');
+                } else if (parseInt(dispensed) > amountToDispense) {
                     bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
                     $(this).closest('tr').find('.qty_disp').val('');
                     return false;
