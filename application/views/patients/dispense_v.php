@@ -1571,7 +1571,22 @@
 
 
                 if (parseInt(dispensed) > 180) {
+                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can not dispense more than 180 ISONIAZIDS</center>");
+                    $(this).closest('tr').find('.qty_disp').val('');
+                } else if (parseInt(dispensed) > amountToDispense) {
                     bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
+                    $(this).closest('tr').find('.qty_disp').val('');
+                    return false;
+                }
+
+            });
+            
+            $(this).closest('tr').find('.next_pill').on('change', function () {
+                var dispensed = $(this).closest('tr').find('.qty_disp').val();
+
+
+                if (parseInt(dispensed) > 180) {
+                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can not dispense more than 180 ISONIAZIDS</center>");
                     $(this).closest('tr').find('.qty_disp').val('');
                 } else if (parseInt(dispensed) > amountToDispense) {
                     bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
