@@ -676,12 +676,12 @@ AND  r.regimen_code LIKE '%oi%'
 
         if (!$differentiated_care) {
             $next_clinical_appointment_date = $next_appointment_date;
-            $sql = "UPDATE patient SET differentiated_care=0 WHERE patient_number_ccc='$patient';";
+            $sql = "UPDATE patient SET differentiated_care=0 ,adherence = '$adherence' WHERE patient_number_ccc='$patient';";
             $this->db->query($sql);
         }
 
         if ($differentiated_care == 1) {
-            $sql = "UPDATE patient SET differentiated_care=1 WHERE patient_number_ccc='$patient';";
+            $sql = "UPDATE patient SET differentiated_care=1 ,adherence = '$adherence' WHERE patient_number_ccc='$patient';";
             $this->db->query($sql);
         }
 
