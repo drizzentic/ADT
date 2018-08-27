@@ -406,6 +406,7 @@
     $(document).ready(function () {
         val = '';
         thedays = 0;
+        amountispensed = 0;
         $.getJSON("<?php echo base_url() . 'patient_management/requiredFields/' . $patient_id; ?>", function (resp) {
             if (resp.status === 1) {
                 bootbox.confirm({
@@ -850,6 +851,16 @@
             $("#patient_names").text(data.names);
             $("#next_clinical_appointment_date").val(data.clinicalappointment);
             $("#next_clinical_appointment").val(data.clinicalappointment);
+
+            $.getJSON("<?= base_url() . 'inventory_management/getIsoniazid/'; ?>" + data.Patient_Number_CCC, function (resp) {
+                amountispensed = parseInt(resp.iso_count);
+                // alert(amountispensed);
+                if (amountispensed >= 180) {
+                    bootbox.alert("<h4>ISONIAZID MAX DISPENSE ALERT!</h4>\n\<hr/><center>This patient has already been dispensed the maximum quantity(180) ISONIAZIDS</center>");
+                }
+
+            }, 'json');
+
             if (data.clinicalappointment !== null) {
 
                 var base_date = new Date();
@@ -1531,40 +1542,26 @@
         return dump;
     }
 
-    $.getJSON("<?= base_url() . 'inventory_management/getIsoniazid/'; ?>" + $("#patient").val(), function (resp) {
-        amoundispensed = parseInt(resp.iso_count);
-        if(amoundispensed >= 180){
-             bootbox.alert("<h4>ISONIAZID MAX DISPENSE ALERT!</h4>\n\<hr/><center>This patient has already been dispensed the maximum quantity(180) of ISONIAZID</center>");
+
+
+    $(document).on('click', '#tbl-dispensing-drugs tr', function () {
+        isoCount = 0;
+        amountToDispense = (180 - amountispensed);
+
+        var text = $(this).closest('tr').find('.drug option:selected').text();
+        if (text.indexOf('ISONIAZID') > -1) {
+            $(this).closest('tr').find('.qty_disp').on('focusout', function () {
+                var dispensed = $(this).closest('tr').find('.qty_disp').val();
+                if (parseInt(dispensed) > amountToDispense) {
+                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
+                    $(this).closest('tr').find('.qty_disp').val('');
+                    return false;
+                }
+
+            });
+
         }
-
-    }, 'json');
-
-    /*$(document).on('click', '#tbl-dispensing-drugs tr', function () {
-     isoCount = 0;
-     amountToDispense = 0;
-     
-     var text = $(this).closest('tr').find('.drug option:selected').text();
-     if (text.indexOf('ISONIAZID') > -1) {
-     var dispensed = $(this).closest('tr').find('.qty_disp').val();
-     $(this).closest('tr').find('.qty_disp').on('focusout', function () {
-     $.getJSON("<?= base_url() . 'inventory_management/getIsoniazid/'; ?>" + $("#patient").val(), function (resp) {
-     amountToDispense = (180 - parseInt(resp.iso_count));
-     }, 'json');
-     if (amountToDispense === 0) {
-     $(this).closest('tr').find('.qty_disp').prop('disabled', true);
-     bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>This patient has already received maximum isoniazid quantity(180) dispensed</center>");
-     return false;
-     } else if (dispensed > amountToDispense) {
-     bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>This patient can only be dispensed a maximum of (" + amountToDispense + ") ISONIAZID</center>");
-     $(this).closest('tr').find('.qty_disp').val('');
-     return false;
-     } else {
-     return true;
-     }
-     })
-     
-     }
-     });*/
+    });
 
 
 
