@@ -24,7 +24,7 @@ function ellipsis($string, $max_length) {
     </div>
     <div class="span11">
         <h5>Patient ADR Reports</h5>
-        <a href="<?php echo base_url().'inventory_management/pqmp_followup/';?>" class="btn btn-primary pull-right" id="followup" ><i class="icon icon-refresh"></i> ADR FOLLOWUP  </a>
+        <!--a href="<?php echo base_url().'inventory_management/pqmp_followup/';?>" class="btn btn-primary pull-right" id="followup" ><i class="icon icon-refresh"></i> ADR FOLLOWUP  </a-->
         <a href="#synchdata" class="btn btn-warning pull-right" id="SYNDATA" ><i class="icon icon-refresh"></i> Synch with PPB  </a>
         <span id="NOCOM" style="display:none">Synch disabled, connection to the SADR server could not be established...</span>
 
