@@ -166,6 +166,8 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        myStorage = window.localStorage;
+        myStorage.clear();
         var base_url = "<?php echo base_url(); ?>";
         var default_link = "<?php echo $this->session->userdata('default_link'); ?>";
 
@@ -189,6 +191,10 @@
         var period = 30;
         var chart1_link = "<?php echo base_url() . 'admin_management/getSystemUsage/'; ?>" + period
         var chart2_link = "<?php echo base_url() . 'admin_management/getWeeklySumary/'; ?>" + fromDate + '/' + endDate;
+        myStorage.setItem("fromDate", fromDate);
+        myStorage.setItem("endDate", endDate);
+
+
         $('#chart_area77').load(chart1_link);
         $('#chart_area78').load(chart2_link);
 

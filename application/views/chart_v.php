@@ -22,7 +22,8 @@ if ($resultArraySize > 25) {
 
 <script>
     $(function () {
-
+        counter = 0;
+        myStorage = window.localStorage;
         $('<?php echo "#" . $container; ?>').highcharts({
             exporting: {
                 chartOptions: {// specific options for the exported image
@@ -37,7 +38,31 @@ if ($resultArraySize > 25) {
                 sourceWidth: 400,
                 sourceHeight: 300,
                 scale: 1,
-                fallbackToExportServer: false
+                fallbackToExportServer: false,
+                buttons: {
+                    customButton: {
+                        text: '< Back',
+                        onclick: function () {
+
+                            category = myStorage.getItem("category");
+                            alert(category)
+                            if (counter === 1) {
+                                var chart1_link = "<?php echo base_url() . 'admin_management/getSystemUsage/'; ?>" + $('#usage_period').val();
+                                $('#chart_area77').load(chart1_link);
+                            } else if (counter === 2) {
+                                $.post("<?php echo base_url() . 'admin_management/drillAccessLevel/'; ?>", {level: category, period: $('#usage_period').val()}, function (resp) {
+                                    $('#chart_area77').append(resp);
+                                });
+                            } else if (counter === 2) {
+                                $.post("<?php echo base_url() . 'admin_management/getdataByUser/'; ?>", {user: this.category, period: $('#usage_period').val()}, function (resp) {
+                                    $('#chart_area77').append(resp);
+                                    counter = 1;
+                                });
+                            }
+
+                        }
+                    }
+                }
             },
             colors: [
                 '#66aaf7',
@@ -91,20 +116,24 @@ if ($resultArraySize > 25) {
                             click: function () {
                                 user = ''
                                 period = $("#usage_period").val();
-
+                                myStorage.setItem("category", this.category);
+                                myStorage.setItem("period", period);
                                 if (this.category === 'System Administrator') {
                                     $.post("<?php echo base_url() . 'admin_management/drillAccessLevel/'; ?>", {level: this.category, period: period}, function (resp) {
                                         $('#chart_area77').append(resp);
+                                        counter = 1;
                                     });
                                 } else
                                 if (this.category === 'Pharmacist') {
                                     $.post("<?php echo base_url() . 'admin_management/drillAccessLevel/'; ?>", {level: this.category, period: period}, function (resp) {
                                         $('#chart_area77').append(resp);
+                                        counter = 1;
                                     });
                                 } else
                                 if (this.category === 'Facility Administrator') {
                                     $.post("<?php echo base_url() . 'admin_management/drillAccessLevel/'; ?>", {level: this.category, period: period}, function (resp) {
                                         $('#chart_area77').append(resp);
+                                        counter = 1;
                                     });
                                 } else if (this.category === 'Dispensment') {
                                     window.location.href = "<?php echo base_url(); ?>home_controller/dispensement/" + $('#uservalue').val() + '/' + period;
@@ -115,8 +144,10 @@ if ($resultArraySize > 25) {
                                     $('#uservalue').val(this.category);
                                     $.post("<?php echo base_url() . 'admin_management/getdataByUser/'; ?>", {user: this.category, period: period}, function (resp) {
                                         $('#chart_area77').append(resp);
+                                        counter = 2;
                                     });
                                 }
+                                alert(counter);
                             }
                         }
                     }

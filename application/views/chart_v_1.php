@@ -22,7 +22,11 @@ if ($resultArraySize > 25) {
 
 <script>
     $(function () {
-         period = $('#enrollment_start').val();
+        period = $('#enrollment_start').val();
+        text = '';
+        counter = 0;
+        myStorage = window.localStorage;
+
         $('<?php echo "#" . $container; ?>').highcharts({
             exporting: {
                 chartOptions: {// specific options for the exported image
@@ -37,7 +41,21 @@ if ($resultArraySize > 25) {
                 sourceWidth: 400,
                 sourceHeight: 300,
                 scale: 1,
-                fallbackToExportServer: false
+                fallbackToExportServer: false,
+                buttons: {
+                    customButton: {
+                        text: '< Back',
+                        onclick: function () {
+                            from = myStorage.getItem("fromDate");
+                            end = myStorage.getItem("endDate");
+                            var chart2_link = "<?php echo base_url() . 'admin_management/getWeeklySumary/'; ?>" + from + '/' + end;
+                            $('#chart_area78').load(chart2_link);
+                            myStorage.clear();
+
+
+                        }
+                    }
+                }
             },
             colors: [
                 '#66aaf7',
@@ -89,9 +107,20 @@ if ($resultArraySize > 25) {
                     point: {
                         events: {
                             click: function () {
-                                $.post("<?php echo base_url() . 'admin_management/getWeeklySumaryPerUser/'; ?>", {day: this.category, start: period}, function (resp) {
-                                    $('#chart_area78').append(resp);
-                                });
+
+                                if (counter === 0) {
+                                    $.post("<?php echo base_url() . 'admin_management/getWeeklySumaryPerUser/'; ?>", {day: this.category, start: period}, function (resp) {
+                                        $('#chart_area78').append(resp);
+
+                                        counter++;
+                                        //alert(counter)
+                                    });
+
+                                } else {
+                                    alert('ACTION END REACHED');
+                                    counter = 1;
+                                    return false;
+                                }
 
                             }
                         }

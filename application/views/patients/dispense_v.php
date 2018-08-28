@@ -1341,10 +1341,10 @@
         var dose_val = row.closest("tr").find(".dose option:selected").attr("dose_val");
         var dose_freq = row.closest("tr").find(".dose option:selected").attr("dose_freq");
     });
-    $(".duration").on('change', function () {
+    $(".duration,.dose").on('keyup', function () {
         duration_quantity($(this));
     });
-    $(".dose").on('input', function () {
+    $(".dose").on('keyup', function () {
         duration_quantity($(this));
     });
     //function to change quantity based on the duration 
@@ -1543,61 +1543,26 @@
     }
 
 
-
-    $(document).on('click', '#tbl-dispensing-drugs tr', function () {
+    $(document).on('change', '.qty_disp,.dose,.duration', function () {
         isoCount = 0;
         amountToDispense = (180 - amountispensed);
-
-        var text = $(this).closest('tr').find('.drug option:selected').text();
-        if (text.indexOf('ISONIAZID') > -1) {
-            $(this).closest('tr').find('.duration').on('change', function () {
-                var dispensed = $(this).closest('tr').find('.qty_disp').val();
-
-
-                if (parseInt(dispensed) > 180) {
-                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
-                    $(this).closest('tr').find('.qty_disp').val('');
-                } else if (parseInt(dispensed) > amountToDispense) {
-                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
-                    $(this).closest('tr').find('.qty_disp').val('');
-                    return false;
-                }
-
-            });
-            
-            
-               $(this).closest('tr').find('.qty_disp').on('change', function () {
-                var dispensed = $(this).closest('tr').find('.qty_disp').val();
-
-
-                if (parseInt(dispensed) > 180) {
-                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can not dispense more than 180 ISONIAZIDS</center>");
-                    $(this).closest('tr').find('.qty_disp').val('');
-                } else if (parseInt(dispensed) > amountToDispense) {
-                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
-                    $(this).closest('tr').find('.qty_disp').val('');
-                    return false;
-                }
-
-            });
-            
-            $(this).closest('tr').find('.next_pill').on('change', function () {
-                var dispensed = $(this).closest('tr').find('.qty_disp').val();
-
-
-                if (parseInt(dispensed) > 180) {
-                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can not dispense more than 180 ISONIAZIDS</center>");
-                    $(this).closest('tr').find('.qty_disp').val('');
-                } else if (parseInt(dispensed) > amountToDispense) {
-                    bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS!</center>");
-                    $(this).closest('tr').find('.qty_disp').val('');
-                    return false;
-                }
-
-            });
-
+        var res = $(this).closest('tr').find('.drug option:selected').text();
+        var dispensed = $(this).closest('tr').find('.qty_disp').val();
+        if (res.indexOf('ISONIAZID') > -1) {
+            if (parseInt(dispensed) > 180) {
+                bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You cannot dispense more than (" + amountToDispense + ") ISONIAZIDS for this patient!</center>");
+                 $(this).closest('tr').find('.qty_disp').val('');
+            } else if (parseInt(dispensed) > amountToDispense) {
+                bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You can only dispense (" + amountToDispense + ") ISONIAZIDS to this patient!</center>");
+                 $(this).closest('tr').find('.qty_disp').val('');
+                return false;
+            }
+        } else {
+           
         }
+
     });
+
 
 
 
