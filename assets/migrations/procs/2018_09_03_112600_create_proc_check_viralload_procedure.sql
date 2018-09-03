@@ -15,8 +15,14 @@ BEGIN
 	DECLARE patient_id INT DEFAULT 0;
 	IF NOT EXISTS(SELECT * FROM patient_viral_load WHERE test_id = in_test_number)
 	THEN
-		REPLACE INTO patient_viral_load(test_id, patient_ccc_number, test_date, date_collected, result, justification)
-		VALUES(in_test_number, in_ccc_number,in_test_date,in_collected_date,in_result,in_justification);
+		INSERT INTO patient_viral_load(test_id, patient_ccc_number, test_date, date_collected, result, justification)
+		VALUES(in_test_number, in_ccc_number,in_test_date,in_collected_date,in_result,in_justification)
+		ON DUPLICATE KEY UPDATE
+		patient_ccc_number = in_ccc_number,
+		test_date = in_test_date,
+		date_collected = in_collected_date,
+		result = in_result,
+		justification = in_justification;
 	END IF;
 END $$
 DELIMITER ;

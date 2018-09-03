@@ -31,7 +31,6 @@ class Viral_load_manual extends MY_Controller {
 
 	function get_viral_load(){
 
-
 				$aColumns = array('patient_ccc_number','date_collected','test_date','result','justification','id');
 				$iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
 				$iDisplayLength = $this -> input -> get_post('iDisplayLength', true);
@@ -43,10 +42,9 @@ class Viral_load_manual extends MY_Controller {
 				$count = 0;
 
 			// Paging
-				if (isset($iDisplayStart) && $iDisplayLength != '-1') {
+				if (isset($iDisplayStart) && $iDisplayLength !== '-1') {
 					$this -> db -> limit($this -> db -> escape_str($iDisplayLength), $this -> db -> escape_str($iDisplayStart));
 				}
-
 					// Ordering
 				if (isset($iSortCol_0)) {
 					for ($i = 0; $i < intval($iSortingCols); $i++) {
@@ -59,24 +57,40 @@ class Viral_load_manual extends MY_Controller {
 						}
 					}
 				}
+
 			/*
 			* Filtering
 			* NOTE this does not match the built-in DataTables filtering which does it
 			* word by word on any field. It's possible to do here, but concerned about efficiency
 			* on very large tables, and MySQL's regex functionality is very limited
 			*/
-			if (isset($sSearch) && !empty($sSearch)) {
-				for ($i = 0; $i < count($aColumns); $i++) {
-					$bSearchable = $this -> input -> get_post('bSearchable_' . $i, true);
 
-				// Individual column filtering
+			$sFilter = "";
+			$c = 0;
+			if (isset($sSearch) && !empty($sSearch)) {
+				$sFilter = "AND ( ";
+				for ($i = 0; $i < count($aColumns); $i++) {
+					$bSearchable = $this->input->get_post('bSearchable_' . $i, true);
+                // Individual column filtering
 					if (isset($bSearchable) && $bSearchable == 'true') {
-						$this -> db -> or_like($aColumns[$i], $this -> db -> escape_like_str($sSearch));
+						if ($aColumns[$i] != 'drug_unit') {
+							if ($c != 0) {
+								$sFilter .= " OR ";
+							}
+							$c = 1;
+							$sSearch = mysql_real_escape_string($sSearch);
+							$sFilter .= "`" . $aColumns[$i] . "` LIKE '%" . $sSearch . "%'";
+						}
 					}
 				}
+				$sFilter .= " )";
+				if ($sFilter == "AND ( )") {
+					$sFilter = "";
+				}
 			}
-
-
+			var_dump($sFilter);die;
+			$iTotal = 500;
+		$iFilteredTotal = count($this->db->query('select *  from patient_viral_load')->result_array());
 
 		// Select Data
 		// $sql = "select patient_ccc_number,test_date,result,justification from patient_viral_load where test_date >= '$start_date' and  test_date <= '$end_date'
@@ -86,10 +100,11 @@ class Viral_load_manual extends MY_Controller {
 				$q = $this->db->get('patient_viral_load');
 			$rResult = $q;
 		// Data set length after filtering
-			$iFilteredTotal =  count($rResult);
 		//Total number of drugs that are displayed
-			$iTotal = count($rResult);
-		//$iFilteredTotal = $iTotal;
+			$iTotal = count($rResult->result_array());
+			// var_dump($iTotal);die;
+
+		// $iFilteredTotal = 1;
 
 		// Output
 			$output = array('sEcho' => intval($sEcho), 'iTotalRecords' => $iTotal, 'iTotalDisplayRecords' => $iFilteredTotal, 'aaData' => array());
