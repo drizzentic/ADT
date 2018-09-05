@@ -59,11 +59,11 @@ class Order extends MY_Controller {
 			$auth_response = json_decode($curl -> response, TRUE);
 
 			//Get user organization_units 
+			$kenya_code = 'HfVjCurKxh2';
 			$dhis_orgs = array();
 			foreach ($auth_response['organisationUnits'] as $orgs) {
 				$dhis_orgs[] = $orgs['id'];
 			}
-
 			//Ensure user has access to facility dhis data
 			$user_dhis_orgs = array();
 			$query = $this->db->get_where('sync_facility', array(
@@ -74,7 +74,7 @@ class Order extends MY_Controller {
 			};
 			$user_dhis_orgs = array_unique($user_dhis_orgs);
 			$array_intersect = array_intersect($user_dhis_orgs, $dhis_orgs);
-			if(!empty($array_intersect)){
+			if(!empty($array_intersect) || in_array($kenya_code, $dhis_orgs)){
 				//Save user data
 				$sync_user = array(
 					'username' => $username,
