@@ -1,6 +1,5 @@
 
 <div id="wrapperd">
-			
 	<div id="patient_enrolled_content" class="full-content">
 		<?php $this->load->view("reports/reports_top_menus_v") ?>
 		<h4 style="text-align: center" id='report_title'><?= $report_title;?></h4>
