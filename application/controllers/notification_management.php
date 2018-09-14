@@ -712,7 +712,7 @@ public function missed_appointments_notification($display_array=false){
 
 	public function load_followup_view(){
 		$patients=$this->followup_notification(true);
-		//columns for dataTables
+//columns for dataTables
 		$columns=array("#","CCC NO","Patient Name","Contact","Date Enrolled","Next Appointment","Current Regimen","Status","Action");
 		//if patients is null create empty array
         if(!$patients){
@@ -720,7 +720,7 @@ public function missed_appointments_notification($display_array=false){
         }
         //use table library to generate table
 		$this -> load -> library('table');
-		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped dataTables" >');
+		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped defaulter_table" >');
 		$this -> table -> set_template($tmpl);
 		$this -> table -> set_heading($columns);
 
@@ -733,8 +733,8 @@ public function missed_appointments_notification($display_array=false){
         	unset($patient['id']);
         	$this -> table -> add_row($patient);
         }
-
 		$data['followup_patients']=$this -> table -> generate();
+		$data['report_title'] = 'defaulter_notification';
 		$data['content_view'] = "followup_listing_v";
 		$this -> base_params($data);
 	}
