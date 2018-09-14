@@ -3,7 +3,7 @@ CREATE VIEW vw_patient_list
 AS select p.id AS patient_id
 ,p.patient_number_ccc AS ccc_number
 ,p.first_name AS first_name
-p.other_name AS other_name
+,p.other_name AS other_name
 ,p.last_name AS last_name
 ,p.dob AS date_of_birth
 ,round(((to_days(curdate()) - to_days(p.dob)) / 365),0) AS age
