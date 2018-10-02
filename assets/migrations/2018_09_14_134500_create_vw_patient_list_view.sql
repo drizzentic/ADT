@@ -10,7 +10,7 @@ AS select p.id AS patient_id
 ,if((round(((to_days(curdate()) - to_days(p.dob)) / 365),0) >= 15),'Adult','Paediatric') AS maturity
 ,p.pob AS pob
 ,if((p.gender = 1),'MALE','FEMALE') AS gender
-,p.adherence,
+,p.adherence
 ,if((p.pregnant = 1),'YES','NO') AS pregnant
 ,p.weight AS current_weight
 ,p.height AS current_height

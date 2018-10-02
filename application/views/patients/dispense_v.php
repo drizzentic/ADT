@@ -1997,6 +1997,8 @@
                     day_percentage = day_percentage.toFixed(2) + "%";
                 }
 
+                if (day_percentage < 1) {day_percentage = 0;}
+
                 $("#adherence").attr("value", day_percentage);
                 $("#adherence").attr("readonly", "readonly");
             }
