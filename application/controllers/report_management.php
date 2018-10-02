@@ -3582,7 +3582,7 @@ class Report_management extends MY_Controller {
 	nextappointment,
 	current_status,
 	viral_load_test_results, 
-	adherence, 
+	p.adherence, 
 	MAX(dispensing_date) last_dispensed_date
 	FROM patient_visit pv
 	INNER JOIN vw_patient_list p ON p.ccc_number= pv.patient_id
@@ -3590,6 +3590,7 @@ class Report_management extends MY_Controller {
 	AND p.differentiated_care_status = 'differentiated'
 	GROUP BY pv.patient_id
 	";
+
 
         $query = $this->db->query($sql);
         $results = $query->result_array();
@@ -9136,6 +9137,7 @@ class Report_management extends MY_Controller {
         $data['hide_side_menu'] = 1;
         $data['banner_text'] = "Facility Reports";
         $data['selected_report_type_link'] = "early_warning_report_select";
+        $data['selected_report_type_link'] = "standard_report_row";
         $data['selected_report_type'] = "Standard Reports";
         $data['report_title'] = "Active Patients By Regimen ";
         $data['facility_name'] = $this->session->userdata('facility_name');

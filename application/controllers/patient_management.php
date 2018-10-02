@@ -1516,10 +1516,10 @@ class Patient_management extends MY_Controller {
         $to = $this->input->post('to');
         //$dateEnrolled = $this->input->post('dateEnrolled');
         $gender = $this->input->post('gender');
-        $trans = $this->input->post('transferedFrom');
+        $patientsource = $this->input->post('patientSource');
         $maturity = $this->input->post('agegroup');
         $service = $this->input->post('service');
-        $startRegimen = $this->input->post('pregnant');
+        $startRegimen = $this->input->post('startRegimen');
         $currRegimen = $this->input->post('currentRegimen');
         $currStatus = $this->input->post('currentStatus');
         $smokes = $this->input->post('smokes');
@@ -1535,48 +1535,23 @@ class Patient_management extends MY_Controller {
         if (!empty($to)) {
             $query .= " AND date_enrolled BETWEEN '$from' AND '$to' ";
         }
-        if (!empty($gender)) {
-            $query .= " AND gender ='$gender'";
-        }
-        if (!empty($maturity)) {
-            $query .= " AND maturity ='$maturity'";
-        }
-        if (!empty($service)) {
-            $query .= " AND service ='$service'";
-        }
-        if (!empty($startRegimen)) {
-            $query .= " AND start_regimen ='$startRegimen'";
-        }
-        if (!empty($currRegimen)) {
-            $query .= " AND current_regimen ='$currRegimen'";
-        }
-        if (!empty($smokes)) {
-            $query .= " AND smoke ='$smokes'";
-        }
-        if (!empty($drink)) {
-            $query .= " AND alcohol ='$drink'";
-        }
-        if (!empty($pregnant)) {
-            $query .= " AND pregnant ='$pregnant'";
-        }
-        if (!empty($tb)) {
-            $query .= " AND tb ='$tb'";
-        }
-        if (!empty($differentiated)) {
-            $query .= " AND differentiated_care_status ='$differentiated'";
-        }
-        if (!empty($currStatus)) {
-            $query .= " AND current_status ='$currStatus'";
-        }
 
-        if (!empty($disclosure)) {
-            $query .= " AND disclosure ='$disclosure'";
-        }
-        if (!empty($trans)) {
-            $query .= " AND patient_source ='$trans'";
-        }
+        $query .= (!empty($gender)) ? " AND gender ='$gender'" : '' ;
+        $query .= (!empty($maturity)) ? " AND maturity ='$maturity'" : '' ;
+        $query .= (!empty($service)) ? " AND service ='$service'" : '';
+        $query .= (!empty($startRegimen)) ? " AND start_regimen ='$startRegimen'" : '';
+        $query .= (!empty($currRegimen)) ? " AND current_regimen ='$currRegimen'" : '';
+        $query .= (!empty($smokes)) ? " AND smoke ='$smokes'" : '';
+        $query .= (!empty($drink)) ? " AND alcohol ='$drink'" : '';
+        $query .= (!empty($pregnant)) ? " AND pregnant ='$pregnant'" : '';
+        $query .= (!empty($tb)) ? " AND tb ='$tb'" : '';
+        $query .= (!empty($differentiated)) ? " AND differentiated_care_status ='$differentiated'" : '';
+        $query .= (!empty($currStatus)) ? " AND current_status ='$currStatus'" : '';
+        $query .= (!empty($disclosure)) ? " AND disclosure ='$disclosure'" : '';
+        $query .= (!empty($patientsource)) ? " AND patient_source ='$patientsource'" : '';
 
-        $raw = preg_replace('/AND/', '', $query, 1);
+
+        $raw = preg_replace('/AND/', '', $query, 1); // remove first appearance of AND
 
         if (!empty($query)) {
             $results = $this->query(' WHERE '.$raw);
@@ -1588,30 +1563,13 @@ class Patient_management extends MY_Controller {
     }
 
     function query($raw='') {
-        return $this->db->query("SELECT ccc_number,first_name,other_name,last_name,date_of_birth,age,maturity,pob,gender,pregnant,adherence,current_weight,current_height,current_bsa,current_bmi,phone_number,physical_address,alternate_address,other_illnesses,other_drugs,drug_allergies,tb,smoke,alcohol,date_enrolled,patient_source,supported_by,service,start_regimen,start_regimen_date,current_status,sms_consent,family_planning,tbphase,startphase,endphase,partner_status,status_change_date,disclosure,support_group,current_regimen,nextappointment,days_to_nextappointment,clinicalappointment,start_height,start_weight,start_bsa,start_bmi,transfer_from,prophylaxis,isoniazid_start_date,isoniazid_end_date,pep_reason,differentiated_care_status,viral_load_test_results,
-        CASE WHEN t.is_tested = 1 THEN 'YES'
-        ELSE 'NO' END AS is_tested
-        ,test_date	as prep_test_date,
-        CASE WHEN t.test_result = 1 THEN 'Positive'
-        ELSE 'Negative' END AS  prep_test_result,
-        name as prep_reason_name
-        FROM vw_patient_list v1 
-		LEFT JOIN (
-			SELECT ppt.*,pr.name
-			FROM patient_prep_test ppt
-			INNER JOIN prep_reason pr ON pr.id = ppt.prep_reason_id
-			INNER JOIN (
-					SELECT patient_id, MAX(test_date) test_date
-					FROM patient_prep_test 
-					GROUP BY patient_id
-					) t ON t.patient_id = ppt.patient_id AND t.test_date = ppt.test_date
-			GROUP BY ppt.patient_id
-			) t ON t.patient_id = v1.patient_id 
-                        $raw 
-		GROUP BY v1.patient_id");
+    	$query_str = "SELECT ccc_number,first_name,other_name,last_name,date_of_birth,age,maturity,pob,gender,pregnant,adherence,current_weight,current_height,current_bsa,current_bmi,phone_number,physical_address,alternate_address,other_illnesses,other_drugs,drug_allergies,tb,smoke,alcohol,date_enrolled,patient_source,supported_by,service,start_regimen,start_regimen_date,current_status,sms_consent,family_planning,tbphase,startphase,endphase,partner_status,status_change_date,disclosure,support_group,current_regimen,nextappointment,days_to_nextappointment,clinicalappointment,start_height,start_weight,start_bsa,start_bmi,transfer_from,prophylaxis,isoniazid_start_date,isoniazid_end_date,pep_reason,differentiated_care_status,viral_load_test_results
+        	from vw_patient_list $raw";
+        return $this->db->query($query_str);
     }
 
     public function getPatientMasterList($results) {
+
         ini_set("memory_limit", '2048M');
         $this->load->dbutil();
         $this->load->helper('file');
