@@ -43,6 +43,7 @@
 </div>
 
 
+<script src="<?=base_url() ?>assets/scripts/highcharts/highcharts.js" ></script>
 <!--custom script-->
 <script type='text/javascript'>
     $(function(){
