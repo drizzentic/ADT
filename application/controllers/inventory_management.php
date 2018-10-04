@@ -479,7 +479,7 @@ class Inventory_management extends MY_Controller {
         $data['pqmp_data'] = $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation , cou.name country
 FROM pqms p 
 LEFT JOIN pv_counties co ON p.county_id = co.id 
-LEFT JOIN pv_countries cou ON cou.id = p.country_of_origin
+LEFT JOIN countries cou ON cou.id = p.country_of_origin
 LEFT JOIN pv_sub_counties su ON p.sub_county_id = su.id 
 LEFT JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
         $this->base_params($data);
@@ -502,8 +502,8 @@ LEFT JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->res
         $data['patient_id'] = $id;
         $data['hide_side_menu'] = 0;
         $data['diagnosis'] = $this->db->get('drug_classification')->result();
-        $data['adr_data'] = $this->db->query("SELECT p.*,co.county_name county_name,su.sub_county_name sub_county_name,de.name designation_d FROM adr_form p LEFT JOIN counties co ON p.county = co.id LEFT JOIN sub_counties su ON p.sub_county = su.id LEFT JOIN designations de ON p.designation = de.id WHERE p.id='$id'")->result_array();
-        $data['adr_details'] = $this->db->query("SELECT afd.id,afd.dose_id, afd.route_freq, afd.adr_id,afd.visitid,afd.dose,afd.route,d.value dose_unit, r.name route_name, f.name freq_name, afd.drug, afd.brand,afd.date_started,afd.date_stopped,afd.indication, afd.suspecteddrug FROM adr_form_details afd LEFT JOIN doses d ON d.id = afd.dose_id LEFT JOIN frequencies f ON f.id = afd.route_freq LEFT JOIN routes r ON r.id = afd.route WHERE afd.adr_id='$id'")->result_array();
+        $data['adr_data'] = $this->db->query("SELECT p.*,co.county_name county_name,su.sub_county_name sub_county_name,de.name designation_d FROM adr_form p LEFT JOIN pv_counties co ON p.county = co.id LEFT JOIN pv_sub_counties su ON p.sub_county = su.id LEFT JOIN pv_designations de ON p.designation = de.id WHERE p.id='$id'")->result_array();
+        $data['adr_details'] = $this->db->query("SELECT afd.id,afd.dose_id, afd.route_freq, afd.adr_id,afd.visitid,afd.dose,afd.route,d.value dose_unit, r.name route_name, f.name freq_name, afd.drug, afd.brand,afd.date_started,afd.date_stopped,afd.indication, afd.suspecteddrug FROM adr_form_details afd LEFT JOIN pv_doses d ON d.id = afd.dose_id LEFT JOIN pv_frequencies f ON f.id = afd.route_freq LEFT JOIN pv_routes r ON r.id = afd.route WHERE afd.adr_id='$id'")->result_array();
         $this->base_params($data);
     }
 
