@@ -6,6 +6,10 @@ $ccc_stores = $this->session->userdata("ccc_store");
 <script type="text/javascript">
     $(document).ready(function () {
         // $('#drugselector').select2();
+       $('.nav a').click(function(){
+        $('.drugselector').css('display', 'none');
+        });
+       
         $('#visiting_patient_report_select').change(function () {
             var value = $(this).val();
             if (value === 'getPatientList') {
@@ -162,7 +166,7 @@ $ccc_stores = $this->session->userdata("ccc_store");
                     <option class="date_range_report" value="getPatientMissingAppointments">Patients Missing Appointments</option>
                     <option class="date_range_report" value="dispensingReport">Patients Visit Summary</option>
                     <option class="date_range_report" value="get_viral_load_results">List of Patient Viral Load Results</option>
-                    <option class="date_range_report" value="getPatientList">List of Patients on a given Drug </option>
+                    <option class="date_range_report drug_select" value="getPatientList">List of Patients on a given Drug </option>
                 </select></td>
         </tr>
 
@@ -229,8 +233,7 @@ $ccc_stores = $this->session->userdata("ccc_store");
         <!-- guidelines-->
         <tr id="guidelines_report_row" class="reports_types">
         </tr>
-        <tr id="DRUGFILTER" class="">
-
+        <tr id="DRUGFILTER" class="select_drug">
             <td>
                 <strong class="drugselector" style="display: none;">Select Drug</strong> 
                 <select id="drugselector" class="select2 drugselector" style="display: none;">
