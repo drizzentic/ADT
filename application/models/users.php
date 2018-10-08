@@ -31,7 +31,7 @@ class Users extends Doctrine_Record {
 		$this -> _set('Password', md5($value));
 	}
 
-	public function login($username, $password) {
+	public static function login($username, $password) {
 
 		//$query = Doctrine_Query::create() -> select("*") -> from("Users") -> where("Username = '" . $username . "' or Email_Address='" . $username . "' or Phone_Number='" . $username . "'");
 
@@ -72,7 +72,7 @@ class Users extends Doctrine_Record {
 	}
 
 	//get all users
-	public function getAll() {
+	public static function getAll() {
 		$query = Doctrine_Query::create() -> select("u.Name,u.Username, a.Level_Name as Access, u.Email_Address, u.Phone_Number, b.Name as Creator,u.Active as Active") -> from("Users u") -> leftJoin('u.Access a, u.Creator b');
 		$users = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $users;
