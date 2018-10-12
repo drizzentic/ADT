@@ -1632,10 +1632,11 @@
 
     function loadRegimens(age) {
         var link = "<?php echo base_url(); ?>regimen_management/getFilteredRegiments";
+        var service = "<?php echo $service_name; ?>"
         var request = $.ajax({
             url: link,
             type: 'post',
-            data: {"age": age},
+            data: {"age": age,"service":service},
             dataType: "json"
         });
         request.done(function (data) {
