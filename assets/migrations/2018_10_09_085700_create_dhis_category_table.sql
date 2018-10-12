@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS dhis_category;
+DROP TABLE IF EXISTS dhis_category//
 CREATE TABLE dhis_category (
   dhiscode varchar(100) NOT NULL,
   name varchar(100) NOT NULL

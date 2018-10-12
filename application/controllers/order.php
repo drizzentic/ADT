@@ -209,7 +209,8 @@ class Order extends MY_Controller {
 				$conditions
 				ORDER BY c.period_begin desc";
 			} else if ($type == "maps") {
-				$sql = "SELECT m.id,IF(m.code='D-MAPS',CONCAT('D-MAPS#',m.id),CONCAT('F-MAPS#',m.id)) as maps_id,m.period_begin,LCASE(m.status) as status_name,$facility_name as facility_name
+				$sql = "SELECT m.id,IF(m.code='D-MAPS',CONCAT('D-MAPS#',m.id),CONCAT('F-MAPS#',m.id)) as maps_id,m.period_begin,
+				concat (LCASE(m.status),'-',m.issynched) as status_name,$facility_name as facility_name
 				FROM maps m
 				LEFT JOIN $facility_table f ON f.id=m.facility_id
 				WHERE facility_id IN($facilities)
@@ -239,15 +240,28 @@ class Order extends MY_Controller {
 		$this -> table -> set_heading($columns);
 		$link_values = "";
 		foreach ($data as $mydata) {
-			$status_name = strtolower(@$mydata['status_name']);
+			$status_name = explode('-', strtolower(@$mydata['status_name']))[0];
+			$issynched = explode('-', strtolower(@$mydata['status_name']))[1];
+			// $status_name = strtolower(@$mydata['status_name']);
+
+
 			if ($status_name == "prepared" || $status_name == "review") {
 				$links = array("order/view_order/" . $table => "view", "order/update_order/" . $table => "update", "order/read_order/" . $table => "delete", "order/download_order/" . $table => "download");
+
+
 			} else {
 				$links = array("order/view_order/" . $table => "view", "order/download_order/" . $table => "download");
 				if ($table == "aggregate") {
 					$links = array("order/aggregate_download" => "download");
+				} 
+				if ($issynched !== "N") {
+					$links = array("order/view_order/" . $table => "view", "order/download_order/" . $table => "download","order/upload_dhis/".$table => "sync DHIS");
 				}
+
+
 			}
+
+			
 			//Set Up links
 			foreach ($links as $i => $link) {
 				if ($link == "delete") {
@@ -2660,6 +2674,148 @@ public function getPeriodRegimenPatients($from, $to) {
 		$data["actual"] =  $this ->actualReports($facility_code,$period_begin,$type);
 		echo json_encode($data);
 	}
+
+	public function upload_dhis($order_type,$order_id){
+		// Creation of MAPS dhis message
+		if ($order_type == 'maps') {
+			# code...
+			$results = Maps::getMap($order_id)[0];
+			$results['item'] = Maps_Item::getDhisItem($order_id);
+			$dhis_orgs = $this->session->userdata('dhis_orgs');
+			if (count($dhis_orgs)>1){
+				$dhis_org = ($dhis_orgs[0] =='HfVjCurKxh2') ? $dhis_orgs[1]  : $dhis_orgs[0]  ;
+			}
+		// $dhis_orgs =$dhis_orgs[0];
+			$dataValues = array();
+			foreach ($results['item'] as $key => $item) {
+				if ($item['dhis_code'] ==NULL){continue;}
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'NhSoXUMPK2K', 'value' =>$item['total'],'comment'=>''));
+			}
+			$dhismessage = array(
+				'dataSet'=> 'mgaZyW3Xzyf',
+				'completeDate' => date('Y-m-d',strtotime($results['updated'])),
+				'period' => date('Ym',strtotime($results['period_begin'])),
+				'orgUnit'=> $dhis_org,
+				'attributeOptionCombo'=> "NhSoXUMPK2K",
+				'dataValues' => $dataValues
+			);
+			$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
+			$resource = 'api/dataValueSets';
+			$reports = $this->sendRequest($resource,'post',$dhismessage,$dhis_auth);
+			var_dump($reports);
+		}
+		// Creation of CDRR dhis message
+		else {
+			# code...
+			$results = Cdrr::getCdrr($order_id)[0];
+			$results['item'] = Cdrr_Item::getDhisItem($order_id);
+			$dhis_orgs = $this->session->userdata('dhis_orgs');
+			if (count($dhis_orgs)>1){
+				$dhis_org = ($dhis_orgs[0] =='HfVjCurKxh2') ? $dhis_orgs[1]  : $dhis_orgs[0]  ;
+			}
+			$dataValues = array();
+			foreach ($results['item'] as $key => $item) {
+				if ($item['dhis_code'] ==NULL){continue;}
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'jWmWT3Nvq1P', 'value' =>$item['balance'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'XmKrTgYAPoi', 'value' =>$item['received'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'yP6vevc91WZ', 'value' =>$item['dispensed_packs'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'b11dZBeBzRE', 'value' =>$item['losses'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'LeyPc0LYjLg', 'value' =>$item['adjustments'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'O9yaDegYywr', 'value' =>$item['adjustments_neg'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'GvjV9gy3OOc', 'value' =>$item['count'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'r9aTy1gRXUC', 'value' =>$item['expiry_quant'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'hOMc7AVsdRk', 'value' =>$item['expiry_date'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'aDZLiIaG8gC', 'value' =>$item['out_of_stock'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'R4B7KIT1mch', 'value' =>$item['resupply'],'comment'=>''));
+				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'NhSoXUMPK2K', 'value' =>$item['total'],'comment'=>''));
+
+			}
+			$dhismessage = array(
+				'dataSet'=> 'OSulH5zPHPw',
+				'completeDate' => date('Y-m-d',strtotime($results['updated'])),
+				'period' => date('Ym',strtotime($results['period_begin'])),
+				'orgUnit'=> $dhis_org,
+				'attributeOptionCombo'=> "NhSoXUMPK2K",
+				'dataValues' => $dataValues
+			);
+			$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
+			$resource = 'api/dataValueSets';
+			$reports = $this->sendRequest($resource,'post',$dhismessage,$dhis_auth);
+			// var_dump(json_encode($dhismessage));
+			var_dump($reports);
+		}
+
+
+
+		// https://hiskenya.org/api/dataValueSets?dataSet=OSulH5zPHPw&period=201807&orgUnit=JgBnZEcsqDR
+	}
+	public function get_dhis(){
+		$cdrr_code = 'OSulH5zPHPw';
+		$maps_code = 'mgaZyW3Xzyf';
+
+		$balance         =  'jWmWT3Nvq1P';
+		$received        =  'XmKrTgYAPoi';
+		$dispensed_packs =  'yP6vevc91WZ';
+		$losses          =  'b11dZBeBzRE';
+		$adjustments     =  'LeyPc0LYjLg';
+		$adjustments_neg =  'O9yaDegYywr';
+		$count           =  'GvjV9gy3OOc';
+		$expiry_quant    =  'r9aTy1gRXUC';
+		$expiry_date     =  'hOMc7AVsdRk';
+		$out_of_stock    =  'aDZLiIaG8gC';
+		$resupply        =  'R4B7KIT1mch';
+		$total           =  'NhSoXUMPK2K';
+
+		$curr_month = date('Ym');
+		$prev_month = date('Ym', strtotime("-1 months"));
+		// $prev_month = echo date('Ym', strtotime("-2 months"));
+		$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
+
+
+		$dhiscode = $this->session->userdata('dhis_id');
+		$resource = "api/dataValueSets?dataSet=OSulH5zPHPw&period=201807&orgUnit=JgBnZEcsqDR";
+		// echo $dhis_auth;die;
+		$reports = json_decode($this->sendRequest($resource,'GET',null,$dhis_auth));
+		echo "<pre>";
+		var_dump($reports);
+
+		foreach ($reports->dataValues as $key => $value) {
+			echo $value->dataElement;
+			echo $value->categoryOptionCombo;
+			echo $value->attributeOptionCombo;
+			echo $value->value;
+		}
+
+	}
+
+	private function sendRequest($resource,$method, $payload = null,$authorization = null){
+			//  Initiate cURL.
+		$ch = curl_init($this->dhis_url.$resource);
+			//  The JSON data.
+			//  Encode the array into JSON.
+		$jsonDataEncoded = json_encode($payload);
+			//  Tell cURL that we want to send a POST request.
+
+		if ($method == 'POST') {
+			curl_setopt($ch, CURLOPT_POST, 1);
+			//  Attach our encoded JSON string to the POST fields.
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonDataEncoded);
+		}
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+
+			//  Set the content type to application/json
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json')); 
+		curl_setopt($ch, CURLOPT_USERPWD, "$authorization");
+
+		$response = curl_exec($ch);
+		$status = curl_getinfo($ch);
+		curl_close($ch);
+		return $response;
+
+	}
+
+
 }
 // end of buffer: Exit and Clear
 ob_get_clean();
