@@ -25,6 +25,18 @@ class Maps_item extends Doctrine_Record {
 		return $items[0];
 	}
 
+	public function getDhisItem($item) {
+
+		$sql="SELECT * from maps_item mi left join dhis_elements de on regimen_id = target_id where maps_id = $item AND target_category = 'regimen'";
+		$query=$this->db->query($sql);
+		$items=$query->result_array();
+		return $items;
+		
+	}
+
+
+
+
 	public function getItems($map) {
 		$query = Doctrine_Query::create() -> select("*") -> from("maps_item") -> where("maps_id = '$map'");
 		$items = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);

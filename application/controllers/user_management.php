@@ -14,6 +14,9 @@ class User_management extends MY_Controller {
 		ini_set("smtp_port", '465');
 		ini_set("sendmail_from", 'webadt.chai@gmail.com');
 		date_default_timezone_set('Africa/Nairobi');
+
+		$this->endpoint = "https://hiskenya.org/api/";
+
 	}
 
 	public function index() {

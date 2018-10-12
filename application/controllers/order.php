@@ -2752,6 +2752,10 @@ public function getPeriodRegimenPatients($from, $to) {
 	public function get_dhis(){
 		$cdrr_code = 'OSulH5zPHPw';
 		$maps_code = 'mgaZyW3Xzyf';
+		$dhis_orgs = $this->session->userdata('dhis_orgs');
+		if (count($dhis_orgs)>1){
+			$dhis_org = ($dhis_orgs[0] =='HfVjCurKxh2') ? $dhis_orgs[1]  : $dhis_orgs[0]  ;
+		}
 
 		$balance         =  'jWmWT3Nvq1P';
 		$received        =  'XmKrTgYAPoi';
@@ -2773,17 +2777,29 @@ public function getPeriodRegimenPatients($from, $to) {
 
 
 		$dhiscode = $this->session->userdata('dhis_id');
-		$resource = "api/dataValueSets?dataSet=OSulH5zPHPw&period=201807&orgUnit=JgBnZEcsqDR";
-		// echo $dhis_auth;die;
+		$resource = "api/dataValueSets?dataSet=OSulH5zPHPw&period=201807&orgUnit=JgBnZEcsqDR"; // get cdrr
+		$resource = "api/dataValueSets?dataSet=mgaZyW3Xzyf&period=201807&orgUnit=JgBnZEcsqDR"; // get map
+		$resource = "api/dataValueSets?dataSet=mgaZyW3Xzyf&period=201807&orgUnit=JgBnZEcsqDR"; // get map
+		$dhis_org
+
 		$reports = json_decode($this->sendRequest($resource,'GET',null,$dhis_auth));
 		echo "<pre>";
-		var_dump($reports);
+echo substr($report->period, 4);
 
-		foreach ($reports->dataValues as $key => $value) {
-			echo $value->dataElement;
-			echo $value->categoryOptionCombo;
-			echo $value->attributeOptionCombo;
-			echo $value->value;
+		// var_dump($report);
+
+		// get organization
+		// 	period start
+		// 	period end
+		// 	date updated 
+		die;
+
+
+		foreach ($report->dataValues as $key => $value) {
+			echo 'dataElement '.$value->dataElement;
+			echo 'categoryOptionCombo '.$value->categoryOptionCombo;
+			echo 'attributeOptionCombo '.$value->attributeOptionCombo;
+			echo 'value '.$value->value;
 		}
 
 	}
