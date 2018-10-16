@@ -477,11 +477,11 @@ class Inventory_management extends MY_Controller {
         $data['patient_id'] = $id;
         $data['hide_side_menu'] = 0;
         $data['pqmp_data'] = $this->db->query("SELECT p.*,co.county_name,su.sub_county_name,de.name designation , cou.name country
-FROM pqms p 
-LEFT JOIN pv_counties co ON p.county_id = co.id 
-LEFT JOIN countries cou ON cou.id = p.country_of_origin
-LEFT JOIN pv_sub_counties su ON p.sub_county_id = su.id 
-LEFT JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
+                                                FROM pqms p 
+                                                LEFT JOIN pv_counties co ON p.county_id = co.id 
+                                                LEFT JOIN pv_countries cou ON cou.id = p.country_of_origin
+                                                LEFT JOIN pv_sub_counties su ON p.sub_county_id = su.id 
+                                                LEFT JOIN pv_designations de ON p.designation_id = de.id WHERE p.id='$id'")->result_array();
         $this->base_params($data);
     }
 
