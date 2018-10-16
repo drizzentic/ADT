@@ -37,14 +37,14 @@ function ellipsis($string, $max_length) {
             Synchronization Successfully Completed..
         </div>
 
-            <?php if (!empty($this->session->flashdata('pqmp_saved'))) { ?>
+            <?php $msg = $this->session->flashdata('pqmp_saved'); if (!empty($msg)) { ?>
             <div class="alert alert-success">
             <?= $this->session->flashdata('pqmp_saved'); ?>
             </div> 
         <?php }
         ?>
 
-            <?php if (!empty($this->session->flashdata('adr_error'))) { ?>
+            <?php $adr_error = $this->session->flashdata('adr_error'); if (!empty($adr_error)) { ?>
             <div class="alert alert-danger">
             <?= $this->session->flashdata('adr_error'); ?>
             </div> 
