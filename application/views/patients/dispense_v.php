@@ -1548,6 +1548,7 @@
         amountToDispense = (180 - amountispensed);
         var res = $(this).closest('tr').find('.drug option:selected').text();
         var dispensed = $(this).closest('tr').find('.qty_disp').val();
+        duration_quantity($(this));
         if (res.indexOf('ISONIAZID') > -1) {
             if (parseInt(dispensed) > 180) {
                 bootbox.alert("<h4>ISONIAZID MAX ALERT!</h4>\n\<hr/><center>You cannot dispense more than (" + amountToDispense + ") ISONIAZIDS for this patient!</center>");
