@@ -6,6 +6,7 @@
          <div id='disclosure_chart'></div>
 	</div>
 </div>
+<script src="<?=base_url() ?>assets/scripts/highcharts/highcharts.js" ></script>
 
 <script type="text/javascript">
 	$(document).ready(function(){	
