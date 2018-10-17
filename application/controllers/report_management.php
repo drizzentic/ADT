@@ -3858,7 +3858,7 @@ class Report_management extends MY_Controller {
 	AND pa.appointment >= '$from' 
 	AND pa.appointment <= '$to'
 	AND facility = '$facility_code' 
-	GROUP BY patient, appointmen";
+	GROUP BY patient, appointment";
         $query = $this->db->query($sql);
 
         $results = $query->result_array();
