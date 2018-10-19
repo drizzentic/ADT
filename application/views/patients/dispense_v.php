@@ -1543,7 +1543,7 @@
     }
 
 
-    $(document).on('change', '.qty_disp,.dose,.duration', function () {
+    $(document).on('change', '.dose,.duration', function () {
         isoCount = 0;
         amountToDispense = (180 - amountispensed);
         var res = $(this).closest('tr').find('.drug option:selected').text();
