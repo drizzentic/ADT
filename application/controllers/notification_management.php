@@ -607,9 +607,9 @@ public function missed_appointments_notification($display_array=false){
 		                left join patient p on p.patient_number_ccc =  pv.patient_id 
 				WHERE  dp.id = dpd.drug_prescriptionid
 		and p.id  is null
-				GROUP BY patient_ccc, order_number 
+				GROUP BY patient, order_number 
 				ORDER BY timecreated DESC 
-		) b on a.patient_number_ccc = b.patient_ccc 
+		) b on a.patient_number_ccc = b.patient
 		group by order_number";
 		
 		$query=$this->db->query($sql);
@@ -752,7 +752,6 @@ public function missed_appointments_notification($display_array=false){
 		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped dataTables" >');
 		$this -> table -> set_template($tmpl);
 		$this -> table -> set_heading($columns);
-
 		//loop  through patients adding the rows
         foreach($patients as $patient){
         	// http://localhost:81/ADT/dispensement_management/dispense/2821?pid=1255
