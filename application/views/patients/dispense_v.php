@@ -1637,7 +1637,7 @@
         var request = $.ajax({
             url: link,
             type: 'post',
-            data: {"age": age,"service":service},
+            data: {"age": <?= $age; ?> ,"service":service},
             dataType: "json"
         });
         request.done(function (data) {
