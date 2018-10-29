@@ -3587,7 +3587,7 @@ class Report_management extends MY_Controller {
 	FROM patient_visit pv
 	INNER JOIN vw_patient_list p ON p.ccc_number= pv.patient_id
 	WHERE pv.dispensing_date >='$start_date'  AND pv.dispensing_date < '$end_date' 
-	AND p.differentiated_care_status = 'differentiated'
+	AND pv.differentiated_care = 1
 	GROUP BY pv.patient_id
 	";
 
@@ -4695,7 +4695,7 @@ class Report_management extends MY_Controller {
         $from = date('Y-m-d', strtotime($from));
         $to = date('Y-m-d', strtotime($to));
 
-        $sql = "SELECT pv.patient_number,type_of_service,client_support,patient_name,current_age,sex,regimen,visit_date,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence,source FROM vw_routine_refill_visit pv
+        $sql = "SELECT pv.patient_number,type_of_service,client_support,patient_name,current_age,sex,regimen,visit_date,quantity,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence,source FROM vw_routine_refill_visit pv
 	WHERE pv.visit_date 
 	BETWEEN '$from' 
 	AND '$to' group by patient_number,visit_date";
@@ -4712,7 +4712,8 @@ class Report_management extends MY_Controller {
 	<th> Current Age </th>
 	<th> Sex</th>
 	<th> Regimen </th>
-	<th> Visit Date</th>
+    <th> Visit Date</th>
+	<th> Quantity</th>
 	<th> Current Weight (Kg) </th>
 	<th> Missed Pills Adherence (%)</th>
 	<th> Pill Count Adherence (%)</th>
@@ -4743,12 +4744,13 @@ class Report_management extends MY_Controller {
                 $dispensing_date = date('d-M-Y', strtotime($result['visit_date']));
                 $regimen_desc = "<b>" . $result['regimen'] . "</b>";
                 $weight = $result['current_weight'];
+                $quantity = $result['quantity'];
                 $source = $result['source'];
                 $pill_count = $result['pill_count_adherence'];
                 $missed_pills = $result['missed_pill_adherence'];
                 $adherence_array = array($missed_pills, $pill_count, $appointments);
                 $avg_adherence = number_format(array_sum($adherence_array) / count($adherence_array), 2);
-                $row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$supported_by</td><td>$patient_name</td><td>$age</td><td>$gender</td><td>$regimen_desc</td><td>$dispensing_date</td><td>$weight</td>
+                $row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$supported_by</td><td>$patient_name</td><td>$age</td><td>$gender</td><td>$regimen_desc</td><td>$dispensing_date</td><td>$quantity</td><td>$weight</td>
 			<td>$missed_pills</td><td>$pill_count</td><td>$appointments</td><td>$avg_adherence</td><td>$source</td></tr>";
 
                 $overall_total++;
