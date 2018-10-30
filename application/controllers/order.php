@@ -19,7 +19,7 @@ class Order extends MY_Controller {
 	}
 
 	public function index() {
-		if ($this->session->userdata("facility_dhis") && !$this->session->userdata("dhis_id")){
+		if ($this->session->userdata("facility_dhis")==1 && !$this->session->userdata("dhis_id")){
 			$data['page_title'] = "DHiS Login";
 			$data['banner_text'] = "DHIS Login";
 			$data['content_view'] = "orders/dhis_login_v";
@@ -97,6 +97,7 @@ class Order extends MY_Controller {
 					$this->db->insert('sync_user', $sync_user);
 				}
 				//Set session
+				$this->session->set_userdata("dhis_org", $this->facility_dhis());
 				$this->session->set_userdata("dhis_id", $auth_response['id']);
 				$this->session->set_userdata("dhis_name",  $auth_response['name']);
 				$this->session->set_userdata("dhis_user", $username);
@@ -117,9 +118,17 @@ class Order extends MY_Controller {
 		$this -> session -> unset_userdata("dhis_orgs");
 		redirect("order");
 	}
+	function facility_dhis(){
+		$code = $this->session->userdata('facility');
+		$sql = "select dhiscode from sync_facility where code = $code ";
+		$dhiscode = ($this->db->query($sql)->result_array()) ? $this->db->query($sql)->result_array()[0]['dhiscode'] : null ;
+		return $dhiscode;
+	}
 
 	public function get_dhis_data(){
-		echo json_encode(1);
+		$this->get_dhis('maps');
+		$this->get_dhis('cdrr');
+		echo json_encode('success');
 	}
 
 	public function verify_user_access(){
@@ -254,8 +263,8 @@ class Order extends MY_Controller {
 				if ($table == "aggregate") {
 					$links = array("order/aggregate_download" => "download");
 				} 
-				if ($issynched !== "N") {
-					$links = array("order/view_order/" . $table => "view", "order/download_order/" . $table => "download","order/upload_dhis/".$table => "sync DHIS");
+				if ($issynched !== "N" && ($this->session->userdata("facility_dhis"))) {
+					$links = array("order/view_order/" . $table => "view", "order/download_order/" . $table => "download");
 				}
 
 
@@ -653,6 +662,7 @@ class Order extends MY_Controller {
 					$status = "updated";
 					if ($this -> input -> post("status_change")) {
 						$status = $this -> input -> post("status_change");
+						if($status =='approved'){$this->upload_dhis('cdrr',$id);}
 					}
 					$logs = Cdrr_Log::getHydratedLogs($id);
 
@@ -811,6 +821,7 @@ class Order extends MY_Controller {
 			$this -> session -> set_flashdata('order_message', "Your " . strtoupper($type) . " data was successfully ".$status." !");
 
 			if($status == "approved" || $status == "archived"){
+				if($status =='approved'){$this->upload_dhis('maps',$id);}
 				redirect("order/view_order/" . $type . "/" . $id);
 			}else{
 				redirect("order/update_order/" . $type . "/" . $id);
@@ -2681,11 +2692,7 @@ public function getPeriodRegimenPatients($from, $to) {
 			# code...
 			$results = Maps::getMap($order_id)[0];
 			$results['item'] = Maps_Item::getDhisItem($order_id);
-			$dhis_orgs = $this->session->userdata('dhis_orgs');
-			if (count($dhis_orgs)>1){
-				$dhis_org = ($dhis_orgs[0] =='HfVjCurKxh2') ? $dhis_orgs[1]  : $dhis_orgs[0]  ;
-			}
-		// $dhis_orgs =$dhis_orgs[0];
+			$dhis_org = $this->session->userdata('dhis_org');
 			$dataValues = array();
 			foreach ($results['item'] as $key => $item) {
 				if ($item['dhis_code'] ==NULL){continue;}
@@ -2702,17 +2709,12 @@ public function getPeriodRegimenPatients($from, $to) {
 			$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
 			$resource = 'api/dataValueSets';
 			$reports = $this->sendRequest($resource,'post',$dhismessage,$dhis_auth);
-			var_dump($reports);
 		}
-		// Creation of CDRR dhis message
-		else {
+		else if ($order_type = 'cdrr'){
 			# code...
 			$results = Cdrr::getCdrr($order_id)[0];
 			$results['item'] = Cdrr_Item::getDhisItem($order_id);
-			$dhis_orgs = $this->session->userdata('dhis_orgs');
-			if (count($dhis_orgs)>1){
-				$dhis_org = ($dhis_orgs[0] =='HfVjCurKxh2') ? $dhis_orgs[1]  : $dhis_orgs[0]  ;
-			}
+			$dhis_org = $this->session->userdata('dhis_org');
 			$dataValues = array();
 			foreach ($results['item'] as $key => $item) {
 				if ($item['dhis_code'] ==NULL){continue;}
@@ -2741,66 +2743,126 @@ public function getPeriodRegimenPatients($from, $to) {
 			$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
 			$resource = 'api/dataValueSets';
 			$reports = $this->sendRequest($resource,'post',$dhismessage,$dhis_auth);
-			// var_dump(json_encode($dhismessage));
-			var_dump($reports);
 		}
-
-
-
-		// https://hiskenya.org/api/dataValueSets?dataSet=OSulH5zPHPw&period=201807&orgUnit=JgBnZEcsqDR
 	}
-	public function get_dhis(){
-		$cdrr_code = 'OSulH5zPHPw';
-		$maps_code = 'mgaZyW3Xzyf';
-		$dhis_orgs = $this->session->userdata('dhis_orgs');
-		if (count($dhis_orgs)>1){
-			$dhis_org = ($dhis_orgs[0] =='HfVjCurKxh2') ? $dhis_orgs[1]  : $dhis_orgs[0]  ;
-		}
+	public function get_dhis($ds = null, $period = null){
 
-		$balance         =  'jWmWT3Nvq1P';
-		$received        =  'XmKrTgYAPoi';
-		$dispensed_packs =  'yP6vevc91WZ';
-		$losses          =  'b11dZBeBzRE';
-		$adjustments     =  'LeyPc0LYjLg';
-		$adjustments_neg =  'O9yaDegYywr';
-		$count           =  'GvjV9gy3OOc';
-		$expiry_quant    =  'r9aTy1gRXUC';
-		$expiry_date     =  'hOMc7AVsdRk';
-		$out_of_stock    =  'aDZLiIaG8gC';
-		$resupply        =  'R4B7KIT1mch';
-		$total           =  'NhSoXUMPK2K';
+		$dataset =  $this->config->config['dhiscode'][$ds.'_code']; // pick dataset code from config
+		$prev_month = date('Ym', strtotime("-1 months")); // previous month
+		$period = (!$period) ? $prev_month : date('Ym', strtotime($period)) ;
 
-		$curr_month = date('Ym');
-		$prev_month = date('Ym', strtotime("-1 months"));
-		// $prev_month = echo date('Ym', strtotime("-2 months"));
+		$dhis_org = $this->session->userdata('dhis_org');
+		// $dhis_org = 'JgBnZEcsqDR'; // lvct code
 		$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
-
-
 		$dhiscode = $this->session->userdata('dhis_id');
-		$resource = "api/dataValueSets?dataSet=OSulH5zPHPw&period=201807&orgUnit=JgBnZEcsqDR"; // get cdrr
-		$resource = "api/dataValueSets?dataSet=mgaZyW3Xzyf&period=201807&orgUnit=JgBnZEcsqDR"; // get map
-		$resource = "api/dataValueSets?dataSet=mgaZyW3Xzyf&period=201807&orgUnit=JgBnZEcsqDR"; // get map
-		$dhis_org
+		$resource = "api/dataValueSets?dataSet=$dataset&period=$period&orgUnit=".$dhis_org; // get cdrr
+		$report = json_decode($this->sendRequest($resource,'GET',null,$dhis_auth));
+		$start_date = substr($report->period, 0,4).'-'.substr($report->period, 4).'-01';
+		$end_date =  substr($report->period, 0,4).'-'.substr($report->period, 4).'-'.cal_days_in_month(CAL_GREGORIAN,substr($report->period,4),substr($report->period, 0,4));		
+		$arr = array();
 
-		$reports = json_decode($this->sendRequest($resource,'GET',null,$dhis_auth));
-		echo "<pre>";
-echo substr($report->period, 4);
+		// insert if cdrr
+		if($ds == 'cdrr' && $report->dataValues){
 
-		// var_dump($report);
+			$facility_id = $this->session->userdata('facility_id');
+			$cdrr = array(
+				'status' => 'downloaded',
+				'created' => str_replace('T', ' ', $report->dataValues[0]->created),
+				'updated' => str_replace('T', ' ', $report->dataValues[0]->lastUpdated),
+				'code' => 'F-CDRR_packs',
+				'period_begin' => $start_date,
+				'period_end' => $end_date,
+				'comments' => '',
+				'reports_expected' => 0,
+				'reports_actual' => 0,
+				'services' => '',
+				'sponsors' => '',
+				'non_arv' => 0,
+				'delivery_note' => '',
+				'order_id' => 0,
+				'facility_id' => $facility_id,
+				'issynched' => 'Y');
 
-		// get organization
-		// 	period start
-		// 	period end
-		// 	date updated 
-		die;
+			$this->db->insert('cdrr',$cdrr);		$cdrr_id = $this->db->insert_id();
+			$sql = '';
+			foreach ($report->dataValues as $key => $value) {
+				$drug_id = $this->dhisLookup($value->dataElement,'drug');
+				$column = $this->dhisLookup($value->categoryOptionCombo);
 
-
-		foreach ($report->dataValues as $key => $value) {
-			echo 'dataElement '.$value->dataElement;
-			echo 'categoryOptionCombo '.$value->categoryOptionCombo;
-			echo 'attributeOptionCombo '.$value->attributeOptionCombo;
-			echo 'value '.$value->value;
+				$sql .="insert into cdrr_item ($column,drug_id,cdrr_id) values ($value->value,$drug_id,$cdrr_id) on duplicate key update $column = $value->value;";
+			}
+			$this->db->query($sql);
 		}
+		// insert if maps
+		else if($ds == 'maps' && $report->dataValues){
+			$facility_id = $this->session->userdata('facility_id');
+			$maps = array(
+				'status' => 'downloaded',
+				'created' => str_replace('T', ' ', $report->dataValues[0]->created),
+				'updated' => str_replace('T', ' ', $report->dataValues[0]->lastUpdated),
+				'code'  => 'F-MAPS',
+				'period_begin' => $start_date,
+				'period_end' => $end_date,
+				'reports_expected' => 0,
+				'reports_actual' => 0,
+				'art_adult'  => '',
+				'art_child'  => '',
+				'new_male'  => '',
+				'revisit_male'  => '',
+				'new_female'  => '',
+				'revisit_female'  => '',
+				'new_pmtct'  => '',
+				'revisit_pmtct'  => '',
+				'total_infant'  => '',
+				'pep_adult'  => '',
+				'pep_child'  => '',
+				'total_adult'  => '',
+				'total_child'  => '',
+				'diflucan_adult'  => '',
+				'diflucan_child'  => '',
+				'new_cm'  => '',
+				'revisit_cm'  => '',
+				'new_oc'  => '',
+				'revisit_oc'  => '',
+				'comments'  => '',
+				'report_id'  => '',
+				'facility_id' => $facility_id,
+				'issynched'  => 'Y'
+			);
+
+			$this->db->insert('maps',$maps);
+			$maps_id = $this->db->insert_id();
+			
+			$sql = '';
+			foreach ($report->dataValues as $key => $value) {
+				$regimen_id = $this->dhisLookup($value->dataElement,'regimen');
+				$sql .="insert into maps_item (total,regimen_id,maps_id) values ($value->value,$regimen_id,$maps_id) on duplicate key update total = $value->value;";
+			}
+			$this->db->query($sql);
+		}
+	}
+
+	public function dhisLookup($dhiscode,$object = null){
+		// return category option names in the adt_config
+
+		if($object ==null){
+			$key = array_search ($dhiscode, $this->config->config['dhiscode']);
+			$result = $key;
+		}	
+
+		// return ADT object whether regimen,drug,facility, 
+		if ($object == 'facility'){
+
+		}
+		if ($object == 'drug'){
+			$sql = "SELECT * FROM dhis_elements de left join drugcode d on de.target_id = d.id WHERE dhis_code = '$dhiscode'";
+			$result = $this->db->query($sql)->result_array()[0]['id'];
+		}
+		if ($object == 'regimen'){
+			$sql = "SELECT * FROM dhis_elements de left join regimen r on de.target_id = r.id WHERE dhis_code = '$dhiscode'";		
+			$result = $this->db->query($sql)->result_array()[0]['id'];
+		}
+		return $result;
 
 	}
 

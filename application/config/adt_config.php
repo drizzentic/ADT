@@ -2,10 +2,26 @@
 
 
 $config['adt_version'] = '3.4(Beta-1.0)';
-$config['server_url'] = 'http://197.248.7.226/api/public/api/v1/'; 
-$config['ip'] = '197.248.7.226';
-$config['port'] = '80';
-$config['timeout'] = '10';
+$config['server_url'] = 'http://197.248.7.226/api/public/api/v1/';  // ppb API url
+$config['ip'] = '197.248.7.226'; // PPB IP address
+$config['port'] = '80'; // PPB PORt
+$config['timeout'] = '10'; // PPB request timeout in seconds 
+
+$config['dhiscode']['balance']         =  'jWmWT3Nvq1P';
+$config['dhiscode']['received']        =  'XmKrTgYAPoi';
+$config['dhiscode']['dispensed_packs'] =  'yP6vevc91WZ';
+$config['dhiscode']['losses']          =  'b11dZBeBzRE';
+$config['dhiscode']['adjustments']     =  'LeyPc0LYjLg';
+$config['dhiscode']['adjustments_neg'] =  'O9yaDegYywr';
+$config['dhiscode']['count']           =  'GvjV9gy3OOc';
+$config['dhiscode']['expiry_quant']    =  'r9aTy1gRXUC';
+$config['dhiscode']['expiry_date']     =  'hOMc7AVsdRk';
+$config['dhiscode']['out_of_stock']    =  'aDZLiIaG8gC';
+$config['dhiscode']['resupply']        =  'R4B7KIT1mch';
+$config['dhiscode']['total']           =  'NhSoXUMPK2K';
+
+$config['dhiscode']['cdrr_code'] = 'OSulH5zPHPw';
+$config['dhiscode']['maps_code'] = 'mgaZyW3Xzyf';
 
 /* End of file config.php */
 /* Location: ./application/config/adt_config.php */

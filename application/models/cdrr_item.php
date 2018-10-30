@@ -43,13 +43,12 @@ class Cdrr_item extends Doctrine_Record {
 		$items = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $items;
 	}
-public function getDhisItem($item) {
-	$sql = "SELECT *
-	FROM cdrr_item ci
-	left join dhis_elements de on ci.drug_id = de.target_id 
-	WHERE  
-	target_category = 'drug'
-	 AND cdrr_id = $item";
+
+	public function getDhisItem($item) {
+		$sql = "SELECT * FROM cdrr_item ci
+		LEFT JOIN dhis_elements de on ci.drug_id = de.target_id 
+		WHERE  target_category = 'drug'
+		AND cdrr_id = $item";
 		$query=$this->db->query($sql);
 		$items=$query->result_array();
 		return $items;
