@@ -20,8 +20,10 @@ $config['dhiscode']['out_of_stock']    =  'aDZLiIaG8gC';
 $config['dhiscode']['resupply']        =  'R4B7KIT1mch';
 $config['dhiscode']['total']           =  'NhSoXUMPK2K';
 
-$config['dhiscode']['cdrr_code'] = 'OSulH5zPHPw';
-$config['dhiscode']['maps_code'] = 'mgaZyW3Xzyf';
+$config['dhiscode']['fcdrr_code'] = 'OSulH5zPHPw';
+$config['dhiscode']['fmaps_code'] = 'mgaZyW3Xzyf';
+$config['dhiscode']['dcdrr_code'] = 'rk2yudsNrm5';
+$config['dhiscode']['dmaps_code'] = 'ZddkIXm6FDw';
 
 /* End of file config.php */
 /* Location: ./application/config/adt_config.php */

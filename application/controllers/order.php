@@ -64,6 +64,32 @@ class Order extends MY_Controller {
 			foreach ($auth_response['organisationUnits'] as $orgs) {
 				$dhis_orgs[] = $orgs['id'];
 			}
+
+			//Get dhiscodes for all related sites without
+			$missing_dhiscode = array();
+			$query = $this->db->get_where('sync_facility', array(
+				'parent_id' => Sync_Facility::getId($this->facility_code, $this->facility_type)['id'])
+			);
+			foreach ($query->result_array() as $facility) {
+				if(!$facility['dhiscode']){
+					$missing_dhiscode[] = $facility['code'];
+				}
+			};
+
+			if(!empty($missing_dhiscode)){
+				$org_unit_url = $this -> dhis_url . 'api/organisationUnits.json?level=5&paging=false&fields=:id,code,name&filter=code:in:['.implode(',', $missing_dhiscode).']';
+				$curl -> get($org_unit_url);
+				if (!$curl -> error) {
+					$org_response = json_decode($curl -> response, TRUE);
+					foreach ($org_response['organisationUnits'] as $org) {
+						if(isset($org['code'])){
+							$this->db->where('code', $org['code']);
+							$this->db->update('sync_facility', array('dhiscode' => $org['id']));
+						}
+					}
+				}
+			}
+			
 			//Ensure user has access to facility dhis data
 			$user_dhis_orgs = array();
 			$query = $this->db->get_where('sync_facility', array(
@@ -73,8 +99,8 @@ class Order extends MY_Controller {
 				$user_dhis_orgs[] = $facility['dhiscode'];
 			};
 			$user_dhis_orgs = array_unique($user_dhis_orgs);
-			$array_intersect = array_intersect($user_dhis_orgs, $dhis_orgs);
-			if(!empty($array_intersect) || in_array($kenya_code, $dhis_orgs)){
+			$dhis_orgs_intersect = array_intersect($user_dhis_orgs, $dhis_orgs);
+			if(!empty($dhis_orgs_intersect) || in_array($kenya_code, $dhis_orgs)){
 				//Save user data
 				$sync_user = array(
 					'username' => $username,
@@ -85,7 +111,7 @@ class Order extends MY_Controller {
 					'status' => 'A',
 					'user_id' => $this->session->userdata('user_id'),
 					'profile_id' => $auth_response['id'],
-					'organization_id' => json_encode($dhis_orgs)
+					'organization_id' => json_encode($dhis_orgs_intersect)
 				);
 
 				//Link User to facilities
@@ -102,7 +128,7 @@ class Order extends MY_Controller {
 				$this->session->set_userdata("dhis_name",  $auth_response['name']);
 				$this->session->set_userdata("dhis_user", $username);
 				$this->session->set_userdata("dhis_pass", $password);
-				$this->session->set_userdata("dhis_orgs", $dhis_orgs);
+				$this->session->set_userdata("dhis_orgs", $dhis_orgs_intersect);
 			}else{
 				$this -> session -> set_flashdata('login_message', "<span class='error'>You are not authorized in this Facility!</span>");
 			}
@@ -125,10 +151,23 @@ class Order extends MY_Controller {
 		return $dhiscode;
 	}
 
-	public function get_dhis_data(){
-		$this->get_dhis('maps');
-		$this->get_dhis('cdrr');
-		echo json_encode('success');
+	public function get_dhis_data($period_filter){
+		$message = '';
+
+		if ($this->facility_type == 0) { //Satellite Site
+			$message .= $this->get_dhis('fcdrr', $period_filter, 'F-CDRR_units')['fcdrr']['message'];
+			$message .= $this->get_dhis('fmaps', $period_filter, 'F-MAPS')['fmaps']['message'];
+		}else if ($this->facility_type == 1) { //Standalone Site
+			$message .= $this->get_dhis('fcdrr', $period_filter, 'F-CDRR_packs')['fcdrr']['message'];
+			$message .= $this->get_dhis('fmaps', $period_filter, 'F-MAPS')['fmaps']['message'];
+		}else if ($this->facility_type > 1) { //Central Site
+			$message .= $this->get_dhis('fcdrr', $period_filter, 'F-CDRR_units')['fcdrr']['message'];
+			$message .= $this->get_dhis('fmaps', $period_filter, 'F-MAPS')['fmaps']['message'];
+			$message .= $this->get_dhis('dcdrr', $period_filter, 'D-CDRR')['dcdrr']['message'];
+			$message .= $this->get_dhis('dmaps', $period_filter, 'D-MAPS')['dmaps']['message'];
+		}
+
+		echo json_encode($message);
 	}
 
 	public function verify_user_access(){
@@ -184,7 +223,7 @@ class Order extends MY_Controller {
 	}
 
 	public function get_orders($type = "cdrr", $period_begin = "") {
-		$columns = array('#', '#ID', 'Period Beginning', 'Status', 'Facility Name', 'Options');
+		$columns = array('#', '#ID', 'Period Beginning', 'Status-Online', 'Facility Name', 'Options');
 		$facility_table = 'sync_facility';
 		$facility_name = 'f.name';
 		$conditions = '';
@@ -210,7 +249,7 @@ class Order extends MY_Controller {
 
 		if($facilities){
 			if ($type == "cdrr") {
-				$sql = "SELECT c.id,IF(c.code='D-CDRR',CONCAT('D-CDRR#',c.id),CONCAT('F-CDRR#',c.id)) as cdrr_id,c.period_begin,LCASE(c.status) as status_name,$facility_name as facility_name
+				$sql = "SELECT c.id,IF(c.code='D-CDRR',CONCAT('D-CDRR#',c.id),CONCAT('F-CDRR#',c.id)) as cdrr_id,c.period_begin, concat (LCASE(c.status),'-',c.issynched) as status_name,$facility_name as facility_name
 				FROM cdrr c
 				LEFT JOIN $facility_table f ON f.id=c.facility_id
 				WHERE facility_id IN($facilities)
@@ -248,29 +287,20 @@ class Order extends MY_Controller {
 		$this -> table -> set_template($tmpl);
 		$this -> table -> set_heading($columns);
 		$link_values = "";
+
 		foreach ($data as $mydata) {
 			$status_name = explode('-', strtolower(@$mydata['status_name']))[0];
 			$issynched = explode('-', strtolower(@$mydata['status_name']))[1];
-			// $status_name = strtolower(@$mydata['status_name']);
-
 
 			if ($status_name == "prepared" || $status_name == "review") {
 				$links = array("order/view_order/" . $table => "view", "order/update_order/" . $table => "update", "order/read_order/" . $table => "delete", "order/download_order/" . $table => "download");
-
-
 			} else {
 				$links = array("order/view_order/" . $table => "view", "order/download_order/" . $table => "download");
 				if ($table == "aggregate") {
 					$links = array("order/aggregate_download" => "download");
-				} 
-				if ($issynched !== "N" && ($this->session->userdata("facility_dhis"))) {
-					$links = array("order/view_order/" . $table => "view", "order/download_order/" . $table => "download");
 				}
-
-
 			}
 
-			
 			//Set Up links
 			foreach ($links as $i => $link) {
 				if ($link == "delete") {
@@ -1175,7 +1205,7 @@ class Order extends MY_Controller {
 							if ($key == $cdrr_item['drug_id']) {
 								$objPHPExcel -> getActiveSheet() -> SetCellValue('D' . $i, $cdrr_item['balance']);
 								$objPHPExcel -> getActiveSheet() -> SetCellValue('E' . $i, $cdrr_item['received']);
-								$objPHPExcel -> getActiveSheet() -> SetCellValue('F' . $i, $cdrr_item['dispensed_units']);
+								$objPHPExcel -> getActiveSheet() -> SetCellValue('F' . $i, $cdrr_item['dispensed_packs']);
 								$objPHPExcel -> getActiveSheet() -> SetCellValue('G' . $i, $cdrr_item['losses']);
 								$objPHPExcel -> getActiveSheet() -> SetCellValue('H' . $i, $cdrr_item['adjustments']);
 								$objPHPExcel -> getActiveSheet() -> SetCellValue('I' . $i, $cdrr_item['adjustments_neg']);
@@ -2745,106 +2775,238 @@ public function getPeriodRegimenPatients($from, $to) {
 			$reports = $this->sendRequest($resource,'post',$dhismessage,$dhis_auth);
 		}
 	}
-	public function get_dhis($ds = null, $period = null){
-
-		$dataset =  $this->config->config['dhiscode'][$ds.'_code']; // pick dataset code from config
-		$prev_month = date('Ym', strtotime("-1 months")); // previous month
-		$period = (!$period) ? $prev_month : date('Ym', strtotime($period)) ;
-
-		$dhis_org = $this->session->userdata('dhis_org');
-		// $dhis_org = 'JgBnZEcsqDR'; // lvct code
+	public function get_dhis($ds = null, $period_filter = null, $code = null){
+		//Default messages
+		$response[$ds] = array('status' => false, 'message' => '<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error!</strong> No '.strtoupper($ds).' Data was Retrieved!</div>');
+		$dataset_url = "api/dataValueSets";
+		$dataset =  $this->config->config['dhiscode'][$ds.'_code']; //pick dataset code from config
+		//Set dates for report retrieving
+		$i = 1;
+		$period_dates = array();
+		while ($i <= $period_filter) {
+			$period_dates[] = date('Y-m-01', strtotime(date('Y-m')." -".$i." month"));
+			$i++;
+		}
 		$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
-		$dhiscode = $this->session->userdata('dhis_id');
-		$resource = "api/dataValueSets?dataSet=$dataset&period=$period&orgUnit=".$dhis_org; // get cdrr
-		$report = json_decode($this->sendRequest($resource,'GET',null,$dhis_auth));
-		$start_date = substr($report->period, 0,4).'-'.substr($report->period, 4).'-01';
-		$end_date =  substr($report->period, 0,4).'-'.substr($report->period, 4).'-'.cal_days_in_month(CAL_GREGORIAN,substr($report->period,4),substr($report->period, 0,4));		
-		$arr = array();
+		$dhiscode = $this->session->userdata('dhis_id'); //DHIS USER ID
+		//Loop through user dhis facilities and get cdrr/maps
+		$dhis_orgs = $this->session->userdata('dhis_orgs');
+		foreach ($period_dates as $period_date) {
+			foreach ($dhis_orgs as $dhis_org) {
+				$period = date('Ym', strtotime($period_date));
+				$resource = $dataset_url."?dataSet=$dataset&period=$period&orgUnit=".$dhis_org; // get cdrr
+				$report = json_decode($this->sendRequest($resource, 'GET', null, $dhis_auth));
 
-		// insert if cdrr
-		if($ds == 'cdrr' && $report->dataValues){
+				if(!empty($report->dataValues)){
+					$start_date = $period_date;
+					$end_date =  date('Y-m-t', strtotime($period_date));
+					//cdrr
+					if(in_array($ds, array('fcdrr', 'dcdrr')) && isset($report->dataValues)){
+						$facility_id = $this->get_sync_facility_id($dhis_org, $code);
+						//Add cdrr
+						$cdrr = array(
+							'status' => 'approved',
+							'created' => str_replace('T', ' ', $report->dataValues[0]->created),
+							'updated' => str_replace('T', ' ', $report->dataValues[0]->lastUpdated),
+							'code' => $code,
+							'period_begin' => $start_date,
+							'period_end' => $end_date,
+							'comments' => '',
+							'reports_expected' => 0,
+							'reports_actual' => 0,
+							'services' => '',
+							'sponsors' => '',
+							'non_arv' => 0,
+							'delivery_note' => '',
+							'order_id' => 0,
+							'facility_id' => $facility_id,
+							'issynched' => 'Y');
+						//Check if cdrr exists
+						$row = $this->db->select('id')->get_where('cdrr', array(
+								'facility_id' => $facility_id, 
+								'period_begin' => $start_date,
+								'code' => 'F-CDRR_packs'))->row_array();
+						if(!empty($row)){
+							$cdrr_id = $row['id'];
+							$this->db->where('id', $cdrr_id);
+							$this->db->update('cdrr', $cdrr);
+						}else{
+							$this->db->insert('cdrr', $cdrr);		
+							$cdrr_id = $this->db->insert_id();
+						}
 
-			$facility_id = $this->session->userdata('facility_id');
-			$cdrr = array(
-				'status' => 'downloaded',
-				'created' => str_replace('T', ' ', $report->dataValues[0]->created),
-				'updated' => str_replace('T', ' ', $report->dataValues[0]->lastUpdated),
-				'code' => 'F-CDRR_packs',
-				'period_begin' => $start_date,
-				'period_end' => $end_date,
-				'comments' => '',
-				'reports_expected' => 0,
-				'reports_actual' => 0,
-				'services' => '',
-				'sponsors' => '',
-				'non_arv' => 0,
-				'delivery_note' => '',
-				'order_id' => 0,
-				'facility_id' => $facility_id,
-				'issynched' => 'Y');
+						//Build formatted cdrr_item object
+						$cdrr_item = array();
+						foreach ($report->dataValues as $key => $value) {
+							$drug_id = $this->dhisLookup($value->dataElement, 'drug');
+							$column = $this->dhisLookup($value->categoryOptionCombo);
+							$cdrr_item[$cdrr_id][$drug_id][$column] = $value->value;
+						}
 
-			$this->db->insert('cdrr',$cdrr);		$cdrr_id = $this->db->insert_id();
-			$sql = '';
-			foreach ($report->dataValues as $key => $value) {
-				$drug_id = $this->dhisLookup($value->dataElement,'drug');
-				$column = $this->dhisLookup($value->categoryOptionCombo);
+						//Add cdrr_item
+						foreach ($cdrr_item as $cdrr_id => $items) {
+							foreach ($items as $drug_id => $cdrr_item_tmp) {
+								//Add cdrr_id and drug_id
+								$cdrr_item_tmp['cdrr_id'] = $cdrr_id;
+								$cdrr_item_tmp['drug_id'] = $drug_id;
+								//Check if value exists
+								$row = $this->db->select('id')->get_where('cdrr_item', array(
+								'cdrr_id' => $cdrr_id, 
+								'drug_id' => $drug_id))->row_array();
+								if(!empty($row)){
+									$cdrr_item_id = $row['id'];
+									$this->db->where('id', $cdrr_item_id);
+									$this->db->update('cdrr_item', $cdrr_item_tmp);
+								}else{
+									$this->db->insert('cdrr_item', $cdrr_item_tmp);		
+								}
+							}	
+						}
 
-				$sql .="insert into cdrr_item ($column,drug_id,cdrr_id) values ($value->value,$drug_id,$cdrr_id) on duplicate key update $column = $value->value;";
+						//Add cdrr_log
+						$last_index = (sizeof($report->dataValues) - 1);
+						$logs = array('prepared' => $report->dataValues[$last_index]->created, 'approved' => $report->dataValues[$last_index]->lastUpdated);
+						foreach ($logs as $log => $timeline) {
+							//cdrr_log Object 
+							$cdrr_log_tmp = array(
+								'description' => $log,
+								'created' => $timeline,
+								'user_id' => $this->db->select('user_id')->get_where('sync_user', array('username' => $report->dataValues[$last_index]->storedBy))->row_array()['user_id'],
+								'cdrr_id' => $cdrr_id
+							);
+
+							//Check if value exists
+							$row = $this->db->select('id')->get_where('cdrr_log', array(
+							'cdrr_id' => $cdrr_id, 
+							'description' => $log))->row_array();
+							if(!empty($row)){
+								$cdrr_log_id = $row['id'];
+								$this->db->where('id', $cdrr_log_id);
+								$this->db->update('cdrr_log', $cdrr_log_tmp);
+							}else{
+								$this->db->insert('cdrr_log', $cdrr_log_tmp);		
+							}
+						}
+
+						//Set success response
+						$response[$ds] = array('status' => true, 'message' => '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Success!</strong> '.strtoupper($ds).' Reports were retrieved successfully!</div>');
+					}	
+					//maps
+					else if(in_array($ds, array('fmaps', 'dmaps')) && isset($report->dataValues)){
+						$facility_id = $this->get_sync_facility_id($dhis_org, $code);
+						$maps = array(
+							'status' => 'approved',
+							'created' => str_replace('T', ' ', $report->dataValues[0]->created),
+							'updated' => str_replace('T', ' ', $report->dataValues[0]->lastUpdated),
+							'code'  => $code,
+							'period_begin' => $start_date,
+							'period_end' => $end_date,
+							'reports_expected' => 0,
+							'reports_actual' => 0,
+							'art_adult'  => '',
+							'art_child'  => '',
+							'new_male'  => '',
+							'revisit_male'  => '',
+							'new_female'  => '',
+							'revisit_female'  => '',
+							'new_pmtct'  => '',
+							'revisit_pmtct'  => '',
+							'total_infant'  => '',
+							'pep_adult'  => '',
+							'pep_child'  => '',
+							'total_adult'  => '',
+							'total_child'  => '',
+							'diflucan_adult'  => '',
+							'diflucan_child'  => '',
+							'new_cm'  => '',
+							'revisit_cm'  => '',
+							'new_oc'  => '',
+							'revisit_oc'  => '',
+							'comments'  => '',
+							'report_id'  => '',
+							'facility_id' => $facility_id,
+							'issynched'  => 'Y'
+						);
+
+						//Check if maps exists
+						$row = $this->db->select('id')->get_where('maps', array(
+								'facility_id' => $facility_id, 
+								'period_begin' => $start_date,
+								'code' => 'F-MAPS'))->row_array();
+						if(!empty($row)){
+							$maps_id = $row['id'];
+							$this->db->where('id', $maps_id);
+							$this->db->update('maps', $maps);
+						}else{
+							$this->db->insert('maps', $maps);		
+							$maps_id = $this->db->insert_id();
+						}
+
+						//Build formatted maps_item object
+						$maps_item = array();
+						foreach ($report->dataValues as $key => $value) {
+							$regimen_id = $this->dhisLookup($value->dataElement, 'regimen');
+							$column = $this->dhisLookup($value->categoryOptionCombo);
+							$maps_item[$maps_id][$regimen_id][$column] = $value->value;
+						}
+
+						//Add maps_item
+						foreach ($maps_item as $maps_id => $items) {
+							foreach ($items as $regimen_id => $maps_item_tmp) {
+								//Add maps_id and regimen_id
+								$maps_item_tmp['maps_id'] = $maps_id;
+								$maps_item_tmp['regimen_id'] = $regimen_id;
+								//Check if value exists
+								$row = $this->db->select('id')->get_where('maps_item', array(
+								'maps_id' => $maps_id, 
+								'regimen_id' => $regimen_id))->row_array();
+								if(!empty($row)){
+									$maps_item_id = $row['id'];
+									$this->db->where('id', $maps_item_id);
+									$this->db->update('maps_item', $maps_item_tmp);
+								}else{
+									$this->db->insert('maps_item', $maps_item_tmp);		
+								}
+							}	
+						}
+
+						//Add maps_log
+						$last_index = (sizeof($report->dataValues) - 1);
+						$logs = array('prepared' => $report->dataValues[$last_index]->created, 'approved' => $report->dataValues[$last_index]->lastUpdated);
+						foreach ($logs as $log => $timeline) {
+							//maps_log Object 
+							$maps_log_tmp = array(
+								'description' => $log,
+								'created' => $timeline,
+								'user_id' => $this->db->select('user_id')->get_where('sync_user', array('username' => $report->dataValues[$last_index]->storedBy))->row_array()['user_id'],
+								'maps_id' => $maps_id
+							);
+
+							//Check if value exists
+							$row = $this->db->select('id')->get_where('maps_log', array(
+							'maps_id' => $maps_id, 
+							'description' => $log))->row_array();
+							if(!empty($row)){
+								$maps_log_id = $row['id'];
+								$this->db->where('id', $maps_log_id);
+								$this->db->update('maps_log', $maps_log_tmp);
+							}else{
+								$this->db->insert('maps_log', $maps_log_tmp);		
+							}
+						}
+
+						//Set success response
+						$response[$ds] = array('status' => true, 'message' => '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Success!</strong> '.strtoupper($ds).' Reports were retrieved successfully!</div>');
+					}
+				}
 			}
-			$this->db->query($sql);
 		}
-		// insert if maps
-		else if($ds == 'maps' && $report->dataValues){
-			$facility_id = $this->session->userdata('facility_id');
-			$maps = array(
-				'status' => 'downloaded',
-				'created' => str_replace('T', ' ', $report->dataValues[0]->created),
-				'updated' => str_replace('T', ' ', $report->dataValues[0]->lastUpdated),
-				'code'  => 'F-MAPS',
-				'period_begin' => $start_date,
-				'period_end' => $end_date,
-				'reports_expected' => 0,
-				'reports_actual' => 0,
-				'art_adult'  => '',
-				'art_child'  => '',
-				'new_male'  => '',
-				'revisit_male'  => '',
-				'new_female'  => '',
-				'revisit_female'  => '',
-				'new_pmtct'  => '',
-				'revisit_pmtct'  => '',
-				'total_infant'  => '',
-				'pep_adult'  => '',
-				'pep_child'  => '',
-				'total_adult'  => '',
-				'total_child'  => '',
-				'diflucan_adult'  => '',
-				'diflucan_child'  => '',
-				'new_cm'  => '',
-				'revisit_cm'  => '',
-				'new_oc'  => '',
-				'revisit_oc'  => '',
-				'comments'  => '',
-				'report_id'  => '',
-				'facility_id' => $facility_id,
-				'issynched'  => 'Y'
-			);
 
-			$this->db->insert('maps',$maps);
-			$maps_id = $this->db->insert_id();
-			
-			$sql = '';
-			foreach ($report->dataValues as $key => $value) {
-				$regimen_id = $this->dhisLookup($value->dataElement,'regimen');
-				$sql .="insert into maps_item (total,regimen_id,maps_id) values ($value->value,$regimen_id,$maps_id) on duplicate key update total = $value->value;";
-			}
-			$this->db->query($sql);
-		}
+		return $response;
 	}
 
-	public function dhisLookup($dhiscode,$object = null){
+	public function dhisLookup($dhiscode, $object = null){
 		// return category option names in the adt_config
-
 		if($object ==null){
 			$key = array_search ($dhiscode, $this->config->config['dhiscode']);
 			$result = $key;
@@ -2866,7 +3028,7 @@ public function getPeriodRegimenPatients($from, $to) {
 
 	}
 
-	private function sendRequest($resource,$method, $payload = null,$authorization = null){
+	private function sendRequest($resource, $method, $payload = null,$authorization = null){
 			//  Initiate cURL.
 		$ch = curl_init($this->dhis_url.$resource);
 			//  The JSON data.
@@ -2882,7 +3044,11 @@ public function getPeriodRegimenPatients($from, $to) {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
-			//  Set the content type to application/json
+		// Escape SSL Certificate errors
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
+		// Set the content type to application/json
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json')); 
 		curl_setopt($ch, CURLOPT_USERPWD, "$authorization");
 
@@ -2893,6 +3059,37 @@ public function getPeriodRegimenPatients($from, $to) {
 
 	}
 
+	public function get_sync_facility_id($dhis_code, $code){
+		$facility_id = NULL;
+
+		if(in_array($code, array('F-CDRR_units', 'F-MAPS'))  && $this->facility_type != 1){ //Satellite
+			$result = $this->db->select('id')->get_where('sync_facility', array(
+				'dhiscode' =>  $dhis_code, 
+				'category' => 'satellite', 
+				'ordering' => '0',
+				'service_point' => '1'
+			))->row_array();
+		}else if(in_array($code, array('F-CDRR_packs', 'F-MAPS'))  &&  $this->facility_type == 1){ //Standalone
+			$result = $this->db->select('id')->get_where('sync_facility', array(
+				'dhiscode' =>  $dhis_code, 
+				'category' => 'standalone', 
+				'ordering' => '1',
+				'service_point' => '1'
+			))->row_array();
+		}else if(in_array($code, array('D-CDRR', 'D-MAPS')) &&  $this->facility_type > 1){ //Central
+			$result = $this->db->select('id')->get_where('sync_facility', array(
+				'dhiscode' =>  $dhis_code, 
+				'category' => 'central', 
+				'ordering' => '1',
+				'service_point' => '0'
+			))->row_array();
+		}
+
+		if(!empty($result)){
+			$facility_id = $result['id'];
+		}
+		return $facility_id;
+	}
 
 }
 // end of buffer: Exit and Clear

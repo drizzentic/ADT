@@ -38,10 +38,7 @@
 	<!--row for tabs-->
 	<?php if($this->session->userdata('facility_dhis')){ ?>
 		<div class="row-fluid">
-			<div class="span3">
-				<button id="get_dhis_data" class="btn btn-lg btn-warning"><i class="icon-download-alt"></i> GET DATA FROM DHIS</button>
-			</div>
-			<div class="span3 offset6">
+			<div class="span3 offset9">
 				Welcome <b><?php echo $this->session->userdata('dhis_name'); ?></b>, 
 				<a href="<?php echo base_url().'order/logout'; ?>"><i class="icon-off"></i>Logout</a>
 			</div>
@@ -59,6 +56,11 @@
 				<li id="templates_btn">
 					<a href="#templates">my TEMPLATEs</a>
 				</li>
+				<?php if($this->session->userdata('facility_dhis')){ ?>
+					<li id="dhis_reports_btn">
+						<a href="#dhis_downloader">my DHIS Downloader</a>
+					</li>
+				<?php } ?>		
 			</ul>
 		</div>
 	</div>
@@ -109,6 +111,19 @@
 								</ul>
 							</div>
 						</span>	
+					</div>
+				</div>
+				<div id="dhis_downloader" class="tab-pane">
+					<div id="download_msg"></div>
+					<div class="table-responsive">
+						Period
+						<select id="period_filter" name="period_filter">
+							<option value="1">Last Month</option>
+							<option value="3">Last 3 Month(s)</option>
+							<option value="6">Last 6 Month(s)</option>
+							<option value="12">Last 12 Month(s)</option>
+						</select>
+						<button id="get_dhis_data" class="btn btn-lg btn-warning"><i class="icon-download-alt"></i> Download Reports</button>
 					</div>
 				</div>
 			</div>
@@ -287,10 +302,16 @@
 			$.blockUI({ 
 				message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Downloading...</h3>' 
 			}); 
-			var dataURL = 'Order/get_dhis_data'
+			var dhis_filter = $("#period_filter").val();
+			var dataURL = 'Order/get_dhis_data/'+dhis_filter
+			$('#download_msg').html('')
 			$.getJSON(dataURL, function(data){
 				$.unblockUI();
-				alert(data)
+				$('#download_msg').html(data); //Append success message
+				setTimeout(function(){
+					location.reload();
+				}, 2000); //Reload page after 2 sec
+				
 			});
 		});
 		
@@ -320,25 +341,40 @@
 	   $("#cdrr_btn").click(function() {
 	   	$("#maps_btn").removeClass();
 	   	$("#templates_btn").removeClass();
+	   	$("#dhis_reports_btn").removeClass();
 	   	$(this).addClass("active");
 	   	$("#cdrrs").show();
 	   	$("#maps").hide();
 	   	$("#templates").hide();
+	   	$("#dhis_downloader").hide();
 	   });
 	   $("#maps_btn").click(function() {
 	   	$("#cdrr_btn").removeClass();
 	   	$("#templates_btn").removeClass();
+	   	$("#dhis_reports_btn").removeClass();
 	   	$(this).addClass("active");
 	   	$("#maps").show();
 	   	$("#cdrrs").hide();
 	   	$("#templates").hide();
-
+	   	$("#dhis_downloader").hide();
 	   });
 	   $("#templates_btn").click(function() {
 	   	$("#cdrr_btn").removeClass();
 	   	$("#maps_btn").removeClass();
+	   	$("#dhis_reports_btn").removeClass();
 	   	$(this).addClass("active");
 	   	$("#templates").show();
+	   	$("#maps").hide();
+	   	$("#cdrrs").hide();
+	   	$("#dhis_downloader").hide();
+	   });
+	   $("#dhis_reports_btn").click(function() {
+	   	$("#cdrr_btn").removeClass();
+	   	$("#maps_btn").removeClass();
+	   	$("#templates_btn").removeClass();
+	   	$(this).addClass("active");
+	   	$("#dhis_downloader").show();
+	   	$("#templates").hide();
 	   	$("#maps").hide();
 	   	$("#cdrrs").hide();
 	   });

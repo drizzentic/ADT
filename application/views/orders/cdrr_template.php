@@ -113,20 +113,6 @@
 						<td><b>County: &nbsp;</b><?php echo ucwords($facility_object -> County -> county);?></td>
 						<td><b>Sub-County: &nbsp;</b><?php echo $facility_object -> Parent_District -> Name;?></td>
 					</tr>
-					
-					<!--
-					<tr>
-						<td colspan='2'><b>Programme Sponsor: &nbsp;</b><?php //echo $facility_object -> support -> Name;?>
-							<input type="hidden" name="sponsor" value="<?php //echo $facility_object -> support -> Name; ?>"/>
-						</td>
-					</tr>
-					<tr>
-						<td><b>Type of Service provided at the Facility: &nbsp; </b>
-						<input type="hidden" name="type_of_service" value="<?php //echo implode(",", $type_of_service); ?>"/></td>
-						<td><b>Non-ARV: &nbsp;</b>
-						<input type="checkbox" name="non_arv" id="non_arv" value="0"/>
-						</td>
-					</tr>-->
 					<tr>
 						<?php
 						if (empty($cdrr_array)) {
@@ -589,7 +575,7 @@
 		  $("#item_id_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['item_id']; ?>");
 		  $("#opening_balance_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['balance']; ?>");
 		  $("#received_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['received']; ?>");
-		  $("#dispensed_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['dispensed_units']; ?>"); 
+		  $("#dispensed_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['dispensed_packs']; ?>"); 
 		<?php	
 		if($cdrr_array[0]['code']=="D-CDRR"){
 		?>
