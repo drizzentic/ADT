@@ -56,7 +56,7 @@
                         <select name="transferedFrom" class="select2" > 
                             <option value=""> - Transfered From - </option>
                             <?php foreach ($transfered as $t) { ?>
-                                <option value="<?= $t->name; ?>"><?= $t->name; ?></option>
+                                <option value="<?= $t['name']; ?>"><?= $t['name']; ?></option>
                             <?php } ?>
                         </select>
                     </td>
@@ -70,7 +70,7 @@
                         <select name="service"  class="select2">
                             <option value=""> - Service - </option>
                             <?php foreach ($service as $t) { ?>
-                                <option value="<?= $t->name; ?>"><?= $t->name; ?></option>
+                                <option value="<?= $t['name']; ?>"><?= $t['name']; ?></option>
                             <?php } ?>
                         </select>
                     </td>
@@ -83,7 +83,7 @@
                         <select  name="startRegimen" class="select2">
                             <option value=""> - Regimen - </option>
                             <?php foreach ($startreg as $t) { ?>
-                                <option value="<?= $t->regimen_desc; ?>"><?= $t->regimen_desc; ?></option>
+                                <option value="<?= $t['regimen_desc']; ?>"><?= $t['regimen_desc']; ?></option>
                             <?php } ?>
                         </select>
                     </td>
@@ -112,7 +112,7 @@
                         <select name="currentStatus" class="select2" >
                             <option value=""> - Current Status - </option>
                             <?php foreach ($currstat as $t) { ?>
-                                <option value="<?= $t->Name; ?>"><?= strtoupper($t->Name); ?></option>
+                                <option value="<?= $t['Name']; ?>"><?= strtoupper($t['Name']); ?></option>
                             <?php } ?>
                         </select>
                     </td>

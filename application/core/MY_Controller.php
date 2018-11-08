@@ -13,7 +13,7 @@ class MY_Controller extends CI_Controller {
     }
     
     function loadChoices($table,$column){
-        return $this->db->select($column)->group_by($column)->get($table)->result();
+        return $this->db->select($column)->group_by($column)->get($table)->result_array();
     }
 
     function getDrugData($id) {
