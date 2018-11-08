@@ -98,7 +98,7 @@
                         <select name="currentRegimen" class="select2" >
                             <option value=""> - Current Regimen - </option>
                             <?php foreach ($startreg as $t) { ?>
-                                <option value="<?= $t->regimen_desc; ?>"><?= $t->regimen_desc; ?></option>
+                                <option value="<?= $t['regimen_desc']; ?>"><?= $t['regimen_desc']; ?></option>
                             <?php } ?>
                         </select>
                     </td>
