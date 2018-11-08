@@ -492,11 +492,11 @@ class Patient_management extends MY_Controller {
         $status = 0;
         $result = $this->db->where('id', $ccid)->get('patient')->result();
         $mandatory = [
-            'patient_number_ccc', 'first_name', 'dob', 'gender', 'pregnant', 'bmi', 'sa',
+            'patient_number_ccc', 'first_name', 'dob', 'gender', 'pregnant',
             'height', 'weight', 'date_enrolled', 'start_regimen', 'source', 'service'
         ];
         $label = [
-            'Patient CCC No.', 'First Name', 'Date of Birth', 'Gender', 'Pregnancy Status', 'Body Mass Index(BMI)', 'Body Surface Area (MSQ)',
+            'Patient CCC No.', 'First Name', 'Date of Birth', 'Gender', 'Pregnancy Status', 
             'Height', 'Weight', 'Enrollment Date', 'Date Regimen Started', 'Source of patient', 'Service'
         ];
         $i = 0;
