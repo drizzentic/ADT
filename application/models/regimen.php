@@ -108,7 +108,7 @@ class Regimen extends Doctrine_Record {
 	}
 	
 	public function getServiceRegimens($service){
-		$sql=("SELECT category as Category,enabled as Enabled,line as Line,merged_to as Merged_To,optimality as Optimality,regimen_code as Regimen_Code,regimen_desc as Regimen_Desc,remarks as Remarks,source as Source,type_of_service as Type_Of_Service FROM regimen
+		$sql=("SELECT regimen.id, category as Category,enabled as Enabled,line as Line,merged_to as Merged_To,optimality as Optimality,regimen_code as Regimen_Code,regimen_desc as Regimen_Desc,remarks as Remarks,source as Source,type_of_service as Type_Of_Service FROM regimen
 			inner join regimen_service_type on type_of_service = regimen_service_type.id 
 			and regimen_service_type.name like'%$service%' ORDER BY type_of_service");
 		$query = $this -> db -> query($sql);
