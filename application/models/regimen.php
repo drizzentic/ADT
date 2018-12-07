@@ -106,7 +106,16 @@ class Regimen extends Doctrine_Record {
 		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $regimens;
 	}
-		
+	
+	public function getServiceRegimens($service){
+		$sql=("SELECT category as Category,enabled as Enabled,line as Line,merged_to as Merged_To,optimality as Optimality,regimen_code as Regimen_Code,regimen_desc as Regimen_Desc,remarks as Remarks,source as Source,type_of_service as Type_Of_Service FROM regimen
+			inner join regimen_service_type on type_of_service = regimen_service_type.id 
+			and regimen_service_type.name like'%$service%' ORDER BY type_of_service");
+		$query = $this -> db -> query($sql);
+		$regimens = $query -> result_array();
+		return $regimens;
+	}
+
 	public function getChildRegimens(){
 		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> where("(r.Regimen_Category.Name LIKE '%paed%' OR r.Regimen_Category.Name LIKE '%child%'  OR r.Regimen_Category.Name LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
 		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
