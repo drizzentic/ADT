@@ -123,7 +123,15 @@
  	patient_ccc_number = p.patient_number_ccc
  	ORDER BY test_date DESC
  	LIMIT 1) AS viral_load_test_results,
- IF((p.differentiated_care = 1),
+ (SELECT 
+ 	patient_viral_load.test_date
+ 	FROM
+ 	patient_viral_load
+ 	WHERE
+ 	patient_ccc_number = p.patient_number_ccc
+ 	ORDER BY test_date DESC
+ 	LIMIT 1) AS viral_load_test_date,
+ 	 IF((p.differentiated_care = 1),
  	'differentiated',
  	IF((p.differentiated_care = 0),
  		'notdifferentiated',
@@ -142,4 +150,4 @@
  LEFT JOIN prep_reason ON ((patient_prep_test.prep_reason_id = prep_reason.id)))
  LEFT JOIN pep_reason ON ((p.pep_reason = pep_reason.id)))
  WHERE
-        (p.active = 1)//
+        (p.active = 1)
