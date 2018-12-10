@@ -2553,7 +2553,7 @@ public function getPeriodRegimenPatients($from, $to) {
 		else
 		{
 			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'] - $row['adjustments_neg'];
-			$row['resupply'] = ($row['dispensed_to_patients'] * 3) - $row['physical_stock'];
+			$row['resupply'] = ($row['dispensed_to_patients'] * 2) - $row['physical_stock'];
 		}
 		
 		if($code == "F-CDRR_packs"){
