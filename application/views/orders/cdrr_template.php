@@ -223,7 +223,7 @@
 						<th class="number" rowspan="3">Unit of Issue /<br/>Pack Size</th>
 						<th class="number">Beginning Balance</th>
 						<th class="number">Total Quantity <br/>Received this month</th>
-						<th class="col_dispensed_units" colspan="2">Total Quantity Dispensed <br/>this month</th>
+						<th class="col_dispensed_units">Total Quantity Dispensed <br/>this month</th>
 						<th class="col_losses_units">Losses &amp Wastages</th>
 						<th class="col_adjustments">Positive</br>Adjustments</th>
 						<th class="col_adjustments">Negative</br>Adjustments</th>
@@ -235,7 +235,7 @@
 					<tr>
 						<th>A</th>
 						<th>B</th>
-						<th colspan="2">C</th>
+						<th>C</th>
 						<th>D</th>
 						<th>E</th>
 						<th>F</th>
@@ -361,13 +361,6 @@
 						<td> <input name="opening_balance[]" id="opening_balance_<?php echo $commodity->id;?>" type="text" class="opening_balance" style="width:100%; text-align:center;"/></td>
 						<td> <input name="quantity_received[]" id="received_in_period_<?php echo $commodity -> id;?>" type="text" class="quantity_received" style="width:100%; text-align:center;"/></td>
 						<td> <input name="quantity_dispensed[]" id="dispensed_in_period_<?php echo $commodity -> id;?>" type="text" class="quantity_dispensed" style="width:100%; text-align:center;"/></td>
-						<?php
-	                    if($stand_alone==1){
-	                    ?>
-	                    <td> <input name="quantity_dispensed_packs[]" id="dispensed_in_period_packs_<?php echo $commodity -> id;?>" type="text" class="quantity_dispensed_packs" style="width:100%; text-align:center;"/></td>
-	                    <?php
-						}
-	                    ?>
 						<td> <input name="losses[]" id="losses_in_period_<?php echo $commodity->id;?>" type="text" class="losses" style="width:100%; text-align:center;"/></td>
 						<!-- added column to the new cdrr templates ... Positive Adjustments -->
 						<td> <input name="adjustments[]" id="positive_adjustment_<?php echo $commodity->id;?>" type="text" class="adjustments" style="width:100%; text-align:center;"/></td>
@@ -667,7 +660,7 @@
 		<?php
 		if($stand_alone==1){
 		?>
-		var quantity_dispensed = parseInt(row_element.find(".quantity_dispensed_packs").attr("value"));
+		// var quantity_dispensed = parseInt(row_element.find(".quantity_dispensed_packs").attr("value"));
 		<?php
 		}else{
 		?>
