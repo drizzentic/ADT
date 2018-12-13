@@ -22,6 +22,7 @@ td {
 		var link="<?php echo base_url(); ?>"+"notification_management/error_generator";
 		var error_list="<?php echo $first_error; ?>";
 		var start_reg_error=error_list.indexOf("Patients without Start Regimen");
+		var pat_reg_error=error_list.indexOf("Patients with the wrong Regimen");
 		var lost_to_followup=error_list.indexOf("Patients without Current Regimen");
 		var start_regimen_date_error=error_list.indexOf("Patients without Start Regimen");
 		if(start_reg_error!=-1||lost_to_followup!=-1||start_regimen_date_error!=-1){

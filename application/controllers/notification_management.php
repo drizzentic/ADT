@@ -229,7 +229,19 @@ class Notification_management extends MY_Controller {
 														AND ps.Name LIKE '%active%'
 														AND ( r.regimen_desc NOT LIKE '%pmtct%' OR ROUND( DATEDIFF( curdate( ) , p.dob ) /360 ) >2)
 														GROUP BY p.patient_number_ccc;";
-
+		/*Patients with the wrong Regimen*/
+		$sql['Patients with the wrong Regimen'] =  "SELECT p.patient_number_ccc,
+														p.current_regimen, 
+														CONCAT_WS(' | ',r.regimen_code,r.regimen_desc) AS regimen,
+														p.id FROM patient p
+														LEFT JOIN regimen r ON r.id=p.current_regimen
+														LEFT JOIN patient_status ps ON ps.id=p.current_status
+														LEFT JOIN regimen_service_type rs ON rs.id=p.service
+														WHERE p.current_regimen=r.id 
+														AND p.active='1' 
+														AND p.current_status = '1' 
+														AND ((DATEDIFF(CURDATE(), p.dob) /360 >15 AND regimen_code LIKE '%CF%') OR (DATEDIFF(CURDATE(), p.dob) /360 <15 AND regimen_code LIKE '%AF%'))
+														GROUP BY p.patient_number_ccc;";
 		/*Patients without Start Regimen date*/
 		$sql['Patients without Start Regimen date'] =  "SELECT p.patient_number_ccc,
 					                                          p.id,
