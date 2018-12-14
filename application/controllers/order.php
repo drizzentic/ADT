@@ -2541,7 +2541,7 @@ public function getPeriodRegimenPatients($from, $to) {
 			foreach ($row as $i => $v) {
 				$exempted_columns = array('expiry_month','beginning_balance','reported_consumed','reported_physical_stock', 'pack_size');
 				if (!in_array($i,$exempted_columns)) {
-					$row[$i] = round(@$v / @$pack_size);
+					$row[$i] = @$v;
 				}
 			}
 
