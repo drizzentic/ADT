@@ -763,7 +763,6 @@ class Access extends MX_Controller {
 	    //run before statements that affect source table
 		if(!empty($befores)){
 			foreach($befores as $before){
-				echo "before ".$before;
 				try{
 					$this->db->query($before);
 				}catch(Exception $e){
