@@ -43,8 +43,12 @@
 							if(data==1){
 								bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number Matches an existing record</center>");
 								$(".btn").attr("disabled","disabled");
+								$('#patient_number').focus();
+								$('#patient_number').val('');
+
 							}else{
 								$(".btn").attr("disabled",false);
+							
 							}
 						}
 					});
