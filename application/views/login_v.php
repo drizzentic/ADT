@@ -66,6 +66,14 @@
 					<input type="password" name="password" class="input-xlarge" id="password" placeholder="password">
 				</label>
 
+				<select class="input-xlarge" name="ccc_store" style="width: 100%;">
+					<option> -- Select Dispensing Point --</option>
+					<?php foreach ($stores as $value) {?>
+						<option value="<?= $value->id;?>"><?=$value->Name; ?></option>
+					<?php	} ?>
+				</select>
+				<br />
+				<br />
 				<input type="submit" class="btn" name="register" id="register" value="Login" >
 
 				<div style="margin:auto;width:auto" class="anchor">

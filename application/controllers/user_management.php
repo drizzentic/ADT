@@ -26,7 +26,11 @@ class User_management extends MY_Controller {
 
 	public function login() {
 		$this->check_db_port();
+		$stores  = CCC_store_service_point::getAllActive();
+
+
 		$users = Users::getAll();
+
 		(count($users)==1) ? redirect('tools/setup') : '' ;
 		//if seesion variable user_id is not present
 
@@ -34,6 +38,7 @@ class User_management extends MY_Controller {
 		if (!$this -> session -> userdata("user_id")) {
 			$this -> session -> set_flashdata('message', 0);
 			$data = array();
+			$data['stores'] = $stores;
 			$data['title'] = "webADT | System Login";
 			$this->load->view("login_v", $data);
 		} else {
@@ -268,6 +273,8 @@ class User_management extends MY_Controller {
 			$username = $this -> input -> post("username");
 			$password = $this -> input -> post("password");
 			$remember = $this -> input -> post("remember");
+			$ccc_store = $this -> input -> post("ccc_store");
+
 			$key = $this -> encrypt -> get_key();
 			$encrypted_password = $key . $password;
 			$logged_in = Users::login($username, $encrypted_password);
@@ -385,8 +392,8 @@ class User_management extends MY_Controller {
 						'Email_Address' => $logged_in -> Email_Address, 
 						'Phone_Number' => $phone, 
 						'facility' => $logged_in -> Facility_Code, 
-						'ccc_store' => $logged_in -> ccc_store_sp, 
-						'ccc_store_id' => $logged_in -> ccc_store_sp, 
+						'ccc_store' =>     ($ccc_store > 0) ? $ccc_store : $logged_in -> ccc_store_sp, 
+						'ccc_store_id' =>  ($ccc_store > 0) ? $ccc_store : $logged_in -> ccc_store_sp, 
 						'facility_id' => $facility_details[0]['id'],
 						'county' => $facility_details[0]['county'],
 						'facility_phone' => $facility_details[0]['phone'],
