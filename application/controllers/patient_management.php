@@ -617,7 +617,7 @@ class Patient_management extends MY_Controller {
         //Program Information
         $new_patient->Date_Enrolled = $this->input->post('enrolled', TRUE);
         $new_patient->Current_Status = $this->input->post('current_status', TRUE);
-        //$new_patient -> Status_Change_Date = $this -> input -> post('status_started', TRUE);
+        $new_patient ->Status_Change_Date = $this -> input -> post('service_started', TRUE);
         $new_patient->Source = $this->input->post('source', TRUE);
         $new_patient->Transfer_From = $this->input->post('transfer_source', TRUE);
         $new_patient->drug_prophylaxis = $this->input->post('drug_prophylaxis', TRUE);
