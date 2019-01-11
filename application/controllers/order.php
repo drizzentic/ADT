@@ -153,7 +153,6 @@ class Order extends MY_Controller {
 
 	public function get_dhis_data($period_filter){
 		$message = '';
-
 		if ($this->facility_type == 0) { //Satellite Site
 			$message .= $this->get_dhis('fcdrr', $period_filter, 'F-CDRR_units')['fcdrr']['message'];
 			$message .= $this->get_dhis('fmaps', $period_filter, 'F-MAPS')['fmaps']['message'];
@@ -166,7 +165,6 @@ class Order extends MY_Controller {
 			$message .= $this->get_dhis_central('dcdrr', $period_filter, 'D-CDRR')['dcdrr']['message'];
 			$message .= $this->get_dhis_central('dmaps', $period_filter, 'D-MAPS')['dmaps']['message'];
 		}
-
 		echo json_encode($message);
 	}
 
@@ -2812,8 +2810,8 @@ public function getPeriodRegimenPatients($from, $to) {
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
 							'comments' => '',
-							'reports_expected' => 0,
-							'reports_actual' => 0,
+							'reports_expected' => '',
+							'reports_actual' => '',
 							'services' => '',
 							'sponsors' => '',
 							'non_arv' => 0,
@@ -2901,8 +2899,8 @@ public function getPeriodRegimenPatients($from, $to) {
 							'code'  => $code,
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
-							'reports_expected' => 0,
-							'reports_actual' => 0,
+							'reports_expected' => '',
+							'reports_actual' => '',
 							'art_adult'  => '',
 							'art_child'  => '',
 							'new_male'  => '',
@@ -3007,26 +3005,44 @@ public function getPeriodRegimenPatients($from, $to) {
 
 	public function get_dhis_central($ds = null, $period_filter = null, $code = null){
 		//Default messages
-		$response[$ds] = array('status' => false, 'message' => '<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Error!</strong> No '.strtoupper($ds).' Data was Retrieved!</div>');
+		$response[$ds] = array(
+			'status' => false, 
+			'message' => '<div class="alert alert-error">
+							<button type="button" class="close" data-dismiss="alert">&times;</button>
+							<strong>Error!</strong> No '.strtoupper($ds).' Data was Retrieved!</div>');
 		$dataset_url = "api/dataValueSets";
-		$central_sites_url = "api/organisationUnitGroupSets/tjVYz9cY7I3/organisationUnitGroups?fields=:id,name,&paging=false";
-		$dataset =  $this->config->config['dhiscode'][$ds.'_code']; //pick dataset code from config
-		//Set dates for report retrieving
-		$i = 1;
-		$period_dates = array();
-		while ($i <= $period_filter) {
-			$period_dates[] = date('Y-m-01', strtotime(date('Y-m')." -".$i." month"));
-			$i++;
-		}
+		$central_sites_url = "api/organisationUnitGroupSets/tjVYz9cY7I3/organisationUnitGroups?fields=:id&paging=false";
+		$facility_dhis_url = "api/organisationUnits.json?level=5&paging=false&fields=:all&filter=code:eq:".$this->facility_code;
+		$dataset =  $this->config->config['dhiscode'][$ds.'_code'];
 		$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
-		$dhiscode = $this->session->userdata('dhis_id'); //DHIS USER ID
-		//Loop through user dhis facilities and get cdrr/maps
-		$dhis_orgs = json_decode($this->sendRequest($central_sites_url, 'GET', null, $dhis_auth));
-		foreach ($period_dates as $period_date) {
-			foreach ($dhis_orgs as $dhis_org_group) {
-				$dhis_org = $dhis_org_group['id'];
+		$dhiscode = $this->session->userdata('dhis_id'); //DHIS user_id
+		//Get ordering sites dhiscode
+		$dhis_central_ids = array();
+		$centralsite_orgs = json_decode($this->sendRequest($central_sites_url, 'GET', null, $dhis_auth), TRUE)['organisationUnitGroups'];
+		$facility_org_ids = array();
+		$facility_org_groups = json_decode($this->sendRequest($facility_dhis_url, 'GET', null, $dhis_auth), TRUE)['organisationUnits'][0];
+		foreach (array_values($centralsite_orgs) as $centralsite) {
+			$dhis_central_ids[] = $centralsite['id'];
+		}
+		foreach (array_values($facility_org_groups['organisationUnitGroups']) as $facility_org) {
+			$facility_org_ids[] = $facility_org['id'];
+		}
+		$central_grp_arr = array();
+		$central_grp_arr = array_intersect($facility_org_ids, $dhis_central_ids);
+		if(!empty($central_grp_arr)){
+			$dhis_org = $facility_org_groups['id'];
+			$central_grp = array_values($central_grp_arr)[0];
+			//Set dates for report retrieving
+			$i = 1;
+			$period_dates = array();
+			while ($i <= $period_filter) {
+				$period_dates[] = date('Y-m-01', strtotime(date('Y-m')." -".$i." month"));
+				$i++;
+			}
+			//Loop through report monthly periods and get cdrr/maps
+			foreach ($period_dates as $period_date) {
 				$period = date('Ym', strtotime($period_date));
-				$resource = $dataset_url."?dataSet=$dataset&period=$period&orgUnitGroup=".$dhis_org; // get cdrr
+				$resource = $dataset_url."?dataSet=$dataset&period=$period&orgUnitGroup=".$central_grp; // get cdrr
 				$report = json_decode($this->sendRequest($resource, 'GET', null, $dhis_auth));
 
 				if(!empty($report->dataValues)){
@@ -3044,8 +3060,8 @@ public function getPeriodRegimenPatients($from, $to) {
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
 							'comments' => '',
-							'reports_expected' => 0,
-							'reports_actual' => 0,
+							'reports_expected' => '',
+							'reports_actual' => '',
 							'services' => '',
 							'sponsors' => '',
 							'non_arv' => 0,
@@ -3072,7 +3088,11 @@ public function getPeriodRegimenPatients($from, $to) {
 						foreach ($report->dataValues as $key => $value) {
 							$drug_id = $this->dhisLookup($value->dataElement, 'drug');
 							$column = $this->dhisLookup($value->categoryOptionCombo);
-							$cdrr_item[$cdrr_id][$drug_id][$column] = $value->value;
+							if($column == 'expiry_date' && $value->value != 0){
+								$cdrr_item[$cdrr_id][$drug_id][$column] = date('Y-m-01', strtotime(substr($value->value, -4).'-'.substr($value->value, 0, -4).'-01'));
+							}else{
+								$cdrr_item[$cdrr_id][$drug_id][$column] = $value->value;
+							}
 						}
 
 						//Add cdrr_item
@@ -3099,14 +3119,18 @@ public function getPeriodRegimenPatients($from, $to) {
 						$last_index = (sizeof($report->dataValues) - 1);
 						$logs = array('prepared' => $report->dataValues[$last_index]->created, 'approved' => $report->dataValues[$last_index]->lastUpdated);
 						foreach ($logs as $log => $timeline) {
+							$user_id = $this->session->userdata('user_id');
+							$user = $this->db->select('user_id')->get_where('sync_user', array('username' => $report->dataValues[$last_index]->storedBy))->row_array();
+							if(!empty($user)){
+								$user_id = $user['user_id'];
+							}
 							//cdrr_log Object 
 							$cdrr_log_tmp = array(
 								'description' => $log,
 								'created' => $timeline,
-								'user_id' => $this->db->select('user_id')->get_where('sync_user', array('username' => $report->dataValues[$last_index]->storedBy))->row_array()['user_id'],
+								'user_id' => $user_id,
 								'cdrr_id' => $cdrr_id
 							);
-
 							//Check if value exists
 							$row = $this->db->select('id')->get_where('cdrr_log', array(
 							'cdrr_id' => $cdrr_id, 
@@ -3119,7 +3143,6 @@ public function getPeriodRegimenPatients($from, $to) {
 								$this->db->insert('cdrr_log', $cdrr_log_tmp);		
 							}
 						}
-
 						//Set success response
 						$response[$ds] = array('status' => true, 'message' => '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Success!</strong> '.strtoupper($ds).' Reports were retrieved successfully!</div>');
 					}	
@@ -3133,8 +3156,8 @@ public function getPeriodRegimenPatients($from, $to) {
 							'code'  => $code,
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
-							'reports_expected' => 0,
-							'reports_actual' => 0,
+							'reports_expected' => '',
+							'reports_actual' => '',
 							'art_adult'  => '',
 							'art_child'  => '',
 							'new_male'  => '',
@@ -3206,11 +3229,16 @@ public function getPeriodRegimenPatients($from, $to) {
 						$last_index = (sizeof($report->dataValues) - 1);
 						$logs = array('prepared' => $report->dataValues[$last_index]->created, 'approved' => $report->dataValues[$last_index]->lastUpdated);
 						foreach ($logs as $log => $timeline) {
+							$user_id = $this->session->userdata('user_id');
+							$user = $this->db->select('user_id')->get_where('sync_user', array('username' => $report->dataValues[$last_index]->storedBy))->row_array();
+							if(!empty($user)){
+								$user_id = $user['user_id'];
+							}
 							//maps_log Object 
 							$maps_log_tmp = array(
 								'description' => $log,
 								'created' => $timeline,
-								'user_id' => $this->db->select('user_id')->get_where('sync_user', array('username' => $report->dataValues[$last_index]->storedBy))->row_array()['user_id'],
+								'user_id' => $user_id,
 								'maps_id' => $maps_id
 							);
 
@@ -3226,14 +3254,13 @@ public function getPeriodRegimenPatients($from, $to) {
 								$this->db->insert('maps_log', $maps_log_tmp);		
 							}
 						}
-
 						//Set success response
 						$response[$ds] = array('status' => true, 'message' => '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Success!</strong> '.strtoupper($ds).' Reports were retrieved successfully!</div>');
 					}
 				}
 			}
 		}
-
+		
 		return $response;
 	}
 
@@ -3261,7 +3288,7 @@ public function getPeriodRegimenPatients($from, $to) {
 
 	}
 
-	private function sendRequest($resource, $method, $payload = null,$authorization = null){
+	private function sendRequest($resource, $method, $payload = null, $authorization = null){
 			//  Initiate cURL.
 		$ch = curl_init($this->dhis_url.$resource);
 			//  The JSON data.
