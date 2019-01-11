@@ -274,6 +274,22 @@ class Notification_management extends MY_Controller {
 															AND rst2.Name NOT LIKE '%oi%'
 															AND ps.Name LIKE '%active%'
 															GROUP BY p.patient_number_ccc;";
+															/*Patients With Incorrect Current Regimens*/
+		$sql['Patients with malformed CCC numbers'] = "SELECT p.id,
+					p.patient_number_ccc as ccc_no,
+					UPPER(CONCAT_WS(' ',CONCAT_WS(' ',p.first_name,p.other_name),p.last_name)) as patient_name,
+					p.phone as contact,
+					DATE_FORMAT(p.date_enrolled,'%d-%b-%Y') as enrollment_date,
+					DATE_FORMAT(p.nextappointment,'%d-%b-%Y') as next_appointment,
+					UPPER(r.regimen_desc) as regimen_name,
+					UPPER(ps.Name) as status_name
+				FROM patient p 
+				LEFT JOIN patient_status ps ON ps.id = p.current_status 
+				LEFT JOIN regimen r ON r.id=p.current_regimen
+				WHERE p.active = '1' 
+				AND ps.Name LIKE '%active%'
+				and p.patient_number_ccc NOT REGEXP  '(^[0-9]{5}-[0-9]{5})'
+												";
 
 		if($display_array==true){
 			foreach ($sql as $i => $q) {

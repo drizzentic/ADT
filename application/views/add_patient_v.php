@@ -34,6 +34,14 @@
 			$('.match_hidden').css("display","none");
 			$("#patient_number").change(function(){
 				var patient_no=$("#patient_number").val();
+				// -- do regex check on patient ccc number 
+				var CCC_check = new RegExp('^[0-9]{5}-[0-9]{5}');
+				if(!CCC_check.test(patient_no)){
+					bootbox.alert("<h4>CCC Wrong format</h4>\n\<hr/><center>Please use 10 digit recommended format for CCC. {mfl}-{ccc} e.g <?=$facility_code;?>-00001</center>");
+					$(".btn").attr("disabled","disabled");
+				} else{
+					$(".btn").attr("disabled",false);
+
 				if(patient_no !=''){
 					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
 					$.ajax({
@@ -53,6 +61,7 @@
 						}
 					});
 				}
+			}
 			});
 
 			$("#match_spouse").change(function(){
@@ -602,7 +611,7 @@
 							</div>
 							<div class="mid-row">
 								<label> <span class='astericks'>*</span>Patient Number CCC </label>
-								<input type="text"name="patient_number" id="patient_number" class="validate[required]">
+								<input type="text"name="patient_number" id="patient_number" class="validate[required]" value="<?=$facility_code?>-">
 							</div>
 						</div>
 						<div class="max-row">
