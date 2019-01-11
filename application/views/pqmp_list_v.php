@@ -41,7 +41,8 @@ function ellipsis($string, $max_length) {
 
         <?php
         $pqmp_saved = $this->session->flashdata('pqmp_saved');
-         if (!empty($pqmp_saved)) { ?>
+        if (!empty($pqmp_saved)) {
+            ?>
             <div class="alert alert-success">
                 <?= $this->session->flashdata('pqmp_saved'); ?>
             </div> 
@@ -49,8 +50,9 @@ function ellipsis($string, $max_length) {
         ?>
 
         <?php
-        $pqmp_error =  $this->session->flashdata('pqmp_error');
-         if (!empty($pqmp_error)) { ?>
+        $pqmp_error = $this->session->flashdata('pqmp_error');
+        if (!empty($pqmp_error)) {
+            ?>
             <div class="alert alert-danger">
                 <?= $this->session->flashdata('pqmp_error'); ?>
             </div> 
@@ -65,13 +67,14 @@ function ellipsis($string, $max_length) {
                 <input type="checkbox" checked="checked" name="pmpqid" style="display:none;" value="1010101010101010"/>
             </th>
 
-            <th>Action</th>
+
             <th>Brand Name</th>
             <th>Generic Name</th>
             <th>Batch No</th>
             <th>Manufacturer Name</th>
             <th>Receipt Date</th>
-            <th>Supplier Name</th>  
+            <th>Supplier Name</th> 
+            <th>Action</th>
 
             </thead>
             <tbody>
@@ -85,13 +88,22 @@ function ellipsis($string, $max_length) {
                             <?php }
                             ?>
                         </td>
-                        <td><a href="<?= base_url(); ?>inventory_management/loadRecord/<?= $pqmp['id']; ?> "> View</a></td>
                         <td> <?= ellipsis($pqmp['brand_name'], 20); ?></td>
                         <td> <?= ellipsis($pqmp['generic_name'], 20); ?></td>
                         <td> <?= ellipsis($pqmp['batch_number'], 20); ?></td>
                         <td> <?= ellipsis($pqmp['name_of_manufacturer'], 10); ?></td>
                         <td> <?= ellipsis($pqmp['receipt_date'], 20); ?></td>
-                        <td> <?= ellipsis($pqmp['supplier_name'], 20); ?></td>
+                        <td> <?= ellipsis($pqmp['supplier_name'], 20); ?></td>               
+                        <td style="width:50px;">
+                            <?php if ($pqmp['synch'] == '0') { ?>
+                        
+                                <a href="<?= base_url(); ?>inventory_management/loadRecord/<?= $pqmp['id']; ?> "> View</a> |
+                                <a href="<?= base_url(); ?>inventory_management/pqmp/<?= $pqmp['id']; ?>/delete"><span style="color:red;font-weight: bold;"> Delete</span></a>
+                            <?php } else { ?>
+                                <a href="<?= base_url(); ?>inventory_management/loadRecord/<?= $pqmp['id']; ?> "> View</a>
+                            <?php }?>
+                        </td> 
+
 
 
                     </tr>    

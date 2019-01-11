@@ -262,7 +262,7 @@ class Dispensement_management extends MY_Controller {
                     );
                     $this->db->insert('adr_form_details', $adr_details);
                 }
-               // redirect('inventory_management/adr/');
+                redirect('inventory_management/adr/');
                 
             } else {
                 echo "No drugs selected";
