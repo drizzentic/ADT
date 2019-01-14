@@ -38,7 +38,16 @@ foreach($results as $result){
 	    //Function to Check Patient Numner exists
 	    var base_url = "<?php echo base_url();?>";
 	    $("#patient_number").change(function() {
-	    	var patient_no = $("#patient_number").val();
+	    		var patient_no=$("#patient_number").val();
+				// -- do regex check on patient ccc number 
+				var CCC_check = new RegExp('^[0-9]{5}-[0-9]{5}');
+				if(!CCC_check.test(patient_no)){
+					bootbox.alert("<h4>CCC Wrong format</h4>\n\<hr/><center>Please use 10 digit recommended format for CCC. {mfl}-{ccc} e.g <?=$facility_code;?>-00001</center>");
+					$(".btn").attr("disabled","disabled");
+				} else{
+					$(".btn").attr("disabled",false);
+
+
 	    	if (patient_no != '') {
 	    		var original_patient_no = $("#original_patient_number").val();
 	    		var link = base_url + "patient_management/checkpatient_no/" + patient_no;
@@ -55,6 +64,7 @@ foreach($results as $result){
 	    			}
 	    		});
 	    	}
+	    }
 	    });
 	    $("#match_spouse").change(function() {
 	    	var patient_no = $("#match_spouse").val();

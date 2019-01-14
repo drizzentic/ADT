@@ -91,6 +91,7 @@ class Patient_management extends MY_Controller {
 
     public function addpatient_show() {
         $data = array();
+        $data['facility_code'] = $this->session->userdata('facility');
         $data['districts'] = District::getPOB();
         $data['genders'] = Gender::getAll();
         $data['statuses'] = Patient_Status::getStatus();
@@ -464,7 +465,7 @@ class Patient_management extends MY_Controller {
             $results[0]['other_illnesses'] = $this->extract_illness($results[0]['other_illnesses']);
             $data['results'] = $results;
         }
-
+        $data['facility_code'] = $this->session->userdata('facility');
         $data['record_no'] = $record_no;
         $data['facility_adult_age'] = $this->getFacililtyAge();
         $data['districts'] = District::getPOB();
