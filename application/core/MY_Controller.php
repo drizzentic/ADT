@@ -11,8 +11,8 @@ class MY_Controller extends CI_Controller {
         parent::__construct();
         date_default_timezone_set('Africa/Nairobi');
     }
-    
-    function loadChoices($table,$column){
+
+    function loadChoices($table, $column) {
         return $this->db->select($column)->group_by($column)->get($table)->result_array();
     }
 
@@ -79,7 +79,7 @@ class MY_Controller extends CI_Controller {
                 array_push($adr, $query);
                 array_push($adr, $query2);
                 $data = json_encode($adr);
-               // print_r($data);
+                // print_r($data);
                 $this->push($this->SERVER_URL . 'sadr/send', $data, $table, $final, $type);
             }
         } else {
@@ -108,8 +108,8 @@ class MY_Controller extends CI_Controller {
         $result = curl_exec($curl);
 
         $response = json_decode($result, TRUE);
-        
-      
+
+
 
         if ((int) $response['status'] === 1):
 
@@ -131,12 +131,13 @@ class MY_Controller extends CI_Controller {
 
     //Check and get the number of new updates of reports from ppb pv data
     function checkUpdatePv($pv) {
+        $facility_id = $this->session->userdata('facility');
         //  $la = $this->db->get('api_update')->result();
         //  $newupdates = "";
 
-        $data = 'sadr_id=13050' .
-                '&sadr_list_id=13050' .
-                '&spqm_id=13050';
+        $data = "sadr_id=$facility_id" .
+                "&sadr_list_id=$facility_id" .
+                "&spqm_id=$facility_id";
 
 
 

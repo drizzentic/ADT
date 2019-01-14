@@ -24,7 +24,7 @@ function ellipsis($string, $max_length) {
     </div>
     <div class="span11">
         <h5>Patient ADR Reports</h5>
-        <!--a href="<?php echo base_url().'inventory_management/pqmp_followup/';?>" class="btn btn-primary pull-right" id="followup" ><i class="icon icon-refresh"></i> ADR FOLLOWUP  </a-->
+        <!--a href="<?php echo base_url() . 'inventory_management/pqmp_followup/'; ?>" class="btn btn-primary pull-right" id="followup" ><i class="icon icon-refresh"></i> ADR FOLLOWUP  </a-->
         <a href="#synchdata" class="btn btn-warning pull-right" id="SYNDATA" ><i class="icon icon-refresh"></i> Synch with PPB  </a>
         <span id="NOCOM" style="display:none">Synch disabled, connection to the SADR server could not be established...</span>
 
@@ -37,19 +37,21 @@ function ellipsis($string, $max_length) {
             Synchronization Successfully Completed..
         </div>
 
-            <?php $msg = $this->session->flashdata('pqmp_saved'); if (!empty($msg)) { ?>
+        <?php $msg = $this->session->flashdata('pqmp_saved');
+        if (!empty($msg)) { ?>
             <div class="alert alert-success">
             <?= $this->session->flashdata('pqmp_saved'); ?>
             </div> 
         <?php }
         ?>
 
-            <?php $adr_error = $this->session->flashdata('adr_error'); if (!empty($adr_error)) { ?>
+            <?php $adr_error = $this->session->flashdata('adr_error');
+            if (!empty($adr_error)) { ?>
             <div class="alert alert-danger">
             <?= $this->session->flashdata('adr_error'); ?>
             </div> 
-        <?php }
-        ?>
+<?php }
+?>
     </div>
     <div class="span11">
         <table border="1" class="table" >
@@ -63,6 +65,7 @@ function ellipsis($string, $max_length) {
             <th>Outcome</th>
             <th>Date</th>
             <th>Action Taken</th>  
+            <th>Action </th>  
 
             </thead>
             <tbody>
@@ -70,22 +73,29 @@ function ellipsis($string, $max_length) {
                     <tr>
                         <td>
 
-    <?php if ($adr['synch'] == '0' || is_null($adr['synch'])) { ?>
+                                   <?php if ($adr['synch'] == '0' || is_null($adr['synch'])) { ?>
                                 <input type="checkbox" name="adrid" value="<?= $adr['id']; ?>"
 
                                    <?php } else { ?>
                                        <span class="">&#9989;</span> 
-                            <?php }
-                            ?></td>
+    <?php }
+    ?></td>
                         <td> <?= $adr['id']; ?></td>
-                        <td>
-                            <a href="<?= base_url(); ?>inventory_management/loadAdrRecord/<?= $adr['id']; ?> "> <?= ellipsis($adr['patient_name'], 10); ?> </a>
-                        </td>
+                        <td><?= ellipsis($adr['patient_name'], 10); ?></td>
                         <td> <?= ellipsis($adr['diagnosis'], 10); ?></td>
                         <td> <?= ellipsis($adr['severity'], 10); ?></td>
                         <td> <?= ellipsis($adr['outcome'], 10); ?></td>
                         <td> <?= ellipsis($adr['datecreated'], 10); ?></td>
                         <td> <?= ellipsis($adr['action_taken'], 10); ?></td>
+                        <td style="width:50px;">
+    <?php if ($adr['synch'] == '0') { ?>
+
+                                <a href="<?= base_url(); ?>inventory_management/loadAdrRecord/<?= $adr['id']; ?> "> View</a> |
+                                <a href="<?= base_url(); ?>inventory_management/adr/<?= $adr['id']; ?>/delete"><span style="color:red;font-weight: bold;"> Delete</span></a>
+                            <?php } else { ?>
+                                <a href="<?= base_url(); ?>inventory_management/loadAdrRecord/<?= $adr['id']; ?> "> View</a>
+    <?php } ?>
+                        </td> 
 
 
                     </tr>    
