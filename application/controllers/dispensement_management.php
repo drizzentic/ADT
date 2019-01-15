@@ -135,13 +135,14 @@ class Dispensement_management extends MY_Controller {
 
 
         /*         * ********** */
-        $sql1 = "SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '" . $patient_no . "' AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1";
+        $sql1 = "SELECT dispensing_date,differentiated_care FROM patient_visit pv WHERE pv.patient_id =  '" . $patient_no . "' AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1";
         $query = $this->db->query($sql1);
         $results1 = $query->row_array();
         $dated = '';
         $results = array();
         if ($results1) {
             $dated = $results1['dispensing_date'];
+            $data['differentiated_care'] = $results1['differentiated_care'];
             $sql = "SELECT d.id as drug_id,d.drug,d.dose,d.duration, pv.quantity,pv.dispensing_date,pv.pill_count,r.id as regimen_id,r.regimen_desc,r.regimen_code,pv.months_of_stock as mos,ds.value,ds.frequency
 			FROM patient_visit pv
 			LEFT JOIN drugcode d ON d.id = pv.drug_id
@@ -402,6 +403,7 @@ class Dispensement_management extends MY_Controller {
         echo json_encode($data);
     }
 
+
     public function update_prep_test($patient_id, $prep_reason_id, $is_tested, $test_date, $test_result) {
         $message = '';
         $test_data = array(
@@ -429,6 +431,7 @@ class Dispensement_management extends MY_Controller {
         $patient_ccc = $this->input->post("patient_ccc");
         $data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
         $data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
+        $data['dcm_exit_reasons'] = DCM_exit_reason::getAllHydrated();
         $data['patient_appointment'] = Patient_appointment::getAppointmentDate($patient_ccc);
 
         echo json_encode($data);
@@ -650,6 +653,8 @@ AND  r.regimen_code LIKE '%oi%'
         $weight = $this->input->post("weight");
         $last_regimen = $this->input->post("last_regimen");
         $regimen_change_reason = $this->input->post("regimen_change_reason");
+        $dcm_exit_reason = $this->input->post("dcm_exit_reason");
+
         $non_adherence_reasons = $this->input->post("non_adherence_reasons");
         $patient_source = strtolower($this->input->post("patient_source"));
         $timestamp = date('U');
@@ -666,6 +671,18 @@ AND  r.regimen_code LIKE '%oi%'
         $service = $res[0]['type_of_service'];
         $sql_get_patient_service = "SELECT service FROM patient WHERE patient_number_ccc='$patient'";
         $service_results = $this->db->query($sql_get_patient_service);
+        $dcm_change_id = '';
+        $dcm_status ='';
+        
+        $sql_get_patient_dcm = "SELECT id,status,patient FROM dcm_change_log WHERE patient = $patient ORDER BY id desc LIMIT 1";
+        $patient_dcm = $this->db->query($sql_get_patient_dcm);
+        if($patient_dcm->result_array()){
+
+            $dcm_change_id  = $patient_dcm->result_array()[0]['id'];
+            $dcm_status  = $patient_dcm->result_array()[0]['status'];
+        }
+
+
         $service_res = $service_results->result_array();
         $patient_service = $service_res[0]['service'];
 
@@ -678,16 +695,21 @@ AND  r.regimen_code LIKE '%oi%'
             $next_clinical_appointment_date = $next_appointment_date;
             $sql = "UPDATE patient SET differentiated_care=0 ,adherence = '$adherence' WHERE patient_number_ccc='$patient';";
             $this->db->query($sql);
+            if($dcm_status == '1'){
+                $sql = "UPDATE  dcm_change_log SET status=0 ,end_date = CURDATE(),exit_reason = '$dcm_exit_reason' WHERE id='$dcm_change_id';";
+            $this->db->query($sql);
+            }
         }
 
         if ($differentiated_care == 1) {
             $sql = "UPDATE patient SET differentiated_care=1 ,adherence = '$adherence' WHERE patient_number_ccc='$patient';";
             $this->db->query($sql);
+
+            $sql = "insert into dcm_change_log (status,start_date,patient) values (1,CURDATE(),'$patient');";
+            $this->db->query($sql);
         }
 
-
         //end update service type
-        //echo var_dump($dose);die();
         //Get transaction type
         $transaction_type = transaction_type::getTransactionType("dispense", "0");
         $transaction_type = $transaction_type->id;

@@ -134,6 +134,15 @@
                             <input  type="checkbox" name="differentiated_care" id="differentiated_care"  class="">
                         </div>
                     </div>
+                    <div class="span6 offset4 dispensing-field">
+                        <div class="control-group" style="display:none;" id="dcm_exit_reason_container">
+                            <label><span class='astericks'>*</span>Differentiated care Exit Reason</label>
+                            <select type="text"name="dcm_exit_reason" id="dcm_exit_reason" >
+                                <option value="">--Select One--</option>
+                            </select>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="row-fluid clinical_appointment_input" style="display:none;">
@@ -1048,14 +1057,24 @@
         }
 
     });
+    if(<?=$differentiated_care;?> == 1){
+    $('#differentiated_care').attr("checked", "checked");
+    }
+
     $('#differentiated_care').click(function (event) {
         if ($(this).is(":checked"))
         {
             $(".clinical_appointment_input").show();
+            $("#dcm_exit_reason_container").hide();
             validateAppointments();
         } else
         {
             $(".clinical_appointment_input").hide();
+            // show diff care exit reason
+            if(<?=$differentiated_care;?> == 1){
+                $("#dcm_exit_reason_container").show();
+            }
+
         }
     });
     // on change weight, sort doses.
@@ -1667,7 +1686,9 @@
         request.done(function (data) {
             var non_adherence_reasons = data.non_adherence_reasons;
             var regimen_change_reason = data.regimen_changes;
+            var dcm_exit_reasons = data.dcm_exit_reasons;
             var patient_appointment = data.patient_appointment;
+
             //Remove appended options to reinitialize dropdown
             $('#non_adherence_reasons option')
                     .filter(function () {
@@ -1683,6 +1704,15 @@
                     }).remove();
             $(regimen_change_reason).each(function (i, v) {
                 $("#regimen_change_reason").append("<option value='" + v.id + "'>" + v.Name + "</option>");
+            });
+
+             //Load dcm exit reasons
+            $('#dcm_exit_reason option')
+                    .filter(function () {
+                        return this.value || $.trim(this.value).length != 0;
+                    }).remove();
+            $(dcm_exit_reasons).each(function (i, v) {
+                $("#dcm_exit_reason").append("<option value='" + v.id + "'>" + v.Name + "</option>");
             });
             //Appointment date, If patient presiously visited,load previous appointment date
             if (patient_appointment.length > 0) {
