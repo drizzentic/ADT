@@ -3572,29 +3572,33 @@ class Report_management extends MY_Controller {
         $facility_code = $this->session->userdata("facility");
 
         $sql = "SELECT 
-	ccc_number,
-	CONCAT(first_name	,' ',other_name	,' ', last_name) as name, 
-	concat(phone_number) as contact,
-	age,
-	gender,
-	current_regimen,
-	service,
-	nextappointment,
-	current_status,
-	viral_load_test_results, 
-	p.adherence, 
-	MAX(dispensing_date) last_dispensed_date
-	FROM patient_visit pv
-	INNER JOIN vw_patient_list p ON p.ccc_number= pv.patient_id
-	WHERE pv.dispensing_date >='$start_date'  AND pv.dispensing_date < '$end_date' 
-	AND pv.differentiated_care = 1
-	GROUP BY pv.patient_id
+    dcl.patient as ccc_number,
+    CONCAT(first_name   ,' ',other_name ,' ', last_name) as name, 
+    concat(phone) as contact,
+    round(((to_days(curdate()) - to_days(dob)) / 365),0) AS age,
+    g.name as gender,
+    r.regimen_code as current_regimen,
+    rs.name as service,
+    nextappointment,
+    p.adherence,
+
+    start_date,
+    end_date,
+    dxr.name as exit_reason,
+    (select result from patient_viral_load where patient_ccc_number= p.patient_number_ccc )as   viral_load_test_results,
+    ps.Name as current_status
+    FROM patient p 
+    left join dcm_change_log dcl on dcl.patient = p.patient_number_ccc
+    left join dcm_exit_reason dxr on dcl.exit_reason = dxr.id
+    left join regimen r on r.id = p.current_regimen 
+    left join patient_status ps on ps.id = p.current_status
+    left join regimen_service_type rs on rs.id = p.service 
+    left join gender g on p.gender = g.id
+    WHERE dcl.start_date >='$start_date'  AND dcl.start_date < '$end_date' 
 	";
-
-
+    // echo $sql;die;
         $query = $this->db->query($sql);
         $results = $query->result_array();
-        // echo "<pre>"; var_dump($results);die;
         $row_string = "
 	<table border='1' class='dataTables'>
 	<thead >
@@ -3607,7 +3611,11 @@ class Report_management extends MY_Controller {
 	<th> Current Regimen </th>
 	<th> Service </th>
 	<th> Next Appointment</th>
-	<th> Adherence</th>
+    <th> Adherence</th>
+    <th> DCM Started</th>
+    <th> DCM Exit</th>
+	<th> DCM reason</th>
+
 	<th> VL Results</th>
 	<th> Status</th>
 	</tr>
@@ -3625,7 +3633,10 @@ class Report_management extends MY_Controller {
 		<td>" . $result['current_regimen'] . "</td>
 		<td>" . $result['service'] . "</td>
 		<td>" . $result['nextappointment'] . "</td>
-		<td>" . $result['adherence'] . "</td>
+        <td>" . $result['adherence'] . "</td>
+        <td>" . $result['start_date'] . "</td>
+        <td>" . $result['end_date'] . "</td>
+		<td>" . $result['exit_reason'] . "</td>
 		<td>" . $result['viral_load_test_results'] . "</td>
 		<td>" . $result['current_status'] . "</td
 		</tr>";
