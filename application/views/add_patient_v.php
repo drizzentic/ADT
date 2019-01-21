@@ -611,7 +611,7 @@
 							</div>
 							<div class="mid-row">
 								<label> <span class='astericks'>*</span>Patient Number CCC </label>
-								<input type="text"name="patient_number" id="patient_number" class="validate[required]" value="<?=$facility_code?>-">
+								<input type="text"name="patient_number" id="patient_number" class="validate[required]" value="<?=$facility_code?>-" maxlength="11">
 							</div>
 						</div>
 						<div class="max-row">
