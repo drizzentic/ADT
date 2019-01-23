@@ -870,7 +870,7 @@
 
             }, 'json');
 
-            if (data.clinicalappointment !== null) {
+            if (data.clinicalappointment !== null && data.clinicalappointment!="") {
 
                 var base_date = new Date();
                 var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());

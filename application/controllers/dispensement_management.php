@@ -135,6 +135,7 @@ class Dispensement_management extends MY_Controller {
 
 
         /*         * ********** */
+        $data['differentiated_care'] = 0;
         $sql1 = "SELECT dispensing_date,differentiated_care FROM patient_visit pv WHERE pv.patient_id =  '" . $patient_no . "' AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1";
         $query = $this->db->query($sql1);
         $results1 = $query->row_array();
