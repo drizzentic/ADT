@@ -675,7 +675,7 @@ AND  r.regimen_code LIKE '%oi%'
         $dcm_change_id = '';
         $dcm_status ='';
         
-        $sql_get_patient_dcm = "SELECT id,status,patient FROM dcm_change_log WHERE patient = $patient ORDER BY id desc LIMIT 1";
+        $sql_get_patient_dcm = "SELECT id,status,patient FROM dcm_change_log WHERE patient = '$patient' ORDER BY id desc LIMIT 1";
         $patient_dcm = $this->db->query($sql_get_patient_dcm);
         if($patient_dcm->result_array()){
 
