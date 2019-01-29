@@ -296,6 +296,18 @@
 
 	$(document).ready(function() {
 		var base_url="<?php echo base_url();?>";
+<?php if($this->session->userdata('facility_dhis')){ ?>
+				var dataURL = 'Order/get_dhis_data/3'
+				$('#download_msg').html('')
+			$.getJSON(dataURL, function(data){
+				$.unblockUI();
+				$('#download_msg').html(data); //Append success message
+				setTimeout(function(){
+					location.reload();
+				}, 2000); //Reload page after 2 sec
+				
+			});
+<?php }?>
 
 		//Get data from dhis
 		$('#get_dhis_data').click(function(){

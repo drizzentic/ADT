@@ -2823,7 +2823,7 @@ public function getPeriodRegimenPatients($from, $to) {
 						$row = $this->db->select('id')->get_where('cdrr', array(
 								'facility_id' => $facility_id, 
 								'period_begin' => $start_date,
-								'code' => 'F-CDRR_packs'))->row_array();
+								'code' => $code))->row_array();
 						if(!empty($row)){
 							$cdrr_id = $row['id'];
 							$this->db->where('id', $cdrr_id);
