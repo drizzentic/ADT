@@ -4038,29 +4038,14 @@ class Report_management extends MY_Controller {
          $from = date('Y-m-d', strtotime($from));
          $to = date('Y-m-d', strtotime($to));
 
-        $sql = " SELECT 
-                        p.patient_number_ccc as art_no,
-                        UPPER(p.first_name) as first_name,
-                        pss.name as source,
-                        UPPER(p.last_name) as last_name,
-                        UPPER(p.other_name)as other_name,
-                        FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age,
-                        p.dob,
-                        p.weight,
-                        r.regimen_desc,
-                        r.regimen_code,
-                        p.start_regimen_date,
-                        t.name AS service_type,
-                        s.name AS supported_by,
-                        dr.drug,
-                        IF(p.gender=1,'Male','Female') as gender
-                        FROM patient p
-                        LEFT JOIN patient_source pss on pss.id=p.source
-                        LEFT JOIN regimen r ON p.start_regimen =r.id
-                        LEFT JOIN regimen_service_type t ON t.id = p.service
-                        LEFT JOIN supporter s ON s.id = p.supported_by
-                        LEFT JOIN patient_visit pv ON p.id = pv.patient_id
-                        LEFT JOIN drugcode dr ON pv.drug_id = dr.id
+        $sql = " SELECT p.patient_number_ccc as art_no, UPPER(p.first_name) as first_name, pss.name as source, UPPER(p.last_name) as last_name, UPPER(p.other_name)as other_name, FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, p.dob, p.weight, r.regimen_desc, r.regimen_code, p.start_regimen_date, t.name AS service_type, s.name AS supported_by, dr.drug, IF(p.gender=1,'Male','Female') as gender 
+                        FROM patient_visit pv
+                        left join patient p ON p.patient_number_ccc = pv.patient_id  
+                        LEFT JOIN patient_source pss on pss.id=p.source 
+                        LEFT JOIN regimen r ON p.start_regimen =r.id 
+                        LEFT JOIN regimen_service_type t ON t.id = p.service 
+                        LEFT JOIN supporter s ON s.id = p.supported_by 
+                        LEFT JOIN drugcode dr ON pv.drug_id = dr.id 
                         WHERE pv.drug_id ='$drug'
                         AND pv.active='1' 
                         AND p.facility_code='$facility_code'
