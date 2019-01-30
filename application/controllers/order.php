@@ -2250,7 +2250,7 @@ public function getPeriodRegimenPatients($from, $to) {
 			return 0;
 		}	
 	}
-	public function actualReports($facility_code="13050",$period_begin="2014-09-01",$type="cdrr"){
+	public function actualReports($facility_code,$period_begin,$type){
 		if($facility_code!=''){
 			$filter = "";
 			if($type=="cdrr"){
@@ -2810,8 +2810,8 @@ public function getPeriodRegimenPatients($from, $to) {
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
 							'comments' => '',
-							'reports_expected' => '',
-							'reports_actual' => '',
+							'reports_expected' => $this -> expectedReports($this->facility_code),
+							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'cdrr'),
 							'services' => '',
 							'sponsors' => '',
 							'non_arv' => 0,
@@ -2899,8 +2899,8 @@ public function getPeriodRegimenPatients($from, $to) {
 							'code'  => $code,
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
-							'reports_expected' => '',
-							'reports_actual' => '',
+							'reports_expected' => $this -> expectedReports($this->facility_code),
+							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'maps'),
 							'art_adult'  => '',
 							'art_child'  => '',
 							'new_male'  => '',
@@ -3060,8 +3060,8 @@ public function getPeriodRegimenPatients($from, $to) {
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
 							'comments' => '',
-							'reports_expected' => '',
-							'reports_actual' => '',
+							'reports_expected' => $this -> expectedReports($this->facility_code),
+							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'cdrr'),						
 							'services' => '',
 							'sponsors' => '',
 							'non_arv' => 0,
@@ -3156,8 +3156,8 @@ public function getPeriodRegimenPatients($from, $to) {
 							'code'  => $code,
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
-							'reports_expected' => '',
-							'reports_actual' => '',
+							'reports_expected' => $this -> expectedReports($this->facility_code),
+							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'maps'),						
 							'art_adult'  => '',
 							'art_child'  => '',
 							'new_male'  => '',
