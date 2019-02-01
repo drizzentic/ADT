@@ -2212,6 +2212,7 @@ class Patient_management extends MY_Controller {
             $medical_cond = 'p.medical_record_number,p.patient_number_ccc as ccc_no,';
             $contact_sql = "";
         }
+        $store = $this->session->userdata('ccc_store_id');
 
         $sql = "SELECT 
         $medical_cond
@@ -2227,7 +2228,9 @@ class Patient_management extends MY_Controller {
                 LEFT JOIN regimen r ON r.id=p.current_regimen
                 LEFT JOIN patient_status ps ON ps.id=p.current_status
                 WHERE p.facility_code = '$facility_code'
-                AND p.patient_number_ccc != '' $filter ";
+                AND p.patient_number_ccc != '' $filter
+                AND p.ccc_store_sp = '$store' ";
+
         $query = $this->db->query($sql);
         $patients = $query->result_array();
         $temp = array();
