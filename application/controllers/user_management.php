@@ -28,13 +28,13 @@ class User_management extends MY_Controller {
     public function login() {
         $this->check_db_port();
         $users = Users::getAll();
-        $stores  = CCC_store_service_point::getAllActive();
+        $data = array();
+        $data['stores']  = CCC_store_service_point::getAllActive();
         (count($users) == 1) ? redirect('tools/setup') : '';
         //if seesion variable user_id is not present
         // test database connection
         if (!$this->session->userdata("user_id")) {
             $this->session->set_flashdata('message', 0);
-            $data = array();
             $data['title'] = "webADT | System Login";
             $this->load->view("login_v", $data);
         } else {
