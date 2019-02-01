@@ -260,6 +260,8 @@ class User_management extends MY_Controller {
             $username = $this->input->post("username");
             $password = $this->input->post("password");
             $remember = $this->input->post("remember");
+            $ccc_store = $this -> input -> post("ccc_store");
+
             $key = $this->encrypt->get_key();
             $encrypted_password = $key . $password;
             $logged_in = Users::login($username, $encrypted_password);

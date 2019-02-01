@@ -3613,8 +3613,8 @@ class Report_management extends MY_Controller {
 	<th> Next Appointment</th>
     <th> Adherence</th>
     <th> DCM Started</th>
-    <th> DCM Exit</th>
-	<th> DCM reason</th>
+    <th> DCM Ended</th>
+	<th> DCM EXit reason</th>
 
 	<th> VL Results</th>
 	<th> Status</th>
