@@ -3184,6 +3184,8 @@ public function getPeriodRegimenPatients($from, $to) {
 								$this->db->insert('cdrr_log', $cdrr_log_tmp);		
 							}
 						}
+						$this->aggregate_dcdrr($start_date);
+					
 						//Set success response
 						$response[$ds] = array('status' => true, 'message' => '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Success!</strong> '.strtoupper($ds).' Reports were retrieved successfully!</div>');
 					}	
