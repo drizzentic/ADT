@@ -129,6 +129,9 @@ class Order extends MY_Controller {
 				$this->session->set_userdata("dhis_user", $username);
 				$this->session->set_userdata("dhis_pass", $password);
 				$this->session->set_userdata("dhis_orgs", $dhis_orgs_intersect);
+
+				$this->get_dhis_orgs();
+
 			}else{
 				$this -> session -> set_flashdata('login_message', "<span class='error'>You are not authorized in this Facility!</span>");
 			}
@@ -166,6 +169,41 @@ class Order extends MY_Controller {
 			$message .= $this->get_dhis_central('dmaps', $period_filter, 'D-MAPS')['dmaps']['message'];
 		}
 		echo json_encode($message);
+	}
+	public function get_dhis_orgs(){
+
+				$query_str = "SELECT sf.id
+			FROM facilities f , sync_facility sf
+			where  sf.code = f.facilitycode
+			and f.facilitycode = $this->facility_code
+			and sf.category = 'satellite'";
+
+					$query = $this -> db -> query($query_str);
+					$result = $query -> result_array();
+					if ($result) {
+						$parent_id = $result[0]['id'];
+					}
+				// $dhis_auth = 'tngugi:Ngugi1234';
+				$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
+
+				$resource = "api/me";
+				$response = json_decode($this->sendRequest($resource, 'GET', null, $dhis_auth));
+				$str  = '';
+				
+				foreach ($response->organisationUnits as $rs) {
+					$str .=$rs->id.',';
+				}
+
+				$resource = "api/organisationUnits.json?level=5&paging=false&fields=:all&filter=id:in:[$str]";
+				$response = json_decode($this->sendRequest($resource, 'GET', null, $dhis_auth));
+				// echo "<pre>"; var_dump($response->organisationUnits);die;
+				$parent_id = 32;
+				$str = "";
+				foreach ($response->organisationUnits as $rs) {
+				$str .= "insert into sync_facility (name,category ,parent_id,code,ordering,service_point,dhiscode,Active) Values";
+					$str .="('$rs->name','satellite',$parent_id,'$rs->code',0,1,'$rs->id',1) ON DUPLICATE KEY UPDATE name = '$rs->name', parent_id = $parent_id, ordering = 0, service_point = 1, dhiscode = '$rs->id', Active = 1 ;";
+				}
+				$this->db->query($str);
 	}
 
 	public function verify_user_access(){
@@ -2238,7 +2276,8 @@ public function getPeriodRegimenPatients($from, $to) {
 		if($facility_code!=''){
 			$sql = "SELECT COUNT(sf.id) as total FROM sync_facility sf 
 			INNER JOIN sync_facility sf1 ON sf1.parent_id = sf.id
-			WHERE sf.code ='$facility_code'";
+			WHERE sf.code ='$facility_code'
+			AND category in ('satellite')";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if($results){
@@ -3053,7 +3092,7 @@ public function getPeriodRegimenPatients($from, $to) {
 						$facility_id = $this->get_sync_facility_id($dhis_org, $code);
 						//Add cdrr
 						$cdrr = array(
-							'status' => 'approved',
+							'status' => 'prepared',
 							'created' => str_replace('T', ' ', $report->dataValues[0]->created),
 							'updated' => str_replace('T', ' ', $report->dataValues[0]->lastUpdated),
 							'code' => $code,
@@ -3082,6 +3121,8 @@ public function getPeriodRegimenPatients($from, $to) {
 							$this->db->insert('cdrr', $cdrr);		
 							$cdrr_id = $this->db->insert_id();
 						}
+
+						// run aggregate function
 
 						//Build formatted cdrr_item object
 						$cdrr_item = array();
@@ -3317,6 +3358,38 @@ public function getPeriodRegimenPatients($from, $to) {
 		curl_close($ch);
 		return $response;
 
+	}
+	public function aggregate_dcdrr($period = null){
+		// select fcdrr id for period
+		$sql = "select id from cdrr c where code = 'D-CDRR' and  period_begin = '$period' limit 1";
+		$query = $this->db->query($sql);
+		$result = $query->result_array($query);
+		if($result){
+			$dcdrr_id = $result[0]['id'];
+			$sql = "SELECT concat ('update cdrr_item set aggr_on_hand= ', sum(count),' ,aggr_consumed =',(sum(dispensed_packs)  * pack_size ) ,' where drug_id = ',drug_id,' and cdrr_id = $dcdrr_id;' ) as q
+			FROM cdrr c 
+			inner join cdrr_item ci on ci.cdrr_id  = c.id
+			left join drugcode dc on dc.id = ci.drug_id
+			WHERE c.period_begin = '$period' 
+			and c.code != 'D-CDRR'
+			group by drug_id";
+
+			$query = $this->db->query($sql);
+			$result = $query->result_array();
+			if ($result){
+				foreach ($result as $value) {
+					if ($value['q'] !==NULL) {
+						echo $value['q'].'<br />';
+// var_dump(				$this->db->query($value['q']));
+					}
+
+				}
+			}
+
+		}
+		else {
+	// no dcdrr for period
+		}
 	}
 
 	public function get_sync_facility_id($dhis_code, $code){
