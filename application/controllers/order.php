@@ -12,10 +12,16 @@ class Order extends MY_Controller {
 		$this -> load -> library('Curl');
 
 		$this->facility_code = $this -> session -> userdata('facility');
-		$this->facility_type = Facilities::getType($this->facility_code);
 		$this->user_id = $this -> session -> userdata('user_id');
 		$this->facility_dhis = $this->session->userdata('facility_dhis');
 		$this->dhis_url = 'https://hiskenya.org/';
+	}
+
+	private function setFacilityType($type){
+		$this->facility_type = $type;
+	}
+	private function getFacilityType(){
+		return $this->facility_type;
 	}
 
 	public function index() {
@@ -89,17 +95,18 @@ class Order extends MY_Controller {
 					}
 				}
 			}
-			
+			$parent_id = $this->get_dhis_orgs($username.':'.$password);
 			//Ensure user has access to facility dhis data
 			$user_dhis_orgs = array();
 			$query = $this->db->get_where('sync_facility', array(
-				'parent_id' => Sync_Facility::getId($this->facility_code, $this->facility_type)['id'])
-			);
+				'parent_id' =>  $parent_id
+			));
 			foreach ($query->result_array() as $facility) {
 				$user_dhis_orgs[] = $facility['dhiscode'];
 			};
 			$user_dhis_orgs = array_unique($user_dhis_orgs);
 			$dhis_orgs_intersect = array_intersect($user_dhis_orgs, $dhis_orgs);
+
 			if(!empty($dhis_orgs_intersect) || in_array($kenya_code, $dhis_orgs)){
 				//Save user data
 				$sync_user = array(
@@ -129,9 +136,6 @@ class Order extends MY_Controller {
 				$this->session->set_userdata("dhis_user", $username);
 				$this->session->set_userdata("dhis_pass", $password);
 				$this->session->set_userdata("dhis_orgs", $dhis_orgs_intersect);
-
-				$this->get_dhis_orgs();
-
 			}else{
 				$this -> session -> set_flashdata('login_message', "<span class='error'>You are not authorized in this Facility!</span>");
 			}
@@ -170,21 +174,19 @@ class Order extends MY_Controller {
 		}
 		echo json_encode($message);
 	}
-	public function get_dhis_orgs(){
-
-				$query_str = "SELECT sf.id
+	public function get_dhis_orgs($dhis_auth){
+		$parent_id = 0;
+		$query_str = "SELECT sf.id
 			FROM facilities f , sync_facility sf
 			where  sf.code = f.facilitycode
 			and f.facilitycode = $this->facility_code
-			and sf.category = 'satellite'";
+			and sf.category in ('central')";
 
 					$query = $this -> db -> query($query_str);
 					$result = $query -> result_array();
 					if ($result) {
 						$parent_id = $result[0]['id'];
 					}
-				// $dhis_auth = 'tngugi:Ngugi1234';
-				$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
 
 				$resource = "api/me";
 				$response = json_decode($this->sendRequest($resource, 'GET', null, $dhis_auth));
@@ -193,17 +195,35 @@ class Order extends MY_Controller {
 				foreach ($response->organisationUnits as $rs) {
 					$str .=$rs->id.',';
 				}
-
 				$resource = "api/organisationUnits.json?level=5&paging=false&fields=:all&filter=id:in:[$str]";
+
 				$response = json_decode($this->sendRequest($resource, 'GET', null, $dhis_auth));
-				// echo "<pre>"; var_dump($response->organisationUnits);die;
-				$parent_id = 32;
-				$str = "";
-				foreach ($response->organisationUnits as $rs) {
-				$str .= "insert into sync_facility (name,category ,parent_id,code,ordering,service_point,dhiscode,Active) Values";
-					$str .="('$rs->name','satellite',$parent_id,'$rs->code',0,1,'$rs->id',1) ON DUPLICATE KEY UPDATE name = '$rs->name', parent_id = $parent_id, ordering = 0, service_point = 1, dhiscode = '$rs->id', Active = 1 ;";
-				}
+				foreach ($response->organisationUnits as $key => $rs ) {
+				$str = "insert into sync_facility (name,category ,parent_id,code,ordering,service_point,dhiscode,Active) Values('$rs->name','satellite',$parent_id,'$rs->code',0,1,'$rs->id',1) ON DUPLICATE KEY UPDATE name = '$rs->name', parent_id = $parent_id, ordering = 0, service_point = 1, dhiscode = '$rs->id', Active = 1 ;";
 				$this->db->query($str);
+				$this->setFacilityType($key);
+				}
+
+				$upd_user = ($parent_id > 0) ? $this->update_user_facilities($parent_id): false;
+				return $parent_id;
+	}
+	
+	function update_user_facilities($parent_id){
+		$query_str = "SELECT id FROM sync_facility WHERE parent_id = $parent_id AND category = 'satellite'";
+		$query = $this -> db -> query($query_str);
+		$result = $query -> result_array();
+		$str = '';
+		if ($result) {
+			foreach ($result as $key => $id) {
+				$str .= '"'.$id['id'].'",';
+			}
+
+			 $str = "[".substr($str,0, -1)."]";
+			 $user_id = $this->session->userdata('user_id');
+			 $sql =  "update user_facilities set facility = '$str' where user_id = $user_id;";
+			 $this->db->query($sql);
+			}
+
 	}
 
 	public function verify_user_access(){
@@ -2277,7 +2297,7 @@ public function getPeriodRegimenPatients($from, $to) {
 			$sql = "SELECT COUNT(sf.id) as total FROM sync_facility sf 
 			INNER JOIN sync_facility sf1 ON sf1.parent_id = sf.id
 			WHERE sf.code ='$facility_code'
-			AND category in ('satellite')";
+			AND sf.category = 'satellite'";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if($results){
@@ -3382,7 +3402,6 @@ public function getPeriodRegimenPatients($from, $to) {
 				foreach ($result as $value) {
 					if ($value['q'] !==NULL) {
 						echo $value['q'].'<br />';
-// var_dump(				$this->db->query($value['q']));
 					}
 
 				}
