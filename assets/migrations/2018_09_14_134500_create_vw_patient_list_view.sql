@@ -31,6 +31,7 @@ AS select p.id AS patient_id
 ,rst.name AS service
 ,r1.regimen_desc AS start_regimen
 ,p.start_regimen_date AS start_regimen_date
+,(SELECT regimen from patient_visit pv limit 1 order by dispensing_date desc where p.patient_number_ccc = pv.patient_id)
 ,pst.Name AS current_status
 ,if((p.sms_consent = 1),'YES','NO') AS sms_consent
 ,p.fplan AS family_planning
