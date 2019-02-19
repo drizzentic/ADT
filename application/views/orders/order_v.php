@@ -296,8 +296,12 @@
 
 	$(document).ready(function() {
 		var base_url="<?php echo base_url();?>";
-<?php if($this->session->userdata('facility_dhis')){ ?>
-				var dataURL = 'Order/get_dhis_data/3'
+<?php if($this->session->userdata('facility_dhis')  && (!$dhis_data)){ ?>
+			$.blockUI({ 
+				message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Downloading...</h3>' 
+			}); 
+
+			var dataURL = 'Order/get_dhis_data/1'
 				$('#download_msg').html('')
 			$.getJSON(dataURL, function(data){
 				$.unblockUI();

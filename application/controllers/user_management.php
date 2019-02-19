@@ -390,8 +390,8 @@ class User_management extends MY_Controller {
                         'facility_sms_consent' => $facility_details[0]['map'],
                         'lost_to_follow_up' => ((@$facility_details[0]['lost_to_follow_up'] ) !== null) ? @$facility_details[0]['lost_to_follow_up'] : 90,
                         'pill_count' => ((@$facility_details[0]['pill_count'] ) !== null) ? @$facility_details[0]['pill_count'] : 0,
-                        'medical_number' => ((@$facility_details[0]['medical_number'] ) !== null) ? @$facility_details[0]['medical_number'] : 0,
-                        'facility_dhis' => ((@$facility_details[0]['facility_dhis'] ) !== null) ? @$facility_details[0]['facility_dhis'] : 0,
+                        'medical_number' => ((@$facility_details[0]['medical_number'] ) !== null) ? 1 : 0,
+                        'facility_dhis' => ((@$facility_details[0]['facility_dhis'] ) !== null) ? 1 : 0,
                         'autobackup' => ((@$facility_details[0]['autobackup'] ) !== null) ? @$facility_details[0]['autobackup'] : 0
                     );
 
@@ -421,11 +421,12 @@ class User_management extends MY_Controller {
     }
 
     public function getFacilityDetails($facility_code) {
-        $sql = "SELECT f.county county_id,f.district district_id,f.*,  c.county county_, d.name subcounty_ 
-                FROM counties c LEFT 
-                JOIN facilities f ON c.id = f.county
-                JOIN district d ON d.id = f.district
+        $sql = "SELECT f.county county_id,f.district district_id,f.*, c.county county_, d.name subcounty_ 
+                FROM facilities f 
+                LEFT JOIN  counties c  
+                ON c.id = f.county left JOIN district d ON d.id = f.district
                 WHERE f.facilitycode=?";
+                echo $sql;
         return $this->db->query($sql, array($facility_code))->result_array();
     }
 

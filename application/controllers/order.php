@@ -10,8 +10,8 @@ class Order extends MY_Controller {
 		parent::__construct();
 
 		$this -> load -> library('Curl');
-
 		$this->facility_code = $this -> session -> userdata('facility');
+		$this->facility_type = Facilities::getType($this->facility_code);
 		$this->user_id = $this -> session -> userdata('user_id');
 		$this->facility_dhis = $this->session->userdata('facility_dhis');
 		$this->dhis_url = 'https://hiskenya.org/';
@@ -30,6 +30,7 @@ class Order extends MY_Controller {
 			$data['banner_text'] = "DHIS Login";
 			$data['content_view'] = "orders/dhis_login_v";
 		}else{
+			$data['dhis_data'] =$this->check_dhis_data_exists();
 			$data['cdrr_buttons'] = $this -> get_buttons("cdrr");
 			$data['cdrr_filter'] = $this -> get_filter("cdrr");
 			$data['fmap_buttons'] = $this -> get_buttons("maps");
@@ -157,9 +158,22 @@ class Order extends MY_Controller {
 		$dhiscode = ($this->db->query($sql)->result_array()) ? $this->db->query($sql)->result_array()[0]['dhiscode'] : null ;
 		return $dhiscode;
 	}
+	function check_dhis_data_exists(){
+		$last_month_date = date('Y-m',strtotime("-1 month")).'-01';
+		$query_str = "select id from cdrr where period_begin = '$last_month_date'
+						UNION
+					select id from maps where period_begin = '$last_month_date'";
+					$returnable = false;
+		$query = $this->db->query($query_str);
+		if ($query->result_array())
+			{$returnable = true;}
+		return $returnable;
+
+	}
 
 	public function get_dhis_data($period_filter){
 		$message = '';
+		
 		if ($this->facility_type == 0) { //Satellite Site
 			$message .= $this->get_dhis('fcdrr', $period_filter, 'F-CDRR_units')['fcdrr']['message'];
 			$message .= $this->get_dhis('fmaps', $period_filter, 'F-MAPS')['fmaps']['message'];
@@ -2883,7 +2897,7 @@ public function getPeriodRegimenPatients($from, $to) {
 								'facility_id' => $facility_id, 
 								'period_begin' => $start_date,
 								'code' => $code))->row_array();
-						if(!empty($row)){
+						if(count($row)>0){
 							$cdrr_id = $row['id'];
 							$this->db->where('id', $cdrr_id);
 							$this->db->update('cdrr', $cdrr);
@@ -3104,7 +3118,7 @@ public function getPeriodRegimenPatients($from, $to) {
 				$resource = $dataset_url."?dataSet=$dataset&period=$period&orgUnitGroup=".$central_grp; // get cdrr
 				$report = json_decode($this->sendRequest($resource, 'GET', null, $dhis_auth));
 
-				if(!empty($report->dataValues)){
+				if(count($report->dataValues)>0){
 					$start_date = $period_date;
 					$end_date =  date('Y-m-t', strtotime($period_date));
 					//cdrr
@@ -3120,7 +3134,7 @@ public function getPeriodRegimenPatients($from, $to) {
 							'period_end' => $end_date,
 							'comments' => '',
 							'reports_expected' => $this -> expectedReports($this->facility_code),
-							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'cdrr'),						
+							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'cdrr'),
 							'services' => '',
 							'sponsors' => '',
 							'non_arv' => 0,
@@ -3133,7 +3147,8 @@ public function getPeriodRegimenPatients($from, $to) {
 								'facility_id' => $facility_id, 
 								'period_begin' => $start_date,
 								'code' => 'D-CDRR'))->row_array();
-						if(!empty($row)){
+						var_dump($row);
+						if(count($row)>0){
 							$cdrr_id = $row['id'];
 							$this->db->where('id', $cdrr_id);
 							$this->db->update('cdrr', $cdrr);
@@ -3166,7 +3181,7 @@ public function getPeriodRegimenPatients($from, $to) {
 								$row = $this->db->select('id')->get_where('cdrr_item', array(
 								'cdrr_id' => $cdrr_id, 
 								'drug_id' => $drug_id))->row_array();
-								if(!empty($row)){
+								if(count($row)>0){
 									$cdrr_item_id = $row['id'];
 									$this->db->where('id', $cdrr_item_id);
 									$this->db->update('cdrr_item', $cdrr_item_tmp);
@@ -3196,7 +3211,7 @@ public function getPeriodRegimenPatients($from, $to) {
 							$row = $this->db->select('id')->get_where('cdrr_log', array(
 							'cdrr_id' => $cdrr_id, 
 							'description' => $log))->row_array();
-							if(!empty($row)){
+							if(count($row)>0){
 								$cdrr_log_id = $row['id'];
 								$this->db->where('id', $cdrr_log_id);
 								$this->db->update('cdrr_log', $cdrr_log_tmp);
@@ -3204,7 +3219,7 @@ public function getPeriodRegimenPatients($from, $to) {
 								$this->db->insert('cdrr_log', $cdrr_log_tmp);		
 							}
 						}
-						$this->aggregate_dcdrr($start_date);
+						$this->aggregate_dcdrr($start_date,$facility_id);
 					
 						//Set success response
 						$response[$ds] = array('status' => true, 'message' => '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Success!</strong> '.strtoupper($ds).' Reports were retrieved successfully!</div>');
@@ -3381,7 +3396,7 @@ public function getPeriodRegimenPatients($from, $to) {
 		return $response;
 
 	}
-	public function aggregate_dcdrr($period = null){
+	public function aggregate_dcdrr($period = null , $facility_id){
 		// select fcdrr id for period
 		$sql = "select id from cdrr c where code = 'D-CDRR' and  period_begin = '$period' limit 1";
 		$query = $this->db->query($sql);
@@ -3394,6 +3409,7 @@ public function getPeriodRegimenPatients($from, $to) {
 			left join drugcode dc on dc.id = ci.drug_id
 			WHERE c.period_begin = '$period' 
 			and c.code != 'D-CDRR'
+			AND c.facility_id !=$facility_id
 			group by drug_id";
 
 			$query = $this->db->query($sql);
@@ -3401,9 +3417,8 @@ public function getPeriodRegimenPatients($from, $to) {
 			if ($result){
 				foreach ($result as $value) {
 					if ($value['q'] !==NULL) {
-						echo $value['q'].'<br />';
+						$query = $this->db->query($value['q']);
 					}
-
 				}
 			}
 
