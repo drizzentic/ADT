@@ -117,13 +117,13 @@ class Regimen extends Doctrine_Record {
 	}
 
 	public function getChildRegimens(){
-		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> where("(r.Regimen_Category.Name LIKE '%paed%' OR r.Regimen_Category.Name LIKE '%child%'  OR r.Regimen_Category.Name LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
+		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> where("(r.Category LIKE '%paed%' OR r.Category LIKE '%child%'  OR r.Category LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
 		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $regimens;
 	}
 
 	public function getAdultRegimens(){
-		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> where("(r.Regimen_Category.Name LIKE '%adult%' OR r.Regimen_Category.Name LIKE '%mother%' OR r.Regimen_Category.Name LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
+		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> where("(r.Category LIKE '%adult%' OR r.Category LIKE '%mother%' OR r.Category LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
 		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $regimens;
 	}

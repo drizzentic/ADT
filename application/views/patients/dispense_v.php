@@ -260,10 +260,6 @@
                                 </tbody>
                             </table>
                         </div>
-
-
-
-
                         <?php if (count($prescription) > 0 && $api) { ?>
 
 
@@ -441,7 +437,7 @@
             }
         });
 <?php if (count($prescription) > 0 && $api) { ?>
-            $('#current_regimen').val($("#current_regimen option:contains($prescription[0]['drug_name'])").val());
+            $('#current_regimen').val($("#current_regimen option:contains(<?= $prescription[0]['drug_name']; ?>)").val());
 <?php } ?>
         $('#ccc_store_id').val(<?= $this->session->userdata('ccc_store_id'); ?>);
         $('#ccc_store_id').attr('readonly', 'true');

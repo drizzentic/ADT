@@ -70,10 +70,6 @@ class Api extends MX_Controller {
 // 5. Action | [save,update]
 // 6. Response
 
-
-
-	// Response
-
 			die;
 		}
 		$api_messages = ['ADT^Â08','ADT^Â04','SIU^S12','ORU^R01','RDE^001'];
@@ -101,7 +97,11 @@ class Api extends MX_Controller {
 // 			die;
 // 		}
 // internal identification is an array of objects
-		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+		$identification = array();
+		foreach ($patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID as $id) {
+			$identification[$id->IDENTIFIER_TYPE] = $id->ID;
+		}
+		$ccc_no = ($identification['CCC_NUMBER']);
 		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
 		// $ccc_no = $this->parseCCC($ccc_no,$SENDING_FACILITY);
 
@@ -174,7 +174,13 @@ class Api extends MX_Controller {
 	}
 
 	function processPatientUpdate($patient){
-		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+
+		$identification = array();
+		foreach ($patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID as $id) {
+			$identification[$id->IDENTIFIER_TYPE] = $id->ID;
+		}
+		$ccc_no = ($identification['CCC_NUMBER']);
+
 		$internal_patient = $this->api_model->getPatient($ccc_no);
 		if (!$internal_patient){
 			$this->processPatientRegistration($patient);
@@ -236,65 +242,62 @@ class Api extends MX_Controller {
 
 	}
 
-	function processObservation($observations){
+	function processObservation($obx){
+		$identification = array();
+		
+		foreach ($obx->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID as $id) {
+			$identification[$id->IDENTIFIER_TYPE] = $id->ID;
+		}
+		$ccc_no = ($identification['CCC_NUMBER']);
+		$internal_patient = $this->api_model->getPatient($ccc_no);
 
-		$internal_patient = $this->api_model->getPatient(null,$patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID);
 		if (!$internal_patient){
-			$this->processPatientRegistration($patient);
-// registration successful
+			writeLog('ORU Error ',"patient does not exist. Can't process observation");
 			die;
 		}
-		$internal_patient_id = $internal_patient->internal_id;
-// internal & external patient ID matching
-		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
 
-		$EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
-
-// internal identification is an array of objects
-		$ccc_no = $patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+		$internal_patient_id = $internal_patient->id;
+		$SENDING_FACILITY = $obx->MESSAGE_HEADER->SENDING_FACILITY;
 
  // Observation Result(s) - Array of Objects
-
 		$observations = array();
-		foreach ($patient->OBSERVATION_RESULT as $ob) {
-
+		foreach ($obx->OBSERVATION_RESULT as $ob) {
 			$observations[$ob->OBSERVATION_IDENTIFIER] = $ob->OBSERVATION_VALUE;
-
 		}
 		$START_HEIGHT = (isset($observations['START_HEIGHT'])) ? $observations['START_HEIGHT'] : false ;
 		$START_WEIGHT = (isset($observations['START_WEIGHT'])) ? $observations['START_WEIGHT'] : false ;
+
 		$IS_PREGNANT = (isset($observations['IS_PREGNANT'])) ? $observations['IS_PREGNANT'] : false ;
 		$PRENGANT_EDD = (isset($observations['PRENGANT_EDD'])) ? $observations['PRENGANT_EDD'] : false ;
-		$CURRENT_REGIMEN = (isset($observations['CURRENT_REGIMEN'])) ? $observations['CURRENT_REGIMEN'] : false ;
-		
+		$CURRENT_REGIMEN = (isset($observations['CURRENT_REGIMEN'])) ? $observations['CURRENT_REGIMEN'] : false ;		
 		$IS_SMOKER = (isset($observations['IS_SMOKER'])) ? $observations['IS_SMOKER'] : false ;
-		$IS_ALCOHOLIC = (isset($observations['IS_ALCOHOLIC'])) ? $observations['IS_ALCOHOLIC'] : false ;
-		
-
+		$IS_ALCOHOLIC = (isset($observations['IS_ALCOHOLIC'])) ? $observations['IS_ALCOHOLIC'] : false ;	
 		$REGIMEN_CHANGE_REASON = (isset($observations['REGIMEN_CHANGE_REASON'])) ? $observations['REGIMEN_CHANGE_REASON'] : false ;
-		if ($REGIMEN_CHANGE_REASON){
-
-// do regimen change/ drug stop
-			var_dump($REGIMEN_CHANGE_REASON);die;
+		if ($REGIMEN_CHANGE_REASON){ 
+		// do regimen change/ drug stop
+			// var_dump($REGIMEN_CHANGE_REASON);die;
 		}
-// 
 
-
-		$patient = array('facility_code'=>$SENDING_FACILITY,
+		$observation = array('facility_code'=>$SENDING_FACILITY,
 			'patient_number_ccc'=>$ccc_no,
 			'pregnant'=>$IS_PREGNANT,
 			'smoke'=>$IS_SMOKER,
+			'height'=>$START_HEIGHT,
 			'start_height'=>$START_HEIGHT,
 			'start_regimen'=>$CURRENT_REGIMEN,
 			'start_weight'=>$START_WEIGHT,
 			'weight'=>$START_HEIGHT);
-
-		$result = $this->api_model->updatePatient($patient,$internal_patient_id);
+		$result = $this->api_model->updatePatient($observation,$internal_patient_id);
 	}
 
 	function processAppointment($appointment){
-		$internal_patient_ccc = $appointment->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
-		$internal_patient_ccc = $this->api_model->getPatient($internal_patient_ccc);
+		$identification = array();
+		foreach ($appointment->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID as $id) {
+			$identification[$id->IDENTIFIER_TYPE] = $id->ID;
+		}
+		$ccc_no = ($identification['CCC_NUMBER']);
+		$internal_patient_ccc = $this->api_model->getPatient($ccc_no);
+
 		if (!$internal_patient_ccc){$this->writeLog('Patient not found ',$internal_patient_ccc);die;}
 
 		$SENDING_APPLICATION = $appointment->MESSAGE_HEADER->SENDING_APPLICATION;
@@ -339,11 +342,15 @@ class Api extends MX_Controller {
 
 	}
 	function processDrugOrder($order){
-		$internal_patient_ccc = $order->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID[0]->ID;
+		$identification = array();
+		foreach ($order->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID as $id) {
+			$identification[$id->IDENTIFIER_TYPE] = $id->ID;
+		}
+		$ccc_no = ($identification['CCC_NUMBER']);	
+
 		$SENDING_FACILITY = $order->MESSAGE_HEADER->SENDING_FACILITY;
-		$internal_patient_ccc = $this->api_model->getPatient($internal_patient_ccc);
-		
-		$internal_patient_ccc = $this->parseCCC($internal_patient_ccc,$SENDING_FACILITY);
+		$internal_patient_ccc = $this->api_model->getPatient($ccc_no);	
+		// $internal_patient_ccc = $this->parseCCC($internal_patient_ccc,$SENDING_FACILITY);
 
 		if (!$internal_patient_ccc){$this->writeLog('Patient not found ',$internal_patient_ccc);die;}
 
@@ -389,7 +396,6 @@ class Api extends MX_Controller {
 			'order_physician' => $OP_FIRST_NAME.' '.$OP_MIDDLE_NAME.' '.$OP_LAST_NAME,
 			'notes' => $NOTES
 		);
-
 
 		$this->writeLog('prescription ',json_encode($pe));
 		$this->writeLog('prescription order ',json_encode($pe_order));

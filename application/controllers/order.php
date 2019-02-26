@@ -3235,7 +3235,7 @@ public function getPeriodRegimenPatients($from, $to) {
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
 							'reports_expected' => $this -> expectedReports($this->facility_code),
-							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'maps'),						
+							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'maps'),
 							'art_adult'  => '',
 							'art_child'  => '',
 							'new_male'  => '',
