@@ -262,7 +262,6 @@
                         </div>
                         <?php if (count($prescription) > 0 && $api) { ?>
 
-
                             <div id="prescription_div">
                                 <div style="background: #f7e9e9;">
                                     Ordering Physician: <?= $prescription[0]['order_physician']; ?>
@@ -299,9 +298,6 @@
 
                             </div>
                         <?php } ?>
-
-
-
                     </div>
                 </div>
             </div>

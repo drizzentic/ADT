@@ -48,7 +48,8 @@ class Cdrr_item extends Doctrine_Record {
 		$sql = "SELECT * FROM cdrr_item ci
 		LEFT JOIN dhis_elements de on ci.drug_id = de.target_id 
 		WHERE  target_category = 'drug'
-		AND cdrr_id = $item";
+		AND cdrr_id = $item
+		AND target_report !='unknown'";
 		$query=$this->db->query($sql);
 		$items=$query->result_array();
 		return $items;
