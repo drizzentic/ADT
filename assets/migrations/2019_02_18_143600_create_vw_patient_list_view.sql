@@ -1,4 +1,5 @@
 DROP VIEW IF EXISTS vw_patient_list//
+create vw_patient_list as 
 select p.id AS patient_id
 ,p.patient_number_ccc AS ccc_number
 ,p.first_name AS first_name
