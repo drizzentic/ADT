@@ -631,14 +631,16 @@ public function missed_appointments_notification($display_array=false){
 		 INNER JOIN
 		(SELECT dp.* FROM drug_prescription dp ,drug_prescription_details dpd 
 				left join drug_prescription_details_visit  dpdv on dpdv.drug_prescription_details_id  = dpd.id
-				left join patient_visit pv on pv.id= dpdv.visit_id
-		                left join patient p on p.patient_number_ccc =  pv.patient_id 
 				WHERE  dp.id = dpd.drug_prescriptionid
-		and p.id  is null
-				GROUP BY patient, order_number 
-				ORDER BY timecreated DESC 
-		) b on a.patient_number_ccc = b.patient
-		group by order_number";
+and dp.id not in (SELECT dp.id
+FROM drug_prescription_details_visit dpdv, drug_prescription_details dpd ,drug_prescription dp
+where 
+dpd.id = dpdv.drug_prescription_details_id
+and dpd.drug_prescriptionid = dp.id
+and dpdv.visit_id > 0
+group by id) GROUP BY patient, order_number ORDER BY timecreated DESC ) b on a.patient_number_ccc = b.patient
+		group by order_number order by timecreated desc
+		";
 		
 		$query=$this->db->query($sql);
 		$results=$query->result_array();
