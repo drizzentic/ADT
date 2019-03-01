@@ -166,7 +166,8 @@ AS
           WHERE  ( patient_viral_load.patient_ccc_number = p.patient_number_ccc ) 
           ORDER  BY patient_viral_load.test_date DESC 
           LIMIT  1) 
-            AS viral_load_test_results, 
+            AS viral_load_test_results,
+            (select patient_viral_load.test_date from patient_viral_load where (patient_viral_load.patient_ccc_number = p.patient_number_ccc) order by patient_viral_load.test_date desc limit 1) AS viral_load_test_date ,
          IF(( p.differentiated_care = 1 ), 'differentiated', IF(( 
          p.differentiated_care = 0 ), 'notdifferentiated', 'notdifferentiated')) 
             AS 
