@@ -3358,11 +3358,11 @@ public function getPeriodRegimenPatients($from, $to) {
 
 		}
 		if ($object == 'drug'){
-			$sql = "SELECT * FROM dhis_elements de left join drugcode d on de.target_id = d.id WHERE dhis_code = '$dhiscode'";
+			$sql = "SELECT * FROM dhis_elements de left join sync_drug d on de.target_id = d.id WHERE dhis_code = '$dhiscode'";
 			$result = $this->db->query($sql)->result_array()[0]['id'];
 		}
 		if ($object == 'regimen'){
-			$sql = "SELECT * FROM dhis_elements de left join regimen r on de.target_id = r.id WHERE dhis_code = '$dhiscode'";		
+			$sql = "SELECT * FROM dhis_elements de left join sync_regimen r on de.target_id = r.id WHERE dhis_code = '$dhiscode'";		
 			$result = $this->db->query($sql)->result_array()[0]['id'];
 		}
 		return $result;
