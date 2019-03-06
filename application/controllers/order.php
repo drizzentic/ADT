@@ -231,6 +231,7 @@ class Order extends MY_Controller {
 			foreach ($result as $key => $id) {
 				$str .= '"'.$id['id'].'",';
 			}
+			$str.='"'.$parent_id.'",';
 
 			 $str = "[".substr($str,0, -1)."]";
 			 $user_id = $this->session->userdata('user_id');
@@ -3148,7 +3149,6 @@ public function getPeriodRegimenPatients($from, $to) {
 								'facility_id' => $facility_id, 
 								'period_begin' => $start_date,
 								'code' => 'D-CDRR'))->row_array();
-						var_dump($row);
 						if(count($row)>0){
 							$cdrr_id = $row['id'];
 							$this->db->where('id', $cdrr_id);
@@ -3290,6 +3290,8 @@ public function getPeriodRegimenPatients($from, $to) {
 								//Add maps_id and regimen_id
 								$maps_item_tmp['maps_id'] = $maps_id;
 								$maps_item_tmp['regimen_id'] = $regimen_id;
+								$maps_item_tmp['issynched'] = 'Y';
+
 								//Check if value exists
 								$row = $this->db->select('id')->get_where('maps_item', array(
 								'maps_id' => $maps_id, 

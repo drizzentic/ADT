@@ -308,7 +308,7 @@
 				$('#download_msg').html(data); //Append success message
 				setTimeout(function(){
 					location.reload();
-				}, 2000); //Reload page after 2 sec
+				}, 10000); //Reload page after 10 sec
 				
 			});
 <?php }?>
@@ -326,7 +326,7 @@
 				$('#download_msg').html(data); //Append success message
 				setTimeout(function(){
 					location.reload();
-				}, 2000); //Reload page after 2 sec
+				}, 10000); //Reload page after 10 sec
 				
 			});
 		});

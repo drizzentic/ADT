@@ -143,7 +143,7 @@ class Facilities extends Doctrine_Record {
 
 	public function getType($facility_code) {
 		$query =$this->db->query("SELECT count(*) as count FROM sync_facility s1
-					left join sync_facility s2 on s1.id = s2.parent_id
+					right join sync_facility s2 on s1.id = s2.parent_id
 					WHERE s1.code =$facility_code");
 		return $query->result_array()[0]['count']+0;
 	}
