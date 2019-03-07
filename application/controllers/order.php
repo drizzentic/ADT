@@ -2308,11 +2308,15 @@ public function getPeriodRegimenPatients($from, $to) {
 	}
 
 	public function expectedReports($facility_code) {//Get number of total expected reports
-		if($facility_code!=''){
-			$sql = "SELECT COUNT(sf.id) as total FROM sync_facility sf 
-			INNER JOIN sync_facility sf1 ON sf1.parent_id = sf.id
-			WHERE sf.code ='$facility_code'
-			AND sf.category = 'satellite'";
+		if($facility_code != ''){
+			$sql = "SELECT COUNT(DISTINCT code) total
+					FROM sync_facility 
+					WHERE parent_id IN (
+						SELECT id 
+						FROM sync_facility 
+						WHERE code = '$facility_code' 
+						AND category = 'central') 
+					AND category = 'satellite'";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if($results){
@@ -2324,21 +2328,22 @@ public function getPeriodRegimenPatients($from, $to) {
 			return 0;
 		}	
 	}
-	public function actualReports($facility_code,$period_begin,$type){
+	public function actualReports($facility_code, $period_begin, $type){
 		if($facility_code!=''){
 			$filter = "";
-			if($type=="cdrr"){
-				$filter = "F-CDRR";
-			}else if($type=="maps"){
+			if($type == "cdrr"){
+				$filter = "F-CDRR_units";
+			}else if($type == "maps"){
 				$filter = "F-MAPS";
 			} 
-			$sql = "
-			SELECT COUNT(m.id) as total FROM $type m LEFT JOIN sync_facility sf ON sf.id=m.facility_id 
-			WHERE  m.status ='approved' 
-			AND m.code LIKE '%$filter%'
-			AND sf.category = 'satellite'
-			AND m.period_begin='$period_begin'  ORDER BY m.code DESC
-			";
+			$sql = "SELECT COUNT(t.id) as total 
+					FROM $type t 
+					INNER JOIN sync_facility sf ON sf.id = t.facility_id 
+					WHERE t.status = 'approved' 
+					AND t.code = '$filter'
+					AND sf.category = 'satellite'
+					AND t.period_begin = '$period_begin'
+					AND sf.parent_id IN (SELECT id FROM sync_facility WHERE code = '$facility_code' AND category = 'central'";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if($results){
@@ -3128,7 +3133,7 @@ public function getPeriodRegimenPatients($from, $to) {
 						$facility_id = $this->get_sync_facility_id($dhis_org, $code);
 						//Add cdrr
 						$cdrr = array(
-							'status' => 'prepared',
+							'status' => 'approved',
 							'created' => str_replace('T', ' ', $report->dataValues[0]->created),
 							'updated' => str_replace('T', ' ', $report->dataValues[0]->lastUpdated),
 							'code' => $code,
@@ -3136,7 +3141,7 @@ public function getPeriodRegimenPatients($from, $to) {
 							'period_end' => $end_date,
 							'comments' => '',
 							'reports_expected' => $this -> expectedReports($this->facility_code),
-							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'cdrr'),
+							'reports_actual' => $this -> actualReports($this->facility_code, $start_date, 'cdrr'),
 							'services' => '',
 							'sponsors' => '',
 							'non_arv' => 0,
@@ -3236,7 +3241,7 @@ public function getPeriodRegimenPatients($from, $to) {
 							'period_begin' => $start_date,
 							'period_end' => $end_date,
 							'reports_expected' => $this -> expectedReports($this->facility_code),
-							'reports_actual' =>$this -> actualReports($this->facility_code,$start_date,'maps'),
+							'reports_actual' =>$this -> actualReports($this->facility_code, $start_date, 'maps'),
 							'art_adult'  => '',
 							'art_child'  => '',
 							'new_male'  => '',
@@ -3281,7 +3286,7 @@ public function getPeriodRegimenPatients($from, $to) {
 						foreach ($report->dataValues as $key => $value) {
 							$regimen_id = $this->dhisLookup($value->dataElement, 'regimen');
 							$column = $this->dhisLookup($value->categoryOptionCombo);
-							$maps_item[$maps_id][$regimen_id][$column] = $value->value;
+							$maps_item[$maps_id][$regimen_id][$column] += $value->value;
 						}
 
 						//Add maps_item
@@ -3358,11 +3363,11 @@ public function getPeriodRegimenPatients($from, $to) {
 
 		}
 		if ($object == 'drug'){
-			$sql = "SELECT * FROM dhis_elements de left join sync_drug d on de.target_id = d.id WHERE dhis_code = '$dhiscode'";
+			$sql = "SELECT * FROM dhis_elements de inner join sync_drug d on de.target_id = d.id WHERE de.dhis_code = '$dhiscode'";
 			$result = $this->db->query($sql)->result_array()[0]['id'];
 		}
 		if ($object == 'regimen'){
-			$sql = "SELECT * FROM dhis_elements de left join sync_regimen r on de.target_id = r.id WHERE dhis_code = '$dhiscode'";		
+			$sql = "SELECT * FROM dhis_elements de inner join sync_regimen r on de.target_id = r.id WHERE de.dhis_code = '$dhiscode'";		
 			$result = $this->db->query($sql)->result_array()[0]['id'];
 		}
 		return $result;
@@ -3406,13 +3411,15 @@ public function getPeriodRegimenPatients($from, $to) {
 		$result = $query->result_array($query);
 		if($result){
 			$dcdrr_id = $result[0]['id'];
-			$sql = "SELECT concat ('update cdrr_item set aggr_on_hand= ', sum(count),' ,aggr_consumed =',(sum(dispensed_packs)  * pack_size ) ,' where drug_id = ',drug_id,' and cdrr_id = $dcdrr_id;' ) as q
+			$sql = "SELECT concat ('update cdrr_item set aggr_on_hand= ', sum(count),' ,aggr_consumed =', sum(dispensed_packs) ,' where drug_id = ',drug_id,' and cdrr_id = $dcdrr_id;' ) as q
 			FROM cdrr c 
-			inner join cdrr_item ci on ci.cdrr_id  = c.id
-			left join drugcode dc on dc.id = ci.drug_id
+			INNER JOIN cdrr_item ci ON ci.cdrr_id  = c.id
+			INNER JOIN sync_drug dc ON dc.id = ci.drug_id
+			INNER JOIN sync_facility sf ON sf.id = c.facility_id
 			WHERE c.period_begin = '$period' 
-			and c.code != 'D-CDRR'
-			AND c.facility_id !=$facility_id
+			AND c.code = 'F-CDRR_units'
+			AND sf.category = 'satellite'
+			AND sf.parent_id = '$facility_id'
 			group by drug_id";
 
 			$query = $this->db->query($sql);
@@ -3424,10 +3431,6 @@ public function getPeriodRegimenPatients($from, $to) {
 					}
 				}
 			}
-
-		}
-		else {
-	// no dcdrr for period
 		}
 	}
 
