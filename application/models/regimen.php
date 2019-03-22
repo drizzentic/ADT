@@ -117,7 +117,7 @@ class Regimen extends Doctrine_Record {
 	}
 
 	public function getChildRegimens(){
-		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> where("(r.Category LIKE '%paed%' OR r.Category LIKE '%child%'  OR r.Category LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
+		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> where("(r.Category LIKE '%paed%' OR r.Category LIKE '%ped%' OR r.Category LIKE '%child%'  OR r.Category LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
 		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $regimens;
 	}
