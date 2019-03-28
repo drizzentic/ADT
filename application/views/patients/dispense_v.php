@@ -2046,7 +2046,7 @@
                 var new_date = new Date(appointment);
                 var formatted_date_day = new_date.getDay();
                 var days_of_week = ["Sunday", "Monday", "Tuseday", "Wednesday", "Thursday", "Friday", "Saturday"];
-                if (formatted_date_day == 6 || formatted_date_day == 0) {
+                if (formatted_date_day == 6 ) {
                     bootbox.alert("<h4>Weekend Alert</h4>\n\<hr/><center>It will be on " + days_of_week[formatted_date_day] + " During the Weekend </center>");
                     if (parseInt(data[0].total_appointments) > parseInt(data[0].weekend_max)) {
                         bootbox.alert("<h4>Excess Appointments</h4>\n\<hr/><center>Maximum Appointments for Weekend Reached</center>");
