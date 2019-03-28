@@ -847,7 +847,16 @@ class Inventory_management extends MY_Controller {
             die;
         }
 
+        $six_months_ago_date = date('Y-m-d', strtotime('-6 month'));
         $data = array();
+        $sql = "SELECT p.id,pv.patient_id, first_name  ,last_name
+                                        FROM patient_visit pv ,patient p
+                                        where pv.patient_id = p.patient_number_ccc
+                                        and dispensing_date >= '$six_months_ago_date'
+                                        group by  p.id,pv.patient_id, p.first_name  ,p.last_name
+                                        ";
+        $patients = $this->db->query($sql);
+        $data['patients_arr'] = $patients->result_array();
         $content_view = 'adr_list_v';
         if ($record_no + 0 > 0) {
             $this->db->where('adr_form.id', $record_no);
