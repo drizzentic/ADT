@@ -58,6 +58,7 @@ $("#autobackup").val("<?php echo $facility['autobackup'];?>");
 $("#pill_count").val("<?php echo $facility['pill_count'];?>");
 $("#medical_number").val("<?php echo $facility['medical_number'];?>");
 $("#facility_dhis").val("<?php echo $facility['facility_dhis'];?>");
+$("#lost_to_follow_up").val("<?php echo $facility['lost_to_follow_up'];?>");
 
 });
 </script>
@@ -105,10 +106,10 @@ $("#facility_dhis").val("<?php echo $facility['facility_dhis'];?>");
 								<tr><td><strong class="label">Maximum Patients Per Weekend</strong></td>
 									<td><input type="text" name="weekend_max" id="weekend_max" class="input-small" value="<?php echo @$facility['weekend_max'];?>"></td>
 								</tr>
-										<!-- <tr><td><strong class="label">Lost to follow_up days</strong></td>
-								<td><input type="hidden" name="lost_to_follow_up" id="lost_to_follow_up" class="input-small" style="color:green" value="90" >
+								 <tr><td><strong class="label">Lost to follow_up days</strong></td>
+								<td><input name="lost_to_follow_up" id="lost_to_follow_up" class="input-small" style="color:green" value="90" >
 									</td>
-								</tr> -->
+								</tr>
 								<tr><td><strong class="label">Facility Type</strong></td>
 									<td><select class="input-xlarge" id="facility_type" name="facility_type">
 											<?php foreach($facility_types as $facility_type){?>

@@ -96,6 +96,7 @@ class Facility_Management extends MY_Controller {
 				      'county' => $this -> input -> post('county'), 
 				      'weekday_max' => $this -> input -> post('weekday_max'), 
 				      'weekend_max' => $this -> input -> post('weekend_max'),
+				      'lost_to_follow_up' => $this -> input -> post('lost_to_follow_up'),
 				      'supported_by' => $this -> input -> post('supported_by'),
 				      'phone' => $this -> input -> post('phone_number'), 
 				      'service_art' => $art_service, 
