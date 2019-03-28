@@ -2343,7 +2343,7 @@ public function getPeriodRegimenPatients($from, $to) {
 					AND t.code = '$filter'
 					AND sf.category = 'satellite'
 					AND t.period_begin = '$period_begin'
-					AND sf.parent_id IN (SELECT id FROM sync_facility WHERE code = '$facility_code' AND category = 'central'";
+					AND sf.parent_id IN (SELECT id FROM sync_facility WHERE code = '$facility_code' AND category = 'central')";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if($results){
