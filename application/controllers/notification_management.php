@@ -288,15 +288,12 @@ class Notification_management extends MY_Controller {
 					LEFT JOIN regimen r ON r.id=p.current_regimen
 					WHERE p.active = '1' 
 					AND ps.Name LIKE '%active%'
-					and (
-					p.patient_number_ccc NOT REGEXP  '(^[0-9]{5}-[0-9]{5})'
-					OR 
-					p.patient_number_ccc NOT REGEXP '(^[0-9]{5}-[0-9]{4}-[0-9]{5})'
-					OR 
-					p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{3}-[0-9]{4}-[0-9]{5})'
-					OR 
-					p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{4}-[0-9]{4}-[0-9]{5})'
-					)
+					AND  p.patient_number_ccc NOT REGEXP  '(^[0-9]{5}-[0-9]{5})'
+					AND p.patient_number_ccc NOT REGEXP '(^[0-9]{5}-[0-9]{4}-[0-9]{5})'
+					AND p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{3}-[0-9]{4}-[0-9]{5})'
+					AND p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{3}-[0-9]{5}-[0-9]{5})'
+					AND p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{4}-[0-9]{5}-[0-9]{5})'
+					
 					";
 
 		if($display_array==true){
