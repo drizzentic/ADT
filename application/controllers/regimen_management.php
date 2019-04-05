@@ -355,7 +355,7 @@ class Regimen_management extends MY_Controller {
 	}
 	
 	public function getFilteredRegiments(){
-		$age = $this ->input ->post("age");
+		$age = $this ->input ->post("age")+0;
 		$service = $this ->input ->post("service");
 		$regimens = "";
 		if($service =='prep' || $service =='pep'){
@@ -366,12 +366,12 @@ class Regimen_management extends MY_Controller {
 			if($age==''){
 				$regimens = Regimen::getRegimens();
 			}else{
-				if($age>=15){
-				//adult regimens
-					$regimens=Regimen::getAdultRegimens();
-				}else if($age<15){
+				if($age<15){
 				//paediatric regimens
 					$regimens=Regimen::getChildRegimens();
+				}else if($age>=15){
+				//adult regimens
+					$regimens=Regimen::getAdultRegimens();
 				}
 			}
 		}
