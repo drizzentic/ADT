@@ -1,6 +1,6 @@
 
 <div id="wrapperd">
-			
+	
 	<div id="patient_enrolled_content" class="full-content">
 		<?php $this->load->view("reports/reports_top_menus_v") ?>
 		<h4 style="text-align: center" id='report_title'>Listing of Active Patients Who Have Changed to second line Regimens In The Period Between <span class="green"><?php echo $from; ?></span> And <span class="green"><?php echo $to; ?></span></h4>
@@ -17,6 +17,7 @@
 					<th> To Regimen </th>
 					<th> ART No </th>
 					<th> Name </th>
+					<th> Gender </th>
 					<th> Service </th>
 					<th> Date of Change </th>
 					<th> Change Reason</th>
@@ -27,13 +28,22 @@
 			<tbody>
 				<?php 
 				foreach ($patients as $patient) {
-				?>
-				<tr><td><?php echo $patient['from_regimen']?></td><td><?php echo $patient['to_regimen']?></td><td><?php echo $patient['art_no']?></td><td><?php echo strtoupper($patient['full_name']);?></td><td><?php echo $patient['service_type']?></td><td><?php echo date('d-M-Y',strtotime($patient['dispensing_date']));?></td><td><?php echo $patient['regimen_change_reason']?></td><td><?php echo $patient['adherence']?></td><td><?php echo $patient['viral_load_test_results']?></td></tr>
-				<?php	
-				}
-				?>
-			</tbody>
-		</table>
-		
+					?>
+					<tr><td><?php echo $patient['from_regimen']?></td>
+						<td><?php echo $patient['to_regimen']?></td>
+						<td><?php echo $patient['art_no']?></td>
+						<td><?php echo strtoupper($patient['full_name']);?></td>
+						<td><?php echo strtoupper($patient['gender']);?></td>
+						<td><?php echo $patient['service_type']?></td>
+						<td><?php echo date('d-M-Y',strtotime($patient['dispensing_date']));?></td>
+						<td><?php echo $patient['regimen_change_reason']?></td>
+						<td><?php echo $patient['adherence']?></td>
+						<td><?php echo $patient['viral_load_test_results']?></td></tr>
+						<?php	
+					}
+					?>
+				</tbody>
+			</table>
+			
+		</div>
 	</div>
-</div>

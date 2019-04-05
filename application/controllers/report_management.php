@@ -6468,7 +6468,7 @@ class Report_management extends MY_Controller {
          * Get All active patients
          * Get Transactions of patients who visited in the selected period and changed regimens
          */
-        $sql = "SELECT CONCAT_WS(  ' | ', r2.regimen_code, r2.regimen_desc ) AS from_regimen, CONCAT_WS(  ' | ', r1.regimen_code, r1.regimen_desc ) AS to_regimen, p.patient_number_ccc AS art_no, CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name, pv.dispensing_date, rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason, (SELECT 
+        $sql = "SELECT CONCAT_WS(  ' | ', r2.regimen_code, r2.regimen_desc ) AS from_regimen, CONCAT_WS(  ' | ', r1.regimen_code, r1.regimen_desc ) AS to_regimen, p.patient_number_ccc AS art_no, CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name,g.name as gender, pv.dispensing_date, rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason, (SELECT 
                 patient_viral_load.result
             FROM
                 patient_viral_load
@@ -6485,6 +6485,7 @@ class Report_management extends MY_Controller {
         ORDER BY id DESC
         ) AS pv ON pv.patient_id = p.patient_number_ccc 
         LEFT JOIN regimen r1 ON r1.id = pv.regimen 
+        LEFT JOIN gender g ON g.id = p.gender 
         LEFT JOIN regimen r2 ON r2.id = pv.last_regimen 
         LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason 
         WHERE ps.Name LIKE  '%active%' 
@@ -6521,6 +6522,7 @@ class Report_management extends MY_Controller {
 		CONCAT(r2.regimen_code,' | ',r2.regimen_desc )as to_regimen,
 		p.patient_number_ccc AS art_no,
 		CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name, 
+        g.name as gender,
 		pv.dispensing_date,
 		 rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason ,
 		 (SELECT 
@@ -6536,6 +6538,7 @@ class Report_management extends MY_Controller {
 		left join regimen r1 on pv.last_regimen = r1.id
 		left join regimen r2 on pv.regimen = r2.id
 		left join patient p on p.patient_number_ccc = pv.patient_id
+        LEFT JOIN gender g ON g.id = p.gender 
 		LEFT JOIN regimen_service_type rst ON rst.id = p.service 
 				LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason  
 		where pv.last_regimen != pv.regimen
