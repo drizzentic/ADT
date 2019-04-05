@@ -4038,11 +4038,11 @@ class Report_management extends MY_Controller {
          $from = date('Y-m-d', strtotime($from));
          $to = date('Y-m-d', strtotime($to));
 
-        $sql = " SELECT p.patient_number_ccc as art_no, UPPER(p.first_name) as first_name, pss.name as source, UPPER(p.last_name) as last_name, UPPER(p.other_name)as other_name, FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, p.dob, p.weight, r.regimen_desc, r.regimen_code, p.start_regimen_date, t.name AS service_type, s.name AS supported_by, dr.drug, IF(p.gender=1,'Male','Female') as gender 
+        $sql = " SELECT p.patient_number_ccc as art_no, UPPER(p.first_name) as first_name, pss.name as source, UPPER(p.last_name) as last_name, UPPER(p.other_name)as other_name, FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age, p.dob, p.weight, r.regimen_desc, r.regimen_code, t.name AS service_type, s.name AS supported_by, dr.drug, IF(p.gender=1,'Male','Female') as gender 
                         FROM patient_visit pv
                         left join patient p ON p.patient_number_ccc = pv.patient_id  
                         LEFT JOIN patient_source pss on pss.id=p.source 
-                        LEFT JOIN regimen r ON p.start_regimen =r.id 
+                        LEFT JOIN regimen r ON p.current_regimen =r.id 
                         LEFT JOIN regimen_service_type t ON t.id = p.service 
                         LEFT JOIN supporter s ON s.id = p.supported_by 
                         LEFT JOIN drugcode dr ON pv.drug_id = dr.id 
@@ -4064,8 +4064,7 @@ class Report_management extends MY_Controller {
 	<th> Patient Name </th>
 	<th> Sex</th>
 	<th>Age</th>
-	<th> Start Regimen Date </th>
-	<th> Regimen </th>
+	<th> Current Regimen </th>
 	<th> Current Weight (Kg)</th>
 	<th> Source</th>
 	</tr>
@@ -4084,7 +4083,16 @@ class Report_management extends MY_Controller {
                 $regimen_desc = "<b>" . $result['regimen_code'] . "</b>|" . $result['regimen_desc'];
                 $weight = number_format($result['weight'], 2);
                 $source = $result['source'];
-                $row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$supported_by</td><td>$patient_name</td><td>$gender</td><td>$age</td><td>$start_regimen_date</td><td>$regimen_desc</td><td>$weight</td><td>$source</td></tr>";
+                $row_string .= "<tr>
+                <td>$patient_no</td>
+                <td>$service_type</td>
+                <td>$supported_by</td>
+                <td>$patient_name</td>
+                <td>$gender</td>
+                <td>$age</td>
+                <td>$regimen_desc</td>
+                <td>$weight</td>
+                <td>$source</td></tr>";
                 $overall_total++;
             }
         } else {
