@@ -14,7 +14,7 @@ class Order extends MY_Controller {
 		$this->facility_type = Facilities::getType($this->facility_code);
 		$this->user_id = $this -> session -> userdata('user_id');
 		$this->facility_dhis = $this->session->userdata('facility_dhis');
-		$this->dhis_url = 'https://hiskenya.org/';
+		$this->dhis_url = 'https://test.hiskenya.org/';
 	}
 
 	private function setFacilityType($type){
@@ -173,7 +173,6 @@ class Order extends MY_Controller {
 
 	public function get_dhis_data($period_filter){
 		$message = '';
-		
 		if ($this->facility_type == 0) { //Satellite Site
 			$message .= $this->get_dhis('fcdrr', $period_filter, 'F-CDRR_units')['fcdrr']['message'];
 			$message .= $this->get_dhis('fmaps', $period_filter, 'F-MAPS')['fmaps']['message'];
@@ -2821,7 +2820,14 @@ public function getPeriodRegimenPatients($from, $to) {
 			# code...
 			$results = Cdrr::getCdrr($order_id)[0];
 			$results['item'] = Cdrr_Item::getDhisItem($order_id);
-			$dhis_org = $this->session->userdata('dhis_org');
+
+			$query = $this->db->get_where('sync_facility', array(
+				'id' =>  $results['facility_id']
+			));
+
+			$dhis_org = $query->result_array()[0]['dhiscode'];
+
+			// facility_id
 			$dataValues = array();
 			foreach ($results['item'] as $key => $item) {
 				if ($item['dhis_code'] ==NULL){continue;}
@@ -2848,8 +2854,9 @@ public function getPeriodRegimenPatients($from, $to) {
 				'dataValues' => $dataValues
 			);
 			$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
-			$resource = 'api/dataValueSets';
+			$resource = 'api/dataValueSets?skipExistingCheck=true&datasetAllowsPeriods=true&dryRun=false';
 			$result = $this->sendRequest($resource,'POST',$dhismessage,$dhis_auth);
+			// echo json_encode($dhismessage, JSON_PRETTY_PRINT).'<br />';echo $resource.'<br/>';var_dump($result);die;
 
 		}
 	}
@@ -3360,13 +3367,15 @@ public function getPeriodRegimenPatients($from, $to) {
 
 		// return ADT object whether regimen,drug,facility, 
 		if ($object == 'facility'){
-
+			$sql = "SELECT * FROM sync_facility where id = '$dhiscode'";
+			$result = $this->db->query($sql)->result_array()[0]['id'];
 		}
-		if ($object == 'drug'){
+
+		else if ($object == 'drug'){
 			$sql = "SELECT * FROM dhis_elements de inner join sync_drug d on de.target_id = d.id WHERE de.dhis_code = '$dhiscode'";
 			$result = $this->db->query($sql)->result_array()[0]['id'];
 		}
-		if ($object == 'regimen'){
+		else if ($object == 'regimen'){
 			$sql = "SELECT * FROM dhis_elements de inner join sync_regimen r on de.target_id = r.id WHERE de.dhis_code = '$dhiscode'";		
 			$result = $this->db->query($sql)->result_array()[0]['id'];
 		}
