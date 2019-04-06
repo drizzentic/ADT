@@ -41,8 +41,17 @@ foreach($results as $result){
 	    		var patient_no=$("#patient_number").val();
 				// -- do regex check on patient ccc number 
 				var CCC_check = new RegExp('^[0-9]{5}-[0-9]{5}');
-				if(!CCC_check.test(patient_no)){
-					bootbox.alert("<h4>CCC Wrong format</h4>\n\<hr/><center>Please use 10 digit recommended format for CCC. {mfl}-{ccc} e.g <?=$facility_code;?>-00001</center>");
+				var CCC_check_PREP = new RegExp('^PREP-[0-9]{5}-[0-9]{5}');
+				var CCC_check_PEP  = new RegExp('^PEP-[0-9]{5}-[0-9]{5}');
+				var CCC_check_HEI = new RegExp('^[0-9]{5}-<?=date('Y')?>-[0-9]{5}');
+
+				if(!CCC_check.test(patient_no) && !CCC_check_PREP.test(patient_no) && !CCC_check_PEP.test(patient_no) && !CCC_check_HEI.test(patient_no) ){
+					bootbox.alert("<h4>Wrong CCC format</h4>\n\<hr/>Please Note recommended format \
+					<br /><b> ART</b> : {mfl}-{ccc} e.g <b> <?=$facility_code;?>-00001 </b> \
+					<br /><b> PREP</b>: PREP-{mfl}-{ccc} e.g <b> PREP-<?=$facility_code;?>-00001 </b> \
+					<br /><b> PEP</b>:  PEP-{mfl}-{ccc} e.g <b> PEP-<?=$facility_code;?>-00001 </b> \
+					<br /><b> HEI</b>:  {mfl}-{year}-{ccc} e.g <b> <?=$facility_code.'-'.date('Y');?>-00001 </b> \
+						");
 					$(".btn").attr("disabled","disabled");
 				} else{
 					$(".btn").attr("disabled",false);
