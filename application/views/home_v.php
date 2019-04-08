@@ -62,13 +62,13 @@ $(document).ready(function() {
       var location=2;
       $('h3 .btn-danger').hide();
     
-      //Get Today's Date and Upto Saturday
+      //Get Today's Date and Upto Sunday
       var someDate = new Date();
       var dd = ("0" + someDate.getDate()).slice(-2);
       var m = ("0" + (someDate.getMonth() + 1)).slice(-2);
       var y = someDate.getFullYear();
       var fromDate="<?php echo $monday = date('d-M-Y',strtotime('monday this week'));?>";  
-      var endDate="<?php echo $saturday = date('d-M-Y',strtotime('saturday this week')); ?>";
+      var endDate="<?php echo $sunday = date('d-M-Y',strtotime('sunday this week')); ?>";
       
       $("#enrollment_start").val(fromDate);
       $("#enrollment_end").val(endDate);

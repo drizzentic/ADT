@@ -64,7 +64,7 @@ class Facilitydashboard_Management extends MY_Controller {
 		$timestamp = time();
 		$edate = date('Y-m-d', $timestamp);
 		$dates = array();
-		$x = 6;
+		$x = 7;
 		$y = 0;
 		$resultArraySize = 0;
 		$days_in_year = date("z", mktime(0, 0, 0, 12, 31, date('Y'))) + 1;
@@ -74,15 +74,14 @@ class Facilitydashboard_Management extends MY_Controller {
 		//If no parameters are passed, get enrolled patients for the past 7 days
 		if ($startdate == "" || $enddate == "") {
 			for ($i = 0; $i < $x; $i++) {
-				if (date("D", $timestamp) != "Sun") {
+				// if (date("D", $timestamp) != "Sun") {
 					$sdate = date('Y-m-d', $timestamp);
 					//Store the days in an array
 					$dates[$y] = $sdate;
 					$y++;
-				}
+				// }
 				//If sunday is included, add one more day
-				else {$x = 8;
-				}
+				// else {$x = 8;}
 				$timestamp += 24 * 3600;
 			}
 			$start_date = $sdate;
@@ -90,16 +89,15 @@ class Facilitydashboard_Management extends MY_Controller {
 		} else {
 			$startdate = strtotime($startdate);
 			for ($i = 0; $i < $x; $i++) {
-				if (date("D", $startdate) != "Sun") {
+				// if (date("D", $startdate) != "Sun") {
 					$sdate = date('Y-m-d', $startdate);
 					//Store the days in an array
 
 					$dates[$y] = $sdate;
 					$y++;
-				}
+				// }
 				//If sunday is included, add one more day
-				else {$x = 8;
-				}
+				// else {$x = 8;}
 				$startdate += 24 * 3600;
 			}
 			$start_date = $startdate;
@@ -148,7 +146,7 @@ class Facilitydashboard_Management extends MY_Controller {
 		}
 
 		$resultArraySize = 6;
-		$categories = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+		$categories = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday');
 		foreach ($patients_array as $key => $value) {
 			$maleAdult[] = (int)$value['Adult Male'];
 			$femaleAdult[] = (int)$value['Adult Female'];
@@ -178,23 +176,22 @@ class Facilitydashboard_Management extends MY_Controller {
 		$timestamp = time();
 		$edate = date('Y-m-d', $timestamp);
 		$dates = array();
-		$x = 6;
+		$x = 7;
 		$y = 0;
 		$missed = array();
 		$visited = array();
 
 		//If no parameters are passed, get enrolled patients for the past 7 days
 		if ($startdate == "" || $enddate == "") {
-			for ($i = 0; $i < $x; $i++) {
-				if (date("D", $timestamp) != "Sun") {
+			// for ($i = 0; $i < $x; $i++) {
+				if (1) {
 					$sdate = date('Y-m-d', $timestamp);
 					//Store the days in an array
 					$dates[$y] = $sdate;
 					$y++;
-				}
+				// }
 				//If sunday is included, add one more day
-				else {$x = 8;
-				}
+				// else {$x = 8;}
 				$timestamp += 24 * 3600;
 			}
 			$start_date = $sdate;
@@ -202,16 +199,15 @@ class Facilitydashboard_Management extends MY_Controller {
 		} else {
 			$startdate = strtotime($startdate);
 			for ($i = 0; $i < $x; $i++) {
-				if (date("D", $startdate) != "Sun") {
+				// if (1) {
 					$sdate = date('Y-m-d', $startdate);
 					//Store the days in an array
 
 					$dates[$y] = $sdate;
 					$y++;
-				}
+				// }
 				//If sunday is included, add one more day
-				else {$x = 8;
-				}
+				// else {$x = 8;}
 				$startdate += 24 * 3600;
 			}
 			$start_date = $startdate;
@@ -286,7 +282,7 @@ class Facilitydashboard_Management extends MY_Controller {
 
 			}
 		}
-		$categories = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+		$categories = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
 		$resultArray = array( array('name' => 'Visited', 'data' => $visited), array('name' => 'Expected', 'data' => $missed));
 		$resultArray = json_encode($resultArray);
 		$categories = json_encode($categories);
