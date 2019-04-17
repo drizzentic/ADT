@@ -3585,7 +3585,7 @@ class Report_management extends MY_Controller {
     start_date,
     end_date,
     dxr.name as exit_reason,
-    (select result from patient_viral_load where patient_ccc_number= p.patient_number_ccc )as   viral_load_test_results,
+    (select result from patient_viral_load where patient_ccc_number= p.patient_number_ccc order by test_date desc limit 1 )as   viral_load_test_results,
     ps.Name as current_status
     FROM patient p 
     left join dcm_change_log dcl on dcl.patient = p.patient_number_ccc
@@ -3595,6 +3595,7 @@ class Report_management extends MY_Controller {
     left join regimen_service_type rs on rs.id = p.service 
     left join gender g on p.gender = g.id
     WHERE dcl.start_date >='$start_date'  AND dcl.start_date < '$end_date' 
+    group by ccc_number
 	";
     // echo $sql;die;
         $query = $this->db->query($sql);
