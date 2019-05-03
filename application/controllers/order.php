@@ -14,7 +14,8 @@ class Order extends MY_Controller {
 		$this->facility_type = Facilities::getType($this->facility_code);
 		$this->user_id = $this -> session -> userdata('user_id');
 		$this->facility_dhis = $this->session->userdata('facility_dhis');
-		$this->dhis_url = 'https://test.hiskenya.org/';
+		$this->dhis_url = 'https://hiskenya.org/';
+		$this->dhis_url = 'https://test.hiskenya.org/kenya/';
 	}
 
 	private function setFacilityType($type){
@@ -2797,19 +2798,35 @@ public function getPeriodRegimenPatients($from, $to) {
 		if ($order_type == 'maps') {
 			# code...
 			$results = Maps::getMap($order_id)[0];
-			$results['item'] = Maps_Item::getDhisItem($order_id);
+				$code = '';
+
+			switch ($this->facility_type) {
+				case 0:
+				$code = 'MoH 729a';
+
+				case  1:
+				$code = 'MoH 729a';
+				
+				default:
+				$code = 'MoH 729B';
+				break;
+			}
+
+			$results['item'] = Maps_Item::getDhisItem($order_id,$code);
 			$dhis_org = $this->session->userdata('dhis_org');
 			$dataValues = array();
 			foreach ($results['item'] as $key => $item) {
 				if ($item['dhis_code'] ==NULL){continue;}
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'NhSoXUMPK2K', 'value' =>$item['total'],'comment'=>'N/A'));
+				if ($item['total']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'NhSoXUMPK2K', 'value' =>$item['total']));
+				}
 			}
 			$dhismessage = array(
 				'dataSet'=> 'mgaZyW3Xzyf',
 				'completeDate' => date('Y-m-d',strtotime($results['updated'])),
 				'period' => date('Ym',strtotime($results['period_begin'])),
 				'orgUnit'=> $dhis_org,
-				'attributeOptionCombo'=> "NhSoXUMPK2K",
+				// 'attributeOptionCombo'=> "NhSoXUMPK2K",
 				'dataValues' => $dataValues
 			);
 			$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
@@ -2817,9 +2834,25 @@ public function getPeriodRegimenPatients($from, $to) {
 			$reports = $this->sendRequest($resource,'POST',$dhismessage,$dhis_auth);
 		}
 		else if ($order_type = 'cdrr'){
-			# code...
 			$results = Cdrr::getCdrr($order_id)[0];
-			$results['item'] = Cdrr_Item::getDhisItem($order_id);
+			$code = '';
+
+			switch ($this->facility_type) {
+				case 0:
+				$code = 'MoH 729a';
+
+				case  1:
+				$code = 'MoH 730a';
+				
+				default:
+				$code = 'MoH 730B';
+				break;
+			}
+
+			$results['item'] = Cdrr_Item::getDhisItem($order_id,$code);
+			// var_dump($results['item']);die;
+			$dhis_org = $this->session->userdata('dhis_org');
+
 
 			$query = $this->db->get_where('sync_facility', array(
 				'id' =>  $results['facility_id']
@@ -2831,18 +2864,42 @@ public function getPeriodRegimenPatients($from, $to) {
 			$dataValues = array();
 			foreach ($results['item'] as $key => $item) {
 				if ($item['dhis_code'] ==NULL){continue;}
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'jWmWT3Nvq1P', 'value' =>$item['balance'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'XmKrTgYAPoi', 'value' =>$item['received'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'yP6vevc91WZ', 'value' =>$item['dispensed_packs'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'b11dZBeBzRE', 'value' =>$item['losses'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'LeyPc0LYjLg', 'value' =>$item['adjustments'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'O9yaDegYywr', 'value' =>$item['adjustments_neg'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'GvjV9gy3OOc', 'value' =>$item['count'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'r9aTy1gRXUC', 'value' =>$item['expiry_quant'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'hOMc7AVsdRk', 'value' =>$item['expiry_date'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'aDZLiIaG8gC', 'value' =>$item['out_of_stock'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'R4B7KIT1mch', 'value' =>$item['resupply'],'comment'=>'N/A'));
-				array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'NhSoXUMPK2K', 'value' =>$item['count'],'comment'=>'N/A'));
+				if ($item['balance']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'jWmWT3Nvq1P', 'value' =>$item['balance']));
+				}
+				if ($item['received']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'XmKrTgYAPoi', 'value' =>$item['received']));
+				}
+				if ($item['dispensed_packs']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'yP6vevc91WZ', 'value' =>$item['dispensed_packs']));
+				}
+				if ($item['losses']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'b11dZBeBzRE', 'value' =>$item['losses']));
+				}
+				if ($item['adjustments']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'LeyPc0LYjLg', 'value' =>$item['adjustments']));
+				}
+				if ($item['adjustments_neg']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'O9yaDegYywr', 'value' =>$item['adjustments_neg']));
+				}
+				if ($item['count']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'GvjV9gy3OOc', 'value' =>$item['count']));
+				}
+				if ($item['expiry_quant']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'r9aTy1gRXUC', 'value' =>$item['expiry_quant']));
+				}
+				if ($item['expiry_date']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'hOMc7AVsdRk', 'value' =>$item['expiry_date']));
+				}
+				if ($item['out_of_stock']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'aDZLiIaG8gC', 'value' =>$item['out_of_stock']));
+				}
+				if ($item['resupply']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'R4B7KIT1mch', 'value' =>$item['resupply']));
+				}
+				if ($item['count']!==null){
+					array_push($dataValues, array('dataElement' =>$item['dhis_code'],'categoryOptionCombo' =>'NhSoXUMPK2K', 'value' =>$item['count']));
+				}
 
 			}
 			$dhismessage = array(
@@ -2854,7 +2911,8 @@ public function getPeriodRegimenPatients($from, $to) {
 				'dataValues' => $dataValues
 			);
 			$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
-			$resource = 'api/dataValueSets?skipExistingCheck=true&datasetAllowsPeriods=true&dryRun=false';
+			// $dhis_auth = 'Thikalevel5ccc:Judy-2018';
+			$resource = 'api/27/dataValueSets?dataElementIdScheme=UID&orgUnitIdScheme=UID&importStrategy=CREATE_AND_UPDATE&dryRun=false&datasetAllowsPeriods=true&strictOrganisationUnits=true&strictPeriods=true&skipExistingCheck=false';
 			$result = $this->sendRequest($resource,'POST',$dhismessage,$dhis_auth);
 			// echo json_encode($dhismessage, JSON_PRETTY_PRINT).'<br />';echo $resource.'<br/>';var_dump($result);die;
 
