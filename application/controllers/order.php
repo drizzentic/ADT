@@ -14,8 +14,8 @@ class Order extends MY_Controller {
 		$this->facility_type = Facilities::getType($this->facility_code);
 		$this->user_id = $this -> session -> userdata('user_id');
 		$this->facility_dhis = $this->session->userdata('facility_dhis');
-		$this->dhis_url = 'https://hiskenya.org/';
 		$this->dhis_url = 'https://test.hiskenya.org/kenya/';
+		$this->dhis_url = 'https://hiskenya.org/';
 	}
 
 	private function setFacilityType($type){
@@ -2811,7 +2811,6 @@ public function getPeriodRegimenPatients($from, $to) {
 				$code = 'MoH 729B';
 				break;
 			}
-
 			$results['item'] = Maps_Item::getDhisItem($order_id,$code);
 			$dhis_org = $this->session->userdata('dhis_org');
 			$dataValues = array();
@@ -2830,7 +2829,7 @@ public function getPeriodRegimenPatients($from, $to) {
 				'dataValues' => $dataValues
 			);
 			$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
-			$resource = 'api/dataValueSets';
+			$resource = 'api/27/dataValueSets?dataElementIdScheme=UID&orgUnitIdScheme=UID&importStrategy=CREATE_AND_UPDATE&dryRun=false&datasetAllowsPeriods=true&strictOrganisationUnits=true&strictPeriods=true&skipExistingCheck=false';
 			$reports = $this->sendRequest($resource,'POST',$dhismessage,$dhis_auth);
 		}
 		else if ($order_type = 'cdrr'){
@@ -2850,7 +2849,6 @@ public function getPeriodRegimenPatients($from, $to) {
 			}
 
 			$results['item'] = Cdrr_Item::getDhisItem($order_id,$code);
-			// var_dump($results['item']);die;
 			$dhis_org = $this->session->userdata('dhis_org');
 
 
