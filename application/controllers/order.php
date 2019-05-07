@@ -2799,6 +2799,11 @@ public function getPeriodRegimenPatients($from, $to) {
 			# code...
 			$results = Maps::getMap($order_id)[0];
 				$code = '';
+				$query = $this->db->get_where('sync_facility', array(
+				'id' =>  $results['facility_id']
+			));
+
+			$dhis_org = $query->result_array()[0]['dhiscode'];
 
 			switch ($this->facility_type) {
 				case 0:
@@ -2812,7 +2817,6 @@ public function getPeriodRegimenPatients($from, $to) {
 				break;
 			}
 			$results['item'] = Maps_Item::getDhisItem($order_id,$code);
-			$dhis_org = $this->session->userdata('dhis_org');
 			$dataValues = array();
 			foreach ($results['item'] as $key => $item) {
 				if ($item['dhis_code'] ==NULL){continue;}
@@ -2831,6 +2835,7 @@ public function getPeriodRegimenPatients($from, $to) {
 			$dhis_auth = $this->session->userdata('dhis_user').':'.$this->session->userdata('dhis_pass');
 			$resource = 'api/27/dataValueSets?dataElementIdScheme=UID&orgUnitIdScheme=UID&importStrategy=CREATE_AND_UPDATE&dryRun=false&datasetAllowsPeriods=true&strictOrganisationUnits=true&strictPeriods=true&skipExistingCheck=false';
 			$reports = $this->sendRequest($resource,'POST',$dhismessage,$dhis_auth);
+			// echo json_encode($dhismessage, JSON_PRETTY_PRINT).'<br />';echo $resource.'<br/>';var_dump($reports);die;
 		}
 		else if ($order_type = 'cdrr'){
 			$results = Cdrr::getCdrr($order_id)[0];
