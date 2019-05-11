@@ -29,7 +29,7 @@
 	        "bDestroy": true,
 	        "sDom": '<"H"Tfr>t<"F"ip>',
 					"oTableTools": {
-						"sSwfPath": base_url+"assets/scripts/datatable/copy_csv_xls_pdf.swf",
+						"sSwfPath": "<?= base_url();?>assets/scripts/datatable/copy_csv_xls_pdf.swf",
 						"aButtons": [ "copy", "print","xls","pdf" ]
 					},
 	       "aoColumnDefs": [
