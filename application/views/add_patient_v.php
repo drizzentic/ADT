@@ -202,7 +202,13 @@
 				} else {
 					$("#patient_source_listing").hide();
 					$("#transfer_source").attr("value",'');
+				$('#patient_number').val('<?= $facility_code?>-');
 				}
+			});
+
+			$("#transfer_source").change(function() {
+				var selected_value = $(this).val();
+				$('#patient_number').val(selected_value+'-');
 			});
 			
 
@@ -614,6 +620,28 @@
 							Patient Information &amp; Demographics
 						</legend>
 						<div class="max-row">
+								<label><span class='astericks'>*</span>Source of Patient</label>
+								<select name="source" id="source" class="validate[required]">
+									<option value="">--Select--</option>
+									<?php
+									foreach($sources as $source){
+										echo "<option value='".$source['id']."'>".$source['Name']."</option>";	
+									}
+									?>	
+								</select>
+							</div>
+							<div id="patient_source_listing" class="max-row" style="display:none;">
+								<label> Transfer From</label>
+								<select name="transfer_source" id="transfer_source" style="width:200px;">
+									<option value="">--Select--</option>
+									<?php
+									foreach($facilities as $facility){
+										echo "<option value='".$facility['facilitycode']."'>".$facility['name']."</option>";
+									}
+									?>		
+								</select>
+							</div>
+						<div class="max-row">
 							<div class="mid-row">
 								<label> Medical Record No.</label>
 								<input type="text" name="medical_record_number" id="medical_record_number" value="">
@@ -932,29 +960,6 @@
 										}
 									}
 									?>	
-								</select>
-							</div>
-
-							<div class="max-row">
-								<label><span class='astericks'>*</span>Source of Patient</label>
-								<select name="source" id="source" class="validate[required]">
-									<option value="">--Select--</option>
-									<?php
-									foreach($sources as $source){
-										echo "<option value='".$source['id']."'>".$source['Name']."</option>";	
-									}
-									?>	
-								</select>
-							</div>
-							<div id="patient_source_listing" class="max-row" style="display:none;">
-								<label> Transfer From</label>
-								<select name="transfer_source" id="transfer_source" style="width:200px;">
-									<option value="">--Select--</option>
-									<?php
-									foreach($facilities as $facility){
-										echo "<option value='".$facility['facilitycode']."'>".$facility['name']."</option>";
-									}
-									?>		
 								</select>
 							</div>
 							<div class="max-row">
