@@ -23,9 +23,22 @@
 
 	</style>
 	<script type="text/javascript">
+			function setCCC(service) {
+				if (service=='ART'){
+					$('#patient_number').val('<?=$facility_code;?>-');
+				}
+				if (service=='PREP'){
+					$('#patient_number').val('PREP-<?=$facility_code;?>-');
+				}
+				if (service=='PEP'){
+					$('#patient_number').val('PEP-<?=$facility_code;?>-');
+				}
+
+				if (service=='HEI'){
+					$('#patient_number').val('<?=$facility_code.'-'.date('Y');?>-');
+				}			
+			}
 		$(document).ready(function(){
-
-
 
 			//Function to Check Patient Number exists
 			var base_url="<?php echo base_url();?>";
@@ -640,6 +653,9 @@
 									}
 									?>		
 								</select>
+							</div>
+							<div class="max-row">
+								<a href="javascript:;;" onclick="setCCC('ART')">ART</a> | <a href="javascript:;;" onclick="setCCC('PREP')">PREP</a> | <a href="javascript:;;" onclick="setCCC('HEI')">HEI</a> | <a href="javascript:;;" onclick="setCCC('PEP')">PEP</a>
 							</div>
 						<div class="max-row">
 							<div class="mid-row">
