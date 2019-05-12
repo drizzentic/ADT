@@ -1,0 +1,1 @@
+ALTER TABLE facilities ADD ccc_separator char(2) NULL//

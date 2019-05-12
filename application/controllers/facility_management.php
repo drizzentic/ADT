@@ -90,6 +90,7 @@ class Facility_Management extends MY_Controller {
 			$data = array(
 				      'facilitycode' => $this -> input -> post('facility_cod'),
 				      'name' => $this -> input -> post('facility_name'), 
+				      'ccc_separator' => $this -> input -> post('ccc_separator'), 
 				      'adult_age' => $this -> input -> post('adult_age'), 
 				      'facilitytype' => $this -> input -> post('facility_type'), 
 				      'district' => $this -> input -> post('district'), 

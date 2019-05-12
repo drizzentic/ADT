@@ -85,6 +85,11 @@ class Notification_management extends MY_Controller {
 		$overall_total = 0;
 		$error_array = array();
 
+        $data['facility_code'] = $this->session->userdata('facility');
+        $query = "SELECT * FROM Facilities where facilitycode=".$data['facility_code'];
+        $query = $this->db->query($query);
+        $cs = $query->result_array()[0]['ccc_separator'];
+
 		/*Patients without Gender*/
 		$sql['Patients without Gender'] = "SELECT p.patient_number_ccc,
 		                                          p.gender,
@@ -288,12 +293,11 @@ class Notification_management extends MY_Controller {
 					LEFT JOIN regimen r ON r.id=p.current_regimen
 					WHERE p.active = '1' 
 					AND ps.Name LIKE '%active%'
-					AND  p.patient_number_ccc NOT REGEXP  '(^[0-9]{5}-[0-9]{5})'
-					AND p.patient_number_ccc NOT REGEXP '(^[0-9]{5}-[0-9]{4}-[0-9]{5})'
-					AND p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{3}-[0-9]{4}-[0-9]{5})'
-					AND p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{3}-[0-9]{5}-[0-9]{5})'
-					AND p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{4}-[0-9]{5}-[0-9]{5})'
-					
+					AND  p.patient_number_ccc NOT REGEXP  '(^[0-9]{5}".$cs."[0-9]{5})'
+					AND p.patient_number_ccc NOT REGEXP '(^[0-9]{5}".$cs."[0-9]{4}".$cs."[0-9]{5})'
+					AND p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{3}".$cs."[0-9]{4}".$cs."[0-9]{5})'
+					AND p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{3}".$cs."[0-9]{5}".$cs."[0-9]{5})'
+					AND p.patient_number_ccc NOT REGEXP '(^[a-zA-Z]{4}".$cs."[0-9]{5}".$cs."[0-9]{5})'					
 					";
 
 		if($display_array==true){
@@ -318,9 +322,6 @@ class Notification_management extends MY_Controller {
 				$temp = "<li><a href='" . $temp_link . "'><i class='icon-th'></i>Errors <div class='badge badge-important'>" . $overall_total . "</div></a><li>";
 			}
 			echo $temp;
-
-
-
 		}	
 													
 	}

@@ -92,6 +92,10 @@ $("#lost_to_follow_up").val("<?php echo $facility['lost_to_follow_up'];?>");
 										
 									</td>
 								</tr>
+								<tr><td><strong class="label">CCC Number Separator</strong></td>
+									<td><input type="text" name="ccc_separator" id="ccc_separator" class="input-xlarge span12" style="color:green" value="<?php echo @$facility['ccc_separator'];?>" >
+									</td>
+								</tr>
 								<tr><td><strong class="label">Name of Organization / System</strong></td>
 									<td><input type="text" name="facility_name" id="facility_name" class="input-xlarge span12" style="color:green" value="<?php echo @$facility['name'];?>" >
 									</td>

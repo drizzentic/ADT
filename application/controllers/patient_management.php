@@ -92,6 +92,9 @@ class Patient_management extends MY_Controller {
     public function addpatient_show() {
         $data = array();
         $data['facility_code'] = $this->session->userdata('facility');
+        $sql = "SELECT * FROM Facilities where facilitycode=".$data['facility_code'];
+        $query = $this->db->query($sql);
+        $data['cs'] = $query->result_array()[0]['ccc_separator'];
         $data['districts'] = District::getPOB();
         $data['genders'] = Gender::getAll();
         $data['statuses'] = Patient_Status::getStatus();
@@ -456,16 +459,21 @@ class Patient_management extends MY_Controller {
                        WHERE p.id = ?
                        GROUP BY p.id";
         $query = $this->db->query($sql, array($record_no, $record_no));
-        //echo $this->db->last_query();die();
         $results = $query->result_array();
-        /* echo '<pre>';
-          print_r($results);
-          echo '</pre>';die(); */
+
+
         if ($results) {
             $results[0]['other_illnesses'] = $this->extract_illness($results[0]['other_illnesses']);
             $data['results'] = $results;
         }
+
         $data['facility_code'] = $this->session->userdata('facility');
+                $data['facility_code'] = $this->session->userdata('facility');
+        $sql = "SELECT * FROM Facilities where facilitycode=".$data['facility_code'];
+        $query = $this->db->query($sql);
+        $data['cs'] = $query->result_array()[0]['ccc_separator'];
+
+        
         $data['record_no'] = $record_no;
         $data['facility_adult_age'] = $this->getFacililtyAge();
         $data['districts'] = District::getPOB();

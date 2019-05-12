@@ -25,17 +25,17 @@
 	<script type="text/javascript">
 			function setCCC(service) {
 				if (service=='ART'){
-					$('#patient_number').val('<?=$facility_code;?>-');
+					$('#patient_number').val('<?=$facility_code. $cs;?>');
 				}
 				if (service=='PREP'){
-					$('#patient_number').val('PREP-<?=$facility_code;?>-');
+					$('#patient_number').val('PREP<?=$cs.$facility_code. $cs;?>');
 				}
 				if (service=='PEP'){
-					$('#patient_number').val('PEP-<?=$facility_code;?>-');
+					$('#patient_number').val('PEP<?=$cs.$facility_code. $cs;?>');
 				}
 
 				if (service=='HEI'){
-					$('#patient_number').val('<?=$facility_code.'-'.date('Y');?>-');
+					$('#patient_number').val('<?=$facility_code. $cs.date('Y').$cs;?>');
 				}			
 			}
 		$(document).ready(function(){
@@ -48,17 +48,17 @@
 			$("#patient_number").change(function(){
 				var patient_no=$("#patient_number").val();
 				// -- do regex check on patient ccc number 
-				var CCC_check = new RegExp('^[0-9]{5}-[0-9]{5}');
-				var CCC_check_PREP = new RegExp('^PREP-[0-9]{5}-[0-9]{5}');
-				var CCC_check_PEP  = new RegExp('^PEP-[0-9]{5}-[0-9]{5}');
-				var CCC_check_HEI = new RegExp('^[0-9]{5}-<?=date('Y')?>-[0-9]{5}');
+				var CCC_check = new RegExp('^[0-9]{5}<?=$cs?>[0-9]{5}');
+				var CCC_check_PREP = new RegExp('^PREP-[0-9]{5}<?=$cs?>[0-9]{5}');
+				var CCC_check_PEP  = new RegExp('^PEP-[0-9]{5}<?=$cs?>[0-9]{5}');
+				var CCC_check_HEI = new RegExp('^[0-9]{5}<?=$cs?><?=date('Y')?>-[0-9]{5}');
 
 				if(!CCC_check.test(patient_no) && !CCC_check_PREP.test(patient_no) && !CCC_check_PEP.test(patient_no) && !CCC_check_HEI.test(patient_no) ){
 					bootbox.alert("<h4>Wrong CCC format</h4>\n\<hr/>Please Note recommended format \
-					<br /><b> ART</b> : {mfl}-{ccc} e.g <b> <?=$facility_code;?>-00001 </b> \
-					<br /><b> PREP</b>: PREP-{mfl}-{ccc} e.g <b> PREP-<?=$facility_code;?>-00001 </b> \
-					<br /><b> PEP</b>:  PEP-{mfl}-{ccc} e.g <b> PEP-<?=$facility_code;?>-00001 </b> \
-					<br /><b> HEI</b>:  {mfl}-{year}-{ccc} e.g <b> <?=$facility_code.'-'.date('Y');?>-00001 </b> \
+					<br /><b> ART</b> : {mfl}<?=$cs?>{ccc} e.g <b> <?=$facility_code;?><?=$cs;?>00001 </b> \
+					<br /><b> PREP</b>: PREP-{mfl}<?=$cs?>{ccc} e.g <b> PREP<?=$cs.$facility_code;?><?=$cs;?>00001 </b> \
+					<br /><b> PEP</b>:  PEP-{mfl}<?=$cs?>{ccc} e.g <b> PEP<?=$cs.$facility_code;?><?=$cs;?>00001 </b> \
+					<br /><b> HEI</b>:  {mfl}<?=$cs?>{year}<?=$cs?>{ccc} e.g <b> <?=$facility_code.$cs.date('Y');?><?=$cs;?>00001 </b> \
 						");
 					$(".btn").attr("disabled","disabled");
 				} else{
@@ -215,7 +215,7 @@
 				} else {
 					$("#patient_source_listing").hide();
 					$("#transfer_source").attr("value",'');
-				$('#patient_number').val('<?= $facility_code?>-');
+				$('#patient_number').val('<?= $facility_code.$cs;?>');
 				}
 			});
 
@@ -664,7 +664,7 @@
 							</div>
 							<div class="mid-row">
 								<label> <span class='astericks'>*</span>Patient Number CCC </label>
-								<input type="text"name="patient_number" id="patient_number" class="validate[required]" value="<?=$facility_code?>-" maxlength="17">
+								<input type="text"name="patient_number" id="patient_number" class="validate[required]" value="<?=$facility_code.$cs?>" maxlength="17">
 							</div>
 						</div>
 						<div class="max-row">
