@@ -32,6 +32,21 @@ foreach($results as $result){
 
 	</style>
 	<script type="text/javascript">
+			function setCCC(service) {
+				if (service=='ART'){
+					$('#patient_number').val('<?=$facility_code. $cs;?>');
+				}
+				if (service=='PREP'){
+					$('#patient_number').val('PREP<?=$cs.$facility_code. $cs;?>');
+				}
+				if (service=='PEP'){
+					$('#patient_number').val('PEP<?=$cs.$facility_code. $cs;?>');
+				}
+
+				if (service=='HEI'){
+					$('#patient_number').val('<?=$facility_code. $cs.date('Y').$cs;?>');
+				}			
+			}
 		$(document).ready(function() {
 			var facilityAdultAge = parseInt(<?php echo $facility_adult_age;?>)
 			$("#drug_prophylaxis").trigger("multiselectclick");
@@ -676,6 +691,23 @@ foreach($results as $result){
 	    	}
 	    });
 
+	    	$("#source").change(function() {
+				var selected_value = $(this).val();
+				if(selected_value == 3) {
+					$("#patient_source_listing").show();
+				} else {
+					$("#patient_source_listing").hide();
+					$("#transfer_source").attr("value",'');
+				$('#patient_number').val('<?= $facility_code.$cs;?>');
+				}
+			});
+
+			$("#transfer_source").change(function() {
+				var selected_value = $(this).val();
+				$('#patient_number').val(selected_value+'<?=$cs?>');
+			});
+
+
 	    //Function to display Regimens in this line
 
 	    $("#service").change(function() {
@@ -998,6 +1030,31 @@ function getAge(dateString) {
 							<legend>
 								Patient Information &amp; Demographics
 							</legend>
+							<div class="max-row">
+									<label><span class='astericks'>*</span>Source of Patient</label>
+									<select name="source" id="source" class="validate[required]">
+										<option value="">--Select--</option>
+										<?php
+										foreach ($sources as $source) {
+											echo "<option value='" . $source['id'] . "'>" . $source['Name'] . "</option>";
+										}
+										?>
+									</select>
+								</div>
+								<div id="patient_source_listing" class="max-row" style="display:none;">
+									<label> Transfer From</label>
+									<select name="transfer_source" id="transfer_source" >
+										<option value="">--Select--</option>
+										<?php
+										foreach ($facilities as $facility) {
+											echo "<option value='" . $facility['facilitycode'] . "'>" . $facility['name'] . "</option>";
+										}
+										?>
+									</select>
+								</div>
+								<div class="max-row">
+								<a href="javascript:;;" onclick="setCCC('ART')">ART</a> | <a href="javascript:;;" onclick="setCCC('PREP')">PREP</a> | <a href="javascript:;;" onclick="setCCC('HEI')">HEI</a> | <a href="javascript:;;" onclick="setCCC('PEP')">PEP</a>
+							</div>
 							<div class="max-row">
 								<div class="mid-row">
 									<label> Medical Record No.</label>
@@ -1369,28 +1426,6 @@ function getAge(dateString) {
 								<div class="max-row">
 									<label class="status_started" >Date of Status Change</label>
 									<input type="text" name="status_started" id="status_started" value="" >
-								</div>
-								<div class="max-row">
-									<label><span class='astericks'>*</span>Source of Patient</label>
-									<select name="source" id="source" class="validate[required]">
-										<option value="">--Select--</option>
-										<?php
-										foreach ($sources as $source) {
-											echo "<option value='" . $source['id'] . "'>" . $source['Name'] . "</option>";
-										}
-										?>
-									</select>
-								</div>
-								<div id="patient_source_listing" class="max-row" style="display:none;">
-									<label> Transfer From</label>
-									<select name="transfer_source" id="transfer_source" >
-										<option value="">--Select--</option>
-										<?php
-										foreach ($facilities as $facility) {
-											echo "<option value='" . $facility['facilitycode'] . "'>" . $facility['name'] . "</option>";
-										}
-										?>
-									</select>
 								</div>
 								<div class="max-row">
 									<label><span class='astericks'>*</span>Type of Service</label>
