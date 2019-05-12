@@ -1984,7 +1984,7 @@ class Patient_management extends MY_Controller {
                         IF(v_v.differentiated_care = '1','YES','NO') AS differentiated_care, 
                         v_v.regimen_change_reason AS regimen_change_reason 
                 from v_patient_visits as v_v
-                INNER JOIN regimen as R ON R.id = v_v.current_regimen
+                INNER JOIN regimen as R ON R.id = v_v.regimen_id
                 INNER JOIN drugcode as D ON D.id = v_v.drug_id
                 WHERE v_v.id = $patient_id
                 AND v_v.pv_active = 1
