@@ -1066,7 +1066,7 @@ function getAge(dateString) {
 								</div>
 								<div class="mid-row">
 									<label> <span class='astericks'>*</span>Patient Number CCC </label>
-									<input type="text" name="patient_number" id="patient_number" class="validate[required]" maxlength="17">
+									<input type="text" name="patient_number" id="patient_number" class="validate[required]" maxlength="11">
 									<input type="hidden" name="original_patient_number" id="original_patient_number">
 								</div>
 							</div>
