@@ -26,16 +26,20 @@
 			function setCCC(service) {
 				if (service=='ART'){
 					$('#patient_number').val('<?=$facility_code. $cs;?>');
+					$('#patient_number').attr('maxlength','11');
 				}
 				if (service=='PREP'){
 					$('#patient_number').val('PREP<?=$cs.$facility_code. $cs;?>');
+					$('#patient_number').attr('maxlength','16');
 				}
 				if (service=='PEP'){
 					$('#patient_number').val('PEP<?=$cs.$facility_code. $cs;?>');
+					$('#patient_number').attr('maxlength','15');
 				}
 
 				if (service=='HEI'){
 					$('#patient_number').val('<?=$facility_code. $cs.date('Y').$cs;?>');
+					$('#patient_number').attr('maxlength','16');
 				}			
 			}
 		$(document).ready(function(){
