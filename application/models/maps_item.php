@@ -24,10 +24,12 @@ class Maps_item extends Doctrine_Record {
 		$items = $query -> execute();
 		return $items[0];
 	}
-
-	public function getDhisItem($item) {
-
-		$sql="SELECT * from maps_item mi left join dhis_elements de on regimen_id = target_id where maps_id = $item AND target_category = 'regimen'";
+	public function getDhisItem($item,$code = '') {
+		$sql = "SELECT * FROM maps_item mi 
+		LEFT JOIN dhis_elements de on mi.regimen_id = de.target_id 
+		WHERE  maps_id = $item
+		AND dhis_report ='MoH 729b' AND target_report !='unknown'";
+		
 		$query=$this->db->query($sql);
 		$items=$query->result_array();
 		return $items;

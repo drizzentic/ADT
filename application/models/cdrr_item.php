@@ -51,7 +51,6 @@ class Cdrr_item extends Doctrine_Record {
 		AND cdrr_id = $item
 		AND dhis_report ='$code'
 		AND target_report !='unknown'";
-		echo $sql;
 		$query=$this->db->query($sql);
 		$items=$query->result_array();
 		return $items;
