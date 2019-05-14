@@ -317,7 +317,7 @@ $(document).ready(function(){
 			$("#visit_start").change(function(){
 				var from_date=$(this).val();
 				var someDate = new Date(from_date);
-                var numberOfDaysToAdd = 5;
+                var numberOfDaysToAdd = 6;
                 var to_date=new Date(someDate.setDate(someDate.getDate() + numberOfDaysToAdd)); 
                 var dd = ("0" + to_date.getDate()).slice(-2);
                 var mm = to_date.getMonth();
@@ -330,7 +330,7 @@ $(document).ready(function(){
 			$("#enrollment_start").change(function(){
 				var from_date=$(this).val();
 				var someDate = new Date(from_date);
-                var numberOfDaysToAdd = 5;
+                var numberOfDaysToAdd = 6;
                 var to_date=new Date(someDate.setDate(someDate.getDate() + numberOfDaysToAdd)); 
                 var dd = ("0" + to_date.getDate()).slice(-2);
                 var mm = to_date.getMonth();
