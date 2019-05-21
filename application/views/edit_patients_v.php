@@ -62,7 +62,7 @@ foreach($results as $result){
 				var CCC_check = new RegExp('^[0-9]{5}<?=$cs;?>[0-9]{5}');
 				var CCC_check_PREP = new RegExp('^PREP-[0-9]{5}<?=$cs;?>[0-9]{5}');
 				var CCC_check_PEP  = new RegExp('^PEP-[0-9]{5}<?=$cs;?>[0-9]{5}');
-				var CCC_check_HEI = new RegExp('^[0-9]{5}<?=$cs;?><?=date('Y')?>-[0-9]{5}');
+				var CCC_check_HEI = new RegExp('^[0-9]{5}<?=$cs;?>[0-9]{4}<?=$cs;?>[0-9]{5}');
 
 				if(!CCC_check.test(patient_no) && !CCC_check_PREP.test(patient_no) && !CCC_check_PEP.test(patient_no) && !CCC_check_HEI.test(patient_no) ){
 					bootbox.alert("<h4>Wrong CCC format</h4>\n\<hr/>Please Note recommended format \
