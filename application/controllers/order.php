@@ -97,6 +97,21 @@ class Order extends MY_Controller {
 					}
 				}
 			}
+			$county_url = $this -> dhis_url ."api/organisationUnits.json?level=2&paging=false&fields=:id,code,name&filter=name:ilike:".$this->session->userdata('facility_county');
+			$subcounty_access = false;
+			$curl -> get($county_url);
+			if (!$curl -> error) {
+				$county_response = json_decode($curl -> response, TRUE);
+				$subcounty_access = true;
+			}
+			
+			$subcounty_url = $this -> dhis_url ."api/organisationUnits.json?level=3&paging=false&fields=:id,code,name&filter=name:ilike:".$this->session->userdata('facility_subcounty');
+			$curl -> get($subcounty_url);
+			if (!$curl -> error) {
+				$subcounty_response = json_decode($curl -> response, TRUE);
+				$subcounty_access = true;
+			}
+
 			$parent_id = $this->get_dhis_orgs($username.':'.$password);
 			//Ensure user has access to facility dhis data
 			$user_dhis_orgs = array();
@@ -109,7 +124,7 @@ class Order extends MY_Controller {
 			$user_dhis_orgs = array_unique($user_dhis_orgs);
 			$dhis_orgs_intersect = array_intersect($user_dhis_orgs, $dhis_orgs);
 
-			if(!empty($dhis_orgs_intersect) || in_array($kenya_code, $dhis_orgs)){
+			if(!empty($dhis_orgs_intersect) || in_array($kenya_code, $dhis_orgs) || $subcounty_access){
 				//Save user data
 				$sync_user = array(
 					'username' => $username,
