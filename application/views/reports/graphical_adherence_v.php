@@ -6,6 +6,10 @@
     width: 80px;
     height:80px;
   }
+  .icon-download{
+    color: #fff !important;
+    margin: 9px;
+    }
 </style>
 
 <div class="full-content container">
@@ -14,13 +18,13 @@
 	</div>
    <div class="row-fluid">
    	<div class="span6">
-   		<h3>Overview</h3>
+   		<h3>Overview <a href="<?= current_url()?>/download"><i class="icon-download pull-right"></i></a></h3>
    		<div id="overview">
        <img class="spinner">
       </div>
    	</div>
    	<div class="span6">
-   		<h3>ART vs Non-ART</h3>
+   		<h3>ART vs Non-ART <a href="<?= current_url()?>/download"><i class="icon-download pull-right"></i></a></h3>
    		<div id="service">
        <img class="spinner"> 
       </div>
@@ -28,13 +32,13 @@
    </div>
    <div class="row-fluid">
    	<div class="span6">
-   		<h3>Male vs Female</h3>
+   		<h3>Male vs Female <a href="<?= current_url()?>/download"><i class="icon-download pull-right"></i></a></h3>
    		<div id="gender">
        <img class="spinner"> 
       </div>
    	</div>
    	<div class="span6">
-   		<h3>Age</h3>
+   		<h3>Age <a href="<?= current_url()?>/download"><i class="icon-download pull-right"></i></a></h3>
    		<div id="age">
        <img class="spinner"> 
       </div>
@@ -43,7 +47,11 @@
 </div>
 
 
-<script src="<?=base_url() ?>assets/scripts/highcharts/highcharts.js" ></script>
+<script src="<?= base_url(); ?>assets/scripts/highcharts/highcharts.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/highcharts/modules/exporting.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/highcharts/modules/offline-exporting.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/highcharts/modules/export-csv.js"></script>
+
 <!--custom script-->
 <script type='text/javascript'>
     $(function(){

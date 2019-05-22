@@ -56,6 +56,8 @@ if($this->session->userdata("changed_password")){
 <script src="<?= base_url(); ?>assets/scripts/highcharts/highcharts.js"></script>
 <script src="<?= base_url(); ?>assets/scripts/highcharts/modules/exporting.js"></script>
 <script src="<?= base_url(); ?>assets/scripts/highcharts/modules/offline-exporting.js"></script>
+<script src="<?= base_url(); ?>assets/scripts/highcharts/modules/export-csv.js"></script>
+
 <script type="text/javascript">
 $(document).ready(function() {
       var period=30;
