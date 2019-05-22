@@ -333,6 +333,27 @@ $ccc_stores = $this->session->userdata("ccc_store");
                 <td>
                     <input type="text" name="date_range_to" id="date_range_to" class="input-medium input_dates_to">
                 </td>
+                <td class="service_report_type_title" style="display: none;">
+                    <select name="gender_type" id="report_gender">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </td>
+                
+                <td class="service_report_type_title" style="display: none;">
+                    <select name="age_type" id="report_age">
+                        <option value="below4">Below 4 weeks</option>
+                        <option value="4weeks">4 weeks to < 3 years</option>
+                        <option value="3years">3 years to < 9 years</option>
+                        <option value="9years">9 years to < 15 years</option>
+                        <option value="15years">15 years to < 20 years</option>
+                        <option value="20years">20 years to < 25 years</option>
+                        <option value="25years">25 years to < 49 years</option>
+                        <option value="above49">above 49 years</option>
+                    </select>
+                </td>
+                
+
                 <td>
                     <input type="button" id="generate_date_range_report" class="btn btn-warning generate_btn" value="Generate Report">
                 </td>

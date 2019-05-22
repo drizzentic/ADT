@@ -6,6 +6,7 @@ $(document).ready(function() {
 	var href_final=_href.split('.');
 	//Hide current page from menus
 	var _id="#"+href_final[0];
+	$(".service_report_type_title").css("display","none");
 	$(".select_types").css("display","none");
 
 	//Add datepicker
@@ -106,7 +107,7 @@ $(document).ready(function() {
 	
 	//Features to select
 	$(".select_report").change(function(){
-		
+
 		var get_type=$("option:selected", this).attr("class");
 		var get_id=$("option:selected", this).attr("id");
 		
@@ -136,6 +137,11 @@ $(document).ready(function() {
 			else{
 				$(".show_report_type").hide();
 			}
+			if ($(".select_report").val()=='service_statistics'){
+			$('.service_report_type_title').show();
+		}
+		else{$('.service_report_type_title').hide();}
+
 		}
 		else if(get_type=="month_range_report"){
 			$(".select_types").css("display","none");
@@ -160,6 +166,8 @@ $(document).ready(function() {
 				$(".show_report_type").hide();
 			}
 		}
+
+
 	})
 	
 });

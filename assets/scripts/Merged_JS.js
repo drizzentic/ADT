@@ -904,17 +904,25 @@ $(document).ready(function() {
 					var report = $(".select_report:visible").attr("value");
 					var from = $("#date_range_from").attr("value");
 					var to = $("#date_range_to").attr("value");
+
+					var gender = $('#report_gender').val();
+					var age = $('#report_age').val();
+
 					//If adherence report, get adherence report type
 					if(report=="graphical_adherence"){
 						var adherence_type = $("#adherence_type_report").val();
 						report = report + "/"+adherence_type;
 					}
-					
 					if($(".report_type").is(":visible")) {
 						report = report + "/" + $(".report_type:visible").attr("value");
 					}
 					
 					var report_url = base_url + "report_management/" + report + "/" + from + "/" + to;
+					
+					if ($(".select_report").val()=='service_statistics'){
+					 report_url = base_url + "report_management/" + report + "/" + from + "/" + to + "/" + gender + "/" + age;
+					}
+					
 					window.location = report_url;
 				} else if(id == "generate_month_range_report") {
 					var report = $(".select_report:visible").attr("value");
@@ -1085,7 +1093,6 @@ $(document).ready(function() {
 	$(".select_report").change(function() {
 		var get_type = $("option:selected", this).attr("class");
 		var get_id = $("option:selected", this).attr("id");
-		
 		if(get_type == "none") {
 			$(".select_types").css("display", "none");
 			return;
