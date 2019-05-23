@@ -7000,8 +7000,22 @@ class Report_management extends MY_Controller {
         $data['content_view'] = 'reports/graphical_adherence_v';
         $this->load->view('template', $data);
     }
+    function downlodadherence($name = "appointment", $start_date = "", $end_date = "", $type = "") {
+    
+$this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) ;
+    
+    }
 
-    public function getAdherence($name = "appointment", $start_date = "", $end_date = "", $type = "") {
+    public function getAdherence($name = "appointment", $start_date = "", $end_date = "", $type = "",$download = FALSE) {
+
+        $this->load->dbutil();
+        $this->load->helper('file');
+        $this->load->helper('download');
+        $delimiter = ",";
+        $newline = "\r\n";
+
+        $filename = "file.csv";
+
         if ($name == "appointment") {
             $ontime = 0;
             $missed = 0;
@@ -7069,8 +7083,6 @@ class Report_management extends MY_Controller {
                 'missed' => 0,
                 'defaulter' => 0,
                 'lost_to_followup' => 0);
-
-
 
             /*
              * Get all appointments for a patient in selected period
@@ -7190,7 +7202,6 @@ class Report_management extends MY_Controller {
                         }
                     }
                 }
-
                 if ($type == "overview") {
                     $adherence['total'] = $overview_total;
                     $data_array = $adherence;
@@ -7274,6 +7285,17 @@ class Report_management extends MY_Controller {
         $data['categories'] = $categories;
         $data['suffix'] = '';
         $data['resultArray'] = $resultArray;
+
+        if ($download=='download'){
+    echo 'piure';
+        die;
+        $data = $this->dbutil->csv_from_result($data['resultArray'], '', $newline);
+        ob_clean();//Removes spaces
+        force_download($filename, $data);
+
+}
+
+
         $this->load->view('graph_v', $data);
     }
 
@@ -8946,28 +8968,28 @@ class Report_management extends MY_Controller {
         $overall_adult_female_oi = 0;
         $overall_adult_female_prep = 0;
         if ($agegroup =='below4'){
-            $agecond =  " FLOOR(datediff('$from',p.dob))<29 ";
+            $agecond =  "AND  FLOOR(datediff('$from',p.dob))<29 ";
         }
         if ($agegroup =='4weeks'){
-            $agecond =  "FLOOR(datediff('$from',p.dob)) > 28 AND FLOOR(datediff('$from',p.dob)/365)<3";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)) > 28 AND FLOOR(datediff('$from',p.dob)/365)<3";
         }
         if ($agegroup =='3years'){
-            $agecond =  "FLOOR(datediff('$from',p.dob)/365)>2 AND FLOOR(datediff('$from',p.dob)/365)<9";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>2 AND FLOOR(datediff('$from',p.dob)/365)<9";
         }
         if ($agegroup =='9years'){
-            $agecond =  "FLOOR(datediff('$from',p.dob)/365)>8 AND FLOOR(datediff('$from',p.dob)/365)<15";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>8 AND FLOOR(datediff('$from',p.dob)/365)<15";
         }
         if ($agegroup =='15years'){
-            $agecond =  "FLOOR(datediff('$from',p.dob)/365)>14 AND FLOOR(datediff('$from',p.dob)/365)<20";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>14 AND FLOOR(datediff('$from',p.dob)/365)<20";
         }
         if ($agegroup =='20years'){
-            $agecond =  "FLOOR(datediff('$from',p.dob)/365)>19 AND FLOOR(datediff('$from',p.dob)/365)<25";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>19 AND FLOOR(datediff('$from',p.dob)/365)<25";
         }
         if ($agegroup =='25years'){
-            $agecond =  "FLOOR(datediff('$from',p.dob)/365)>24 AND FLOOR(datediff('$from',p.dob)/365)<49";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>24 AND FLOOR(datediff('$from',p.dob)/365)<49";
         }
         if ($agegroup =='above49'){
-            $agecond =  "FLOOR(datediff('$from',p.dob)/365)>48";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>48";
         }
         //Get Total of all patients
             $sql = "SELECT count(t.regimen_desc)    as total ,t.regimen from
@@ -8978,7 +9000,9 @@ class Report_management extends MY_Controller {
                     pv.regimen
                     FROM patient_visit pv
                     left join regimen r on r.id = pv.regimen
+                    left join patient p on p.patient_number_ccc =  pv.patient_id
                     WHERE pv.dispensing_date >='$from'  
+                    $agecond
                     AND pv.dispensing_date <='$to'  
                     AND pv.facility= '$facility_code'
                     group by patient_id 
@@ -8996,9 +9020,11 @@ class Report_management extends MY_Controller {
                 pv.regimen
                 FROM patient_visit pv
                 left join regimen r on r.id = pv.regimen
+                left join patient p on p.patient_number_ccc =  pv.patient_id
                 WHERE pv.dispensing_date >='$from'  
                 AND pv.dispensing_date <='$to'  
                 AND pv.facility= '$facility_code' 
+                $agecond
                 group by patient_id ) t
                 group by regimen_desc";
 
@@ -9060,9 +9086,9 @@ class Report_management extends MY_Controller {
                     left join patient p on p.patient_number_ccc = t.patient_id
                     LEFT JOIN regimen_service_type rst ON rst.id = p.service 
                      where p.gender = $_gender 
-                     AND $agecond
+                     $agecond
                      GROUP BY p.service ORDER BY rst.id ASC ";
-
+                     
                 $query = $this->db->query($sql);
                 $results = $query->result_array();
                 $total_adult_male_art = "-";
