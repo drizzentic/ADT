@@ -46,6 +46,11 @@ foreach($results as $result){
 					$('#patient_number').attr('maxlength','15');
 				}
 
+				if (service=='HEP'){
+					$('#patient_number').val('HEP<?=$cs.$facility_code. $cs;?>');
+					$('#patient_number').attr('maxlength','15');
+				}
+
 				if (service=='HEI'){
 					$('#patient_number').val('<?=$facility_code. $cs.date('Y').$cs;?>');
 					$('#patient_number').attr('maxlength','16');
@@ -62,6 +67,7 @@ foreach($results as $result){
 				var CCC_check = new RegExp('^[0-9]{5}<?=$cs;?>[0-9]{5}');
 				var CCC_check_PREP = new RegExp('^PREP-[0-9]{5}<?=$cs;?>[0-9]{5}');
 				var CCC_check_PEP  = new RegExp('^PEP-[0-9]{5}<?=$cs;?>[0-9]{5}');
+				var CCC_check_PEP  = new RegExp('^HEP-[0-9]{5}<?=$cs;?>[0-9]{5}');
 				var CCC_check_HEI = new RegExp('^[0-9]{5}<?=$cs;?>[0-9]{4}<?=$cs;?>[0-9]{5}');
 
 				if(!CCC_check.test(patient_no) && !CCC_check_PREP.test(patient_no) && !CCC_check_PEP.test(patient_no) && !CCC_check_HEI.test(patient_no) ){
@@ -69,6 +75,7 @@ foreach($results as $result){
 					<br /><b> ART</b> : {mfl}<?=$cs;?>{ccc} e.g <b> <?=$facility_code;?><?=$cs?>00001 </b> \
 					<br /><b> PREP</b>: PREP-{mfl}<?=$cs;?>{ccc} e.g <b> PREP-<?=$facility_code;?><?=$cs?>00001 </b> \
 					<br /><b> PEP</b>:  PEP-{mfl}<?=$cs;?>{ccc} e.g <b> PEP-<?=$facility_code;?><?=$cs?>00001 </b> \
+					<br /><b> HEP</b>:  HEP-{mfl}<?=$cs;?>{ccc} e.g <b> HEP-<?=$facility_code;?><?=$cs?>00001 </b> \
 					<br /><b> HEI</b>:  {mfl}<?=$cs;?>{year}<?=$cs;?>{ccc} e.g <b> <?=$facility_code.$cs.date('Y');?><?=$cs?>00001 </b> \
 						");
 					$(".btn").attr("disabled","disabled");
@@ -1057,7 +1064,7 @@ function getAge(dateString) {
 									</select>
 								</div>
 								<div class="max-row">
-								<a href="javascript:;;" onclick="setCCC('ART')">ART</a> | <a href="javascript:;;" onclick="setCCC('PREP')">PREP</a> | <a href="javascript:;;" onclick="setCCC('HEI')">HEI</a> | <a href="javascript:;;" onclick="setCCC('PEP')">PEP</a>
+								<a href="javascript:;;" onclick="setCCC('ART')">ART</a> | <a href="javascript:;;" onclick="setCCC('PREP')">PREP</a> | <a href="javascript:;;" onclick="setCCC('HEI')">HEI</a> | <a href="javascript:;;" onclick="setCCC('PEP')">PEP</a> | <a href="javascript:;;" onclick="setCCC('HEP')">HEP</a>
 							</div>
 							<div class="max-row">
 								<div class="mid-row">

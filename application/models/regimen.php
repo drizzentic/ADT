@@ -117,13 +117,13 @@ class Regimen extends Doctrine_Record {
 	}
 
 	public function getChildRegimens(){
-		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> leftJoin('r.Regimen_Category rc') -> where("(rc.Name LIKE '%paed%' OR rc.Name LIKE '%ped%' OR rc.Name LIKE '%child%'  OR rc.Name LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
+		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> leftJoin('r.Regimen_Category rc') -> where("(rc.Name LIKE '%paed%' OR rc.Name LIKE '%ped%' OR rc.Name LIKE '%child%'  OR rc.Name LIKE '%oi%' OR rc.Name LIKE '%hepatitis%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
 		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $regimens;
 	}
 
 	public function getAdultRegimens(){
-		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> leftJoin('r.Regimen_Category rc') -> where("(rc.Name LIKE '%adult%' OR rc.Name LIKE '%mother%' OR rc.Name LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
+		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> leftJoin('r.Regimen_Category rc') -> where("(rc.Name LIKE '%adult%' OR rc.Name LIKE '%mother%' OR rc.Name LIKE '%oi%' OR rc.Name LIKE '%hepatitis%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");
 		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $regimens;
 	}
