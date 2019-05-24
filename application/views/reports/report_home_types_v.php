@@ -138,7 +138,8 @@ $ccc_stores = $this->session->userdata("ccc_store");
                     <option class="donor_date_range_report" value="getStartedonART">Number of Patients Started on ART in the Period</option>
                     <option class="annual_report" value="graph_patients_enrolled_in_year">Graph of Number of Patients Enrolled Per Month in a Given Year</option>
                     <option class="single_date_report" value="cumulative_patients">Cumulative Number of Patients to Date</option>
-                    <option class="date_range_report" value="service_statistics">Number of Active Patients Receiving ART (by Regimen)</option>
+                    <option class="date_range_report" value="all_service_statistics">Number of Active Patients Receiving ART (by Regimen)</option>
+                    <option class="date_range_report" value="service_statistics">Filtered Number of Active Patients Receiving ART (by Regimen)</option>
                     <option class="single_date_report" value="getFamilyPlanning">Family Planning Summary</option>
                     <option class="date_range_report" value="getIndications">Patient Indications Summary</option>
                     <option class="date_range_report" value="getTBPatients">TB Stages Summary</option>
