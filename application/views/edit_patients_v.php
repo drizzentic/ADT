@@ -67,10 +67,10 @@ foreach($results as $result){
 				var CCC_check = new RegExp('^[0-9]{5}<?=$cs;?>[0-9]{5}');
 				var CCC_check_PREP = new RegExp('^PREP-[0-9]{5}<?=$cs;?>[0-9]{5}');
 				var CCC_check_PEP  = new RegExp('^PEP-[0-9]{5}<?=$cs;?>[0-9]{5}');
-				var CCC_check_PEP  = new RegExp('^HEP-[0-9]{5}<?=$cs;?>[0-9]{5}');
+				var CCC_check_HEP  = new RegExp('^HEP-[0-9]{5}<?=$cs;?>[0-9]{5}');
 				var CCC_check_HEI = new RegExp('^[0-9]{5}<?=$cs;?>[0-9]{4}<?=$cs;?>[0-9]{5}');
 
-				if(!CCC_check.test(patient_no) && !CCC_check_PREP.test(patient_no) && !CCC_check_PEP.test(patient_no) && !CCC_check_HEI.test(patient_no) ){
+				if(!CCC_check.test(patient_no) && !CCC_check_PREP.test(patient_no) && !CCC_check_PEP.test(patient_no) && !CCC_check_HEI.test(patient_no) && !CCC_check_HEP.test(patient_no) ){
 					bootbox.alert("<h4>Wrong CCC format</h4>\n\<hr/>Please Note recommended format \
 					<br /><b> ART</b> : {mfl}<?=$cs;?>{ccc} e.g <b> <?=$facility_code;?><?=$cs?>00001 </b> \
 					<br /><b> PREP</b>: PREP-{mfl}<?=$cs;?>{ccc} e.g <b> PREP-<?=$facility_code;?><?=$cs?>00001 </b> \

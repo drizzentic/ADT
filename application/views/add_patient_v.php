@@ -62,7 +62,7 @@
 				var CCC_check_HEP  = new RegExp('^HEP<?=$cs;?>[0-9]{5}<?=$cs?>[0-9]{5}');
 				var CCC_check_HEI = new RegExp('^[0-9]{5}<?=$cs?><?=date('Y')?>-[0-9]{5}');
 
-				if(!CCC_check.test(patient_no) && !CCC_check_PREP.test(patient_no) && !CCC_check_PEP.test(patient_no) && !CCC_check_HEI.test(patient_no) ){
+				if(!CCC_check.test(patient_no) && !CCC_check_PREP.test(patient_no) && !CCC_check_PEP.test(patient_no) && !CCC_check_HEI.test(patient_no) && !CCC_check_HEP.test(patient_no)  ){
 					bootbox.alert("<h4>Wrong CCC format</h4>\n\<hr/>Please Note recommended format \
 					<br /><b> ART</b> : {mfl}<?=$cs?>{ccc} e.g <b> <?=$facility_code;?><?=$cs;?>00001 </b> \
 					<br /><b> PREP</b>: PREP<?=$cs?>{mfl}<?=$cs?>{ccc} e.g <b> PREP<?=$cs.$facility_code;?><?=$cs;?>00001 </b> \
