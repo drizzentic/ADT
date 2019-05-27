@@ -300,7 +300,8 @@ class Order extends MY_Controller {
 			} else if ($this->facility_type == 1) {
 				$buttons .= "<a href='" . base_url() . $set_type . "/1' class='btn'>New Stand-Alone $type</a>";
 			} else if ($this->facility_type > 1) {
-				if(!$this->session->userdata("dhis_id")){$buttons .= "<a href='" . base_url() . $set_type . "/3' class='btn'>New Aggregate $type</a>";}
+				// if(!$this->session->userdata("dhis_id")){}
+				$buttons .= "<a href='" . base_url() . $set_type . "/3' class='btn'>New Aggregate $type</a>";
 				$buttons .= "<a href='" . base_url() . $set_type . "/2' class='btn'>New Central $type</a>";
 				$buttons .= "<a data-toggle='modal' href='#select_satellite' class='btn check_net btn_satellite' id='$satellite_type'>New Satellite $type</a>";
 			}
