@@ -6610,7 +6610,7 @@ class Report_management extends MY_Controller {
          * Get All active patients
          * Get Transactions of patients who visited in the selected period and changed regimens
          */
-        $sql = "SELECT CONCAT_WS(  ' | ', r2.regimen_code, r2.regimen_desc ) AS from_regimen, CONCAT_WS(  ' | ', r1.regimen_code, r1.regimen_desc ) AS to_regimen, p.patient_number_ccc AS art_no, CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name,g.name as gender, pv.dispensing_date, rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason, (SELECT 
+        $sql = "SELECT CONCAT_WS(  ' | ', r2.regimen_code, r2.regimen_desc ) AS from_regimen, CONCAT_WS(  ' | ', r1.regimen_code, r1.regimen_desc ) AS to_regimen, p.patient_number_ccc AS art_no, CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name,g.name as gender,  round(((to_days(curdate()) - to_days(dob)) / 365),0) AS age,pv.dispensing_date, rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason, (SELECT 
                 patient_viral_load.result
             FROM
                 patient_viral_load
@@ -6664,7 +6664,7 @@ class Report_management extends MY_Controller {
 		CONCAT(r2.regimen_code,' | ',r2.regimen_desc )as to_regimen,
 		p.patient_number_ccc AS art_no,
 		CONCAT_WS(  ' ', CONCAT_WS(  ' ', p.first_name, p.other_name ) , p.last_name ) AS full_name, 
-        g.name as gender,
+        g.name as gender, round(((to_days(curdate()) - to_days(dob)) / 365),0) AS age,
 		pv.dispensing_date,
 		 rst.name AS service_type,IF(rcp.name is not null,rcp.name,pv.regimen_change_reason) as regimen_change_reason ,
 		 (SELECT 
