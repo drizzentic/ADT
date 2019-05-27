@@ -1,5 +1,4 @@
-
-	<input type="hidden" id="edit_selected_report" />
+<input type="hidden" id="edit_selected_report" />
 <input type="hidden" id="selected_report" />
 <div id="date_range_report" title="Select Date Range">
 	<table>
