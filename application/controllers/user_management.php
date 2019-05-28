@@ -366,7 +366,6 @@ class User_management extends MY_Controller {
                     $phone = $logged_in->Phone_Number;
                     $check = substr($phone, 0);
                     $phone = str_replace('+254', '', $phone);
-
                     $session_data = array(
                         'user_id' => $logged_in->id,
                         'user_indicator' => $logged_in->Access->Indicator,
@@ -391,7 +390,7 @@ class User_management extends MY_Controller {
                         'lost_to_follow_up' => ((@$facility_details[0]['lost_to_follow_up'] ) !== null) ? @$facility_details[0]['lost_to_follow_up'] : 90,
                         'pill_count' => ((@$facility_details[0]['pill_count'] ) !== null) ? @$facility_details[0]['pill_count'] : 0,
                         'medical_number' => ((@$facility_details[0]['medical_number'] ) !== null) ? 1 : 0,
-                        'facility_dhis' => ((@$facility_details[0]['facility_dhis'] ) !== null) ? 1 : 0,
+                        'facility_dhis' => ((@$facility_details[0]['facility_dhis'] ) !== "0") ? 1 : 0,
                         'autobackup' => ((@$facility_details[0]['autobackup'] ) !== null) ? @$facility_details[0]['autobackup'] : 0
                     );
 
@@ -426,7 +425,6 @@ class User_management extends MY_Controller {
                 LEFT JOIN  counties c  
                 ON c.id = f.county left JOIN district d ON d.id = f.district
                 WHERE f.facilitycode=?";
-                echo $sql;
         return $this->db->query($sql, array($facility_code))->result_array();
     }
 
