@@ -6,10 +6,7 @@ CREATE TABLE dcm_exit_reason (
   PRIMARY KEY (id),
   UNIQUE KEY name (name)
 )//
+
 INSERT INTO dcm_exit_reason (id, name, active) VALUES
-(1,	'Occupational exposure.',	1),
-(2,	'Sexual assault',	1),
-(3,	'Other reasons',	1),
-(4,	'Human bite.',	1),
-(5,	'Condom burst.',	1),
-(6,	'Unprotected sex.',	1)//
+(1, 'unstable clients',1),
+(2, 'poor adherence',1)//
