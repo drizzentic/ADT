@@ -8,5 +8,10 @@ CREATE TABLE dcm_exit_reason (
 )//
 
 INSERT INTO dcm_exit_reason (id, name, active) VALUES
-(1, 'unstable clients',1),
-(2, 'poor adherence',1)//
+(1,'New co-infection',1),
+(2,'Pregnancy',1),
+(3,'Poor adherence',1),
+(4,'Change in regimen',1),
+(5,'Change in BMI below 18.5',1),
+(6,'High viral load',1),
+(7,'Others',1)//
