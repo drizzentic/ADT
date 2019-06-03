@@ -29,7 +29,7 @@
 					$('#patient_number').attr('maxlength','11');
 				}
 				if (service=='PREP'){
-					$('#patient_number').val('PREP<?=$cs.$facility_code. $cs;?>');
+					$('#patient_number').val('<?=$facility_code. $cs.date('Y').$cs;?>');
 					$('#patient_number').attr('maxlength','16');
 				}
 				if (service=='PEP'){
@@ -57,7 +57,7 @@
 				var patient_no=$("#patient_number").val();
 				// -- do regex check on patient ccc number 
 				var CCC_check = new RegExp('^[0-9]{5}<?=$cs?>[0-9]{5}');
-				var CCC_check_PREP = new RegExp('^PREP<?=$cs;?>[0-9]{5}<?=$cs?>[0-9]{5}');
+				var CCC_check_PREP = new RegExp('^[0-9]{5}<?=$cs?><?=date('Y')?>-[0-9]{5}');
 				var CCC_check_PEP  = new RegExp('^PEP<?=$cs;?>[0-9]{5}<?=$cs?>[0-9]{5}');
 				var CCC_check_HEP  = new RegExp('^HEP<?=$cs;?>[0-9]{5}<?=$cs?>[0-9]{5}');
 				var CCC_check_HEI = new RegExp('^[0-9]{5}<?=$cs?><?=date('Y')?>-[0-9]{5}');
@@ -65,9 +65,9 @@
 				if(!CCC_check.test(patient_no) && !CCC_check_PREP.test(patient_no) && !CCC_check_PEP.test(patient_no) && !CCC_check_HEI.test(patient_no) && !CCC_check_HEP.test(patient_no)  ){
 					bootbox.alert("<h4>Wrong CCC format</h4>\n\<hr/>Please Note recommended format \
 					<br /><b> ART</b> : {mfl}<?=$cs?>{ccc} e.g <b> <?=$facility_code;?><?=$cs;?>00001 </b> \
-					<br /><b> PREP</b>: PREP<?=$cs?>{mfl}<?=$cs?>{ccc} e.g <b> PREP<?=$cs.$facility_code;?><?=$cs;?>00001 </b> \
 					<br /><b> PEP</b>:  PEP<?=$cs?>{mfl}<?=$cs?>{ccc} e.g <b> PEP<?=$cs.$facility_code;?><?=$cs;?>00001 </b> \
 					<br /><b> HEP</b>:  hEP<?=$cs?>{mfl}<?=$cs?>{ccc} e.g <b> HEP<?=$cs.$facility_code;?><?=$cs;?>00001 </b> \
+					<br /><b> PREP</b>: {mfl}<?=$cs?>{year}<?=$cs?>{ccc} e.g <b> <?=$facility_code.$cs.date('Y');?><?=$cs;?>00001 </b> \
 					<br /><b> HEI</b>:  {mfl}<?=$cs?>{year}<?=$cs?>{ccc} e.g <b> <?=$facility_code.$cs.date('Y');?><?=$cs;?>00001 </b> \
 						");
 					$(".btn").attr("disabled","disabled");
