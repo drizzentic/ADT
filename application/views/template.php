@@ -421,7 +421,7 @@ if ($user_is_administrator) {
                                     ?>
 
                                     <li class="divider"></li>
-                                    <li><a href="<?php echo base_url() . 'facilitydashboard_management/getPatientMasterList'  ?>"  id="ReportGenerator"> <i class="icon-book"></i>Patients Report</a></li>           
+                                    <li><a href="<?php echo base_url() . 'facilitydashboard_management/getPatientMasterList'  ?>"  id="ReportGenerator"> <i class="icon-book"></i>Patient Master list</a></li>           
                                     <li><a href="<?php echo base_url() . 'assets/manuals/user_manual.pdf' ?>" target="_blank"><i class="icon-book"></i>User Manual</a></li> 
 
 
