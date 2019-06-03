@@ -1696,6 +1696,7 @@ class Order extends MY_Controller {
 							if (!in_array($i, array(35, 55, 68))) {
 								$drug_name = trim($arr[$i]['B']);
 								$pack_size = trim($arr[$i]['C']);
+								$pack_size = 1;
 								$commodity = $this -> getMappedDrug($drug_name, $pack_size);
 								if ($commodity != null) {
 									$cdrr_array[$commodity_counter]['id'] = "";
@@ -2540,7 +2541,6 @@ public function getPeriodRegimenPatients($from, $to) {
 
 		//check whether a satellite,standalone or central site
 		$facility_code = $this -> session -> userdata("facility");
-		$facility_type = Facilities::getType($facility_code);
 
 
 		$row['beginning_balance']=$this->getBeginningBalance($param);
@@ -2553,7 +2553,7 @@ public function getPeriodRegimenPatients($from, $to) {
 			$row['stock_out']=0;
 		}
 
-		if ($facility_type > 1) {
+		if ($this->facility_type > 1) {
 			//central site
 			if ($code == "D-CDRR") {
 				//reported_consumed & reported_stock_on_hand
