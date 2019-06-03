@@ -8971,13 +8971,13 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
             $agecond =  "AND  FLOOR(datediff('$from',p.dob))<29 ";
         }
         if ($agegroup =='4weeks'){
-            $agecond =  "AND FLOOR(datediff('$from',p.dob)) > 28 AND FLOOR(datediff('$from',p.dob)/365)<3";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)) > 28 AND FLOOR(datediff('$from',p.dob)/365)<5";
         }
-        if ($agegroup =='3years'){
-            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>2 AND FLOOR(datediff('$from',p.dob)/365)<9";
+        if ($agegroup =='5years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>4 AND FLOOR(datediff('$from',p.dob)/365)<10";
         }
-        if ($agegroup =='9years'){
-            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>8 AND FLOOR(datediff('$from',p.dob)/365)<15";
+        if ($agegroup =='10years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>9 AND FLOOR(datediff('$from',p.dob)/365)<15";
         }
         if ($agegroup =='15years'){
             $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>14 AND FLOOR(datediff('$from',p.dob)/365)<20";
@@ -8986,11 +8986,24 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
             $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>19 AND FLOOR(datediff('$from',p.dob)/365)<25";
         }
         if ($agegroup =='25years'){
-            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>24 AND FLOOR(datediff('$from',p.dob)/365)<49";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>24 AND FLOOR(datediff('$from',p.dob)/365)<30";
+        }
+        if ($agegroup =='30years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>29 AND FLOOR(datediff('$from',p.dob)/365)<35";
+        }
+        if ($agegroup =='35years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>34 AND FLOOR(datediff('$from',p.dob)/365)<40";
+        }
+        if ($agegroup =='40years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>39 AND FLOOR(datediff('$from',p.dob)/365)<45";
+        }
+        if ($agegroup =='45years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>44 AND FLOOR(datediff('$from',p.dob)/365)<50";
         }
         if ($agegroup =='above49'){
-            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>48";
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>49";
         }
+
         //Get Total of all patients
             $sql = "SELECT count(t.regimen_desc)    as total ,t.regimen from
                     (select
@@ -10059,7 +10072,6 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
             $count = 0;
 
             // Paging
-            // Paging
             if (isset($iDisplayStart) && $iDisplayLength != '-1') {
                 $this->db->limit($this->db->escape_str($iDisplayLength), $this->db->escape_str($iDisplayStart));
             }
@@ -10093,24 +10105,17 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
                 }
             }
 
+            $this->db->select('patient_ccc_number,date_collected, test_date,result,justification');          
 
-
-            // Select Data
-            // $sql = "select patient_ccc_number,test_date,result,justification from patient_viral_load where test_date >= '$start_date' and  test_date <= '$end_date'
-            // $sFilter $sLimit";
-
-            $this->db->select('patient_ccc_number,date_collected, test_date,result,justification');
-            // $this->db->where("test_date >= $start_date AND test_date <= $end_date");
             $this->db->where('test_date >=', $start_date);
             $this->db->where('test_date <=', $end_date);
+
             $q = $this->db->get('patient_viral_load');
             $rResult = $q;
-            //echo $iDisplayLength;die();
             // Data set length after filtering
             $iFilteredTotal = count($rResult);
             //Total number of drugs that are displayed
             $iTotal = count($rResult);
-            //$iFilteredTotal = $iTotal;
             // Output
             $output = array('sEcho' => intval($sEcho), 'iTotalRecords' => $iTotal, 'iTotalDisplayRecords' => $iFilteredTotal, 'aaData' => array());
 

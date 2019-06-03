@@ -344,12 +344,16 @@ $ccc_stores = $this->session->userdata("ccc_store");
                 <td class="service_report_type_title" style="display: none;">
                     <select name="age_type" id="report_age">
                         <option value="below4">Below 4 weeks</option>
-                        <option value="4weeks">4 weeks to < 3 years</option>
-                        <option value="3years">3 years to < 9 years</option>
-                        <option value="9years">9 years to < 15 years</option>
-                        <option value="15years">15 years to < 20 years</option>
-                        <option value="20years">20 years to < 25 years</option>
-                        <option value="25years">25 years to < 49 years</option>
+                        <option value="4weeks">4 weeks to 4 years</option>
+                        <option value="5years">5 years - 9 years</option>
+                        <option value="10years">10 years - 14 years</option>
+                        <option value="15years">15 years - 19 years</option>
+                        <option value="20years">20 years - 24 years</option>
+                        <option value="25years">25 years - 29 years</option>
+                        <option value="30years">30 years - 34 years</option>
+                        <option value="35years">35 years - 39 years</option>
+                        <option value="40years">40 years - 44 years</option>
+                        <option value="45years">45 years - 49 years</option>
                         <option value="above49">above 49 years</option>
                     </select>
                 </td>
