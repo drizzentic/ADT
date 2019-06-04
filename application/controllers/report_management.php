@@ -5771,7 +5771,7 @@ FROM   (SELECT pv.patient_id,
                 $row_string .= "<tr><td>$status_name</td><td>$status_totals[$current_status]</td><td>$patient_percentage</td>";
                 //SQL for Adult Male Status
                 $service_list = array('ART', 'PEP', 'OI Only', 'PREP');
-                $sql = "SELECT count(*) as total_adult_male, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=1 AND p.service !=3 AND FLOOR(datediff('$from',p.dob)/365)>15 and p.active='1' GROUP BY service";
+                $sql = "SELECT count(*) as total_adult_male, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=1 AND FLOOR(datediff('$from',p.dob)/365)>15 and p.active='1' GROUP BY service";
                 $query = $this->db->query($sql);
                 $results = $query->result_array();
                 $i = 0;
