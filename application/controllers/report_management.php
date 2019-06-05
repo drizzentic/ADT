@@ -2282,9 +2282,9 @@ class Report_management extends MY_Controller {
     }
 
     function getDrugs() {
-        echo json_encode($this->db->select('id, drug')->get('drugcode')->result());
+        echo json_encode($this->db->select('id, drug')->where('enabled = 1')->get('drugcode')->result());
     }
-
+    
     public function listing($data = "") {
         $data['content_view'] = "report_v";
         $this->base_params($data);
