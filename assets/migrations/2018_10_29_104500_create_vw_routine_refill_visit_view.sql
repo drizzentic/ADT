@@ -10,6 +10,7 @@ CREATE OR REPLACE VIEW vw_routine_refill_visit AS
 		CONCAT_WS(' | ', r.regimen_code, r.regimen_desc) AS regimen,
 		pv.dispensing_date AS visit_date,
 		pv.quantity,
+		pv.duration,
 		pv.current_weight AS current_weight,
 	    CASE 
 	    WHEN pv.pill_count > 0 AND (pv.missed_pills - pv.pill_count) >= pv.pill_count THEN 0

@@ -4875,7 +4875,6 @@ FROM   (SELECT pv.patient_id,
     WHERE pv.visit_date 
     BETWEEN '$from' 
     AND '$to' group by patient_number,visit_date";
-
         $query = $this->db->query($sql);
         $results = $query->result_array();
         $row_string = "<table border='1'   class='dataTables'>
@@ -6835,7 +6834,7 @@ FROM   (SELECT pv.patient_id,
                 . " FROM patient p "
                 . " LEFT JOIN regimen_service_type rst ON rst.id=p.service "
                 . " LEFT JOIN regimen r ON r.id=p.start_regimen "
-                . " LEFT JOIN patient_source ps ON ps.id = p.source"m
+                . " LEFT JOIN patient_source ps ON ps.id = p.source"
                 . " WHERE p.start_regimen_date"
                 . " BETWEEN '" . $start_date . "'"
                 . " AND '" . $end_date . "'"
