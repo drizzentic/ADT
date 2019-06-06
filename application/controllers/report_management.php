@@ -9491,6 +9491,270 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
         $data['content_view'] = 'reports/no_of_patients_receiving_art_byregimen_v';
         $this->load->view('template', $data);
     }
+        public function clinical_bands($start_date = "",$end_date = "",$gender='',$agegroup = '') {
+        //Variables
+        $facility_code = $this->session->userdata("facility");
+        $data = array();
+        $data['from'] = $start_date;
+        $data['to'] = $end_date;
+        $from = date('Y-m-d', strtotime($start_date));
+        $to = date('Y-m-t', strtotime($end_date));        
+        $regimen_totals = array();
+        $data['gender'] = $gender;
+        $data['agegroup'] = $agegroup;
+        $_gender = ($gender =='male') ? 1 : 2 ;
+        $total = 0;
+        $overall_adult_male_art = 0;
+        $overall_adult_male_pep = 0;
+        $overall_adult_male_oi = 0;
+        $overall_adult_male_prep = 0;
+
+        $overall_adult_female_art = 0;
+        $overall_adult_female_pep = 0;
+        $overall_adult_female_pmtct = 0;
+        $overall_adult_female_oi = 0;
+        $overall_adult_female_prep = 0;
+        if ($agegroup =='below1'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)<1";
+        }
+        if ($agegroup =='1year'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>1 AND FLOOR(datediff('$from',p.dob)/365)<5";
+        }
+        if ($agegroup =='5years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>4 AND FLOOR(datediff('$from',p.dob)/365)<10";
+        }
+        if ($agegroup =='10years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>9 AND FLOOR(datediff('$from',p.dob)/365)<15";
+        }
+        if ($agegroup =='15years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>14 AND FLOOR(datediff('$from',p.dob)/365)<20";
+        }
+        if ($agegroup =='20years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>19 AND FLOOR(datediff('$from',p.dob)/365)<25";
+        }
+        if ($agegroup =='25years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>24 AND FLOOR(datediff('$from',p.dob)/365)<30";
+        }
+        if ($agegroup =='30years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>29 AND FLOOR(datediff('$from',p.dob)/365)<35";
+        }
+        if ($agegroup =='35years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>34 AND FLOOR(datediff('$from',p.dob)/365)<40";
+        }
+        if ($agegroup =='40years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>39 AND FLOOR(datediff('$from',p.dob)/365)<45";
+        }
+        if ($agegroup =='45years'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>44 AND FLOOR(datediff('$from',p.dob)/365)<50";
+        }
+        if ($agegroup =='above49'){
+            $agecond =  "AND FLOOR(datediff('$from',p.dob)/365)>49";
+        }
+
+        //Get Total of all patients
+            $sql = "SELECT count(t.regimen_desc)    as total ,t.regimen from
+                    (select
+                    r.regimen_desc ,
+                    max(pv.dispensing_date),
+                    r.regimen_code, 
+                    pv.regimen
+                    FROM patient_visit pv
+                    left join regimen r on r.id = pv.regimen
+                    left join patient p on p.patient_number_ccc =  pv.patient_id
+                    WHERE pv.dispensing_date >='$from'  
+                    $agecond
+                    AND pv.dispensing_date <='$to'  
+                    AND pv.facility= '$facility_code'
+                    group by patient_id 
+                    )  t";
+        $query = $this->db->query($sql);
+        $results = $query->result_array();
+        $total = $results[0]['total'];
+        //Get Totals for each regimen
+            $sql = "SELECT count(t.regimen_desc) as total   ,t.regimen_desc,t.regimen_code  ,t.regimen
+            from
+                (SELECT
+                r.regimen_desc ,
+                max(pv.dispensing_date),
+                r.regimen_code, 
+                pv.regimen
+                FROM patient_visit pv
+                left join regimen r on r.id = pv.regimen
+                left join patient p on p.patient_number_ccc =  pv.patient_id
+                WHERE pv.dispensing_date >='$from'  
+                AND pv.dispensing_date <='$to'  
+                AND pv.facility= '$facility_code' 
+                $agecond
+                group by patient_id ) t
+                group by regimen_desc";
+
+        $query = $this->db->query($sql);
+        $results = $query->result_array();
+
+        if ($results) {
+            $dyn_table = "<table id='patient_listingh' border='1' cellpadding='5' class='dataTables'><thead>
+                <tr>
+                <th></th>
+                <th>Total</th>
+                <th></th>
+                <th>ART</th><th></th>
+                <th>PEP</th><th></th>
+                <th>OI</th><th></th>
+                <th>PREP</th><th></th>
+                </tr>
+
+                <tr>
+                <th>Regimen</th>
+                <th>No.</th>
+                <th>%</th>
+                <th>No.</th>
+                <th>%</th>
+                <th>No.</th>
+                <th>%</th>
+                <th>No.</th>
+                <th>%</th>
+                <th>No.</th>
+                <th>%</th>
+                </tr>
+                </thead>
+                <tbody>";
+            foreach ($results as $result) {
+                $regimen_totals[$result['current_regimen']] = $result['total'];
+                $current_regimen = $result['regimen'];
+                $regimen_name = $result['regimen_desc'];
+                $regimen_code = $result['regimen_code'];
+                $regimen_total = $result['total'];
+                $regimen_total_percentage = number_format(($regimen_total / $total) * 100, 1);
+                $dyn_table .= "<tr><td><b>$regimen_code</b> | $regimen_name</td><td>$regimen_total</td><td>$regimen_total_percentage</td>";
+
+                //SQL for Adult Male Regimens
+   
+                    $sql = "SELECT count(t.patient_id) as total , p.service as service_id,rst.name 
+                    FROM 
+                    (SELECT pv.patient_id,
+                    r.regimen_desc ,
+                    max(pv.dispensing_date),
+                    r.regimen_code, 
+                    pv.regimen
+                    FROM patient_visit pv
+                    left join regimen r on r.id = pv.regimen
+                    WHERE pv.dispensing_date >='$from' 
+                    AND pv.dispensing_date <='$to'  
+                    and pv.regimen = '$current_regimen'
+                    AND pv.facility= '$facility_code' 
+                    group by patient_id ) t
+                    left join patient p on p.patient_number_ccc = t.patient_id
+                    LEFT JOIN regimen_service_type rst ON rst.id = p.service 
+                     where p.gender = $_gender 
+                     $agecond
+                     GROUP BY p.service ORDER BY rst.id ASC ";
+                     
+                $query = $this->db->query($sql);
+                $results = $query->result_array();
+                $total_adult_male_art = "-";
+                $total_adult_male_pep = "-";
+                $total_adult_male_oi = "-";
+                $total_adult_male_prep = "-";
+
+                $total_adult_male_art_percentage = "-";
+                $total_adult_male_pep_percentage = "-";
+                $total_adult_male_oi_percentage = "-";
+                $total_adult_male_prep_percentage = "-";
+                if ($results) {
+                    foreach ($results as $result) {
+                        $total_adult_male = $result['total'];
+                        $service_code = $result['service_id'];
+                        $service_name = $result['name'];
+                        if ($service_name == "ART") {
+                            $overall_adult_male_art += $total_adult_male;
+                            $total_adult_male_art = number_format($total_adult_male);
+                            $total_adult_male_art_percentage = number_format(($total_adult_male / $total) * 100, 1);
+                        } else if ($service_name == "PEP") {
+                            $overall_adult_male_pep += $total_adult_male;
+                            $total_adult_male_pep = number_format($total_adult_male);
+                            $total_adult_male_pep_percentage = number_format(($total_adult_male_pep / $total) * 100, 1);
+                        } else if ($service_name == "OI Only") {
+                            $overall_adult_male_oi += $total_adult_male;
+                            $total_adult_male_oi = number_format($total_adult_male);
+                            $total_adult_male_oi_percentage = number_format(($total_adult_male_oi / $total) * 100, 1);
+                        } else if (strtoupper($service_name) == "PREP") {
+                            $overall_adult_male_prep += $total_adult_male;
+                            $total_adult_male_prep = number_format($total_adult_male);
+                            $total_adult_male_prep_percentage = number_format(($total_adult_male_prep / $total) * 100, 1);
+                        }
+                    }
+                    $dyn_table .= "<td>$total_adult_male_art</td>
+                                    <td>$total_adult_male_art_percentage</td>
+                                    <td>$total_adult_male_pep</td>
+                                    <td>$total_adult_male_pep_percentage</td>
+                                    <td>$total_adult_male_oi</td>
+                                    <td>$total_adult_male_oi_percentage</td>
+                                    <td>$total_adult_male_prep</td>
+                                    <td>$total_adult_male_prep_percentage</td>";
+                } else {
+                    $dyn_table .= "<td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>";
+                }
+                $dyn_table .= "</tr>";
+            }
+            $overall_art_male_percent = number_format(($overall_adult_male_art / $total) * 100, 1);
+            $overall_pep_male_percent = number_format(($overall_adult_male_pep / $total) * 100, 1);
+            $overall_oi_male_percent = number_format(($overall_adult_male_oi / $total) * 100, 1);
+            $overall_prep_male_percent = number_format(($overall_adult_male_prep / $total) * 100, 1);
+
+            $overall_art_female_percent = number_format(($overall_adult_female_art / $total) * 100, 1);
+            $overall_pep_female_percent = number_format(($overall_adult_female_pep / $total) * 100, 1);
+            $overall_pmtct_female_percent = number_format(($overall_adult_female_pmtct / $total) * 100, 1);
+            $overall_oi_female_percent = number_format(($overall_adult_female_oi / $total) * 100, 1);
+            $overall_prep_female_percent = number_format(($overall_adult_female_prep / $total) * 100, 1);
+
+            $overall_art_childmale_percent = number_format(($overall_child_male_art / $total) * 100, 1);
+            $overall_pep_childmale_percent = number_format(($overall_child_male_pep / $total) * 100, 1);
+            $overall_oi_childmale_percent = number_format(($overall_child_male_pmtct / $total) * 100, 1);
+            $overall_pmtct_childmale_percent = number_format(($overall_child_male_oi / $total) * 100, 1);
+            $overall_prep_childmale_percent = number_format(($overall_child_male_prep / $total) * 100, 1);
+
+            $overall_art_childfemale_percent = number_format(($overall_child_female_art / $total) * 100, 1);
+            $overall_pep_childfemale_percent = number_format(($overall_child_female_pep / $total) * 100, 1);
+            $overall_pmtct_childfemale_percent = number_format(($overall_child_female_pmtct / $total) * 100, 1);
+            $overall_oi_childfemale_percent = number_format(($overall_child_female_oi / $total) * 100, 1);
+            $overall_prep_childfemale_percent = number_format(($overall_child_female_prep / $total) * 100, 1);
+
+            $dyn_table .= "</tbody><tfoot><tr>
+            <td>TOTALS</td>
+            <td>$total</td>
+            <td>100</td>
+            <td>$overall_adult_male_art</td>
+            <td>$overall_art_male_percent</td>
+            <td>$overall_adult_male_pep</td>
+            <td>$overall_pep_male_percent</td>
+            <td>$overall_adult_male_oi</td>
+            <td>$overall_oi_male_percent</td>
+            <td>$overall_adult_male_prep</td>
+            <td>$overall_prep_male_percent</td>
+            </tr></tfoot></table>";
+        } else {
+            $dyn_table = "<h4 style='text-align: center'><span >No Data Available</span></h4>";
+        }
+        $data['from'] = date('d-M-Y', strtotime($from));
+        $data['dyn_table'] = $dyn_table;
+        $data['title'] = "webADT | Reports";
+        $data['hide_side_menu'] = 1;
+        $data['banner_text'] = "Facility Reports";
+        $data['selected_report_type_link'] = "early_warning_report_select";
+        $data['selected_report_type_link'] = "standard_report_row";
+        $data['selected_report_type'] = "Standard Reports";
+        $data['report_title'] = "Filtered number of Active Patients receiving ART (by AGE - formulation age bands) - $gender ";
+        $data['facility_name'] = $this->session->userdata('facility_name');
+        $data['content_view'] = 'reports/no_of_patients_receiving_art_byregimen_v';
+        $this->load->view('template', $data);
+    }
        public function all_service_statistics($start_date = "",$end_date = "") {
         //Variables
         $facility_code = $this->session->userdata("facility");

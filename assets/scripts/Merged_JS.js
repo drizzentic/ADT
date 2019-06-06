@@ -922,6 +922,9 @@ $(document).ready(function() {
 					if ($(".select_report").val()=='service_statistics'){
 					 report_url = base_url + "report_management/" + report + "/" + from + "/" + to + "/" + gender + "/" + age;
 					}
+					if ($(".select_report").val()=='clinical_bands'){
+					 report_url = base_url + "report_management/" + report + "/" + from + "/" + to + "/" + gender + "/" + age;
+					}
 					
 					window.location = report_url;
 				} else if(id == "generate_month_range_report") {

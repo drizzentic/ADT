@@ -139,6 +139,7 @@ $ccc_stores = $this->session->userdata("ccc_store");
                     <option class="annual_report" value="graph_patients_enrolled_in_year">Graph of Number of Patients Enrolled Per Month in a Given Year</option>
                     <option class="single_date_report" value="cumulative_patients">Cumulative Number of Patients to Date</option>
                     <option class="date_range_report" value="all_service_statistics">Number of Active Patients Receiving ART (by Regimen)</option>
+                    <option class="date_range_report" value="clinical_bands">Filtered number of Active Patients receiving ART (by AGE - Clinical Age Bands) </option>
                     <option class="date_range_report" value="service_statistics">Filtered number of Active Patients receiving ART (by AGE - formulation age bands)</option>
                     <option class="single_date_report" value="getFamilyPlanning">Family Planning Summary</option>
                     <option class="date_range_report" value="getIndications">Patient Indications Summary</option>
@@ -212,7 +213,7 @@ $ccc_stores = $this->session->userdata("ccc_store");
                     <option value="0" class="none">-- Select a Report  --</option>
                     <option id="drug_consumption" class="annual_report" value="stock_report/drug_consumption">Drug Consumption Report</option>
                     <option id="patient_consumption" class="month_period_report" value="patient_consumption">Patient Drug Consumption Report</option>	
-                    <option id="drug_stock_on_hand" class="no_filter" value="stock_report/drug_stock_on_hand">Drug Stock on Hand Report</option>
+                    <option id="drug_stock_on_hand" class="month_range_report" value="stock_report/drug_stock_on_hand">Drug Stock on Hand Report</option>
                     <option id="commodity_summary" class="month_range_report" value="stock_report/commodity_summary">Facility Summary Commodity Report</option>
                     <option id="expiring_drugs" class="no_filter" value="expiring_drugs">Short Dated Stocks &lt;6 Months to Expiry</option>
                     <option id="expired_drugs" class="no_filter" value="expired_drugs">List of Expired Drugs</option>
@@ -346,6 +347,30 @@ $ccc_stores = $this->session->userdata("ccc_store");
                     <select name="age_type" id="report_age">
                         <option value="below4">Below 4 weeks</option>
                         <option value="4weeks">4 weeks to 4 years</option>
+                        <option value="5years">5 years - 9 years</option>
+                        <option value="10years">10 years - 14 years</option>
+                        <option value="15years">15 years - 19 years</option>
+                        <option value="20years">20 years - 24 years</option>
+                        <option value="25years">25 years - 29 years</option>
+                        <option value="30years">30 years - 34 years</option>
+                        <option value="35years">35 years - 39 years</option>
+                        <option value="40years">40 years - 44 years</option>
+                        <option value="45years">45 years - 49 years</option>
+                        <option value="above49">above 49 years</option>
+                    </select>
+                </td>
+
+                 <td class="clinical_band_report_type_title" style="display: none;">
+                    <select name="gender_type" id="report_gender">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </td>
+                
+                <td class="clinical_band_report_type_title" style="display: none;">
+                    <select name="age_type" id="report_age">
+                        <option value="below1">Below 1 year</option>
+                        <option value="1year">1 Year -  4 years</option>
                         <option value="5years">5 years - 9 years</option>
                         <option value="10years">10 years - 14 years</option>
                         <option value="15years">15 years - 19 years</option>

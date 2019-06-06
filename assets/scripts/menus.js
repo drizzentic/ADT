@@ -142,6 +142,10 @@ $(document).ready(function() {
 		}
 		else{$('.service_report_type_title').hide();}
 
+		if ($(".select_report").val()=='clinical_bands'){
+			$('.clinical_band_report_type_title').show();
+		}
+		else{$('.clinical_band_report_type_title').hide();}
 		}
 		else if(get_type=="month_range_report"){
 			$(".select_types").css("display","none");
