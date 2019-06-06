@@ -9962,6 +9962,7 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
 			LEFT JOIN regimen r ON r.id=rd.regimen
 			LEFT JOIN regimen_service_type rst ON rst.id=r.type_of_service
 			LEFT JOIN drugcode d ON d.id=rd.drugcode
+            WHERE d.enabled = '1'
 				GROUP BY drugname";
         $query = $this->db->query($sql);
         $drugs = $query->result_array();
