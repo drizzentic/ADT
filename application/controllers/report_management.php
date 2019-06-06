@@ -4863,7 +4863,7 @@ FROM   (SELECT pv.patient_id,
         $this->load->view('template', $data);
     }
 
-    public function getPatientsforRefill($from = "", $to = "") {
+ public function getPatientsforRefill($from = "", $to = "") {
         //Variables
         $overall_total = 0;
         $today = date('Y-m-d');
@@ -4871,42 +4871,51 @@ FROM   (SELECT pv.patient_id,
         $from = date('Y-m-d', strtotime($from));
         $to = date('Y-m-d', strtotime($to));
 
-        $sql = "SELECT pv.patient_number,type_of_service,client_support,patient_name,current_age,sex,regimen,visit_date,quantity,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence,source FROM vw_routine_refill_visit pv
-	WHERE pv.visit_date 
-	BETWEEN '$from' 
-	AND '$to' group by patient_number,visit_date";
+        $sql = "SELECT pv.patient_number,type_of_service,source,patient_name,current_age,sex,regimen,visit_date,dose,duration,quantity,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence FROM vw_routine_refill_visit pv
+    WHERE pv.visit_date 
+    BETWEEN '$from' 
+    AND '$to' group by patient_number,visit_date";
 
         $query = $this->db->query($sql);
         $results = $query->result_array();
         $row_string = "<table border='1'   class='dataTables'>
-	<thead>
-	<tr>
-	<th> Patient No </th>
-	<th> Type of Service </th>
-	<th> Client Support </th>
-	<th> Patient Name </th>
-	<th> Current Age </th>
-	<th> Sex</th>
-	<th> Regimen </th>
+    <thead>
+    <tr>
+    <th> Patient No </th>
+    <th> Type of Service </th>
+    <th> Source </th>
+    <th> Patient Name </th>
+    <th> Current Age </th>
+    <th> Sex</th>
+    <th> Regimen </th>
     <th> Visit Date</th>
-	<th> Quantity</th>
-	<th> Current Weight (Kg) </th>
-	<th> Missed Pills Adherence (%)</th>
-	<th> Pill Count Adherence (%)</th>
-	<th> Appointment Adherence (%)</th>
-	<th> Average Adherence (%)</th>
-	<th> Source </th>
-	</tr>
-	</thead>
-	<tbody>";
+    <th> Dose</th>
+    <th> Duration</th>
+    <th> Quantity</th>
+    <th> Current Weight (Kg) </th>
+    <th> Missed Pills Adherence (%)</th>
+    <th> Pill Count Adherence (%)</th>
+    <th> Appointment Adherence (%)</th>
+    <th> Average Adherence (%)</th>
+    </tr>
+    </thead>
+    <tbody>";
         if ($results) {
             foreach ($results as $result) {
                 $patient_no = $result['patient_number'];
                 $service_type = $result['type_of_service'];
-                $supported_by = $result['client_support'];
+                $source = $result['source'];
                 $patient_name = $result['patient_name'];
                 $age = $result['current_age'];
                 $gender = $result['sex'];
+                $regimen_desc = "<b>" . $result['regimen'] . "</b>";
+                $dispensing_date = date('d-M-Y', strtotime($result['visit_date']));
+                $dose = $result['dose'];
+                $duration = $result['duration'];
+                $quantity = $result['quantity'];
+                $weight = $result['current_weight'];
+                $missed_pills = $result['missed_pill_adherence'];
+                $pill_count = $result['pill_count_adherence'];
                 $appointments = $result['appointment_adherence'];
                 $appointments = str_replace(">", "", $appointments);
                 $appointments = str_replace("=", "", $appointments);
@@ -4917,17 +4926,10 @@ FROM   (SELECT pv.patient_id,
                     $sum = intval($val1) + intval($val2);
                     $appointments = $sum / 2;
                 }
-                $dispensing_date = date('d-M-Y', strtotime($result['visit_date']));
-                $regimen_desc = "<b>" . $result['regimen'] . "</b>";
-                $weight = $result['current_weight'];
-                $quantity = $result['quantity'];
-                $source = $result['source'];
-                $pill_count = $result['pill_count_adherence'];
-                $missed_pills = $result['missed_pill_adherence'];
                 $adherence_array = array($missed_pills, $pill_count, $appointments);
                 $avg_adherence = number_format(array_sum($adherence_array) / count($adherence_array), 2);
-                $row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$supported_by</td><td>$patient_name</td><td>$age</td><td>$gender</td><td>$regimen_desc</td><td>$dispensing_date</td><td>$quantity</td><td>$weight</td>
-			<td>$missed_pills</td><td>$pill_count</td><td>$appointments</td><td>$avg_adherence</td><td>$source</td></tr>";
+                $row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$source</td><td>$patient_name</td><td>$age</td><td>$gender</td><td>$regimen_desc</td><td>$dispensing_date</td><td>$dose</td><td>$duration</td><td>$quantity</td><td>$weight</td>
+                    <td>$missed_pills</td><td>$pill_count</td><td>$appointments</td><td>$avg_adherence</td></tr>";
 
                 $overall_total++;
             }
@@ -6833,7 +6835,7 @@ FROM   (SELECT pv.patient_id,
                 . " FROM patient p "
                 . " LEFT JOIN regimen_service_type rst ON rst.id=p.service "
                 . " LEFT JOIN regimen r ON r.id=p.start_regimen "
-                . " LEFT JOIN patient_source ps ON ps.id = p.source"
+                . " LEFT JOIN patient_source ps ON ps.id = p.source"m
                 . " WHERE p.start_regimen_date"
                 . " BETWEEN '" . $start_date . "'"
                 . " AND '" . $end_date . "'"
