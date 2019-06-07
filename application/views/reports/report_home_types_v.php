@@ -195,7 +195,7 @@ $ccc_stores = $this->session->userdata("ccc_store");
                     <option class="date_range_report" value="patients_who_changed_regimen">Active Patients who Have Changed Regimens</option>
                     <option class="date_range_report" value="patients_switched_to_second_line_regimen">Active Patients who Have Changed to second line Regimens</option>
                     <option class="date_range_report" value="patients_starting">List of Patients Starting (By Regimen)</option>
-                    <option class="date_range_report" value="early_warning_indicators">HIV Early Warning Indicators</option>
+                    <!-- <option class="month_period_report" value="early_warning_indicators">HIV Early Warning Indicators</option> -->
                     <!--<option class="date_range_report" value="patients_adherence">Patients Adherence Report</option>-->
                     <option class="date_range_report" value="graphical_adherence">Patients Adherence Report</option>
                     <option class="date_range_report" value="patients_nonadherence">Patients Non Adherence Report</option>

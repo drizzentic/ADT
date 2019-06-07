@@ -13,9 +13,14 @@
 					<th> % Starting standard 1st Line regimens</th>
 					<th> % Starting alternative 1st Line regimens</th>
 				</tr>
-				<tr><td align="center"><?php echo $first_line ?></td><td align="center"><?php echo $tot_patients ?></td><td align="center"><?php echo number_format($percentage_firstline,1); ?></td><td align="center"><?php echo number_format($percentage_onotherline,1); ?></td></tr>
+				<tr>
+					<td align="center"><?php echo $tot_patients ?></td>
+					<td align="center"><?php echo $first_line ?></td>
+					<td align="center"><?php echo number_format($percentage_firstline,1); ?>
+					</td><td align="center"><?php echo number_format($percentage_onotherline,1); ?></td></tr>
 			</table>
 		</div>
+		
 		<div class="retention_percentage">
 			<h3 style="text-align: center;margin:0 auto;"> Percentage of patients retained on first line at month 12 [Target >95%]</h3>
 			<table class="listing_table" id="percentage_retention" cellpadding="5" border="1">
