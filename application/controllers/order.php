@@ -294,7 +294,7 @@ class Order extends MY_Controller {
 		$buttons = "";
 		$set_type = "order/create_order/" . $type;
 		$satellite_type = 'btn_new_' . $type . '_satellite';
-		if($this->verify_user_access()){
+		// if($this->verify_user_access()){
 			if ($this->facility_type == 0) {
 				$buttons .= "<a href='" . base_url() . $set_type . "/0' class='btn check_net'>New Satellite $type</a>";
 			} else if ($this->facility_type == 1) {
@@ -305,7 +305,7 @@ class Order extends MY_Controller {
 				$buttons .= "<a href='" . base_url() . $set_type . "/2' class='btn'>New Central $type</a>";
 				$buttons .= "<a data-toggle='modal' href='#select_satellite' class='btn check_net btn_satellite' id='$satellite_type'>New Satellite $type</a>";
 			}
-		}
+		// }
 		return $buttons;
 	}
 
