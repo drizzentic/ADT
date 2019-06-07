@@ -3275,7 +3275,7 @@ class Report_management extends MY_Controller {
         $end_date = date('Y-m-d', strtotime($to));
         $overall_total = 0;
 
-        $sql = " select appointment_description, count( tmp.patient_id) as total from(
+        $sql = "SELECT appointment_description, count( tmp.patient_id) as total from(
 SELECT patient_id, p.nextappointment, max(dispensing_date),  Datediff(p.nextappointment, max(dispensing_date)) appointment_days,
 CASE 
 WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 0 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
@@ -3651,7 +3651,7 @@ GROUP BY  patient_id
 
         $row_string .= "</tbody></table>";
         $data['from'] = date('d-M-Y', strtotime($from));
-        $data['to'] = date('d-M-Y', strtotime($to));
+        $data['to'] = date('d-M-Y', strtotime($filter_to));
         $data['dyn_table'] = $row_string;
         $data['visited_later'] = $visited_later;
         $data['not_visited'] = $not_visited;
@@ -3664,7 +3664,7 @@ GROUP BY  patient_id
         $data['selected_report_type'] = "Visiting Patients";
         $data['report_title'] = "List of Patients Scheduled to Visit";
         $data['facility_name'] = $this->session->userdata('facility_name');
-        $data['content_view'] = 'reports/patients_scheduled_v';
+        $data['content_view'] = 'reports/patients_mmd_scheduled_v';
         $this->load->view('template', $data);
     }
 
