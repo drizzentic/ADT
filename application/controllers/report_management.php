@@ -5077,7 +5077,7 @@ GROUP BY  patient_id
         $from = date('Y-m-d', strtotime($from));
         $to = date('Y-m-d', strtotime($to));
 
-        $sql = "SELECT pv.patient_number,type_of_service,client_support,patient_name,current_age,sex,regimen,visit_date,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence,pv.source,differentiated_care FROM vw_routine_refill_visit pv , patient p
+        $sql = "SELECT pv.patient_number,type_of_service,client_support,patient_name,current_age,sex,regimen,visit_date,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence,pv.source,pv.differentiated_care FROM vw_routine_refill_visit pv , patient p
 	WHERE  p.patient_number_ccc = pv.patient_number
 	and pv.visit_date  BETWEEN '$from' AND '$to' 
 	and p.differentiated_care = '1'
