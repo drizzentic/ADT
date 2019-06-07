@@ -11,7 +11,7 @@ CREATE OR REPLACE VIEW vw_routine_refill_visit AS
 		pv.dispensing_date AS visit_date,
 		pv.quantity,
 		pv.duration,
-		d.Name as dose,
+		pv.dose as dose,
 		pv.current_weight AS current_weight,
 	    CASE 
 	    WHEN pv.pill_count > 0 AND (pv.missed_pills - pv.pill_count) >= pv.pill_count THEN 0
@@ -29,7 +29,8 @@ CREATE OR REPLACE VIEW vw_routine_refill_visit AS
 	    WHEN REPLACE(pv.adherence, '%', '') = 'Infinity' THEN ''
 	    ELSE REPLACE(pv.adherence, '%', '')
 	    END AS appointment_adherence,
-		p.differentiated_care,
+		CASE
+		WHEN  p.differentiated_care = 1 THEN 'YES' ELSE  'NO' END as differentiated_care,	
 		ps.name AS source
 	FROM patient_visit pv
 	LEFT JOIN patient p ON p.patient_number_ccc = pv.patient_id
@@ -39,6 +40,5 @@ CREATE OR REPLACE VIEW vw_routine_refill_visit AS
 	LEFT JOIN regimen r ON r.id = pv.regimen
 	LEFT JOIN patient_source ps on ps.id = p.source
 	LEFT JOIN visit_purpose v ON v.id = pv.visit_purpose
-	LEFT JOIN dose d on pv.dose = d.Name
 	WHERE pv.active = 1
 	AND v.name LIKE '%routine%'//

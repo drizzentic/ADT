@@ -4986,7 +4986,7 @@ GROUP BY  patient_id
         $from = date('Y-m-d', strtotime($from));
         $to = date('Y-m-d', strtotime($to));
 
-        $sql = "SELECT pv.patient_number,type_of_service,source,patient_name,current_age,sex,regimen,visit_date,dose,duration,quantity,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence FROM vw_routine_refill_visit pv
+        $sql = "SELECT pv.patient_number,type_of_service,source,patient_name,current_age,sex,regimen,visit_date,dose,duration,quantity,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence,differentiated_care FROM vw_routine_refill_visit pv
     WHERE pv.visit_date 
     BETWEEN '$from' 
     AND '$to' group by patient_number,visit_date";
@@ -5007,6 +5007,7 @@ GROUP BY  patient_id
     <th> Duration</th>
     <th> Quantity</th>
     <th> Current Weight (Kg) </th>
+    <th> Differentiated Care </th>
     <th> Missed Pills Adherence (%)</th>
     <th> Pill Count Adherence (%)</th>
     <th> Appointment Adherence (%)</th>
@@ -5029,6 +5030,7 @@ GROUP BY  patient_id
                 $quantity = $result['quantity'];
                 $weight = $result['current_weight'];
                 $missed_pills = $result['missed_pill_adherence'];
+                $differentiated_care = $result['differentiated_care'];
                 $pill_count = $result['pill_count_adherence'];
                 $appointments = $result['appointment_adherence'];
                 $appointments = str_replace(">", "", $appointments);
@@ -5042,7 +5044,7 @@ GROUP BY  patient_id
                 }
                 $adherence_array = array($missed_pills, $pill_count, $appointments);
                 $avg_adherence = number_format(array_sum($adherence_array) / count($adherence_array), 2);
-                $row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$source</td><td>$patient_name</td><td>$age</td><td>$gender</td><td>$regimen_desc</td><td>$dispensing_date</td><td>$dose</td><td>$duration</td><td>$quantity</td><td>$weight</td>
+                $row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$source</td><td>$patient_name</td><td>$age</td><td>$gender</td><td>$regimen_desc</td><td>$dispensing_date</td><td>$dose</td><td>$duration</td><td>$quantity</td><td>$weight</td><td>$differentiated_care</td>
                     <td>$missed_pills</td><td>$pill_count</td><td>$appointments</td><td>$avg_adherence</td></tr>";
 
                 $overall_total++;
@@ -5075,7 +5077,7 @@ GROUP BY  patient_id
         $from = date('Y-m-d', strtotime($from));
         $to = date('Y-m-d', strtotime($to));
 
-        $sql = "SELECT pv.patient_number,type_of_service,client_support,patient_name,current_age,sex,regimen,visit_date,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence,pv.source FROM vw_routine_refill_visit pv , patient p
+        $sql = "SELECT pv.patient_number,type_of_service,client_support,patient_name,current_age,sex,regimen,visit_date,current_weight,avg(missed_pill_adherence) as missed_pill_adherence,pill_count_adherence,appointment_adherence,pv.source,differentiated_care FROM vw_routine_refill_visit pv , patient p
 	WHERE  p.patient_number_ccc = pv.patient_number
 	and pv.visit_date  BETWEEN '$from' AND '$to' 
 	and p.differentiated_care = '1'
