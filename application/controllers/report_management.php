@@ -3270,66 +3270,29 @@ class Report_management extends MY_Controller {
         $data['content_view'] = 'reports/differentiated_care_appointments_v';
         $this->load->view('template', $data);
     }
-      public function multi_month_arv_dispensing($from = "", $to = "") {
-        $start_date = date('Y-m-d', strtotime($from));
+      public function multi_month_arv_dispensing($to = "") {
+        // $start_date = date('Y-m-d', strtotime($from));
         $end_date = date('Y-m-d', strtotime($to));
         $overall_total = 0;
 
-        $sql = "SELECT tmp.appointment_description, 
-       Date_format(Min(appointment), '%d-%b-%Y') from_date, 
-       Date_format(Max(appointment), '%d-%b-%Y') to_date, 
-       Count(*) AS total  FROM   (SELECT pv.patient_id, 
-               pv.visit_date, 
-               Min(pa.appointment) appointment, Datediff(Min(pa.appointment), 
-       pv.visit_date) appointment_days, CASE WHEN Datediff(Min(pa.appointment), 
-       pv.visit_date) > 0 
-       AND Datediff(Min(pa.appointment), pv.visit_date) < 31 THEN '1 Month(s)' 
-       WHEN 
-       Datediff(Min(pa.appointment), pv.visit_date) > 30 AND 
-       Datediff(Min(pa.appointment), pv.visit_date) < 61 THEN '2 Month(s)' WHEN 
-       Datediff(Min(pa.appointment), pv.visit_date) > 60 AND 
-       Datediff(Min(pa.appointment), pv.visit_date) 
-       < 91 THEN '3 Month(s)' WHEN Datediff(Min(pa.appointment), pv.visit_date) 
-       > 90 
-       AND Datediff(Min(pa.appointment), pv.visit_date) < 121 THEN '4 Month(s)' 
-       WHEN 
-       Datediff(Min(pa.appointment), pv.visit_date) > 120 AND 
-       Datediff(Min(pa.appointment), pv.visit_date) < 151 THEN '5 Month(s)' WHEN 
-       Datediff(Min(pa.appointment), pv.visit_date) > 150 AND 
-       Datediff(Min(pa.appointment), pv.visit_date) 
-       < 181 THEN '6 Month(s)' WHEN Datediff(Min(pa.appointment), pv.visit_date) 
-       > 180 
-       AND Datediff(Min(pa.appointment), pv.visit_date) < 211 THEN '7 Month(s)' 
-       WHEN 
-       Datediff(Min(pa.appointment), pv.visit_date) > 210 AND 
-       Datediff(Min(pa.appointment), pv.visit_date) < 241 THEN '8 Month(s)' WHEN 
-       Datediff(Min(pa.appointment), pv.visit_date) > 240 AND 
-       Datediff(Min(pa.appointment), pv.visit_date) 
-       < 271 THEN '9 Month(s)' WHEN Datediff(Min(pa.appointment), pv.visit_date) 
-       > 270 
-       AND Datediff(Min(pa.appointment), pv.visit_date) < 301 THEN '10 Month(s)' 
-       WHEN 
-       Datediff(Min(pa.appointment), pv.visit_date) > 300 AND 
-       Datediff(Min(pa.appointment), pv.visit_date) < 331 THEN '11 Month(s)' 
-       WHEN 
-       Datediff(Min(pa.appointment), pv.visit_date) > 330 AND 
-       Datediff(Min(pa.appointment), pv.visit_date) 
-       < 361 THEN '12 Month(s)' WHEN Datediff(Min(pa.appointment), 
-       pv.visit_date) > 360 
-       THEN 'Over 1 Year' ELSE 'N/A' END AS appointment_description 
-        FROM   patient_appointment pa 
-               INNER JOIN (SELECT patient_id, 
-                                  dispensing_date visit_date 
-                           FROM   patient_visit 
-                           WHERE  dispensing_date BETWEEN ? AND ? 
-                           GROUP  BY patient_id, 
-                                     visit_date) pv 
-                       ON pv.patient_id = pa.patient 
-                          AND pa.appointment > visit_date GROUP BY patient_id, 
-       visit_date) tmp 
-            GROUP  BY tmp.appointment_description ";
+        $sql = " select appointment_description, count( tmp.patient_id) as total from(
+SELECT patient_id, p.nextappointment, max(dispensing_date),  Datediff(p.nextappointment, max(dispensing_date)) appointment_days,
+CASE 
+WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 0 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
+WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 30 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
+WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 60 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
+WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 90 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
+WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 120 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
+WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 150 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
+WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 181 THEN 'Over 6 months'
+ELSE 'N/A' END AS appointment_description
+FROM patient_visit pv
+LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+WHERE p.current_status=1 AND  dispensing_date<=?
+GROUP BY  patient_id
+ ) tmp group by appointment_description";
 
-        $query = $this->db->query($sql, array($start_date, $end_date));
+        $query = $this->db->query($sql, array($end_date));
         $results = $query->result_array();
 
         $row_string = "<table border='1' class='dataTables'>
@@ -3346,7 +3309,7 @@ class Report_management extends MY_Controller {
             $app_desc = str_ireplace(array(' ', '(s)'), array('_', ''), $appointment_description);
             $total = $result['total'];
             $overall_total += $total;
-            $action_link = anchor('report_management/getMMDScheduledPatients/' . $result['from_date'] . '/' . $result['to_date'] . '/' . $from . '/' . $to . '/' . $app_desc, 'View Patients', array('target' => '_blank'));
+            $action_link = anchor('report_management/getMMDScheduledPatients/' . $to . '/' . $app_desc, 'View Patients', array('target' => '_blank'));
             $row_string .= "<tr><td>$appointment_description</td><td>$total</td><td>$action_link</td></tr>";
         }
         $row_string .= "</tbody></table>";
@@ -3362,7 +3325,7 @@ class Report_management extends MY_Controller {
         $data['selected_report_type'] = "Visiting Patients";
         $data['report_title'] = "Multi Month ARVs Dispensing (MMD)";
         $data['facility_name'] = $this->session->userdata('facility_name');
-        $data['content_view'] = 'reports/differentiated_care_appointments_v';
+        $data['content_view'] = 'reports/multi_month_arv_v';
         $this->load->view('template', $data);
     }
 
@@ -3552,7 +3515,7 @@ class Report_management extends MY_Controller {
         $data['content_view'] = 'reports/patients_scheduled_v';
         $this->load->view('template', $data);
     }
-    public function getMMDScheduledPatients($from = "", $to = "", $filter_from = NULL, $filter_to = NULL, $appointment_description = NULL) {
+    public function getMMDScheduledPatients($filter_to = NULL, $appointment_description = NULL) {
         //Variables
         $visited = 0;
         $not_visited = 0;
@@ -3566,60 +3529,27 @@ class Report_management extends MY_Controller {
         $from = date('Y-m-d', strtotime($from));
         $to = date('Y-m-d', strtotime($to));
 
-        if ($filter_from != NULL && $filter_to != NULL && $appointment_description != NULL) {
+        if ($filter_to != NULL && $appointment_description != NULL) {
             $filter_from = date('Y-m-d', strtotime($filter_from));
             $filter_to = date('Y-m-d', strtotime($filter_to));
             $app_desc = str_ireplace('_', ' ', $appointment_description) . '(s)';
-            //Get all patients who have apppointments on the selected date range and visited in the filtered date range
-            $sql = "SELECT 
-        tmp.patient,
-        tmp.appointment
-        FROM
-        (
-        SELECT 
-        pa.patient,
-        MIN(pa.appointment) appointment, 
-        CASE 
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 0 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 31 THEN '1 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 30 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 61 THEN '2 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 60 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 91 THEN '3 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 90 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 121 THEN '4 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 120 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 151 THEN '5 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 150 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 181 THEN '6 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 180 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 211 THEN '7 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 210 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 241 THEN '8 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 240 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 271 THEN '9 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 270 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 301 THEN '10 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 300 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 331 THEN '11 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 330 AND DATEDIFF(MIN(pa.appointment), pv.visit_date) < 361 THEN '12 Month(s)'
-        WHEN DATEDIFF(MIN(pa.appointment), pv.visit_date) > 360 THEN 'Over 1 Year'
-        ELSE 'N/A'
-        END AS appointment_description
-        FROM patient_appointment pa 
-        INNER JOIN 
-        (
-        SELECT 
-        patient_id, dispensing_date visit_date
-        FROM patient_visit
-        WHERE dispensing_date BETWEEN '$filter_from' AND '$filter_to'
-        GROUP BY patient_id, visit_date
-        ) pv ON pv.patient_id = pa.patient AND pa.appointment > visit_date
-        GROUP BY patient_id,visit_date
-        ) tmp
-        WHERE tmp.appointment_description = '$app_desc'";
-        } else {
-            //Get all patients who have apppointments on the selected date range
-            $sql = "SELECT pa.patient,pa.appointment ,ca.appointment as clinic_appointment,
-        CASE
-        WHEN  p.differentiated_care = 1 THEN 'YES' ELSE  'NO' END as diff_care,
-        DATEDIFF(ca.appointment, pa.appointment) as days_diff
-        FROM patient_appointment pa
-        LEFT JOIN clinic_appointment ca on ca.id = pa.clinical_appointment
-        LEFT JOIN patient p on p.patient_number_ccc = pa.patient
-        WHERE pa.appointment BETWEEN '$from' AND '$to' 
-        AND pa.facility='$facility_code' 
-        GROUP BY patient,appointment";
-        }
+           
+         } 
+         $sql = "SELECT patient_id as patient ,nextappointment as appointment  from ( SELECT patient_id, p.nextappointment, max(dispensing_date),  Datediff(p.nextappointment, max(dispensing_date)) appointment_days,
+            CASE 
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 0 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 30 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 60 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 90 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 120 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 150 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 181 THEN 'Over 6 months'
+            ELSE 'N/A' END AS appointment_description
+            FROM patient_visit pv
+            LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+            WHERE p.current_status=1 AND  dispensing_date<='$filter_to'
+            GROUP BY  patient_id
+             ) tmp where appointment_description = '$app_desc'";
 
         $query = $this->db->query($sql);
         $results = $query->result_array();
@@ -3645,7 +3575,6 @@ class Report_management extends MY_Controller {
             foreach ($results as $result) {
                 $patient = $result['patient'];
                 $appointment = $result['appointment'];
-                $diff_care = $result['diff_care'];
                 $days_diff = $result['days_diff'];
 
                 //Check if Patient visited on set appointment
@@ -3681,7 +3610,8 @@ class Report_management extends MY_Controller {
             IF(gender=1,'Male','Female')as gender,
             UPPER(physical) as physical,
             phone,
-            alternate,
+            alternate,      
+            CASE WHEN  differentiated_care = 1 THEN 'YES' ELSE  'NO' END as diff_care,
             FLOOR(DATEDIFF('$today',dob)/365) as age,
             regimen_service_type.name as service,
             r.regimen_desc as last_regimen 
@@ -3705,6 +3635,8 @@ class Report_management extends MY_Controller {
                         }
                         $address = $result['physical'];
                         $gender = $result['gender'];
+                        $diff_care = $result['diff_care'];
+
                         $age = $result['age'];
                         $service = $result['service'];
                         $last_regimen = $result['last_regimen'];
