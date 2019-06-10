@@ -9185,6 +9185,52 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
         $overall_adult_female_pmtct = 0;
         $overall_adult_female_oi = 0;
         $overall_adult_female_prep = 0;
+           $age_range = '';
+        switch ($agegroup) {
+           case '4weeks': 
+           $age_range = '4 weeks to 4 years';
+           break;
+           case '5years': 
+           $age_range = 'Below 1 year';
+           break;
+           case '1year': 
+           $age_range = '1 Year -  4 years';
+           break;
+           $age_range = '5 years - 9 years';
+           break;
+           case '10years': 
+           $age_range = '10 years - 14 years';
+           break;
+           case '15years': 
+           $age_range = '15 years - 19 years';
+           break;
+           case '20years': 
+           $age_range = '20 years - 24 years';
+           break;
+           case '25years': 
+           $age_range = '25 years - 29 years';
+           break;
+           case '30years': 
+           $age_range = '30 years - 34 years';
+           break;
+           case '35years': 
+           $age_range = '35 years - 39 years';
+           break;
+           case '40years': 
+           $age_range = '40 years - 44 years';
+           break;
+           case '45years': 
+           $age_range = '45 years - 49 years';
+           break;
+           case 'above49': 
+           $age_range = 'above 49 years';
+           break;
+           case 'below1': 
+
+           default:
+                # code...
+           break;
+       }
         if ($agegroup =='below4'){
             $agecond =  "AND  FLOOR(datediff('$from',p.dob))<29 ";
         }
@@ -9421,7 +9467,7 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
         $data['selected_report_type_link'] = "early_warning_report_select";
         $data['selected_report_type_link'] = "standard_report_row";
         $data['selected_report_type'] = "Standard Reports";
-        $data['report_title'] = "Filtered number of Active Patients receiving ART (by AGE - formulation age bands) - $gender ";
+        $data['report_title'] = "Filtered number of Active Patients receiving ART ($age_range - formulation age bands) - $gender ";
         $data['facility_name'] = $this->session->userdata('facility_name');
         $data['content_view'] = 'reports/no_of_patients_receiving_art_byregimen_v';
         $this->load->view('template', $data);
@@ -9437,6 +9483,52 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
         $regimen_totals = array();
         $data['gender'] = $gender;
         $data['agegroup'] = $agegroup;
+        $age_range = '';
+        switch ($agegroup) {
+           case '4weeks': 
+           $age_range = '4 weeks to 4 years';
+           break;
+           case '5years': 
+           $age_range = 'Below 1 year';
+           break;
+           case '1year': 
+           $age_range = '1 Year -  4 years';
+           break;
+           $age_range = '5 years - 9 years';
+           break;
+           case '10years': 
+           $age_range = '10 years - 14 years';
+           break;
+           case '15years': 
+           $age_range = '15 years - 19 years';
+           break;
+           case '20years': 
+           $age_range = '20 years - 24 years';
+           break;
+           case '25years': 
+           $age_range = '25 years - 29 years';
+           break;
+           case '30years': 
+           $age_range = '30 years - 34 years';
+           break;
+           case '35years': 
+           $age_range = '35 years - 39 years';
+           break;
+           case '40years': 
+           $age_range = '40 years - 44 years';
+           break;
+           case '45years': 
+           $age_range = '45 years - 49 years';
+           break;
+           case 'above49': 
+           $age_range = 'above 49 years';
+           break;
+           case 'below1': 
+
+           default:
+                # code...
+           break;
+       }
         $_gender = ($gender =='male') ? 1 : 2 ;
         $total = 0;
         $overall_adult_male_art = 0;
@@ -9685,7 +9777,7 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
         $data['selected_report_type_link'] = "early_warning_report_select";
         $data['selected_report_type_link'] = "standard_report_row";
         $data['selected_report_type'] = "Standard Reports";
-        $data['report_title'] = "Filtered number of Active Patients receiving ART (by AGE - Clinical Age Bands) - $_gender ";
+        $data['report_title'] = "Filtered number of Active Patients receiving ART ($age_range - Clinical Age Bands) - $gender ";
         $data['facility_name'] = $this->session->userdata('facility_name');
         $data['content_view'] = 'reports/no_of_patients_receiving_art_byregimen_v';
         $this->load->view('template', $data);
