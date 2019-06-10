@@ -704,7 +704,6 @@ foreach($results as $result){
 				} else {
 					$("#patient_source_listing").hide();
 					$("#transfer_source").attr("value",'');
-				$('#patient_number').val('<?= $facility_code.$cs;?>');
 				}
 			});
 
