@@ -3663,7 +3663,7 @@ GROUP BY  patient_id
         $data['banner_text'] = "Facility Reports";
         $data['selected_report_type_link'] = "visiting_patient_report_row";
         $data['selected_report_type'] = "Visiting Patients";
-        $data['report_title'] = "List of Patients Scheduled to Visit";
+        $data['report_title'] = "List of Patients Scheduled to Visit within ".$app_desc;
         $data['facility_name'] = $this->session->userdata('facility_name');
         $data['content_view'] = 'reports/patients_mmd_scheduled_v';
         $this->load->view('template', $data);
@@ -9685,7 +9685,7 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
         $data['selected_report_type_link'] = "early_warning_report_select";
         $data['selected_report_type_link'] = "standard_report_row";
         $data['selected_report_type'] = "Standard Reports";
-        $data['report_title'] = "Filtered number of Active Patients receiving ART (by AGE - formulation age bands) - $gender ";
+        $data['report_title'] = "Filtered number of Active Patients receiving ART (by AGE - formulation age bands) - $_gender ";
         $data['facility_name'] = $this->session->userdata('facility_name');
         $data['content_view'] = 'reports/no_of_patients_receiving_art_byregimen_v';
         $this->load->view('template', $data);

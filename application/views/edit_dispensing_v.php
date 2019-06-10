@@ -17,6 +17,7 @@ foreach ($expiries as $expiry) {
 		</style>
 		<script type="text/javascript">
 			$(document).ready(function() {
+
 				$("#patient").val("<?php echo $result['patient_id'];?>");
 				var first_name="<?php echo strtoupper($result['first_name']); ?>";
 				var other_name="<?php echo strtoupper($result['other_name']); ?>";
@@ -26,8 +27,25 @@ foreach ($expiries as $expiry) {
 				$('#differentiated_care').each(function(e){
 					if(<?= $result['differentiated_care'];?> == '1'){
 						$(this).attr("checked", "checked");
+			            $(".clinical_appointment_input").show();
 					}
 				});
+
+				$('#differentiated_care').click(function (event) {
+					if ($(this).is(":checked")){
+						$(".clinical_appointment_input").show();
+						$("#dcm_exit_reason_container").hide();
+						validateAppointments();
+					} else {
+						$(".clinical_appointment_input").hide();
+			            // show diff care exit reason
+			            if($result['differentiated_care'] == 1){
+		            	$("#dcm_exit_reason_container").show();
+		            }
+		        }
+		    });
+
+
 
 				$("#dispensing_date").val("<?php echo @$result['dispensing_date'];?>"); 
 				$("#original_dispensing_date").val("<?php echo @$result['dispensing_date'];?>"); 
@@ -41,6 +59,7 @@ foreach ($expiries as $expiry) {
 				$("#height").val("<?php echo @$result['current_height'];?>"); 
 				$("#last_regimen").val("<?php echo @$result['last_regimen'];?>"); 
 				$("#current_regimen").val("<?php echo @$result['regimen'];?>"); 
+			    $("#next_clinical_appointment_date").val("<?php echo @$result['clinicalappointment'] ?>").trigger('change');
 				$("#adherence").val("<?php echo @$result['adherence'];?>"); 
 				$("#non_adherence_reasons").val("<?php echo @$result['non_adherence_reason'];?>"); 
 				$("#regimen_change_reason").val("<?php echo @$result['regimen_change_reason'];?>"); 
@@ -90,6 +109,42 @@ foreach ($expiries as $expiry) {
 					changeMonth : true,
 					changeYear : true
 			});
+			   // add datepicker for next clinical appointment date
+        $("#next_clinical_appointment_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: $.datepicker.ATOM,
+            onSelect: function (dateText, inst) {
+                validateAppointments();
+                var base_date = new Date();
+                var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
+                var today_timestamp = today.getTime();
+                var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
+                var one_day = 1000 * 60 * 60 * 24;
+                var appointment_timestamp = $("#next_clinical_appointment_date").datepicker("getDate").getTime();
+                var difference = appointment_timestamp - dispensing_date_timestamp;
+                var days_difference = difference / one_day;
+                $("#days_to_next_clinical").attr("value", Math.round(days_difference));
+                retrieveAppointedPatients();
+            }
+        });
+
+            $("#days_to_next_clinical").change(function () {
+            validateAppointments();
+            var days_to_next_clinical = $("#days_to_next_clinical").attr("value");
+            if (days_to_next_clinical > 0) {
+                var base_date = new Date();
+                var clinical_appointment_date = $("#next_clinical_appointment_date");
+                var today = new Date(base_date.getFullYear(), base_date.getMonth(), base_date.getDate());
+                var today_timestamp = today.getTime();
+                var dispensing_date_timestamp = Date.parse($("#dispensing_date").val());
+                var appointment_timestamp = (1000 * 60 * 60 * 24 * days_to_next_clinical) + dispensing_date_timestamp;
+                clinical_appointment_date.datepicker("setDate", new Date(appointment_timestamp));
+                // retrieveAppointedPatients();
+            } else {
+                bootbox.alert("<h4>Notice!</h4>\n\<center>Days cannot be empty or negative</center>");
+            }
+        });
 			
 			//Add datepicker for the expiry date
 			$("#expiry").datepicker({
@@ -112,6 +167,15 @@ foreach ($expiries as $expiry) {
 				}
 				
 			});
+
+    function validateAppointments() {
+        var days_to_next_clinical = $("#days_to_next_clinical").attr("value");
+        var days = $("#days_to_next").attr("value");
+        if (parseInt(days) > parseInt(days_to_next_clinical) && $('#differentiated_care').is(":checked")) {
+            setClinicalAppointment(days);
+            alert('Pharmacy appointments must be on or before clinical appointment.');
+        }
+    }
 			
 	       //Function to display all Drugs in this regimen
 		   $("#current_regimen").change(function() {
@@ -492,6 +556,23 @@ foreach ($expiries as $expiry) {
                             <input  type="checkbox" name="differentiated_care" id="differentiated_care"  class="">
 						</div>
 					</div>
+					<div class="max-row clinical_appointment_input" style="display:none;">
+						<div class="mid-row">
+                        <div class="control-group">
+                            <label><span class='astericks'>*</span>Days to Next Clinical Appointment</label>
+                            <input  type="text" name="days_to_next_clinical" id="days_to_next_clinical" class="validate[required]">
+                        </div>
+                    </div>
+						<div class="mid-row">
+                        <div class="control-group">
+                            <label><span class='astericks'>*</span>Date of Next Clinical Appointment</label>
+                            <input  type="text" name="next_clinical_appointment_date" id="next_clinical_appointment_date" class="validate[required]" >
+                            <input  type="hidden" name="next_clinical_appointment" id="next_clinical_appointment" class="validate[required]" >
+
+                        </div>
+                    </div>
+                </div>
+
 			</fieldset>
 		</div>
 		<div id="edit_drugs_section" style="margin: 0 auto;">
