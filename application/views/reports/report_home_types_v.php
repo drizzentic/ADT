@@ -182,8 +182,8 @@ $ccc_stores = $this->session->userdata("ccc_store");
                     <option class="date_range_report" value="getScheduledPatientsDiffCare">List of Patients Scheduled to Visit</option>
                     <option class="date_range_report" value="getPatientsStartedonDateDiffCare">List of Patients Started (on a Particular Date)</option>
                     <option class="date_range_report" value="getPatientsforRefillDiffCare">List of Patients Visited For Refill</option>
-                    <option class="date_range_report" value="differenciated_package_of_care">Patients on Differentiated Care(Viral Load)</option>
-                    <option class="date_range_report" value="get_differentiated_care_appointments">Patients on Differentiated Care(Appointments)</option>
+                    <!-- <option class="date_range_report" value="differenciated_package_of_care">Patients on Differentiated Care(Viral Load)</option> -->
+                    <!-- <option class="date_range_report" value="get_differentiated_care_appointments">Patients on Differentiated Care(Appointments)</option> -->
                 </select></td>
         </tr>
         <!-- Early warning reports -->
@@ -368,7 +368,7 @@ $ccc_stores = $this->session->userdata("ccc_store");
                 </td>
                 
                 <td class="clinical_band_report_type_title" style="display: none;">
-                    <select name="age_type" id="report_age">
+                    <select name="age_type" id="clinical_report_age">
                         <option value="below1">Below 1 year</option>
                         <option value="1year">1 Year -  4 years</option>
                         <option value="5years">5 years - 9 years</option>

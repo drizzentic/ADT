@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
-$config['adt_version'] = '3.4(Beta-1.0)';
+$config['adt_version'] = '3.4';
 $config['server_url'] = 'http://197.248.7.226/api/public/api/v1/';  // ppb API url
 $config['ip'] = '197.248.7.226'; // PPB IP address
 $config['port'] = '80'; // PPB PORt
@@ -24,6 +24,7 @@ $config['dhiscode']['fcdrr_code'] = 'OSulH5zPHPw';
 $config['dhiscode']['fmaps_code'] = 'mgaZyW3Xzyf';
 $config['dhiscode']['dcdrr_code'] = 'rk2yudsNrm5';
 $config['dhiscode']['dmaps_code'] = 'ZddkIXm6FDw';
+// GIGlaYuivFh 730 bb
 
 /* End of file config.php */
 /* Location: ./application/config/adt_config.php */

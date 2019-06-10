@@ -907,6 +907,7 @@ $(document).ready(function() {
 
 					var gender = $('#report_gender').val();
 					var age = $('#report_age').val();
+					var clinicalage = $('#clinical_report_age').val();
 
 					//If adherence report, get adherence report type
 					if(report=="graphical_adherence"){
@@ -923,7 +924,7 @@ $(document).ready(function() {
 					 report_url = base_url + "report_management/" + report + "/" + from + "/" + to + "/" + gender + "/" + age;
 					}
 					if ($(".select_report").val()=='clinical_bands'){
-					 report_url = base_url + "report_management/" + report + "/" + from + "/" + to + "/" + gender + "/" + age;
+					 report_url = base_url + "report_management/" + report + "/" + from + "/" + to + "/" + gender + "/" + clinicalage;
 					}
 					
 					window.location = report_url;
