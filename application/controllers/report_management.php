@@ -3564,6 +3564,7 @@ GROUP BY  patient_id
     <th> Sex </th>
     <th> Age </th>
     <th> Service </th>
+    <th> Diff Care </th>
     <th> Last Regimen </th>
     <th> Appointment Date </th>
     <th> Visit Status</th>
@@ -3614,7 +3615,7 @@ GROUP BY  patient_id
             CASE WHEN  differentiated_care = 1 THEN 'YES' ELSE  'NO' END as diff_care,
             FLOOR(DATEDIFF('$today',dob)/365) as age,
             regimen_service_type.name as service,
-            r.regimen_desc as last_regimen 
+            concat (r.regimen_code,' | ',r.regimen_desc )as last_regimen 
             FROM patient 
             LEFT JOIN patient_source pss on pss.id=patient.source 
             LEFT JOIN regimen_service_type on regimen_service_type.id = patient.service
@@ -3643,7 +3644,7 @@ GROUP BY  patient_id
                         $appointment = date('d-M-Y', strtotime($appointment));
                         $source = $result['source'];
                     }
-                    $row_string .= "<tr><td>$patient_id</td><td width='300' style='text-align:left;'>$first_name $other_name $last_name</td><td>$phone</td><td>$address</td><td>$gender</td><td>$age</td><td>$service</td><td style='white-space:nowrap;'>$last_regimen</td><td>$appointment</td><td width='200px'>$status</td><td>$source</td></tr>";
+                    $row_string .= "<tr><td>$patient_id</td><td width='300' style='text-align:left;'>$first_name $other_name $last_name</td><td>$phone</td><td>$address</td><td>$gender</td><td>$age</td><td>$service</td><td>$diff_care</td><td style='white-space:nowrap;'>$last_regimen</td><td>$appointment</td><td width='200px'>$status</td><td>$source</td></tr>";
                     $overall_total++;
                 }
             }
