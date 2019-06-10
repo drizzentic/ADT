@@ -9230,7 +9230,7 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
            default:
                 # code...
            break;
-       }
+        }
         if ($agegroup =='below4'){
             $agecond =  "AND  FLOOR(datediff('$from',p.dob))<29 ";
         }
@@ -9280,6 +9280,7 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
                     left join patient p on p.patient_number_ccc =  pv.patient_id
                     WHERE pv.dispensing_date >='$from'  
                     $agecond
+                    AND p.gender = $_gender
                     AND pv.dispensing_date <='$to'  
                     AND pv.facility= '$facility_code'
                     group by patient_id 
@@ -9302,6 +9303,7 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
                 AND pv.dispensing_date <='$to'  
                 AND pv.facility= '$facility_code' 
                 $agecond
+                AND p.gender = $_gender
                 group by patient_id ) t
                 group by regimen_desc";
 
@@ -9590,6 +9592,7 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
                     left join patient p on p.patient_number_ccc =  pv.patient_id
                     WHERE pv.dispensing_date >='$from'  
                     $agecond
+                    AND p.gender = $_gender
                     AND pv.dispensing_date <='$to'  
                     AND pv.facility= '$facility_code'
                     group by patient_id 
@@ -9612,6 +9615,7 @@ $this->getAdherence($name = "appointment", $start_date , $end_date, $type,TRUE) 
                 AND pv.dispensing_date <='$to'  
                 AND pv.facility= '$facility_code' 
                 $agecond
+                AND p.gender = $_gender
                 group by patient_id ) t
                 group by regimen_desc";
 
