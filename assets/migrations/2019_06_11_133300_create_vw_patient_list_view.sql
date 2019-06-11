@@ -60,7 +60,7 @@ AS
             AS supported_by, 
          rst.name 
             AS service, 
-         r1.regimen_desc 
+         r1.regimen_code 
             AS start_regimen, 
          p.start_regimen_date 
             AS start_regimen_date, 
@@ -94,7 +94,7 @@ AS
             AS disclosure, 
          p.support_group 
             AS support_group, 
-         r.regimen_desc 
+         r.regimen_code 
             AS current_regimen, 
          p.nextappointment 
             AS nextappointment, 
