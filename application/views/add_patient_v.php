@@ -203,7 +203,7 @@
 				changeYear : true
 			});
 			
-			$("#enrolled").datepicker('setDate', new Date());
+			// $("#enrolled").datepicker('setDate', new Date());
 			
 			
 			//Attach date picker for date of start regimen 
@@ -215,7 +215,7 @@
 				maxDate : "0D"
 			});
 			
-			$("#service_started").datepicker('setDate', new Date());
+			// $("#service_started").datepicker('setDate', new Date());
 			
 			//Function to display transfer from list if patient source is(transfer in)
 			$("#source").change(function() {
