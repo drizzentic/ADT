@@ -478,6 +478,7 @@
 		//Add datepicker for the transaction date
 		$("#transaction_date").datepicker({
 			defaultDate : new Date(),
+            maxDate: "0D",	
 			dateFormat : 'dd-M-yy',
 			changeYear : true,
 			changeMonth : true
