@@ -232,6 +232,7 @@
 			$("#transfer_source").change(function() {
 				var selected_value = $(this).val();
 				$('#patient_number').val(selected_value+'<?=$cs?>');
+				$('#patient_number').attr('maxlength','20');
 			});
 			
 
