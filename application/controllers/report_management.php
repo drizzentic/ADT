@@ -3270,7 +3270,68 @@ class Report_management extends MY_Controller {
         $data['content_view'] = 'reports/differentiated_care_appointments_v';
         $this->load->view('template', $data);
     }
-      public function multi_month_arv_dispensing($to = "") {
+      public function distribution_refill($to = "") {
+        // $start_date = date('Y-m-d', strtotime($from));
+        $end_date = date('Y-m-d', strtotime($to));
+        $overall_total = 0;
+
+        $sql = "SELECT appointment_description, count( tmp.patient_id) as total from(
+                SELECT patient_id, p.clinicalappointment, max(dispensing_date),  Datediff(p.clinicalappointment, max(dispensing_date)) appointment_days,
+                CASE 
+                 WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 0 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
+                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 90 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
+                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 120 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
+                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 150 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
+
+                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 180 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 210 THEN '7 MONTH(S)'
+
+                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 210 THEN 'Over 7 months'
+
+                ELSE 'N/A' END AS appointment_description
+                FROM patient_visit pv
+                LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+                WHERE p.current_status=1 AND  dispensing_date<=?
+                GROUP BY  patient_id
+                 ) tmp group by appointment_description";
+
+        $query = $this->db->query($sql, array($end_date));
+        $results = $query->result_array();
+
+        $row_string = "<table border='1' class='dataTables'>
+    <thead >
+    <tr>
+    <th>Appointment Duration</th>
+    <th>Total</th>
+    <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>";
+        foreach ($results as $result) {
+            $appointment_description = $result['appointment_description'];
+            $app_desc = str_ireplace(array(' ', '(s)'), array('_', ''), $appointment_description);
+            $total = $result['total'];
+            $overall_total += $total;
+            $action_link = anchor('report_management/getRefillDistributionPatients/' . $to . '/' . $app_desc, 'View Patients', array('target' => '_blank'));
+            $row_string .= "<tr><td>$appointment_description</td><td>$total</td><td>$action_link</td></tr>";
+        }
+        $row_string .= "</tbody></table>";
+
+        $data['from'] = date('d-M-Y', strtotime($from));
+        $data['to'] = date('d-M-Y', strtotime($to));
+        $data['dyn_table'] = $row_string;
+        $data['overall_total'] = $overall_total;
+        $data['title'] = "webADT | Reports";
+        $data['hide_side_menu'] = 1;
+        $data['banner_text'] = "Facility Reports";
+        $data['selected_report_type_link'] = "visiting_patient_report_row";
+        $data['selected_report_type'] = "Visiting Patients";
+        $data['report_title'] = "Appointment Distribution for Refill";
+        $data['facility_name'] = $this->session->userdata('facility_name');
+        $data['content_view'] = 'reports/distribution_refill_v';
+        $this->load->view('template', $data);
+    }
+
+          public function multi_month_arv_dispensing($to = "") {
         // $start_date = date('Y-m-d', strtotime($from));
         $end_date = date('Y-m-d', strtotime($to));
         $overall_total = 0;
@@ -3544,6 +3605,158 @@ GROUP BY  patient_id
             WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 120 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
             WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 150 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
             WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 181 THEN 'Over 6 months'
+            ELSE 'N/A' END AS appointment_description
+            FROM patient_visit pv
+            LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+            WHERE p.current_status=1 AND  dispensing_date<='$filter_to'
+            GROUP BY  patient_id
+             ) tmp where appointment_description = '$app_desc'";
+
+        $query = $this->db->query($sql);
+        $results = $query->result_array();
+        $row_string = "
+    <table border='1' class='dataTables'>
+    <thead >
+    <tr>
+    <th> Patient No </th>
+    <th> Patient Name </th>
+    <th> Phone No /Alternate No</th>
+    <th> Phys. Address </th>
+    <th> Sex </th>
+    <th> Age </th>
+    <th> Service </th>
+    <th> Diff Care </th>
+    <th> Last Regimen </th>
+    <th> Appointment Date </th>
+    <th> Visit Status</th>
+    <th> Source</th>
+    </tr>
+    </thead>
+    <tbody>";
+        if ($results) {
+            foreach ($results as $result) {
+                $patient = $result['patient'];
+                $appointment = $result['appointment'];
+                $days_diff = $result['days_diff'];
+
+                //Check if Patient visited on set appointment
+                $sql = "select * from patient_visit where patient_id='$patient' and dispensing_date='$appointment' and facility='$facility_code'";
+                $query = $this->db->query($sql);
+                $results = $query->result_array();
+                if ($results) {
+                    //Visited
+                    $visited++;
+                    $status = "<span style='color:green;'>Yes</span>";
+                } else if (!$results) {
+                    //Check if visited later or not
+                    $sql = "select DATEDIFF(dispensing_date,'$appointment')as late_by from patient_visit where patient_id='$patient' and dispensing_date>'$appointment' and facility='$facility_code' ORDER BY dispensing_date asc LIMIT 1";
+                    $query = $this->db->query($sql);
+                    $results = $query->result_array();
+                    if ($results) {
+                        //Visited Later
+                        $visited_later++;
+                        $late_by = $results[0]['late_by'];
+                        $status = "<span style='color:blue;'>Late by $late_by Day(s)</span>";
+                    } else {
+                        //Not Visited
+                        $not_visited++;
+                        $status = "<span style='color:red;'>Not Visited</span>";
+                    }
+                }
+                $sql = "SELECT 
+            patient_number_ccc as art_no,
+            UPPER(first_name)as first_name,
+            pss.name as source,
+            UPPER(other_name)as other_name,
+            UPPER(last_name)as last_name, 
+            IF(gender=1,'Male','Female')as gender,
+            UPPER(physical) as physical,
+            phone,
+            alternate,      
+            CASE WHEN  differentiated_care = 1 THEN 'YES' ELSE  'NO' END as diff_care,
+            FLOOR(DATEDIFF('$today',dob)/365) as age,
+            regimen_service_type.name as service,
+            concat (r.regimen_code,' | ',r.regimen_desc )as last_regimen 
+            FROM patient 
+            LEFT JOIN patient_source pss on pss.id=patient.source 
+            LEFT JOIN regimen_service_type on regimen_service_type.id = patient.service
+            LEFT JOIN regimen r ON current_regimen = r.id 
+            WHERE patient_number_ccc = '$patient' 
+            AND facility_code='$facility_code'";
+                $query = $this->db->query($sql);
+                $results = $query->result_array();
+                if ($results) {
+                    foreach ($results as $result) {
+                        $patient_id = $result['art_no'];
+                        $first_name = $result['first_name'];
+                        $other_name = $result['other_name'];
+                        $last_name = $result['last_name'];
+                        $phone = $result['phone'];
+                        if (!$phone) {
+                            $phone = $result['alternate'];
+                        }
+                        $address = $result['physical'];
+                        $gender = $result['gender'];
+                        $diff_care = $result['diff_care'];
+
+                        $age = $result['age'];
+                        $service = $result['service'];
+                        $last_regimen = $result['last_regimen'];
+                        $appointment = date('d-M-Y', strtotime($appointment));
+                        $source = $result['source'];
+                    }
+                    $row_string .= "<tr><td>$patient_id</td><td width='300' style='text-align:left;'>$first_name $other_name $last_name</td><td>$phone</td><td>$address</td><td>$gender</td><td>$age</td><td>$service</td><td>$diff_care</td><td style='white-space:nowrap;'>$last_regimen</td><td>$appointment</td><td width='200px'>$status</td><td>$source</td></tr>";
+                    $overall_total++;
+                }
+            }
+        }
+
+        $row_string .= "</tbody></table>";
+        $data['from'] = date('d-M-Y', strtotime($from));
+        $data['to'] = date('d-M-Y', strtotime($filter_to));
+        $data['dyn_table'] = $row_string;
+        $data['visited_later'] = $visited_later;
+        $data['not_visited'] = $not_visited;
+        $data['visited'] = $visited;
+        $data['all_count'] = $overall_total;
+        $data['title'] = "webADT | Reports";
+        $data['hide_side_menu'] = 1;
+        $data['banner_text'] = "Facility Reports";
+        $data['selected_report_type_link'] = "visiting_patient_report_row";
+        $data['selected_report_type'] = "Visiting Patients";
+        $data['report_title'] = "List of Patients Scheduled to Visit within ".$app_desc;
+        $data['facility_name'] = $this->session->userdata('facility_name');
+        $data['content_view'] = 'reports/patients_mmd_scheduled_v';
+        $this->load->view('template', $data);
+    }
+        public function getRefillDistributionPatients($filter_to = NULL, $appointment_description = NULL) {
+        //Variables
+        $visited = 0;
+        $not_visited = 0;
+        $visited_later = 0;
+        $row_string = "";
+        $status = "";
+        $overall_total = 0;
+        $today = date('Y-m-d');
+        $late_by = "";
+        $facility_code = $this->session->userdata("facility");
+        $from = date('Y-m-d', strtotime($from));
+        $to = date('Y-m-d', strtotime($to));
+
+        if ($filter_to != NULL && $appointment_description != NULL) {
+            $filter_from = date('Y-m-d', strtotime($filter_from));
+            $filter_to = date('Y-m-d', strtotime($filter_to));
+            $app_desc = str_ireplace('_', ' ', $appointment_description) . '(s)';
+           
+         } 
+         $sql = "SELECT patient_id as patient ,clinicalappointment as appointment  from ( SELECT patient_id, p.clinicalappointment, max(dispensing_date),  Datediff(p.clinicalappointment, max(dispensing_date)) appointment_days,
+            CASE 
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 0 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 90 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 120 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 150 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 180 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 211 THEN '7 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 211 THEN 'Over 7 months'
             ELSE 'N/A' END AS appointment_description
             FROM patient_visit pv
             LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
