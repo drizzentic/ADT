@@ -3599,7 +3599,7 @@ GROUP BY  patient_id
             $app_desc = str_ireplace('_', ' ', $appointment_description) . '(s)';
            
          } 
-         $sql = "SELECT patient_id as patient ,nextappointment as appointment  from ( SELECT patient_id, p.clinicalappointment, max(dispensing_date),  Datediff(p.clinicalappointment, max(dispensing_date)) appointment_days,
+         $sql = "SELECT patient_id as patient ,clinicalappointment as appointment  from ( SELECT patient_id, p.clinicalappointment, max(dispensing_date),  Datediff(p.clinicalappointment, max(dispensing_date)) appointment_days,
             CASE 
             WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 0 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
             WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 30 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
@@ -3752,7 +3752,7 @@ GROUP BY  patient_id
             $app_desc = str_ireplace('_', ' ', $appointment_description) . '(s)';
            
          } 
-         $sql = "SELECT patient_id as patient ,clinicalappointment as appointment  from ( SELECT patient_id, p.nextappointment, max(dispensing_date),  Datediff(p.nextappointment, max(dispensing_date)) appointment_days,
+         $sql = "SELECT patient_id as patient ,nextappointment as appointment  from ( SELECT patient_id, p.nextappointment, max(dispensing_date),  Datediff(p.nextappointment, max(dispensing_date)) appointment_days,
             CASE 
             WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 0 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
             WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 30 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
