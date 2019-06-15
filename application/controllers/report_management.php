@@ -3611,7 +3611,7 @@ GROUP BY  patient_id
             ELSE 'N/A' END AS appointment_description
             FROM patient_visit pv
             LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
-            WHERE p.current_status=1 AND  dispensing_date<='$filter_to'
+            WHERE p.current_status=1 AND p.differentiated_care=1 AND  dispensing_date<='$filter_to'
             GROUP BY  patient_id
              ) tmp where appointment_description = '$app_desc'";
 
