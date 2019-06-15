@@ -3276,16 +3276,18 @@ class Report_management extends MY_Controller {
         $overall_total = 0;
 
         $sql = "SELECT appointment_description, count( tmp.patient_id) as total from(
-                SELECT patient_id, p.clinicalappointment, max(dispensing_date),  Datediff(p.clinicalappointment, max(dispensing_date)) appointment_days,
+                SELECT patient_id, p.nextappointment, max(dispensing_date),  Datediff(p.nextappointment, max(dispensing_date)) appointment_days,
                 CASE 
-                 WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 0 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
-                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 90 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
-                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 120 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
-                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 150 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
+                WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 0 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
+                WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 30 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
+                 WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 0 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
+                WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 90 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
+                WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 120 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
+                WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 150 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
 
-                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 180 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 210 THEN '7 MONTH(S)'
+                WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 180 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 211 THEN '7 MONTH(S)'
 
-                WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 210 THEN 'Over 7 months'
+                WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 210 THEN 'Over 7 months'
 
                 ELSE 'N/A' END AS appointment_description
                 FROM patient_visit pv
@@ -3337,19 +3339,20 @@ class Report_management extends MY_Controller {
         $overall_total = 0;
 
         $sql = "SELECT appointment_description, count( tmp.patient_id) as total from(
-SELECT patient_id, p.nextappointment, max(dispensing_date),  Datediff(p.nextappointment, max(dispensing_date)) appointment_days,
+SELECT patient_id, p.clinicalappointment, max(dispensing_date),  Datediff(p.clinicalappointment, max(dispensing_date)) appointment_days,
 CASE 
-WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 0 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
-WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 30 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
-WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 60 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
-WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 90 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
-WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 120 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
-WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 150 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
-WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 181 THEN 'Over 6 months'
+WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 0 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
+WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 30 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
+WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 60 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
+WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 90 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
+WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 120 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
+WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 150 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
+WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 180 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 211 THEN '7 MONTH(S)'
+WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 210 THEN 'Over 7 months'
 ELSE 'N/A' END AS appointment_description
 FROM patient_visit pv
 LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
-WHERE p.current_status=1 AND  dispensing_date<=?
+WHERE p.current_status=1 AND p.differentiated_care=1 AND dispensing_date<=?
 GROUP BY  patient_id
  ) tmp group by appointment_description";
 
@@ -3596,15 +3599,15 @@ GROUP BY  patient_id
             $app_desc = str_ireplace('_', ' ', $appointment_description) . '(s)';
            
          } 
-         $sql = "SELECT patient_id as patient ,nextappointment as appointment  from ( SELECT patient_id, p.nextappointment, max(dispensing_date),  Datediff(p.nextappointment, max(dispensing_date)) appointment_days,
+         $sql = "SELECT patient_id as patient ,nextappointment as appointment  from ( SELECT patient_id, p.clinicalappointment, max(dispensing_date),  Datediff(p.clinicalappointment, max(dispensing_date)) appointment_days,
             CASE 
-            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 0 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
-            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 30 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
-            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 60 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
-            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 90 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
-            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 120 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
-            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 150 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
-            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 181 THEN 'Over 6 months'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 0 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 30 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 60 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 90 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 120 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 150 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
+            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 181 THEN 'Over 6 months'
             ELSE 'N/A' END AS appointment_description
             FROM patient_visit pv
             LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
@@ -3749,14 +3752,16 @@ GROUP BY  patient_id
             $app_desc = str_ireplace('_', ' ', $appointment_description) . '(s)';
            
          } 
-         $sql = "SELECT patient_id as patient ,clinicalappointment as appointment  from ( SELECT patient_id, p.clinicalappointment, max(dispensing_date),  Datediff(p.clinicalappointment, max(dispensing_date)) appointment_days,
+         $sql = "SELECT patient_id as patient ,clinicalappointment as appointment  from ( SELECT patient_id, p.nextappointment, max(dispensing_date),  Datediff(p.nextappointment, max(dispensing_date)) appointment_days,
             CASE 
-            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 0 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
-            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 90 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
-            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 120 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
-            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 150 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
-            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 180 AND  Datediff(p.clinicalappointment, max(dispensing_date) ) < 211 THEN '7 MONTH(S)'
-            WHEN  Datediff(p.clinicalappointment, max(dispensing_date) ) > 211 THEN 'Over 7 months'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 0 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 31 THEN '1 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 30 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 61 THEN '2 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 60 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 91 THEN '3 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 90 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 121 THEN '4 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 120 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 151 THEN '5 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 150 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 181 THEN '6 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 180 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 211 THEN '7 MONTH(S)'
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 211 THEN 'Over 7 months'
             ELSE 'N/A' END AS appointment_description
             FROM patient_visit pv
             LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
