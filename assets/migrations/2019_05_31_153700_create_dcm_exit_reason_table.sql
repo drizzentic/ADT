@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS dcm_exit_reason//
+DROP TABLE dcm_exit_reason//
 CREATE TABLE dcm_exit_reason (
   id int(11) NOT NULL AUTO_INCREMENT,
   name varchar(150) NOT NULL,
