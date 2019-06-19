@@ -169,7 +169,7 @@ $ccc_stores = $this->session->userdata("ccc_store");
                     <option class="date_range_report" value="dispensingReport">Patients Visit Summary</option>
                     <option class="date_range_report" value="get_viral_load_results">List of Patient Viral Load Results</option>
                     <option class="date_range_report" value="getPatientList">List of Patients on a given Drug </option>
-                    <option class="single_date_report" value="distribution_refill">Appointment distribution for refill </option>
+                    <option class="single_date_report" value="distribution_refill">Multi Monthly ARVs Dispensing </option>
                 
                 </select></td>
         </tr>
@@ -183,7 +183,7 @@ $ccc_stores = $this->session->userdata("ccc_store");
                     <option class="date_range_report" value="getScheduledPatientsDiffCare">List of Patients Scheduled to Visit</option>
                     <option class="date_range_report" value="getPatientsStartedonDateDiffCare">List of Patients Started (on a Particular Date)</option>
                     <option class="date_range_report" value="getPatientsforRefillDiffCare">List of Patients Visited For Refill</option>
-                    <option class="single_date_report" value="multi_month_arv_dispensing">Multi Month ARVs Dispensing (MMD) </option>
+                   <!-- <option class="single_date_report" value="multi_month_arv_dispensing">Multi Month ARVs Dispensing (MMD) </option> -->
                     <!-- <option class="date_range_report" value="differenciated_package_of_care">Patients on Differentiated Care(Viral Load)</option> -->
                     <!-- <option class="date_range_report" value="get_differentiated_care_appointments">Patients on Differentiated Care(Appointments)</option> -->
                 </select></td>
