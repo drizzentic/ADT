@@ -3287,9 +3287,9 @@ class Report_management extends MY_Controller {
 
                 WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 185 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 216 THEN '7 MONTH(S)'
 
-                WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 215 THEN 'Over 7 months'
+                WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 215 THEN 'Over 7 MONTH(S)'
 
-                ELSE 'N/A' END AS appointment_description
+                ELSE 'N/A(S)' END AS appointment_description
                 FROM patient_visit pv
                 LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
                 LEFT JOIN regimen_service_type rst ON rst.id=p.service
@@ -3764,8 +3764,8 @@ GROUP BY  patient_id
             WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 125 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 156 THEN '5 MONTH(S)'
             WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 155 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 186 THEN '6 MONTH(S)'
             WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 185 AND  Datediff(p.nextappointment, max(dispensing_date) ) < 216 THEN '7 MONTH(S)'
-            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 215 THEN 'Over 7 months'
-            ELSE 'N/A' END AS appointment_description
+            WHEN  Datediff(p.nextappointment, max(dispensing_date) ) > 215 THEN 'Over 7 MONTH(S)'
+            ELSE 'N/A(S)' END AS appointment_description
             FROM patient_visit pv
             LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
             LEFT JOIN regimen_service_type rst ON rst.id=p.service
