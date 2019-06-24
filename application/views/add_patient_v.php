@@ -821,6 +821,7 @@
 									<option value="1" > Concordant</option>
 									<option value="2" > Discordant</option>
 									<option value="3" > Unknown</option>
+									<option value="4" > Negative</option>
 								</select>
 
 
