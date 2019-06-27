@@ -110,7 +110,7 @@ class Dispensement_management extends MY_Controller {
         $data['appointments'] = "";
         $dispensing_date = date('Y-m-d');
 
-        $sql = "SELECT * FROM Facilities where facilitycode='$facility_code'";
+        $sql = "SELECT * FROM facilities where facilitycode='$facility_code'";
         $query = $this->db->query($sql);
         $facility_settings = $query->result_array()[0];
 

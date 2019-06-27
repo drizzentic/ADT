@@ -47,7 +47,7 @@ class Patient_management extends MY_Controller {
 
     public function index() {
         $source = $this->session->userdata('facility');
-        $sql = "SELECT * FROM Facilities where facilitycode='$source'";
+        $sql = "SELECT * FROM facilities where facilitycode='$source'";
         $query = $this->db->query($sql);
         $facility_settings = $query->result_array()[0];
 
@@ -92,7 +92,7 @@ class Patient_management extends MY_Controller {
     public function addpatient_show() {
         $data = array();
         $data['facility_code'] = $this->session->userdata('facility');
-        $sql = "SELECT * FROM Facilities where facilitycode=".$data['facility_code'];
+        $sql = "SELECT * FROM facilities where facilitycode=".$data['facility_code'];
         $query = $this->db->query($sql);
         $data['cs'] = $query->result_array()[0]['ccc_separator'];
         $data['districts'] = District::getPOB();
@@ -2207,7 +2207,7 @@ class Patient_management extends MY_Controller {
         $facility_code = $this->session->userdata("facility");
         $access_level = $this->session->userdata('user_indicator');
 
-        $sql = "SELECT * FROM Facilities where facilitycode='$facility_code'";
+        $sql = "SELECT * FROM facilities where facilitycode='$facility_code'";
         $query = $this->db->query($sql);
         $facility_settings = $query->result_array()[0];
 
