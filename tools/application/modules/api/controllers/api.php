@@ -47,7 +47,6 @@ class Api extends MX_Controller {
 				case 'ADT^A08':
 				$this->processPatientUpdate($message);
 				break;
-
 				case 'ORU^R01':
 				$this->processObservation($message);
 
@@ -56,6 +55,9 @@ class Api extends MX_Controller {
 				break;
 				case 'RDE^001':
 				$this->processDrugOrder($message);
+				break;
+				case 'ADT^009':
+				$this->getDispensingByPatientID($message);
 				break;
 				default:
 			# code...
@@ -75,7 +77,7 @@ class Api extends MX_Controller {
 		$api_messages = ['ADT^Â08','ADT^Â04','SIU^S12','ORU^R01','RDE^001'];
 		$api_arr = array(
 			'API Name'=> 'ADT PIS/EMR Interoperability API ',
-			'API vesion' => 1.0,
+			'API version' => 1.0,
 			'API Messages' => $api_messages
 		);
 		header('Content-Type: application/json');
@@ -85,23 +87,8 @@ class Api extends MX_Controller {
 	}
 
 	function processPatientRegistration($patient){
-// internal & external patient ID matching
-
-// 		$EXTERNAL_PATIENT_ID = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ID;
-// 		$ASSIGNING_AUTHORITY = $patient->PATIENT_IDENTIFICATION->EXTERNAL_PATIENT_ID->ASSIGNING_AUTHORITY;
-// 		$internal_patient = $this->api_model->getPatient(null,$EXTERNAL_PATIENT_ID);
-// // getPatientInternalID($external_id,$ASSIGNING_AUTHORITY)
-// 		if ($internal_patient){
-// 			echo "Patient already exists";
-
-// 			die;
-// 		}
-// internal identification is an array of objects
 		$identification = array();
-		foreach ($patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID as $id) {
-			$identification[$id->IDENTIFIER_TYPE] = $id->ID;
-		}
-		$ccc_no = ($identification['CCC_NUMBER']);
+		$ccc_no = $this->getCCC($patient);
 		$SENDING_FACILITY = $patient->MESSAGE_HEADER->SENDING_FACILITY;
 		// $ccc_no = $this->parseCCC($ccc_no,$SENDING_FACILITY);
 
@@ -799,4 +786,21 @@ class Api extends MX_Controller {
 			$this -> template -> index($data);
 		}
 
+		public function getDispensingByPatientID($patient){
+			$ccc_no = $this->getCCC($patient);
+			print_r($ccc_no);
+			$patientDispensing = $this->api_model->getDispensingByPatientID($ccc_no);
+			echo json_encode($patientDispensing);
+		}
+
+		public function getCCC($patient){
+			foreach ($patient->PATIENT_IDENTIFICATION->INTERNAL_PATIENT_ID as $id) {
+				if($id->IDENTIFIER_TYPE == 'CCC_NUMBER'){
+					return $id->ID;
+				}
+			}
+		}
 	}
+
+	
+	 
